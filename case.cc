@@ -6,6 +6,14 @@ bool check_case(int head, uint32_t range);
 void build_base_range(std::vector<uint32_t> &base_range);
 void gen_range(std::vector<uint32_t> &release, int n1, int n2, int n3, int n4);
 
+inline int binary_num(uint32_t binary, int length) { // get number of non-zero bit
+    int num = 0;
+    for (int i = 0; i < length; ++i) {
+        num += int((binary >> i) & 0x1);
+    }
+    return num;
+}
+
 void find_all_case(std::vector<uint64_t> *all_case) {
     all_case->clear();
     std::vector<uint32_t> base_range;

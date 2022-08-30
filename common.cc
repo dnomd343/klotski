@@ -1,15 +1,5 @@
 #include "common.h"
 
-//inline int binary_num(uint32_t binary, int length) { // get number of non-zero bit
-int binary_num(uint32_t binary, int length) { // get number of non-zero bit
-    int num = 0;
-    for (int i = 0; i < length; ++i) {
-        num += int((binary >> i) & 0x1);
-    }
-    return num;
-}
-
-//inline void binary_reverse(uint32_t &range) { // reverse binary every 2 bits
 void binary_reverse(uint32_t &range) { // reverse binary every 2 bits
     range = ((range << 16) & 0xFFFF0000) | ((range >> 16) & 0x0000FFFF);
     range = ((range << 8) & 0xFF00FF00) | ((range >> 8) & 0x00FF00FF);
@@ -17,7 +7,6 @@ void binary_reverse(uint32_t &range) { // reverse binary every 2 bits
     range = ((range << 2) & 0xCCCCCCCC) | ((range >> 2) & 0x33333333);
 }
 
-//inline void binary_to_str(uint64_t binary, char *string) {
 void binary_to_str(uint64_t binary, char *string) {
     for (int i = 0; i < 9; ++i, ++string) { // only read low 9 * 4 bits
         *string = int8_t(binary >> (8 - i) * 4 & 0xF);
