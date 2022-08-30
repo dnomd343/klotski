@@ -3,4 +3,4 @@ project(klotski)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(klotski case.cpp)
+add_executable(klotski main.cpp)
