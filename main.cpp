@@ -1,7 +1,6 @@
 #include <cstdio>
 #include <cstdint>
 
-#define B_empty 0x6 // undefined case
 #define B_space 0x0
 #define B_fill  0x7
 #define B_1x2   0x1
@@ -125,11 +124,48 @@ uint64_t compact_code(uint64_t code) {
     return ret | range << (16 - block_num) * 2;
 }
 
+inline void binary_reverse(uint32_t &range) { // reverse binary every 2 bits
+    range = ((range << 16) & 0xFFFF0000) | ((range >> 16) & 0x0000FFFF);
+    range = ((range << 8) & 0xFF00FF00) | ((range >> 8) & 0x00FF00FF);
+    range = ((range << 4) & 0xF0F0F0F0) | ((range >> 4) & 0x0F0F0F0F);
+    range = ((range << 2) & 0xCCCCCCCC) | ((range >> 2) & 0x33333333);
+}
+
+uint64_t extract_code(uint64_t code) {
+    uint64_t ret = C_2x2 << (code >> 32) * 3;
+    auto range = uint32_t(code);
+    binary_reverse(range);
+    for (int addr = 0; range; range >>= 2) {
+        while (0x7 & ret >> addr) {
+            addr += 3;
+        }
+        switch (range & 0x3) {
+            case 0x1:
+                ret |= C_1x2 << addr;
+                break;
+            case 0x2:
+                ret |= C_2x1 << addr;
+                break;
+            case 0x3:
+                ret |= C_1x1 << addr;
+                break;
+            case 0x0:
+                addr += 3;
+        }
+    }
+    return ret;
+}
+
 int main() {
     printf("Klotski engine\n");
 
-    printf("%lx\n", compact_code(0x0E58FC85FFEBC4DB));
-    printf("%lx\n", compact_code(0x0603EDF5CAFFF5E2));
+//    printf("%lx\n", compact_code(0x0E58FC85FFEBC4DB));
+//    printf("%lx\n", compact_code(0x0603EDF5CAFFF5E2));
+
+    graph_output(extract_code(0x4FEA13400));
+    printf("\n");
+    graph_output(extract_code(0x1A9BF0C00));
+    printf("\n");
 
     return 0;
 
