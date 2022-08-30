@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdint>
 #include <vector>
+#include <list>
 
 #define UP   (-12)
 #define LEFT  (-3)
@@ -17,6 +18,13 @@ struct cache {
 };
 struct cache move_cache[16];
 int move_cache_num;
+
+struct klotski_info {
+    int step;
+    uint64_t code;
+    uint64_t filter;
+    std::list<klotski_info*> src;
+};
 
 void graph_output(uint64_t code) {
     for (int i = 0; i < 20; ++i) {
@@ -179,7 +187,38 @@ void move_block_2x2(uint64_t code, int addr, int filter) {
     }
 }
 
+void add_new_case(klotski_info *src, uint64_t code, uint64_t filter) {
+    graph_output(code);
+    printf("\n");
+}
 
+void next_step(klotski_info *klotski) {
+    uint64_t code = klotski->code;
+    move_cache->code = code;
+    uint64_t range = code & ~klotski->filter;
+    for (int addr = 0; range; range >>= 3, addr += 3) {
+        move_cache_num = 1;
+        switch (range & 0x7) {
+            case B_2x2:
+                move_block_2x2(code, addr, 0);
+                break;
+            case B_2x1:
+                move_block_2x1(code, addr, 0);
+                break;
+            case B_1x2:
+                move_block_1x2(code, addr, 0);
+                break;
+            case B_1x1:
+                move_block_1x1(code, addr, 0);
+                break;
+            default:
+                continue;
+        }
+        for (struct cache *p = move_cache + 1; p < move_cache + move_cache_num; ++p) {
+            add_new_case(klotski, p->code, p->filter);
+        }
+    }
+}
 
 
 int main() {
@@ -270,22 +309,36 @@ int main() {
 //    uint64_t code = 0x00001F81E01C8000; // 5
 //    uint64_t code = 0x003F03C0001C8000; // 5
 //    uint64_t code = 0x00001F81E0038010; // 1
-    uint64_t code = 0x00001F81E0000000; // 9
+//    uint64_t code = 0x00001F81E0000000; // 9
 
-    int move_target = 9;
-
-    move_cache_num = 1;
-    *move_cache = {code,0};
+//    int move_target = 9;
+//    move_cache_num = 1;
+//    *move_cache = {code,0};
 
 //    move_block_1x1(code, move_target * 3, 0);
 //    move_block_1x2(code, move_target * 3, 0);
 //    move_block_2x1(code, move_target * 3, 0);
-    move_block_2x2(code, move_target * 3, 0);
+//    move_block_2x2(code, move_target * 3, 0);
 
-    for (int i = 0; i < move_cache_num; ++i) {
-        graph_output(move_cache[i].code);
-        printf("\n");
-    }
+//    for (int i = 0; i < move_cache_num; ++i) {
+//        graph_output(move_cache[i].code);
+//        printf("\n");
+//    }
+
+    auto test = new klotski_info;
+    test->filter = 0x0;
+    test->step = 0;
+
+//    test->code = 0x0603EDF5CAFFF5E2;
+//    test->code = 0x0E58FC85FFEBC4DB;
+//    test->code = 0x00001F81E0018000;
+//    test->code = 0x00001F81E01C8000;
+//    test->code = 0x003F03C0001C8000;
+//    test->code = 0x00001F81E0038010;
+    test->code = 0x00001F81E0000000;
+
+
+    next_step(test);
 
     return 0;
 }
