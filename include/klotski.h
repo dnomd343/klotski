@@ -10,15 +10,15 @@
 #define B_1x1   0x3
 #define B_2x2   0x4
 
-#define C_1x1 int64_t(0x3)
-#define C_1x2 int64_t(0x39)
-#define C_2x1 int64_t(0x7002)
-#define C_2x2 int64_t(0x3F03C)
+#define C_1x1 uint64_t(0x3)
+#define C_1x2 uint64_t(0x39)
+#define C_2x1 uint64_t(0x7002)
+#define C_2x2 uint64_t(0x3F03C)
 
-#define F_1x1 int64_t(0x7)
-#define F_1x2 int64_t(0x3F)
-#define F_2x1 int64_t(0x7007)
-#define F_2x2 int64_t(0x3F03F)
+#define F_1x1 uint64_t(0x7)
+#define F_1x2 uint64_t(0x3F)
+#define F_2x1 uint64_t(0x7007)
+#define F_2x2 uint64_t(0x3F03F)
 
 uint64_t compact_code(uint64_t code);
 uint64_t extract_code(uint64_t code);
