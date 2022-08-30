@@ -2,8 +2,9 @@
 #include "klotski.h"
 #include <cstdio>
 #include <cstdint>
-#include <vector>
 #include <list>
+#include <unordered_map>
+#include <queue>
 
 #define UP   (-12)
 #define LEFT  (-3)
@@ -25,6 +26,9 @@ struct klotski_info {
     uint64_t filter;
     std::list<klotski_info*> src;
 };
+
+std::queue<klotski_info*> cal_cache;
+std::unordered_map<uint64_t, klotski_info*> klotski_case;
 
 void graph_output(uint64_t code) {
     for (int i = 0; i < 20; ++i) {
@@ -188,28 +192,41 @@ void move_block_2x2(uint64_t code, int addr, int filter) {
 }
 
 void add_new_case(klotski_info *src, uint64_t code, uint64_t filter) {
-    graph_output(code);
-    printf("\n");
+    auto existing_case = klotski_case.find(code);
+    if (existing_case != klotski_case.end()) {
+        existing_case->second->filter |= filter;
+        if (existing_case->second->step != src->step) {
+            existing_case->second->src.push_back(src);
+        }
+        return;
+    }
+
+    auto info = new struct klotski_info;
+    info->code = code;
+    info->filter = filter;
+    info->step = src->step + 1;
+    info->src.push_back(src);
+    cal_cache.emplace(info);
+    klotski_case.emplace(code, info);
 }
 
 void next_step(klotski_info *klotski) {
-    uint64_t code = klotski->code;
-    move_cache->code = code;
-    uint64_t range = code & ~klotski->filter;
+    move_cache->code = klotski->code;
+    uint64_t range = move_cache->code & ~klotski->filter;
     for (int addr = 0; range; range >>= 3, addr += 3) {
         move_cache_num = 1;
         switch (range & 0x7) {
             case B_2x2:
-                move_block_2x2(code, addr, 0);
+                move_block_2x2(move_cache->code, addr, 0);
                 break;
             case B_2x1:
-                move_block_2x1(code, addr, 0);
+                move_block_2x1(move_cache->code, addr, 0);
                 break;
             case B_1x2:
-                move_block_1x2(code, addr, 0);
+                move_block_1x2(move_cache->code, addr, 0);
                 break;
             case B_1x1:
-                move_block_1x1(code, addr, 0);
+                move_block_1x1(move_cache->code, addr, 0);
                 break;
             default:
                 continue;
@@ -220,6 +237,25 @@ void next_step(klotski_info *klotski) {
     }
 }
 
+void cal_klotski(uint64_t code) {
+
+    auto setup = new klotski_info;
+    setup->step = 0;
+    setup->code = code;
+    setup->filter = 0x0;
+
+    klotski_case.clear();
+    klotski_case.emplace(code, setup);
+
+    cal_cache.push(setup);
+    while (!cal_cache.empty()) {
+        next_step(cal_cache.front());
+        cal_cache.pop();
+    }
+
+//    printf("count -> %zu\n", klotski_case.size());
+
+}
 
 int main() {
     printf("Klotski engine\n");
@@ -250,9 +286,6 @@ int main() {
     //  . # ~ ~  |  000 011 001 111 => 1110 0101 1000 -> E58
     // 0x0E58FC85FFEBC4DB
 
-//    graph_output(0x0E58FC85FFEBC4DB);
-//    printf("\n");
-
     // 0x1A9BF0C00
     //  @ * * @  |  010 100 111 010 => 0101 1110 0010 -> 5E2
     //  @ * * @  |  111 111 111 111 => 1111 1111 1111 -> FFF
@@ -261,84 +294,13 @@ int main() {
     //  # . . #  |  011 000 000 011 => 0110 0000 0011 -> 603
     // 0x0603EDF5CAFFF5E2
 
-//    graph_output(0x0603EDF5CAFFF5E2);
-//    printf("\n");
 
-    // 0x...
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // . # . .  000 011 000 000  0000 0001 1000  018
-    // . * * .  000 100 111 000  0001 1110 0000  1E0
-    // . * * .  000 111 111 000  0001 1111 1000  1F8
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // 0x00001F81E0018000
+//    uint64_t code = 0x0603EDF5CAFFF5E2;
+    uint64_t code = 0x0E58FC85FFEBC4DB;
 
-    // 0x...
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // . ~ ~ .  000 001 111 000  0001 1100 1000  1C8
-    // . * * .  000 100 111 000  0001 1110 0000  1E0
-    // . * * .  000 111 111 000  0001 1111 1000  1F8
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // 0x00001F81E01C8000
-
-    // 0x...
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // . ~ ~ .  000 001 111 000  0001 1100 1000  1C8
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // * * . .  100 111 000 000  0000 0011 1100  03C
-    // * * . .  111 111 000 000  0000 0011 1111  03F
-    // 0x003F03C0001C8000
-
-    // 0x...
-    // . @ . .  000 010 000 000  0000 0001 0000  010
-    // . @ . .  000 111 000 000  0000 0011 1000  038
-    // . * * .  000 100 111 000  0001 1110 0000  1E0
-    // . * * .  000 111 111 000  0001 1111 1000  1F8
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // 0x00001F81E0038010
-
-    // 0x...
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // . * * .  000 100 111 000  0001 1110 0000  1E0
-    // . * * .  000 111 111 000  0001 1111 1000  1F8
-    // . . . .  000 000 000 000  0000 0000 0000  000
-    // 0x00001F81E0000000
-
-//    uint64_t code = 0x0E58FC85FFEBC4DB; // 17
-//    uint64_t code = 0x00001F81E0018000; // 5
-//    uint64_t code = 0x00001F81E01C8000; // 5
-//    uint64_t code = 0x003F03C0001C8000; // 5
-//    uint64_t code = 0x00001F81E0038010; // 1
-//    uint64_t code = 0x00001F81E0000000; // 9
-
-//    int move_target = 9;
-//    move_cache_num = 1;
-//    *move_cache = {code,0};
-
-//    move_block_1x1(code, move_target * 3, 0);
-//    move_block_1x2(code, move_target * 3, 0);
-//    move_block_2x1(code, move_target * 3, 0);
-//    move_block_2x2(code, move_target * 3, 0);
-
-//    for (int i = 0; i < move_cache_num; ++i) {
-//        graph_output(move_cache[i].code);
-//        printf("\n");
-//    }
-
-    auto test = new klotski_info;
-    test->filter = 0x0;
-    test->step = 0;
-
-//    test->code = 0x0603EDF5CAFFF5E2;
-//    test->code = 0x0E58FC85FFEBC4DB;
-//    test->code = 0x00001F81E0018000;
-//    test->code = 0x00001F81E01C8000;
-//    test->code = 0x003F03C0001C8000;
-//    test->code = 0x00001F81E0038010;
-    test->code = 0x00001F81E0000000;
-
-
-    next_step(test);
+    for (int i = 0; i < 100; ++i) {
+        cal_klotski(code);
+    }
 
     return 0;
 }
