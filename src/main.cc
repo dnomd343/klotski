@@ -260,6 +260,15 @@ void cal_klotski(uint64_t code) {
 int main() {
     printf("Klotski engine\n");
 
+    std::vector<uint64_t> all_cases;
+    find_all_case(&all_cases);
+
+//    std::cout << "klotski cases -> " << all_cases.size() << std::endl;
+
+    printf("klotski cases -> %zu\n", all_cases.size());
+
+    return 0;
+
 //    printf("%lx\n", compact_code(0x0E58FC85FFEBC4DB));
 //    printf("%lx\n", compact_code(0x0603EDF5CAFFF5E2));
 
