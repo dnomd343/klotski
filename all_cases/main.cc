@@ -65,8 +65,9 @@ void build_basic_ranges(int n1, int n2, int n3, int n4, std::vector<uint32_t> &r
         }
         uint32_t range = 0;
         for (int i = 0; i < len; ++i) { // generate range base on binary value
+            range >>= 2;
             if ((bin >> i) & 0b1) { // non-zero bit
-                (range >>= 2) |= M_01;
+                range |= M_01;
             }
         }
         cache_1.emplace_back(range); // insert into first layer
@@ -152,7 +153,14 @@ int main() {
 
     std::vector<uint64_t> all_cases;
     find_all_cases(all_cases);
-    printf("size -> %ld\n", all_cases.size());
+//    printf("size -> %ld\n", all_cases.size());
+
+    for (uint64_t temp : all_cases) {
+        for (int i = 32; i >= 0; i -= 4) {
+            printf("%lX", temp >> i & 0b1111); // show hex format
+        }
+        printf("\n");
+    }
 
     return 0;
 }
