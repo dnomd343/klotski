@@ -5,18 +5,15 @@
 
 class AllCases {
 public:
-//    std::vector<uint64_t> all_cases;
-
-    std::vector<uint32_t> all_cases[16]; // 012 456 89A CDE
-
-    std::vector<uint32_t> basic_ranges;
+    AllCases() {
+        load_basic_ranges();
+    }
     void find_all_cases();
-
-//protected:
-    static bool check_case(uint32_t head, uint32_t range);
-    void load_basic_ranges();
+    std::vector<uint32_t> all_cases[16];
+    std::vector<uint32_t> basic_ranges;
 
 private:
-    void build_basic_ranges(int n1, int n2, int n3, int n4);
-
+    void load_basic_ranges();
+    void generate_ranges(int n1, int n2, int n3, int n4);
+    static bool check_case(uint32_t head, uint32_t range);
 };

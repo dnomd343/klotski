@@ -1,6 +1,4 @@
-#include <iostream>
 #include <algorithm>
-#include <vector>
 #include "all_cases.h"
 
 inline uint32_t binary_count(uint32_t bin) { // get number of non-zero bits
@@ -51,7 +49,7 @@ bool AllCases::check_case(uint32_t head, uint32_t range) { // check whether the 
     return true; // valid case
 }
 
-void AllCases::build_basic_ranges(int n1, int n2, int n3, int n4) { // build target ranges
+void AllCases::generate_ranges(int n1, int n2, int n3, int n4) { // build target ranges
     int len, limit;
     constexpr uint32_t M_01 = 0b01 << 30;
     constexpr uint32_t M_10 = 0b10 << 30;
@@ -116,14 +114,13 @@ void AllCases::build_basic_ranges(int n1, int n2, int n3, int n4) { // build tar
 }
 
 void AllCases::load_basic_ranges() { // load basic ranges
-    basic_ranges.clear();
     for (int n = 0; n <= 7; ++n) { // number of 1x2 and 2x1 block -> 0 ~ 7
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // number of 2x1 block -> 0 ~ n
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // number of 1x1 block -> 0 ~ (14 - 2n)
                 int n_1x2 = n - n_2x1;
                 int n_space = 16 - n * 2 - n_1x1;
                 /// 0x0 -> 00 | 1x2 -> 01 | 2x1 -> 10 | 1x1 -> 11
-                build_basic_ranges(n_space, n_1x2, n_2x1, n_1x1); // build target ranges
+                generate_ranges(n_space, n_1x2, n_2x1, n_1x1); // build target ranges
             }
         }
     }
@@ -134,47 +131,40 @@ void AllCases::load_basic_ranges() { // load basic ranges
 }
 
 void AllCases::find_all_cases() { // find all valid cases
-//    all_cases.clear();
-    load_basic_ranges(); // load basic ranges
     for (uint32_t head = 0; head < 16; ++head) { // address for 2x2 block
-        all_cases[head].clear();
         if ((head & 0b11) == 0b11) {
             continue;
         }
-//        uint64_t prefix = int64_t(head) << 32;
+        all_cases[head].clear();
         for (uint32_t range : basic_ranges) { // combine 2x2 address and range
             if (check_case(head, range)) {
-                all_cases[head].emplace_back(binary_reverse(range));
-//                all_cases.emplace_back(prefix | binary_reverse(range)); // found valid case
+                all_cases[head].emplace_back(binary_reverse(range)); // found valid case
             }
         }
     }
 }
 
 int main() {
-
-//    std::vector<uint64_t> all_cases;
-//    find_all_cases(all_cases);
-////    printf("size -> %ld\n", all_cases.size());
-//
-//    for (uint64_t temp : all_cases) {
-//        for (int i = 32; i >= 0; i -= 4) {
-//            printf("%lX", temp >> i & 0b1111); // show hex format
-//        }
-//        printf("\n");
-//    }
-
     auto a = AllCases();
 
-//    uint32_t range = binary_reverse(0xA9BF0C00);
-//    std::cout << a.check_case(3, range) << std::endl;
-
-//    a.load_basic_ranges();
-//    std::cout << a.basic_ranges.size() << std::endl;
+//    std::cout << "basic: " << a.basic_ranges.size() << std::endl;
+//    std::cout << std::endl;
+//
+//    int sum = 0;
+//    a.find_all_cases();
+//    for (auto &all_case : a.all_cases) {
+//        sum += (int)all_case.size();
+//        std::cout << all_case.size() << std::endl;
+//    }
+//
+//    std::cout << std::endl;
+//    std::cout << "sum: " << sum << std::endl;
 
     a.find_all_cases();
-    for (const auto &all_case : a.all_cases) {
-        std::cout << all_case.size() << std::endl;
+    for (int n = 0; n < 16; ++n) {
+        for (auto &range : a.all_cases[n]) {
+            printf("%X%08X\n", n, range);
+        }
     }
 
     return 0;
