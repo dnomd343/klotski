@@ -81,10 +81,10 @@ uint64_t unzip_short_code(uint32_t short_code) {
 
     uint32_t prefix = 0;
     for (; prefix < 256; ++prefix) {
-        if (short_code < SHORT_CODE_MARK[head][prefix]) {
+        if (short_code < SHORT_CODE_INDEX[head][prefix]) {
             break;
         }
-        short_code -= SHORT_CODE_MARK[head][prefix];
+        short_code -= SHORT_CODE_INDEX[head][prefix];
     }
 
     std::cout << "prefix: " << prefix << std::endl;
@@ -140,20 +140,52 @@ int main() {
 
     // zip short code
     // valid code -> short code
-    // head -> offset_1
-    // prefix -> offset_2
 
-//    uint64_t code = 0x4FEA13400;
-//    head_offset = code >> 32;
+    uint64_t code = 0x6EC0F8800;
 
-    uint32_t offset[16];
-    uint32_t sum = 0;
-    for (int i = 0; i < 16; ++i) {
-        offset[i] = sum;
-        sum += ALL_CASES_INDEX[i];
-    }
-    for (int i = 0; i < 16; ++i) {
-        std::cout << offset[i] << ", ";
+//    uint32_t head = code >> 32;
+//    std::cout << "head: " << head << std::endl;
+//    uint32_t head_offset = ALL_CASES_OFFSET[head];
+//    std::cout << "head offset: " << head_offset << std::endl;
+//
+//    uint32_t prefix = (code >> 24) & 0xFF;
+//    std::cout << "prefix: " << prefix << std::endl;
+//    uint32_t prefix_offset = SHORT_CODE_MARK[head][prefix];
+//    std::cout << "prefix offset: " << prefix_offset << std::endl;
+
+    // know real range -> start search at offset
+
+//    uint32_t offset[16];
+//    uint32_t sum = 0;
+//    for (int i = 0; i < 16; ++i) {
+//        offset[i] = sum;
+//        sum += ALL_CASES_INDEX[i];
+//    }
+//    for (int i = 0; i < 16; ++i) {
+//        std::cout << offset[i] << ", ";
+//    }
+
+    uint32_t offset[256];
+
+    for (uint32_t head = 0; head < 16; ++head) {
+
+        uint32_t sum = 0;
+        for (int i = 0; i < 256; ++i) {
+            offset[i] = sum;
+            sum += SHORT_CODE_INDEX[head][i];
+        }
+        std::cout << "{" << std::endl;
+        for (int i = 0; i < 256; ++i) {
+            if (i % 8 == 0) {
+                std::cout << "    ";
+            }
+//            printf("%7d, ", offset[i]);
+            printf("%5d, ", SHORT_CODE_INDEX[head][i]);
+            if (i % 8 == 7) {
+                std::cout << std::endl;
+            }
+        }
+        std::cout << "}," << std::endl;
     }
 
     return 0;
