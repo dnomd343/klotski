@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include "all_cases.h"
+#include "short_code.h"
 #include "short_code_mark.h"
 
 // TODO: try to remove: `0` `O` `I` `l`
@@ -67,10 +68,10 @@ uint64_t unzip_short_code(uint32_t short_code) {
 
     uint32_t prefix = 0;
     for (; prefix < 256; ++prefix) {
-        if (short_code < SHORT_CODE_INDEX[head][prefix]) {
+        if (short_code < RANGE_PREFIX_INDEX[head][prefix]) {
             break;
         }
-        short_code -= SHORT_CODE_INDEX[head][prefix];
+        short_code -= RANGE_PREFIX_INDEX[head][prefix];
     }
 
     std::cout << "prefix: " << prefix << std::endl;
@@ -99,7 +100,7 @@ uint32_t zip_short_code(uint64_t code) {
     std::cout << "head offset: " << head_offset << std::endl;
 
     uint32_t prefix = (code >> 24) & 0xFF;
-    uint32_t prefix_offset = SHORT_CODE_OFFSET[head][prefix];
+    uint32_t prefix_offset = RANGE_PREFIX_OFFSET[head][prefix];
 
     std::cout << "prefix: " << prefix << std::endl;
     std::cout << "prefix offset: " << prefix_offset << std::endl;
@@ -130,11 +131,11 @@ uint32_t zip_short_code(uint64_t code) {
 
 int main() {
 
-//    auto ret_code = unzip_short_code(14323231);
-//    printf("result -> %08lX\n", ret_code);
+    auto ret_code = unzip_short_code(14323231);
+    printf("result -> %08lX\n", ret_code);
 
-    auto ret_code = zip_short_code(0x6EC0F8800);
-    printf("result -> %d\n", ret_code);
+    auto ret_short_code = zip_short_code(0x6EC0F8800);
+    printf("result -> %d\n", ret_short_code);
 
     return 0;
 
@@ -165,39 +166,6 @@ int main() {
 
 //    std::cout << code_to_string(14323231) << std::endl;
 //    std::cout << code_from_string("8IzVj") << std::endl;
-
-//    uint32_t offset[16];
-//    uint32_t sum = 0;
-//    for (int i = 0; i < 16; ++i) {
-//        offset[i] = sum;
-//        sum += ALL_CASES_INDEX[i];
-//    }
-//    for (int i = 0; i < 16; ++i) {
-//        std::cout << offset[i] << ", ";
-//    }
-
-//    uint32_t offset[256];
-//
-//    for (uint32_t head = 0; head < 16; ++head) {
-//
-//        uint32_t sum = 0;
-//        for (int i = 0; i < 256; ++i) {
-//            offset[i] = sum;
-//            sum += SHORT_CODE_INDEX[head][i];
-//        }
-//        std::cout << "{" << std::endl;
-//        for (int i = 0; i < 256; ++i) {
-//            if (i % 8 == 0) {
-//                std::cout << "    ";
-//            }
-////            printf("%7d, ", offset[i]);
-//            printf("%5d, ", SHORT_CODE_INDEX[head][i]);
-//            if (i % 8 == 7) {
-//                std::cout << std::endl;
-//            }
-//        }
-//        std::cout << "}," << std::endl;
-//    }
 
     return 0;
 }
