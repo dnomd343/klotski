@@ -8,7 +8,7 @@
 
 const uint32_t ALL_CASES_NUMBER = 29334498;
 
-const uint32_t ALL_CASES_SIZE[] = {
+const uint32_t ALL_CASES_INDEX[] = {
     2942906, 2260392, 2942906, 0,
     2322050, 1876945, 2322050, 0,
     2322050, 1876945, 2322050, 0,
@@ -55,7 +55,54 @@ uint32_t code_from_string(const std::string &short_code) {
     return result;
 }
 
+uint64_t unzip_short_code(uint32_t short_code) {
+
+    auto a = AllCases(); // load basic ranges
+
+    std::cout << "short code: " << short_code << std::endl;
+
+    uint32_t head = 0;
+    for (; head < 16; ++head) {
+        if (short_code < ALL_CASES_INDEX[head]) {
+            break;
+        }
+        short_code -= ALL_CASES_INDEX[head];
+    }
+
+    std::cout << "head: " << head << std::endl;
+    std::cout << "short code: " << short_code << std::endl;
+
+    uint32_t prefix = 0;
+    for (; prefix < 256; ++prefix) {
+        if (short_code < SHORT_CODE_MARK[head][prefix]) {
+            break;
+        }
+        short_code -= SHORT_CODE_MARK[head][prefix];
+    }
+
+    std::cout << "prefix: " << prefix << std::endl;
+    std::cout << "short code: " << short_code << std::endl;
+
+    uint32_t range;
+    for (int i = 0; i < BASIC_RANGES_INDEX[prefix]; ++i) {
+        range = a.basic_ranges[i + BASIC_RANGES_OFFSET[prefix]];
+        if (AllCases::check_case(head, range)) {
+            if (short_code == 0) {
+                break;
+            }
+            --short_code;
+        }
+    }
+    return (uint64_t)head << 32 | AllCases::binary_reverse(range);
+}
+
+
 int main() {
+
+    auto ret_code = unzip_short_code(14323231);
+    printf("result -> %08lX\n", ret_code);
+
+    return 0;
 
     auto a = AllCases();
 //    a.find_all_cases();
@@ -73,25 +120,7 @@ int main() {
 //        all_cases_dict[all_cases[i]] = i;
 //    }
 
-    uint32_t sum = 0;
-    uint32_t index[256];
-    for (int i = 0; i < 256; ++i) {
-        index[i] = sum;
-        sum += BASIC_RANGES_INDEX[i];
-    }
-//    for (int i = 0; i < 256; ++i) {
-//        if (i % 8 == 0) {
-//            printf("    ");
-//        }
-//        printf("%7d, ", index[i]);
-//        if (i % 8 == 7) {
-//            printf("\n");
-//        }
-//    }
-//    return 0;
-
-
-    uint32_t short_code = 14323231;
+//    uint32_t short_code = 14323231;
 //    printf("%09lX\n", all_cases[0]);
 //    printf("%09lX\n", all_cases[short_code]);
 //    printf("%09lX\n", all_cases[ALL_CASES_NUMBER - 1]);
@@ -99,63 +128,6 @@ int main() {
 //    std::cout << code_to_string(all_cases_dict[0x6EC0F8800]) << std::endl;
 //    std::cout << code_to_string(all_cases_dict[0x1A9BF0C00]) << std::endl;
 //    std::cout << code_to_string(all_cases_dict[0x4FEA13400]) << std::endl;
-
-    // located code header
-    // 0 <= short_code < ALL_CASES_NUMBER
-
-//    uint32_t short_code = 5203298;
-    int head = 0;
-    for (; head < 16; ++head) {
-        if (short_code < ALL_CASES_SIZE[head]) {
-            break;
-        }
-        short_code -= ALL_CASES_SIZE[head];
-    }
-    std::cout << "head: " << head << std::endl;
-    std::cout << "sub short code: " << short_code << std::endl;
-
-//    int index = 0;
-//    for (auto &range : a.basic_ranges) {
-//        if (AllCases::check_case(head, range)) {
-//            if (index == short_code) {
-//                printf("%08X\n", AllCases::binary_reverse(range));
-//                break;
-//            }
-//            ++index;
-//        }
-//    }
-
-    int prefix = 0;
-    for (; prefix < 256; ++prefix) {
-        if (short_code < SHORT_CODE_MARK[head][prefix]) {
-            break;
-        }
-        short_code -= SHORT_CODE_MARK[head][prefix];
-    }
-    std::cout << "prefix: " << prefix << std::endl;
-    std::cout << "sub sub short code: " << short_code << std::endl;
-
-//    uint32_t basic_ranges_start = 0;
-//    for (int i = 0; i < prefix; ++i) {
-//        basic_ranges_start += BASIC_RANGES_INDEX[i];
-//    }
-//    std::cout << "basic ranges start: " << basic_ranges_start << std::endl;
-    std::cout << "basic range offset: " << BASIC_RANGES_OFFSET[prefix] << std::endl;
-
-    uint32_t range;
-    for (int i = 0; i < BASIC_RANGES_INDEX[prefix]; ++i) {
-//        range = a.basic_ranges[i + basic_ranges_start];
-        range = a.basic_ranges[i + BASIC_RANGES_OFFSET[prefix]];
-        if (AllCases::check_case(head, range)) {
-            if (short_code == 0) {
-                break;
-            }
-            --short_code;
-        }
-    }
-    range = AllCases::binary_reverse(range);
-    printf("range -> %08X\n", range);
-    printf("result code -> %X%08X\n", head, range);
 
 //    std::cout << code_to_string(14323231) << std::endl;
 //    std::cout << code_from_string("8IzVj") << std::endl;
