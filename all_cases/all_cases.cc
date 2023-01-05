@@ -143,29 +143,3 @@ void AllCases::find_all_cases() { // find all valid cases
         }
     }
 }
-
-int main() {
-    auto a = AllCases();
-
-//    std::cout << "basic: " << a.basic_ranges.size() << std::endl;
-//    std::cout << std::endl;
-//
-//    int sum = 0;
-//    a.find_all_cases();
-//    for (auto &all_case : a.all_cases) {
-//        sum += (int)all_case.size();
-//        std::cout << all_case.size() << std::endl;
-//    }
-//
-//    std::cout << std::endl;
-//    std::cout << "sum: " << sum << std::endl;
-
-    a.find_all_cases();
-    for (int n = 0; n < 16; ++n) {
-        for (auto &range : a.all_cases[n]) {
-            printf("%X%08X\n", n, range);
-        }
-    }
-
-    return 0;
-}
