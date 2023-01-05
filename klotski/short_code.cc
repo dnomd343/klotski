@@ -2,7 +2,12 @@
 #include "short_code.h"
 #include "short_code_mark.h"
 
-void ShortCode::build_mapping() { // build fast search mapping
+void ShortCode::build_base_ranges() {
+    auto all = AllCases(AllCases::InitType::WITH_BASIC_RANGES);
+    basic_ranges = *all.get_basic_ranges();
+}
+
+void ShortCode::build_mappings() { // build fast search mapping
     auto all = AllCases(AllCases::InitType::WITH_ALL_CASES);
     for (int head = 0; head < 16; ++head) {
         uint64_t prefix = (uint64_t)head << 32;
@@ -15,9 +20,18 @@ void ShortCode::build_mapping() { // build fast search mapping
     }
 }
 
-void ShortCode::speed_up() { // speed up for zip / unzip short code
-    if (all_cases_list.empty()) {
-        build_mapping();
+void ShortCode::speed_up(enum Mode mode) { // speed up handle short code
+    switch (mode) {
+        case Mode::NORMAL: // speed up into normal mode
+            if (basic_ranges.empty()) {
+                build_base_ranges(); // basic ranges initialize
+            }
+            break;
+        case Mode::FAST: // speed up into fast mode
+            if (all_cases_list.empty()) {
+                build_mappings(); // all cases mapping initialize
+            }
+            break;
     }
 }
 
