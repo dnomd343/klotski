@@ -11,7 +11,7 @@ inline uint32_t binary_count(uint32_t bin) { // get number of non-zero bits
     return bin & 0b111111;
 }
 
-inline uint32_t binary_reverse(uint32_t bin) { // reverse binary every 2-bits
+uint32_t AllCases::binary_reverse(uint32_t bin) { // reverse binary every 2-bits
     bin = ((bin << 16) & 0xFFFF0000) | ((bin >> 16) & 0x0000FFFF);
     bin = ((bin << 8) & 0xFF00FF00) | ((bin >> 8) & 0x00FF00FF);
     bin = ((bin << 4) & 0xF0F0F0F0) | ((bin >> 4) & 0x0F0F0F0F);

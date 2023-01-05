@@ -57,34 +57,55 @@ uint32_t code_from_string(const std::string &short_code) {
 int main() {
 
     auto a = AllCases();
-    a.find_all_cases();
 
-    std::vector<uint64_t> all_cases;
-    for (int n = 0; n < 16; ++n) {
-        uint64_t prefix = (uint64_t)n << 32;
-        for (auto &code : a.all_cases[n]) {
-            all_cases.emplace_back(prefix | code);
-        }
-    }
+//    a.find_all_cases();
+//
+//    std::vector<uint64_t> all_cases;
+//    for (int n = 0; n < 16; ++n) {
+//        uint64_t prefix = (uint64_t)n << 32;
+//        for (auto &code : a.all_cases[n]) {
+//            all_cases.emplace_back(prefix | code);
+//        }
+//    }
+//
+//    std::unordered_map<uint64_t, uint32_t> all_cases_dict;
+//    for (int i = 0; i < all_cases.size(); ++i) {
+//        all_cases_dict[all_cases[i]] = i;
+//    }
 
-    std::unordered_map<uint64_t, uint32_t> all_cases_dict;
-    for (int i = 0; i < all_cases.size(); ++i) {
-        all_cases_dict[all_cases[i]] = i;
-    }
-
-//    uint32_t short_code = 14323231;
+    uint32_t short_code = 14323231;
 //    printf("%09lX\n", all_cases[0]);
 //    printf("%09lX\n", all_cases[short_code]);
 //    printf("%09lX\n", all_cases[ALL_CASES_NUMBER - 1]);
 
-    std::cout << "start search" << std::endl;
-    std::cout << code_to_string(all_cases_dict[0x6EC0F8800]) << std::endl;
-    std::cout << code_to_string(all_cases_dict[0x1A9BF0C00]) << std::endl;
-    std::cout << code_to_string(all_cases_dict[0x4FEA13400]) << std::endl;
+//    std::cout << code_to_string(all_cases_dict[0x6EC0F8800]) << std::endl;
+//    std::cout << code_to_string(all_cases_dict[0x1A9BF0C00]) << std::endl;
+//    std::cout << code_to_string(all_cases_dict[0x4FEA13400]) << std::endl;
 
-//    printf("%d\n", all_cases_dict[0x6EC0F8800]);
-//    printf("%d\n", all_cases_dict[0x1A9BF0C00]);
-//    printf("%d\n", all_cases_dict[0x4FEA13400]);
+    // located code header
+    // 0 <= short_code < ALL_CASES_NUMBER
+
+//    uint32_t short_code = 5203298;
+    int head = 0;
+    for (; head < 16; ++head) {
+        if (short_code < ALL_CASES_SIZE[head]) {
+            break;
+        }
+        short_code -= ALL_CASES_SIZE[head];
+    }
+    std::cout << "head: " << head << std::endl;
+    std::cout << "sub short code: " << short_code << std::endl;
+
+    int index = 0;
+    for (auto &range : a.basic_ranges) {
+        if (AllCases::check_case(head, range)) {
+            if (index == short_code) {
+                printf("%08X\n", AllCases::binary_reverse(range));
+                break;
+            }
+            ++index;
+        }
+    }
 
 //    std::cout << code_to_string(14323231) << std::endl;
 //    std::cout << code_from_string("8IzVj") << std::endl;
