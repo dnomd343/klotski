@@ -2,25 +2,11 @@
 #include <algorithm>
 #include <unordered_map>
 #include "all_cases.h"
-#include "mark.h"
+#include "short_code_mark.h"
 
 // TODO: try to remove: `0` `O` `I` `l`
 
 const uint32_t ALL_CASES_NUMBER = 29334498;
-
-const uint32_t ALL_CASES_INDEX[16] = {
-    2942906, 2260392, 2942906, 0,
-    2322050, 1876945, 2322050, 0,
-    2322050, 1876945, 2322050, 0,
-    2942906, 2260392, 2942906, 0,
-};
-
-const uint32_t ALL_CASES_OFFSET[16] = {
-           0,  2942906,  5203298,  8146204,
-     8146204, 10468254, 12345199, 14667249,
-    14667249, 16989299, 18866244, 21188294,
-    21188294, 24131200, 26391592, 29334498,
-};
 
 std::string code_to_string(uint32_t short_code) {
     if (short_code >= ALL_CASES_NUMBER) {
@@ -103,12 +89,54 @@ uint64_t unzip_short_code(uint32_t short_code) {
     return (uint64_t)head << 32 | AllCases::binary_reverse(range);
 }
 
+uint32_t zip_short_code(uint64_t code) {
+    auto a = AllCases(); // load basic ranges
+
+    uint32_t head = code >> 32;
+    uint32_t head_offset = ALL_CASES_OFFSET[head];
+
+    std::cout << "head: " << head << std::endl;
+    std::cout << "head offset: " << head_offset << std::endl;
+
+    uint32_t prefix = (code >> 24) & 0xFF;
+    uint32_t prefix_offset = SHORT_CODE_OFFSET[head][prefix];
+
+    std::cout << "prefix: " << prefix << std::endl;
+    std::cout << "prefix offset: " << prefix_offset << std::endl;
+
+    uint32_t basic_index = BASIC_RANGES_INDEX[prefix];
+    uint32_t basic_offset = BASIC_RANGES_OFFSET[prefix];
+
+    std::cout << "basic index: " << basic_index << std::endl;
+    std::cout << "basic offset: " << basic_offset << std::endl;
+
+    auto target_range = AllCases::binary_reverse((uint32_t)code);
+    printf("target range -> %08X\n", target_range);
+
+    uint32_t sub_offset = 0;
+    for (int i = 0; i < basic_index; ++i) {
+        uint32_t range = a.basic_ranges[i + basic_offset];
+        if (range == target_range) {
+            break;
+        }
+        if (AllCases::check_case(head, range)) {
+            ++sub_offset;
+        }
+    }
+    std::cout << "sub offset: " << sub_offset << std::endl;
+
+    return head_offset + prefix_offset + sub_offset;
+}
 
 int main() {
 
 //    auto ret_code = unzip_short_code(14323231);
 //    printf("result -> %08lX\n", ret_code);
-//    return 0;
+
+    auto ret_code = zip_short_code(0x6EC0F8800);
+    printf("result -> %d\n", ret_code);
+
+    return 0;
 
     auto a = AllCases();
 //    a.find_all_cases();
@@ -137,45 +165,6 @@ int main() {
 
 //    std::cout << code_to_string(14323231) << std::endl;
 //    std::cout << code_from_string("8IzVj") << std::endl;
-
-    // zip short code
-    // valid code -> short code
-
-    uint64_t code = 0x6EC0F8800;
-
-    uint32_t head = code >> 32;
-    std::cout << "head: " << head << std::endl;
-    uint32_t head_offset = ALL_CASES_OFFSET[head];
-    std::cout << "head offset: " << head_offset << std::endl;
-
-    uint32_t prefix = (code >> 24) & 0xFF;
-    std::cout << "prefix: " << prefix << std::endl;
-    uint32_t prefix_offset = SHORT_CODE_OFFSET[head][prefix];
-    std::cout << "prefix offset: " << prefix_offset << std::endl;
-
-    uint32_t basic_index = BASIC_RANGES_INDEX[prefix];
-    uint32_t basic_offset = BASIC_RANGES_OFFSET[prefix];
-    std::cout << "basic index: " << basic_index << std::endl;
-    std::cout << "basic offset: " << basic_offset << std::endl;
-
-    // know real range -> start search at offset
-    auto target_range = AllCases::binary_reverse((uint32_t)code);
-    printf("target range -> %08X\n", target_range);
-
-    uint32_t sub_index = 0;
-    for (int i = 0; i < basic_index; ++i) {
-        uint32_t range = a.basic_ranges[i + basic_offset];
-        if (range == target_range) {
-            std::cout << "match target range" << std::endl;
-            break;
-        }
-        if (AllCases::check_case(head, range)) {
-            ++sub_index;
-        }
-    }
-    std::cout << "sub index: " << sub_index << std::endl;
-
-    std::cout << "short code: " << head_offset + prefix_offset + sub_index << std::endl;
 
 //    uint32_t offset[16];
 //    uint32_t sum = 0;
