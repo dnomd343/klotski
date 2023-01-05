@@ -58,7 +58,7 @@ uint32_t code_from_string(const std::string &short_code) {
 int main() {
 
     auto a = AllCases();
-    a.find_all_cases();
+//    a.find_all_cases();
 
 //    std::vector<uint64_t> all_cases;
 //    for (int n = 0; n < 16; ++n) {
@@ -129,26 +129,42 @@ int main() {
 //    printf("%08X\n", a.all_cases[6][1]);
 //    printf("%08X\n", a.all_cases[6][2]);
 
-    uint32_t index[256];
-    for (auto &all_case : a.all_cases) {
-        printf("    {\n");
-        for (uint32_t &tmp: index) {
-            tmp = 0;
-        }
-        for (auto &range: all_case) {
-            ++index[range >> 24];
-        }
-        for (int i = 0; i < 256; ++i) {
-            if (i % 16 == 0) {
-                printf("        ");
-            }
-            printf("%5d, ", index[i]);
-            if (i % 16 == 15) {
-                printf("\n");
-            }
-        }
-        printf("    },\n");
+//    uint32_t index[256];
+//    for (auto &all_case : a.all_cases) {
+//        printf("    {\n");
+//        for (uint32_t &tmp: index) {
+//            tmp = 0;
+//        }
+//        for (auto &range: all_case) {
+//            ++index[range >> 24];
+//        }
+//        for (int i = 0; i < 256; ++i) {
+//            if (i % 16 == 0) {
+//                printf("        ");
+//            }
+//            printf("%5d, ", index[i]);
+//            if (i % 16 == 15) {
+//                printf("\n");
+//            }
+//        }
+//        printf("    },\n");
+//    }
+
+    uint32_t index[256] = {0};
+    for (auto range : a.basic_ranges) {
+        range = AllCases::binary_reverse(range);
+        ++index[range >> 24];
     }
+    for (int i = 0; i < 256; ++i) {
+        if (i % 8 == 0) {
+            printf("    ");
+        }
+        printf("%6d, ", index[i]);
+        if (i % 8 == 7) {
+            printf("\n");
+        }
+    }
+
 
 //    std::cout << code_to_string(14323231) << std::endl;
 //    std::cout << code_from_string("8IzVj") << std::endl;
