@@ -8,11 +8,18 @@
 
 const uint32_t ALL_CASES_NUMBER = 29334498;
 
-const uint32_t ALL_CASES_INDEX[] = {
+const uint32_t ALL_CASES_INDEX[16] = {
     2942906, 2260392, 2942906, 0,
     2322050, 1876945, 2322050, 0,
     2322050, 1876945, 2322050, 0,
     2942906, 2260392, 2942906, 0,
+};
+
+const uint32_t ALL_CASES_OFFSET[16] = {
+           0,  2942906,  5203298,  8146204,
+     8146204, 10468254, 12345199, 14667249,
+    14667249, 16989299, 18866244, 21188294,
+    21188294, 24131200, 26391592, 29334498,
 };
 
 std::string code_to_string(uint32_t short_code) {
@@ -99,10 +106,9 @@ uint64_t unzip_short_code(uint32_t short_code) {
 
 int main() {
 
-    auto ret_code = unzip_short_code(14323231);
-    printf("result -> %08lX\n", ret_code);
-
-    return 0;
+//    auto ret_code = unzip_short_code(14323231);
+//    printf("result -> %08lX\n", ret_code);
+//    return 0;
 
     auto a = AllCases();
 //    a.find_all_cases();
@@ -131,6 +137,24 @@ int main() {
 
 //    std::cout << code_to_string(14323231) << std::endl;
 //    std::cout << code_from_string("8IzVj") << std::endl;
+
+    // zip short code
+    // valid code -> short code
+    // head -> offset_1
+    // prefix -> offset_2
+
+//    uint64_t code = 0x4FEA13400;
+//    head_offset = code >> 32;
+
+    uint32_t offset[16];
+    uint32_t sum = 0;
+    for (int i = 0; i < 16; ++i) {
+        offset[i] = sum;
+        sum += ALL_CASES_INDEX[i];
+    }
+    for (int i = 0; i < 16; ++i) {
+        std::cout << offset[i] << ", ";
+    }
 
     return 0;
 }
