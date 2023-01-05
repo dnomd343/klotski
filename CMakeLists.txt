@@ -3,4 +3,5 @@ set(CMAKE_CXX_STANDARD 14)
 project(klotski)
 
 #add_subdirectory(src)
-add_subdirectory(all_cases)
+#add_subdirectory(all_cases)
+add_subdirectory(klotski)
