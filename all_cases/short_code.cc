@@ -143,17 +143,39 @@ int main() {
 
     uint64_t code = 0x6EC0F8800;
 
-//    uint32_t head = code >> 32;
-//    std::cout << "head: " << head << std::endl;
-//    uint32_t head_offset = ALL_CASES_OFFSET[head];
-//    std::cout << "head offset: " << head_offset << std::endl;
-//
-//    uint32_t prefix = (code >> 24) & 0xFF;
-//    std::cout << "prefix: " << prefix << std::endl;
-//    uint32_t prefix_offset = SHORT_CODE_MARK[head][prefix];
-//    std::cout << "prefix offset: " << prefix_offset << std::endl;
+    uint32_t head = code >> 32;
+    std::cout << "head: " << head << std::endl;
+    uint32_t head_offset = ALL_CASES_OFFSET[head];
+    std::cout << "head offset: " << head_offset << std::endl;
+
+    uint32_t prefix = (code >> 24) & 0xFF;
+    std::cout << "prefix: " << prefix << std::endl;
+    uint32_t prefix_offset = SHORT_CODE_OFFSET[head][prefix];
+    std::cout << "prefix offset: " << prefix_offset << std::endl;
+
+    uint32_t basic_index = BASIC_RANGES_INDEX[prefix];
+    uint32_t basic_offset = BASIC_RANGES_OFFSET[prefix];
+    std::cout << "basic index: " << basic_index << std::endl;
+    std::cout << "basic offset: " << basic_offset << std::endl;
 
     // know real range -> start search at offset
+    auto target_range = AllCases::binary_reverse((uint32_t)code);
+    printf("target range -> %08X\n", target_range);
+
+    uint32_t sub_index = 0;
+    for (int i = 0; i < basic_index; ++i) {
+        uint32_t range = a.basic_ranges[i + basic_offset];
+        if (range == target_range) {
+            std::cout << "match target range" << std::endl;
+            break;
+        }
+        if (AllCases::check_case(head, range)) {
+            ++sub_index;
+        }
+    }
+    std::cout << "sub index: " << sub_index << std::endl;
+
+    std::cout << "short code: " << head_offset + prefix_offset + sub_index << std::endl;
 
 //    uint32_t offset[16];
 //    uint32_t sum = 0;
@@ -165,28 +187,28 @@ int main() {
 //        std::cout << offset[i] << ", ";
 //    }
 
-    uint32_t offset[256];
-
-    for (uint32_t head = 0; head < 16; ++head) {
-
-        uint32_t sum = 0;
-        for (int i = 0; i < 256; ++i) {
-            offset[i] = sum;
-            sum += SHORT_CODE_INDEX[head][i];
-        }
-        std::cout << "{" << std::endl;
-        for (int i = 0; i < 256; ++i) {
-            if (i % 8 == 0) {
-                std::cout << "    ";
-            }
-//            printf("%7d, ", offset[i]);
-            printf("%5d, ", SHORT_CODE_INDEX[head][i]);
-            if (i % 8 == 7) {
-                std::cout << std::endl;
-            }
-        }
-        std::cout << "}," << std::endl;
-    }
+//    uint32_t offset[256];
+//
+//    for (uint32_t head = 0; head < 16; ++head) {
+//
+//        uint32_t sum = 0;
+//        for (int i = 0; i < 256; ++i) {
+//            offset[i] = sum;
+//            sum += SHORT_CODE_INDEX[head][i];
+//        }
+//        std::cout << "{" << std::endl;
+//        for (int i = 0; i < 256; ++i) {
+//            if (i % 8 == 0) {
+//                std::cout << "    ";
+//            }
+////            printf("%7d, ", offset[i]);
+//            printf("%5d, ", SHORT_CODE_INDEX[head][i]);
+//            if (i % 8 == 7) {
+//                std::cout << std::endl;
+//            }
+//        }
+//        std::cout << "}," << std::endl;
+//    }
 
     return 0;
 }
