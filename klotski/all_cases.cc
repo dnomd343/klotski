@@ -93,6 +93,30 @@ void AllCases::build_basic_ranges() { // build basic ranges
     }
 }
 
+void AllCases::find_all_cases() { // find all valid cases
+    get_basic_ranges(); // ensure basic ranges exist
+    for (uint32_t head = 0; head < 16; ++head) { // address of 2x2 block
+        if ((head & 0b11) == 0b11) {
+            continue; // invalid 2x2 address
+        }
+        for (uint32_t range : basic_ranges) { // check base on 2x2 address and range
+            if (Common::check_case(head, range)) {
+                all_cases[head].emplace_back(Common::range_reverse(range)); // found valid case
+            }
+        }
+    }
+}
+
 const std::vector<uint32_t>* AllCases::get_basic_ranges() {
+    if (basic_ranges.empty()) {
+        build_basic_ranges(); // basic ranges initialize
+    }
     return &basic_ranges;
+}
+
+const std::vector<uint32_t> (*AllCases::get_all_cases())[16] {
+    if (all_cases->empty()) {
+        find_all_cases(); // all cases initialize
+    }
+    return &all_cases;
 }
