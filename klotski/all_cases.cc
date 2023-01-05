@@ -107,6 +107,17 @@ void AllCases::find_all_cases() { // find all valid cases
     }
 }
 
+AllCases::AllCases(enum InitType init) {
+    switch (init) {
+        case InitType::WITH_ALL_CASES:
+            get_all_cases();
+        case InitType::WITH_BASIC_RANGES:
+            get_basic_ranges();
+        case WITH_NOTHING:
+            break;
+    }
+}
+
 const std::vector<uint32_t>* AllCases::get_basic_ranges() {
     if (basic_ranges.empty()) {
         build_basic_ranges(); // basic ranges initialize
