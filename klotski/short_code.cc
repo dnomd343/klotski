@@ -44,3 +44,7 @@ uint32_t ShortCode::fast_encode(uint64_t common_code) { // common_code -> short_
     // TODO: ensure input common_code valid
     return all_cases_dict[common_code];
 }
+
+ShortCode::ShortCode(ShortCode::Mode mode) {
+    speed_up(mode);
+}
