@@ -5,14 +5,11 @@
 
 class AllCases {
 public:
-    enum InitType {
-        WITH_NOTHING,
-        WITH_BASIC_RANGES,
-        WITH_ALL_CASES,
-    };
+    enum Build {BASIC_RANGES, ALL_CASES};
 
-    explicit AllCases(enum InitType init);
-    AllCases():AllCases(InitType::WITH_NOTHING) {};
+    AllCases() = default;
+    void build(enum Build type);
+    explicit AllCases(enum Build type);
     const std::vector<uint32_t>* get_basic_ranges();
     const std::vector<uint32_t> (*get_all_cases())[16];
 

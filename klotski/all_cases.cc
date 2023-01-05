@@ -2,13 +2,17 @@
 #include "common.h"
 #include "all_cases.h"
 
-AllCases::AllCases(enum InitType init) {
-    switch (init) {
-        case InitType::WITH_ALL_CASES:
-            get_all_cases();
-        case InitType::WITH_BASIC_RANGES:
-            get_basic_ranges();
-        case WITH_NOTHING:
+AllCases::AllCases(AllCases::Build type) { // class initialize
+    build(type);
+}
+
+void AllCases::build(AllCases::Build type) { // build specific type
+    switch (type) {
+        case Build::BASIC_RANGES:
+            get_basic_ranges(); // basic ranges initialize
+            break;
+        case Build::ALL_CASES:
+            get_all_cases(); // all cases initialize
             break;
     }
 }
