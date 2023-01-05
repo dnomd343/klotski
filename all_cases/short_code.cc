@@ -73,6 +73,24 @@ int main() {
 //        all_cases_dict[all_cases[i]] = i;
 //    }
 
+    uint32_t sum = 0;
+    uint32_t index[256];
+    for (int i = 0; i < 256; ++i) {
+        index[i] = sum;
+        sum += BASIC_RANGES_INDEX[i];
+    }
+//    for (int i = 0; i < 256; ++i) {
+//        if (i % 8 == 0) {
+//            printf("    ");
+//        }
+//        printf("%7d, ", index[i]);
+//        if (i % 8 == 7) {
+//            printf("\n");
+//        }
+//    }
+//    return 0;
+
+
     uint32_t short_code = 14323231;
 //    printf("%09lX\n", all_cases[0]);
 //    printf("%09lX\n", all_cases[short_code]);
@@ -107,24 +125,6 @@ int main() {
 //        }
 //    }
 
-    // group size => 256 => 8-bits
-
-    // min range -> xx * 7 -> 14-bits
-
-    // 00 00 00 00 ...  =>  ... 00 00 00 00
-    // 00 00 00 01 ...  =>  ... 01 00 00 00
-    // 00 00 00 10 ...  =>  ... 10 00 00 00
-    // 00 00 00 11 ...  =>  ... 11 00 00 00
-    // ...
-
-    // ...00000000 -> 0
-    // ...01000000 -> ...
-    // ...10000000 -> ...
-    // ...11000000 -> ...
-
-    // record start search point
-
-
     int prefix = 0;
     for (; prefix < 256; ++prefix) {
         if (short_code < SHORT_CODE_MARK[head][prefix]) {
@@ -135,15 +135,17 @@ int main() {
     std::cout << "prefix: " << prefix << std::endl;
     std::cout << "sub sub short code: " << short_code << std::endl;
 
-    uint32_t basic_ranges_start = 0;
-    for (int i = 0; i < prefix; ++i) {
-        basic_ranges_start += BASIC_RANGES_INDEX[i];
-    }
-    std::cout << "basic ranges start: " << basic_ranges_start << std::endl;
+//    uint32_t basic_ranges_start = 0;
+//    for (int i = 0; i < prefix; ++i) {
+//        basic_ranges_start += BASIC_RANGES_INDEX[i];
+//    }
+//    std::cout << "basic ranges start: " << basic_ranges_start << std::endl;
+    std::cout << "basic range offset: " << BASIC_RANGES_OFFSET[prefix] << std::endl;
 
     uint32_t range;
     for (int i = 0; i < BASIC_RANGES_INDEX[prefix]; ++i) {
-        range = a.basic_ranges[i + basic_ranges_start];
+//        range = a.basic_ranges[i + basic_ranges_start];
+        range = a.basic_ranges[i + BASIC_RANGES_OFFSET[prefix]];
         if (AllCases::check_case(head, range)) {
             if (short_code == 0) {
                 break;
