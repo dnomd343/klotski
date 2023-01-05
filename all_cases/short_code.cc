@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <unordered_map>
 #include "all_cases.h"
+#include "mark.h"
 
 // TODO: try to remove: `0` `O` `I` `l`
 
@@ -123,32 +124,31 @@ int main() {
 
     // record start search point
 
-    std::cout << a.all_cases[6].size() << std::endl;
+//    std::cout << a.all_cases[6].size() << std::endl;
 //    printf("%08X\n", a.all_cases[6][0]);
 //    printf("%08X\n", a.all_cases[6][1]);
 //    printf("%08X\n", a.all_cases[6][2]);
 
-    uint32_t index[256] = {0};
-    for (auto &range : a.all_cases[6]) {
-        ++index[range >> 24];
+    uint32_t index[256];
+    for (auto &all_case : a.all_cases) {
+        printf("    {\n");
+        for (uint32_t &tmp: index) {
+            tmp = 0;
+        }
+        for (auto &range: all_case) {
+            ++index[range >> 24];
+        }
+        for (int i = 0; i < 256; ++i) {
+            if (i % 16 == 0) {
+                printf("        ");
+            }
+            printf("%5d, ", index[i]);
+            if (i % 16 == 15) {
+                printf("\n");
+            }
+        }
+        printf("    },\n");
     }
-
-    std::cout << "00: " << index[0x00] << std::endl;
-    std::cout << "01: " << index[0x01] << std::endl;
-    std::cout << "7D: " << index[0x7D] << std::endl;
-    std::cout << "7E: " << index[0x7E] << std::endl;
-    std::cout << "7F: " << index[0x7F] << std::endl;
-    std::cout << "FE: " << index[0xFE] << std::endl;
-    std::cout << "FF: " << index[0xFF] << std::endl;
-
-    // 1131628 -> 7C FF FF F0
-    // 1131629 -> 7D 00 00 00
-    // ...
-    // 1140029 -> 7D FF FF 00
-    // 1140030 -> 7E 00 00 00
-    // ...
-    // 1147413 -> 7E FF FF 00
-    // 1147414 -> 7F 00 00 00
 
 //    std::cout << code_to_string(14323231) << std::endl;
 //    std::cout << code_from_string("8IzVj") << std::endl;
