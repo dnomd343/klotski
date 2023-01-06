@@ -46,19 +46,64 @@ void ShortCode::build_mappings() { // build fast search mappings
     }
 }
 
-uint64_t ShortCode::fast_decode(uint32_t short_code) { // short_code --fast--> common_code
-    // TODO: ensure input short_code < SHORT_CODE_LIMIT
-    return all_cases_list[short_code];
+enum ShortCode::Mode ShortCode::check_mode() { // ensure speed up enabled and return current mode
+    if (!all_cases_list.empty()) {
+        return ShortCode::Mode::FAST; // fast mode already enabled
+    }
+    if (!basic_ranges.empty()) {
+        return ShortCode::Mode::NORMAL; // normal mode already enabled
+    }
+    speed_up(ShortCode::Mode::NORMAL); // class without initialized -> enter normal mode
+    return ShortCode::Mode::NORMAL; // use normal mode
 }
 
-uint32_t ShortCode::fast_encode(uint64_t common_code) { // common_code --fast--> short_code
-    // TODO: ensure input common_code valid
-    return all_cases_dict[common_code];
+uint32_t ShortCode::zip_short_code(uint64_t common_code) { // common_code --zip--> short_code
+    if (!CommonCode::check(common_code)) {
+        throw std::runtime_error("invalid common code");
+    }
+    switch (check_mode()) {
+        case ShortCode::Mode::NORMAL:
+            return tiny_encode(common_code);
+        case ShortCode::Mode::FAST:
+            return all_cases_dict[common_code];
+        default:
+            throw std::runtime_error("unknown error");
+    }
 }
 
-// TODO: load basic ranges before tiny_decode
-// TODO: ensure input short_code < SHORT_CODE_LIMIT
-uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short_code --low-mem--> common_code
+uint64_t ShortCode::unzip_short_code(uint32_t short_code) { // short_code --unzip--> common_code
+    if (!ShortCode::check(short_code)) {
+        throw std::runtime_error("invalid short code");
+    }
+    switch (check_mode()) {
+        case ShortCode::Mode::NORMAL:
+            return tiny_decode(short_code);
+        case ShortCode::Mode::FAST:
+            return all_cases_list[short_code];
+        default:
+            throw std::runtime_error("unknown error");
+    }
+}
+
+uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common_code --low-memory--> short_code
+    uint32_t offset = 0;
+    uint32_t head = common_code >> 32; // common code head
+    uint32_t prefix = (common_code >> 24) & 0xFF; // common code range prefix
+    auto target = Common::range_reverse((uint32_t)common_code); // target range
+
+    for (int index = 0; index < BASIC_RANGES_INDEX[prefix]; ++index) { // traverse basic ranges
+        uint32_t range = basic_ranges[index + BASIC_RANGES_OFFSET[prefix]];
+        if (range == target) {
+            break; // found target range
+        }
+        if (Common::check_case(head, range)) { // search for valid cases
+            ++offset; // record sub offset
+        }
+    }
+    return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
+}
+
+uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short_code --low-memory--> common_code
     uint32_t head = 0, prefix = 0;
     for (; head < 16; ++head) {
         if (short_code < ALL_CASES_INDEX[head]) { // match head
@@ -84,63 +129,4 @@ uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short_code --low-mem--
         }
     }
     return (uint64_t)head << 32 | Common::range_reverse(range); // release common code
-}
-
-// TODO: ensure input common_code valid
-// TODO: load basic ranges before tiny_encode
-uint32_t ShortCode::tiny_encode(uint64_t common_code) {
-    uint32_t offset = 0;
-    uint32_t head = common_code >> 32; // common code head
-    uint32_t prefix = (common_code >> 24) & 0xFF; // common code range prefix
-    auto target = Common::range_reverse((uint32_t)common_code); // target range
-
-    for (int index = 0; index < BASIC_RANGES_INDEX[prefix]; ++index) { // traverse basic ranges
-        uint32_t range = basic_ranges[index + BASIC_RANGES_OFFSET[prefix]];
-        if (range == target) {
-            break; // found target range
-        }
-        if (Common::check_case(head, range)) { // search for valid cases
-            ++offset; // record sub offset
-        }
-    }
-    return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
-}
-
-uint32_t ShortCode::zip_short_code(uint64_t common_code) { // common_code --zip--> short_code
-    if (!CommonCode::check(common_code)) {
-        throw std::runtime_error("invalid common code");
-    }
-    switch (check_mode()) {
-        case ShortCode::Mode::NORMAL:
-            return tiny_encode(common_code);
-        case ShortCode::Mode::FAST:
-            return fast_encode(common_code);
-        default:
-            throw std::runtime_error("unknown error");
-    }
-}
-
-uint64_t ShortCode::unzip_short_code(uint32_t short_code) { // short_code --unzip--> common_code
-    if (!check(short_code)) {
-        throw std::runtime_error("invalid short code");
-    }
-    switch (check_mode()) {
-        case ShortCode::Mode::NORMAL:
-            return tiny_decode(short_code);
-        case ShortCode::Mode::FAST:
-            return fast_decode(short_code);
-        default:
-            throw std::runtime_error("unknown error");
-    }
-}
-
-enum ShortCode::Mode ShortCode::check_mode() { // ensure speed up enabled and return current mode
-    if (!all_cases_list.empty()) {
-        return ShortCode::Mode::FAST; // fast mode already enabled
-    }
-    if (!basic_ranges.empty()) {
-        return ShortCode::Mode::NORMAL; // normal mode already enabled
-    }
-    speed_up(ShortCode::Mode::NORMAL); // class without initialized -> enter normal mode
-    return ShortCode::Mode::NORMAL; // use normal mode
 }
