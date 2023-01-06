@@ -3,7 +3,7 @@
 #include "short_code.h"
 //#include "common_code.h"
 
-int main() {
+int main(int argc, char *argv[]) {
 
 //    auto a = AllCases();
 //    auto a = AllCases(AllCases::InitType::WITH_NOTHING);
@@ -62,7 +62,11 @@ int main() {
 //    std::cout << "complete verify" << std::endl;
 
 
-    for (uint32_t short_code = 0; short_code < 29334498; ++short_code) {
+//    0 ~ 29334497
+    uint32_t start_code = atoi(argv[1]);
+    uint32_t end_code = atoi(argv[2]);
+
+    for (uint32_t short_code = start_code; short_code < end_code + 1; ++short_code) {
         if (short_code != ShortCode::code_from_string(ShortCode::code_to_string(short_code))) {
             std::cout << "ERROR: " << short_code << std::endl;
         }
