@@ -33,22 +33,16 @@ uint32_t ShortCode::code_from_string(const std::string &short_code) { // 5-bits 
     uint32_t result = 0;
     for (auto bit : short_code) {
         result *= 32;
-        if (bit >= '1' && bit <= '9') { // 1 ~ 9
-            result += bit - 49;
-            continue;
+        if (bit >= 'a' && bit <= 'z') {
+            bit -= 32; // convert to uppercase
         }
-        if (bit >= 'a' && bit <= 'z') { // a ~ z
-            bit -= ('a' - 'A'); // convert to A ~ Z
-        }
-        if (bit >= 'A' && bit <= 'Z') { // A ~ Z
-            bit = SHORT_CODE_TABLE_REV[bit - 65]; // table convert
-            if (bit == 0) {
-                throw std::runtime_error("invalid short code");
+        if (bit >= '1' && bit <= 'Z') {
+            result += (bit = SHORT_CODE_TABLE_REV[bit - 49]); // table convert
+            if (bit != -1) {
+                continue; // pass check
             }
-            result += bit;
-        } else {
-            throw std::runtime_error("invalid short code");
         }
+        throw std::runtime_error("invalid short code");
     }
     if (!ShortCode::check(result)) {
         throw std::range_error("short code out of range");
