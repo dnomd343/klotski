@@ -62,12 +62,14 @@ int main() {
 //    std::cout << "complete verify" << std::endl;
 
 
-    std::cout << ShortCode::code_to_string(14323231) << std::endl;
-    std::cout << ShortCode::code_from_string("EP4HZ") << std::endl;
+    for (uint32_t short_code = 0; short_code < 29334498; ++short_code) {
+        if (short_code != ShortCode::code_from_string(ShortCode::code_to_string(short_code))) {
+            std::cout << "ERROR: " << short_code << std::endl;
+        }
+    }
 
-//    for (int i = 0; i < 32; ++i) {
-//        std::cout << int(SHORT_CODE_TABLE[i] - 49) << ": " << i << std::endl;
-//    }
+//    std::cout << ShortCode::code_to_string(14323231) << std::endl;
+//    std::cout << ShortCode::code_from_string("EP4HZ") << std::endl;
 
     return 0;
 }
