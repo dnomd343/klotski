@@ -18,7 +18,7 @@ int main() {
 //    }
 
 //    auto s = ShortCode();
-    auto s = ShortCode(ShortCode::Mode::NORMAL);
+//    auto s = ShortCode(ShortCode::Mode::NORMAL);
 //    auto s = ShortCode(ShortCode::Mode::FAST);
 
 //    s.speed_up(ShortCode::Mode::FAST);
@@ -29,7 +29,12 @@ int main() {
 //    printf("%09lX\n", s.fast_decode(14323231));
 
 //    s.speed_up(ShortCode::Mode::NORMAL);
-    std::cout << s.basic_ranges.size() << std::endl;
+//    std::cout << s.basic_ranges.size() << std::endl;
+
+    auto s = ShortCode();
+    s.speed_up(ShortCode::Mode::NORMAL); // enter normal mode first
+
+    printf("%09lX\n", s.tiny_decode(14323231));
 
     return 0;
 }

@@ -1,3 +1,4 @@
+#include "common.h"
 #include "all_cases.h"
 #include "short_code.h"
 #include "short_code_mark.h"
@@ -39,12 +40,42 @@ void ShortCode::build_mappings() { // build fast search mappings
     }
 }
 
-uint64_t ShortCode::fast_decode(uint32_t short_code) { // short_code -> common_code
+uint64_t ShortCode::fast_decode(uint32_t short_code) { // short_code --fast--> common_code
     // TODO: ensure input short_code < SHORT_CODE_LIMIT
     return all_cases_list[short_code];
 }
 
-uint32_t ShortCode::fast_encode(uint64_t common_code) { // common_code -> short_code
+uint32_t ShortCode::fast_encode(uint64_t common_code) { // common_code --fast--> short_code
     // TODO: ensure input common_code valid
     return all_cases_dict[common_code];
+}
+
+// TODO: load basic ranges before tiny_decode
+// TODO: ensure input short_code < SHORT_CODE_LIMIT
+uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short_code --low-mem--> common_code
+    uint32_t head = 0, prefix = 0;
+    for (; head < 16; ++head) {
+        if (short_code < ALL_CASES_INDEX[head]) { // match head
+            break;
+        }
+        short_code -= ALL_CASES_INDEX[head]; // short code approximate
+    }
+    for (; prefix < 256; ++prefix) {
+        if (short_code < RANGE_PREFIX_INDEX[head][prefix]) { // match range prefix
+            break;
+        }
+        short_code -= RANGE_PREFIX_INDEX[head][prefix]; // short code approximate
+    }
+
+    uint32_t range;
+    for (int index = 0; index < BASIC_RANGES_INDEX[prefix]; ++index) { // traverse basic ranges
+        range = basic_ranges[index + BASIC_RANGES_OFFSET[prefix]];
+        if (Common::check_case(head, range)) { // search for valid cases
+            if (short_code == 0) {
+                break; // found target range
+            }
+            --short_code; // short code approximate
+        }
+    }
+    return (uint64_t)head << 32 | Common::range_reverse(range); // release common code
 }
