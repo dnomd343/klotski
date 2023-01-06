@@ -34,6 +34,7 @@ int main() {
     auto s = ShortCode();
     s.speed_up(ShortCode::Mode::NORMAL); // enter normal mode first
 
+    printf("%d\n", s.tiny_encode(0x6EC0F8800));
     printf("%09lX\n", s.tiny_decode(14323231));
 
     return 0;

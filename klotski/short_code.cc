@@ -79,3 +79,23 @@ uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short_code --low-mem--
     }
     return (uint64_t)head << 32 | Common::range_reverse(range); // release common code
 }
+
+// TODO: ensure input common_code valid
+// TODO: load basic ranges before tiny_encode
+uint32_t ShortCode::tiny_encode(uint64_t common_code) {
+    uint32_t offset = 0;
+    uint32_t head = common_code >> 32; // common code head
+    uint32_t prefix = (common_code >> 24) & 0xFF; // common code range prefix
+    auto target = Common::range_reverse((uint32_t)common_code); // target range
+
+    for (int index = 0; index < BASIC_RANGES_INDEX[prefix]; ++index) { // traverse basic ranges
+        uint32_t range = basic_ranges[index + BASIC_RANGES_OFFSET[prefix]];
+        if (range == target) {
+            break; // found target range
+        }
+        if (Common::check_case(head, range)) { // search for valid cases
+            ++offset; // record sub offset
+        }
+    }
+    return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
+}
