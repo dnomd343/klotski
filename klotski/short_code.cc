@@ -13,7 +13,7 @@ bool ShortCode::check(uint32_t short_code) {
     return short_code < ShortCode::SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
 }
 
-std::string ShortCode::code_to_string(uint32_t short_code) {
+std::string ShortCode::code_to_string(uint32_t short_code) { // encode as 5-bits string
     if (!ShortCode::check(short_code)) {
         throw std::range_error("short code out of range");
     }
@@ -22,6 +22,36 @@ std::string ShortCode::code_to_string(uint32_t short_code) {
         uint8_t bit = short_code % 32;
         short_code = (short_code - bit) / 32;
         result[4 - n] = SHORT_CODE_TABLE[bit];
+    }
+    return result;
+}
+
+uint32_t ShortCode::code_from_string(const std::string &short_code) { // 5-bits string decode as number
+    if (short_code.length() != 5) {
+        throw std::runtime_error("invalid short code");
+    }
+    uint32_t result = 0;
+    for (auto bit : short_code) {
+        result *= 32;
+        if (bit >= '1' && bit <= '9') { // 1 ~ 9
+            result += bit - 49;
+            continue;
+        }
+        if (bit >= 'a' && bit <= 'z') { // a ~ z
+            bit -= ('a' - 'A'); // convert to A ~ Z
+        }
+        if (bit >= 'A' && bit <= 'Z') { // A ~ Z
+            bit = SHORT_CODE_TABLE_REV[bit - 65]; // table convert
+            if (bit == 0) {
+                throw std::runtime_error("invalid short code");
+            }
+            result += bit;
+        } else {
+            throw std::runtime_error("invalid short code");
+        }
+    }
+    if (!ShortCode::check(result)) {
+        throw std::range_error("short code out of range");
     }
     return result;
 }

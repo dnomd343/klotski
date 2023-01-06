@@ -11,20 +11,28 @@ const char SHORT_CODE_TABLE[32] = {
     'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 };
 
-// 1 -> 48
+const char SHORT_CODE_TABLE_REV[26] = {
+//  00  01  02  03  04  05  06  07  08  09
+     9, 10, 11, 12, 13, 14, 15, 16,  0, 17,
+//  10  11  12  13  14  15  16  17  18  19
+    18,  0, 19, 20,  0, 21, 22, 23, 24, 25,
+//  20  21  22  23  24  25
+    26, 27, 28, 29, 30, 31,
+};
+
+// 00: 1 -> 48
 // ...
-// 9 -> 57
-// A -> 65
+// 08: 9 -> 57
+// 09: A -> 65 (00)
 // ...
-// H -> 72
-// J -> 74
+// 16: H -> 72 (07)
+// 17: J -> 74 (09)
+// 18: K -> 75 (10)
+// 19: M -> 77 (12)
+// 20: N -> 78 (13)
+// 21: P -> 80 (15)
 // ...
-// K -> 75
-// M -> 77
-// N -> 78
-// P -> 80
-// ...
-// Z -> 90
+// 31: Z -> 90 (25)
 
 class ShortCode {
 public:
@@ -39,7 +47,7 @@ public:
     uint64_t unzip_short_code(uint32_t short_code);
 
     static std::string code_to_string(uint32_t short_code);
-//    static uint32_t code_from_string(const std::string &short_code);
+    static uint32_t code_from_string(const std::string &short_code);
 
 private:
     static const uint32_t SHORT_CODE_LIMIT = 29334498;

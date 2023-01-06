@@ -63,6 +63,7 @@ int main() {
 
 
     std::cout << ShortCode::code_to_string(14323231) << std::endl;
+    std::cout << ShortCode::code_from_string("EP4HZ") << std::endl;
 
     return 0;
 }
