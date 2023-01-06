@@ -13,6 +13,19 @@ bool ShortCode::check(uint32_t short_code) {
     return short_code < ShortCode::SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
 }
 
+std::string ShortCode::code_to_string(uint32_t short_code) {
+    if (!ShortCode::check(short_code)) {
+        throw std::range_error("short code out of range");
+    }
+    std::string result(5, '\0'); // short code length 5
+    for (int n = 0; n < 5; ++n) {
+        uint8_t bit = short_code % 32;
+        short_code = (short_code - bit) / 32;
+        result[4 - n] = SHORT_CODE_TABLE[bit];
+    }
+    return result;
+}
+
 void ShortCode::speed_up(enum Mode mode) { // speed up handle short code
     switch (mode) {
         case Mode::NORMAL: // speed up into normal mode
