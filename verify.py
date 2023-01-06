@@ -5,8 +5,7 @@ import sys
 import subprocess
 
 process_list = []
-CASE_NUMBER = 29334
-# CASE_NUMBER = 29334498
+CASE_NUMBER = 29334498
 thread_num = int(sys.argv[1])
 sub_length = ((CASE_NUMBER - 1) // thread_num) + 1
 
