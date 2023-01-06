@@ -46,12 +46,9 @@ int main() {
 //    std::cout << s.zip_short_code(0x6EC0F8800) << std::endl;
 //    std::cout << "complete" << std::endl;
 
-//    if (ShortCode::check(14323231)) {
-    if (ShortCode::check(87654321)) {
-        std::cout << "true" << std::endl;
-    } else {
-        std::cout << "false" << std::endl;
-    }
+    printf("%d\n", s.zip_short_code(0x6EC0F8800));
+    printf("%09lX\n", s.unzip_short_code(14323231));
+//    printf("%09lX\n", s.unzip_short_code(87654321));
 
     return 0;
 }

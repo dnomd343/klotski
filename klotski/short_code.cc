@@ -3,6 +3,7 @@
 #include "all_cases.h"
 #include "short_code.h"
 #include "short_code_mark.h"
+#include "common_code.h"
 
 ShortCode::ShortCode(ShortCode::Mode mode) { // class initialize
     speed_up(mode);
@@ -106,9 +107,9 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
 }
 
 uint32_t ShortCode::zip_short_code(uint64_t common_code) { // common_code --zip--> short_code
-
-    // TODO: confirm common_code valid
-
+    if (!CommonCode::check(common_code)) {
+        throw std::runtime_error("invalid common code");
+    }
     switch (check_mode()) {
         case ShortCode::Mode::NORMAL:
             return tiny_encode(common_code);
@@ -120,11 +121,9 @@ uint32_t ShortCode::zip_short_code(uint64_t common_code) { // common_code --zip-
 }
 
 uint64_t ShortCode::unzip_short_code(uint32_t short_code) { // short_code --unzip--> common_code
-
-    // TODO: confirm short_code valid
-
-
-
+    if (!check(short_code)) {
+        throw std::runtime_error("invalid short code");
+    }
     switch (check_mode()) {
         case ShortCode::Mode::NORMAL:
             return tiny_decode(short_code);
