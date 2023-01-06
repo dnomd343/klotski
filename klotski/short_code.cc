@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "common.h"
 #include "all_cases.h"
 #include "short_code.h"
@@ -5,6 +6,10 @@
 
 ShortCode::ShortCode(ShortCode::Mode mode) { // class initialize
     speed_up(mode);
+}
+
+bool ShortCode::check(uint32_t short_code) {
+    return short_code < ShortCode::SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
 }
 
 void ShortCode::speed_up(enum Mode mode) { // speed up handle short code
@@ -104,22 +109,30 @@ uint32_t ShortCode::zip_short_code(uint64_t common_code) { // common_code --zip-
 
     // TODO: confirm common_code valid
 
-    // TODO: check Mode => NORMAL / FAST
-
-    // TODO: usage fast_encode or tiny_encode
-
-    return 0;
+    switch (check_mode()) {
+        case ShortCode::Mode::NORMAL:
+            return tiny_encode(common_code);
+        case ShortCode::Mode::FAST:
+            return fast_encode(common_code);
+        default:
+            throw std::runtime_error("unknown error");
+    }
 }
 
 uint64_t ShortCode::unzip_short_code(uint32_t short_code) { // short_code --unzip--> common_code
 
     // TODO: confirm short_code valid
 
-    // TODO: check Mode => NORMAL / FAST
 
-    // TODO: usage fast_decode / tiny_decode
 
-    return 0;
+    switch (check_mode()) {
+        case ShortCode::Mode::NORMAL:
+            return tiny_decode(short_code);
+        case ShortCode::Mode::FAST:
+            return fast_decode(short_code);
+        default:
+            throw std::runtime_error("unknown error");
+    }
 }
 
 enum ShortCode::Mode ShortCode::check_mode() { // ensure speed up enabled and return current mode

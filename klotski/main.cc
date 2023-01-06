@@ -38,13 +38,20 @@ int main() {
 //    printf("%d\n", s.tiny_encode(0x6EC0F8800));
 //    printf("%09lX\n", s.tiny_decode(14323231));
 
-//    auto s = ShortCode();
+    auto s = ShortCode();
 //    auto s = ShortCode(ShortCode::Mode::NORMAL);
-    auto s = ShortCode(ShortCode::Mode::FAST);
+//    auto s = ShortCode(ShortCode::Mode::FAST);
 
-    std::cout << "start" << std::endl;
-    std::cout << s.check_mode() << std::endl;
-    std::cout << "complete" << std::endl;
+//    std::cout << "start" << std::endl;
+//    std::cout << s.zip_short_code(0x6EC0F8800) << std::endl;
+//    std::cout << "complete" << std::endl;
+
+//    if (ShortCode::check(14323231)) {
+    if (ShortCode::check(87654321)) {
+        std::cout << "true" << std::endl;
+    } else {
+        std::cout << "false" << std::endl;
+    }
 
     return 0;
 }

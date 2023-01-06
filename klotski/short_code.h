@@ -23,12 +23,13 @@ public:
 
     enum Mode check_mode();
 
+    static bool check(uint32_t short_code);
 
 private:
 //    std::vector<uint64_t> all_cases_list;                  // short_code -> common_code
 //    std::unordered_map<uint64_t, uint32_t> all_cases_dict; // common_code -> short_code
 
-    const uint32_t SHORT_CODE_LIMIT = 29334498;
+    static const uint32_t SHORT_CODE_LIMIT = 29334498;
 
     uint64_t fast_decode(uint32_t short_code);
     uint32_t fast_encode(uint64_t common_code);
