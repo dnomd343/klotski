@@ -99,3 +99,36 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
     }
     return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
 }
+
+uint32_t ShortCode::zip_short_code(uint64_t common_code) { // common_code --zip--> short_code
+
+    // TODO: confirm common_code valid
+
+    // TODO: check Mode => NORMAL / FAST
+
+    // TODO: usage fast_encode or tiny_encode
+
+    return 0;
+}
+
+uint64_t ShortCode::unzip_short_code(uint32_t short_code) { // short_code --unzip--> common_code
+
+    // TODO: confirm short_code valid
+
+    // TODO: check Mode => NORMAL / FAST
+
+    // TODO: usage fast_decode / tiny_decode
+
+    return 0;
+}
+
+enum ShortCode::Mode ShortCode::check_mode() { // ensure speed up enabled and return current mode
+    if (!all_cases_list.empty()) {
+        return ShortCode::Mode::FAST; // fast mode already enabled
+    }
+    if (!basic_ranges.empty()) {
+        return ShortCode::Mode::NORMAL; // normal mode already enabled
+    }
+    speed_up(ShortCode::Mode::NORMAL); // class without initialized -> enter normal mode
+    return ShortCode::Mode::NORMAL; // use normal mode
+}

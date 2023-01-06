@@ -38,37 +38,13 @@ int main() {
 //    printf("%d\n", s.tiny_encode(0x6EC0F8800));
 //    printf("%09lX\n", s.tiny_decode(14323231));
 
+//    auto s = ShortCode();
+//    auto s = ShortCode(ShortCode::Mode::NORMAL);
+    auto s = ShortCode(ShortCode::Mode::FAST);
 
-//    if (CommonCode::check(0x4FEA13400)) {
-//        std::cout << "true" << std::endl;
-//    } else {
-//        std::cout << "false" << std::endl;
-//    }
-
-//    uint32_t sum = 0;
-    for (uint32_t head = 0; head < 16; ++head) {
-        auto prefix = (uint64_t)head << 32;
-        for (uint64_t range = 0; range < 0x100000000; ++range) {
-            uint64_t code = prefix | range;
-            if (CommonCode::check(code)) {
-                printf("%09lX\n", code);
-//                ++sum;
-            }
-//            if (range % 0x1000000 == 0) {
-//                std::cout << range / 0x1000000 << std::endl;
-//            }
-        }
-    }
-//    std::cout << "sum: " << sum << std::endl;
-
-//    uint64_t error_code = 0x02EFFF7C0;
-//    uint64_t error_code = 0x07B4EFC00;
-
-//    if (CommonCode::check(error_code)) {
-//        std::cout << "true" << std::endl;
-//    } else {
-//        std::cout << "false" << std::endl;
-//    }
+    std::cout << "start" << std::endl;
+    std::cout << s.check_mode() << std::endl;
+    std::cout << "complete" << std::endl;
 
     return 0;
 }
