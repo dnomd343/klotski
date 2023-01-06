@@ -1,6 +1,7 @@
 #include <iostream>
 //#include "all_cases.h"
 #include "short_code.h"
+#include "common_code.h"
 
 int main() {
 
@@ -31,11 +32,18 @@ int main() {
 //    s.speed_up(ShortCode::Mode::NORMAL);
 //    std::cout << s.basic_ranges.size() << std::endl;
 
-    auto s = ShortCode();
-    s.speed_up(ShortCode::Mode::NORMAL); // enter normal mode first
+//    auto s = ShortCode();
+//    s.speed_up(ShortCode::Mode::NORMAL); // enter normal mode first
+//
+//    printf("%d\n", s.tiny_encode(0x6EC0F8800));
+//    printf("%09lX\n", s.tiny_decode(14323231));
 
-    printf("%d\n", s.tiny_encode(0x6EC0F8800));
-    printf("%09lX\n", s.tiny_decode(14323231));
+
+    if (CommonCode::check(0x4FEA13400)) {
+        std::cout << "true" << std::endl;
+    } else {
+        std::cout << "false" << std::endl;
+    }
 
     return 0;
 }
