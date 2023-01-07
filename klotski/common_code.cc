@@ -11,7 +11,7 @@ std::string CommonCode::code_to_string(uint64_t common_code, bool shorten) {
     if (!CommonCode::check(common_code)) {
         throw std::invalid_argument("invalid common code");
     }
-    char result[10];
+    char result[10]; // max length 9-bits
     sprintf(result, "%09lX", common_code);
     if (shorten) { // remove `0` after common code
         if (common_code == 0x000000000) {
@@ -20,6 +20,27 @@ std::string CommonCode::code_to_string(uint64_t common_code, bool shorten) {
         result[9 - last_zero_num(common_code) / 4] = '\0'; // truncate string
     }
     return result;
+}
+
+uint64_t CommonCode::code_from_string(const std::string &common_code) {
+    if (common_code.length() > 9 || common_code.length() == 0) {
+        throw std::invalid_argument("common code format error");
+    }
+    uint64_t result = 0;
+    for (auto const &bit : common_code) {
+        result <<= 4;
+        if (bit >= '0' && bit <= '9') { // 0 ~ 9
+            result |= (bit - 48);
+        } else if (bit >= 'A' && bit <= 'Z') { // A ~ Z
+            result |= (bit - 55);
+        } else if (bit >= 'a' && bit <= 'z') { // a ~ z
+            result |= (bit - 87);
+        } else {
+            throw std::invalid_argument("common code format error");
+        }
+    }
+    // TODO: should we ensure that common code is valid?
+    return result << (9 - common_code.length()) * 4; // low-bits fill with zero
 }
 
 bool CommonCode::check(uint64_t common_code) {

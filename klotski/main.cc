@@ -32,8 +32,11 @@ int main() {
 //    std::cout << ShortCode::code_from_string("EP4HZ") << std::endl;
 
 
-    std::cout << CommonCode::code_to_string(0x4FEA13400, true) << std::endl;
-    std::cout << CommonCode::code_to_string(0x4FEA13400) << std::endl;
+//    std::cout << CommonCode::code_to_string(0x4FEA13400, true) << std::endl;
+//    std::cout << CommonCode::code_to_string(0x4FEA13400) << std::endl;
+
+    printf("%09lX\n", CommonCode::code_from_string("4FEa134"));
+    printf("%09lX\n", CommonCode::code_from_string("1A9bf0C0"));
 
     return 0;
 }
