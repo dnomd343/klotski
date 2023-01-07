@@ -1,5 +1,26 @@
+#include <stdexcept>
 #include "common.h"
 #include "common_code.h"
+
+inline uint8_t last_zero_num(uint32_t bin) { // get last zero number
+    bin ^= (bin - 1);
+    return __builtin_popcount(bin >> 1);
+}
+
+std::string CommonCode::code_to_string(uint64_t common_code, bool shorten) {
+    if (!CommonCode::check(common_code)) {
+        throw std::invalid_argument("invalid common code");
+    }
+    char result[10];
+    sprintf(result, "%09lX", common_code);
+    if (shorten) { // remove `0` after common code
+        if (common_code == 0x000000000) {
+            return "0"; // special case
+        }
+        result[9 - last_zero_num(common_code) / 4] = '\0'; // truncate string
+    }
+    return result;
+}
 
 bool CommonCode::check(uint64_t common_code) {
     uint32_t head = common_code >> 32;
