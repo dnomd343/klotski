@@ -13,6 +13,8 @@ public:
     const std::vector<uint32_t>* get_basic_ranges();
     const std::vector<uint32_t> (*get_all_cases())[16];
 
+    // TODO: add all_cases_list export
+
 private:
     std::vector<uint32_t> basic_ranges;
     std::vector<uint32_t> all_cases[16];
