@@ -105,8 +105,10 @@ int main() {
 //    std::cout << ShortCode("EP4HZ", ShortCode::NORMAL).unwrap() << std::endl;
 //    std::cout << ShortCode("eP4hZ", ShortCode::FAST).to_string() << std::endl;
 
-    std::cout << ShortCode::tiny_encode(0x6EC0F8800) << std::endl;
-    printf("%09lX\n", ShortCode::tiny_decode(14323231));
+//    std::cout << ShortCode::tiny_encode(0x6EC0F8800) << std::endl;
+//    printf("%09lX\n", ShortCode::tiny_decode(14323231));
+
+    std::cout << ShortCode(14323231).to_common_code().to_string() << std::endl;
 
     return 0;
 }

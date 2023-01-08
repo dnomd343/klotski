@@ -40,6 +40,7 @@ public:
     static bool check(uint32_t short_code);
 
     uint32_t zip_short_code(uint64_t common_code);
+    /// ok
     uint64_t unzip_short_code(uint32_t short_code);
 
     /// ok
@@ -60,6 +61,7 @@ private:
     enum Mode check_mode();
     void build_base_ranges();
 
+    /// ok
     uint64_t tiny_decode(uint32_t short_code);
     uint32_t tiny_encode(uint64_t common_code);
 };

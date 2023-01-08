@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 #include <unordered_map>
+#include "common_code.h"
 
 class ShortCode {
 public:
@@ -12,6 +13,7 @@ public:
     };
     uint32_t unwrap() const;
     std::string to_string() const;
+    CommonCode to_common_code() const;
     static bool check(uint32_t short_code);
 
     static enum Mode check_mode();
@@ -26,8 +28,6 @@ public:
         speed_up(mode);
     }
 
-    static uint64_t tiny_decode(uint32_t short_code);
-    static uint32_t tiny_encode(uint64_t common_code);
 
 private:
     uint32_t code;
@@ -39,7 +39,6 @@ private:
     static std::unordered_map<uint64_t, uint32_t> all_cases_dict; // common_code -> short_code
 
     static void build_mappings();
-
-//    static uint64_t tiny_decode(uint32_t short_code);
-//    static uint32_t tiny_encode(uint64_t common_code);
+    static uint64_t tiny_decode(uint32_t short_code);
+    static uint32_t tiny_encode(uint64_t common_code);
 };

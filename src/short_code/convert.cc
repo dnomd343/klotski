@@ -3,6 +3,14 @@
 #include "basic_ranges.h"
 #include "short_code_mark.h"
 
+CommonCode ShortCode::to_common_code() const { // convert to common code
+    if (ShortCode::check_mode() == ShortCode::NORMAL) {
+        return CommonCode(tiny_decode(code)); // using normal mode
+    }
+    return CommonCode(all_cases_list[code]); // using fast mode
+}
+
+/// ensure that input common code is valid
 uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common_code --low-memory--> short_code
     uint32_t offset = 0;
     uint32_t head = common_code >> 32; // common code head
@@ -21,6 +29,7 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common_code --low-mem
     return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
 }
 
+/// ensure that input short code is valid
 uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short_code --low-memory--> common_code
     uint32_t head = 0, prefix = 0;
     for (; head < 16; ++head) {
