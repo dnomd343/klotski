@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include "common_code.h"
 
+class CommonCode;
+
 class ShortCode {
 public:
     enum Mode {

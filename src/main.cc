@@ -114,8 +114,10 @@ int main() {
 //    std::cout << ShortCode(14323231).to_common_code().to_string() << std::endl;
 //    std::cout << ShortCode(CommonCode(0x6EC0F8800)).to_string() << std::endl;
 
-    std::cout << ShortCode(CommonCode(0x6EC0F8800), ShortCode::NORMAL).to_string() << std::endl;
-    std::cout << ShortCode(CommonCode(0x6EC0F8800), ShortCode::FAST).to_string() << std::endl;
+//    std::cout << ShortCode(CommonCode(0x6EC0F8800), ShortCode::NORMAL).to_string() << std::endl;
+//    std::cout << ShortCode(CommonCode(0x6EC0F8800), ShortCode::FAST).to_string() << std::endl;
+
+    std::cout << CommonCode(0x6EC0F8800).to_short_code().to_string() << std::endl;
 
     return 0;
 }

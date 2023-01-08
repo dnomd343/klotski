@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "short_code.h"
 #include "short_code_chars.h"
 

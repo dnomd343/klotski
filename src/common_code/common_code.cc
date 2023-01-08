@@ -12,6 +12,10 @@ uint64_t CommonCode::unwrap() const {
     return code; // get raw uint64_t code
 }
 
+ShortCode CommonCode::to_short_code() const { // convert to short code
+    return ShortCode(*this);
+}
+
 CommonCode::CommonCode(uint64_t common_code) {
     if (!CommonCode::check(common_code)) { // check input common code
         throw std::invalid_argument("invalid common code");
