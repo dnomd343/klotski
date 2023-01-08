@@ -39,6 +39,7 @@ public:
     explicit ShortCode(enum Mode mode);
     static bool check(uint32_t short_code);
 
+    /// ok
     uint32_t zip_short_code(uint64_t common_code);
     /// ok
     uint64_t unzip_short_code(uint32_t short_code);
