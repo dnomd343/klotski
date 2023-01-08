@@ -28,6 +28,7 @@ const char SHORT_CODE_TABLE_REV[42] = {
 
 class ShortCode {
 public:
+    // ok
     enum Mode {NORMAL, FAST};
 
     ShortCode() = default;
@@ -42,15 +43,19 @@ public:
     static uint32_t code_from_string(const std::string &short_code);
 
 private:
+    // ok
     static const uint32_t SHORT_CODE_LIMIT = 29334498;
 
+    // ok
     std::vector<uint32_t> basic_ranges;
     std::vector<uint64_t> all_cases_list; // short_code -> common_code
     std::unordered_map<uint64_t, uint32_t> all_cases_dict; // common_code -> short_code
 
+    // ok
     void build_mappings();
     enum Mode check_mode();
     void build_base_ranges();
+
     uint64_t tiny_decode(uint32_t short_code);
     uint32_t tiny_encode(uint64_t common_code);
 };

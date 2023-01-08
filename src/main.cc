@@ -63,23 +63,22 @@ int main() {
 //    std::cout << BasicRanges::fetch() << std::endl;
 
 
-    std::cout << CommonCode::check(0x123456789) << std::endl;
-    std::cout << CommonCode::check(0x4FEA13400) << std::endl;
-
-    printf("%09lX\n", CommonCode("1A9bF0c0").unwrap());
-    std::cout << CommonCode(0x1A9BF0C00).to_string() << std::endl;
-    std::cout << CommonCode(0x1A9BF0C00).to_string(true) << std::endl;
-
-    auto c = CommonCode("4Fea13400");
-    std::cout << c.to_string(true) << std::endl;
-    std::cout << c.to_string() << std::endl;
-    printf("%09lX\n", c.unwrap());
+//    std::cout << CommonCode::check(0x123456789) << std::endl;
+//    std::cout << CommonCode::check(0x4FEA13400) << std::endl;
+//
+//    printf("%09lX\n", CommonCode("1A9bF0c0").unwrap());
+//    std::cout << CommonCode(0x1A9BF0C00).to_string() << std::endl;
+//    std::cout << CommonCode(0x1A9BF0C00).to_string(true) << std::endl;
+//
+//    auto c = CommonCode("4Fea13400");
+//    std::cout << c.to_string(true) << std::endl;
+//    std::cout << c.to_string() << std::endl;
+//    printf("%09lX\n", c.unwrap());
 
 
 //    std::cout << ShortCode::check_mode() << std::endl;
-
+//
 //    std::cout << "start NORMAL speed up" << std::endl;
-////    ShortCode::speed_up(ShortCode::NORMAL);
 //    std::thread t1(ShortCode::speed_up, ShortCode::NORMAL);
 //    std::thread t2(ShortCode::speed_up, ShortCode::NORMAL);
 //    t1.join();
@@ -89,7 +88,6 @@ int main() {
 //    std::cout << ShortCode::check_mode() << std::endl;
 //
 //    std::cout << "start FAST speed up" << std::endl;
-////    ShortCode::speed_up(ShortCode::FAST);
 //    std::thread t3(ShortCode::speed_up, ShortCode::FAST);
 //    std::thread t4(ShortCode::speed_up, ShortCode::FAST);
 //    t3.join();
@@ -97,6 +95,11 @@ int main() {
 //    std::cout << "FAST speed up complete" << std::endl;
 //
 //    std::cout << ShortCode::check_mode() << std::endl;
+
+
+    auto s = ShortCode(14323231);
+    std::cout << s.unwrap() << std::endl;
+    std::cout << s.to_string() << std::endl;
 
     return 0;
 }
