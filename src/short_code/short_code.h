@@ -11,23 +11,26 @@ public:
     enum Mode {
         NORMAL, FAST
     };
+    static enum Mode check_mode();
+    static void speed_up(enum Mode mode);
+
     uint32_t unwrap() const;
     std::string to_string() const;
     CommonCode to_common_code() const;
     static bool check(uint32_t short_code);
 
-    static enum Mode check_mode();
-    static void speed_up(enum Mode mode);
-
     explicit ShortCode(uint32_t short_code);
+    explicit ShortCode(const CommonCode &common_code);
     explicit ShortCode(const std::string &short_code_str);
     ShortCode(uint32_t short_code, enum Mode mode) : ShortCode(short_code) {
+        speed_up(mode);
+    }
+    ShortCode(const CommonCode &common_code, enum Mode mode) : ShortCode(common_code) {
         speed_up(mode);
     }
     ShortCode(const std::string &short_code_str, enum Mode mode) : ShortCode(short_code_str) {
         speed_up(mode);
     }
-
 
 private:
     uint32_t code;

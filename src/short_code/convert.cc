@@ -10,6 +10,14 @@ CommonCode ShortCode::to_common_code() const { // convert to common code
     return CommonCode(all_cases_list[code]); // using fast mode
 }
 
+ShortCode::ShortCode(const CommonCode &common_code) { // convert from common code
+    if (ShortCode::check_mode() == ShortCode::NORMAL) {
+        code = tiny_encode(common_code.unwrap()); // using normal mode
+    } else {
+        code = all_cases_dict[common_code.unwrap()]; // using fast mode
+    }
+}
+
 /// ensure that input common code is valid
 uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common_code --low-memory--> short_code
     uint32_t offset = 0;
