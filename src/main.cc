@@ -45,13 +45,20 @@ int main() {
 //    std::cout << AllCases::get_basic_ranges() << std::endl;
 
 
-    std::cout << CommonCode::check(0x123456789) << std::endl;
-    std::cout << CommonCode::check(0x4FEA13400) << std::endl;
+//    std::cout << CommonCode::check(0x123456789) << std::endl;
+//    std::cout << CommonCode::check(0x4FEA13400) << std::endl;
+//
+//    // TODO: should we return a CommonCode object like String::new(...) in rust?
+//    printf("%09lX\n", CommonCode::from_string("1A9bF0c0"));
+//    std::cout << CommonCode::to_string(0x1A9BF0C00) << std::endl;
+//    std::cout << CommonCode::to_string(0x1A9BF0C00, true) << std::endl;
 
-    // TODO: should we return a CommonCode object like String::new(...) in rust?
-    printf("%09lX\n", CommonCode::from_string("1A9bF0c0"));
-    std::cout << CommonCode::to_string(0x1A9BF0C00) << std::endl;
-    std::cout << CommonCode::to_string(0x1A9BF0C00, true) << std::endl;
+    auto c = CommonCode::from_string("1A9bF0c0");
+    std::cout << c.to_string(true) << std::endl;
+    std::cout << c.to_string() << std::endl;
+    printf("%09lX\n", c.unwrap());
+
+    std::cout << CommonCode(0x1A9BF0C00).to_string() << std::endl;
 
     return 0;
 }
