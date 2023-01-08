@@ -8,7 +8,7 @@ inline uint8_t last_zero_num(uint32_t bin) { // get last zero number
     return __builtin_popcount(bin >> 1);
 }
 
-std::string CommonCode::code_to_string(uint64_t common_code, bool shorten) {
+std::string CommonCode::to_string(uint64_t common_code, bool shorten) {
     if (!CommonCode::check(common_code)) {
         throw std::invalid_argument("invalid common code");
     }
@@ -23,7 +23,7 @@ std::string CommonCode::code_to_string(uint64_t common_code, bool shorten) {
     return result;
 }
 
-uint64_t CommonCode::code_from_string(const std::string &common_code) {
+uint64_t CommonCode::from_string(const std::string &common_code) {
     if (common_code.length() > 9 || common_code.length() == 0) {
         throw std::invalid_argument("common code format error");
     }
@@ -44,7 +44,7 @@ uint64_t CommonCode::code_from_string(const std::string &common_code) {
     return result << (9 - common_code.length()) * 4; // low-bits fill with zero
 }
 
-bool CommonCode::check(uint64_t common_code) {
+bool CommonCode::check(uint64_t common_code) { // check whether common code is valid
     uint32_t head = common_code >> 32;
     if (head >= 16 || (head & 0b11) == 0b11) { // check 2x2 block address
         return false; // invalid common code
