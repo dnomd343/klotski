@@ -13,7 +13,6 @@ public:
     static enum Mode check_mode();
     static void speed_up(enum Mode mode);
 
-
 private:
     static std::mutex map_building;
     static bool fast_mode_available;

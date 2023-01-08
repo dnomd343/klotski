@@ -6,77 +6,74 @@
 
 #include <thread>
 
-void get_status() {
-    switch (BasicRanges::status()) {
-        case BasicRanges::NO_INIT:
-            std::cout << "basic ranges no init" << std::endl;
-            break;
-        case BasicRanges::BUILDING:
-            std::cout << "basic ranges building" << std::endl;
-            break;
-        case BasicRanges::AVAILABLE:
-            std::cout << "basic ranges available" << std::endl;
-            break;
-    }
-
-    switch (AllCases::status()) {
-        case AllCases::NO_INIT:
-            std::cout << "all cases no init" << std::endl;
-            break;
-        case AllCases::BUILDING:
-            std::cout << "all cases building" << std::endl;
-            break;
-        case AllCases::AVAILABLE:
-            std::cout << "all cases available" << std::endl;
-            break;
-    }
-}
+//void get_status() {
+//    switch (BasicRanges::status()) {
+//        case BasicRanges::NO_INIT:
+//            std::cout << "basic ranges no init" << std::endl;
+//            break;
+//        case BasicRanges::BUILDING:
+//            std::cout << "basic ranges building" << std::endl;
+//            break;
+//        case BasicRanges::AVAILABLE:
+//            std::cout << "basic ranges available" << std::endl;
+//            break;
+//    }
+//
+//    switch (AllCases::status()) {
+//        case AllCases::NO_INIT:
+//            std::cout << "all cases no init" << std::endl;
+//            break;
+//        case AllCases::BUILDING:
+//            std::cout << "all cases building" << std::endl;
+//            break;
+//        case AllCases::AVAILABLE:
+//            std::cout << "all cases available" << std::endl;
+//            break;
+//    }
+//}
 
 int main() {
 
-    printf("%p\n", BasicRanges::build);
-    printf("%p\n", AllCases::build);
-
-    printf("%p\n", BasicRanges::status);
-    printf("%p\n", AllCases::status);
-
-    printf("%p\n", BasicRanges::fetch);
-    printf("%p\n", AllCases::fetch);
-
-    get_status();
-    BasicRanges::build();
-    get_status();
-    AllCases::build();
-    get_status();
-
-    std::cout << BasicRanges::fetch()->size() << std::endl;
-
-    uint32_t sum = 0;
-    for (auto const &all_case : *AllCases::fetch()) {
-        sum += all_case.size();
-        std::cout << "  " << all_case.size() << std::endl;
-    }
-    std::cout << sum << std::endl;
-
-    std::cout << AllCases::fetch() << std::endl;
-    std::cout << AllCases::BasicRanges::fetch() << std::endl;
-    std::cout << BasicRanges::fetch() << std::endl;
-
-
-//    std::cout << CommonCode::check(0x123456789) << std::endl;
-//    std::cout << CommonCode::check(0x4FEA13400) << std::endl;
+//    printf("%p\n", BasicRanges::build);
+//    printf("%p\n", AllCases::build);
 //
-//    // TODO: should we return a CommonCode object like String::new(...) in rust?
-//    printf("%09lX\n", CommonCode::from_string("1A9bF0c0"));
-//    std::cout << CommonCode::to_string(0x1A9BF0C00) << std::endl;
-//    std::cout << CommonCode::to_string(0x1A9BF0C00, true) << std::endl;
-
-//    auto c = CommonCode("1A9bF0c0");
-//    std::cout << c.to_string(true) << std::endl;
-//    std::cout << c.to_string() << std::endl;
-//    printf("%09lX\n", c.unwrap());
+//    printf("%p\n", BasicRanges::status);
+//    printf("%p\n", AllCases::status);
 //
-//    std::cout << CommonCode(0x1A9BF0C00).to_string() << std::endl;
+//    printf("%p\n", BasicRanges::fetch);
+//    printf("%p\n", AllCases::fetch);
+//
+//    get_status();
+//    BasicRanges::build();
+//    get_status();
+//    AllCases::build();
+//    get_status();
+//
+//    std::cout << BasicRanges::fetch()->size() << std::endl;
+//
+//    uint32_t sum = 0;
+//    for (auto const &all_case : *AllCases::fetch()) {
+//        sum += all_case.size();
+//        std::cout << "  " << all_case.size() << std::endl;
+//    }
+//    std::cout << sum << std::endl;
+//
+//    std::cout << AllCases::fetch() << std::endl;
+//    std::cout << AllCases::BasicRanges::fetch() << std::endl;
+//    std::cout << BasicRanges::fetch() << std::endl;
+
+
+    std::cout << CommonCode::check(0x123456789) << std::endl;
+    std::cout << CommonCode::check(0x4FEA13400) << std::endl;
+
+    printf("%09lX\n", CommonCode("1A9bF0c0").unwrap());
+    std::cout << CommonCode(0x1A9BF0C00).to_string() << std::endl;
+    std::cout << CommonCode(0x1A9BF0C00).to_string(true) << std::endl;
+
+    auto c = CommonCode("4Fea13400");
+    std::cout << c.to_string(true) << std::endl;
+    std::cout << c.to_string() << std::endl;
+    printf("%09lX\n", c.unwrap());
 
 
 //    std::cout << ShortCode::check_mode() << std::endl;

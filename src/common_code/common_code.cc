@@ -45,16 +45,16 @@ CommonCode::CommonCode(const std::string &common_code_str) {
     code = common_code;
 }
 
-std::string CommonCode::to_string(bool shorten) const {
+std::string CommonCode::to_string(bool shorten) const { // convert uint64_t code to string
     char result[10]; // max length 9-bits
     sprintf(result, "%09lX", code);
     if (shorten) { // remove `0` after common code
         if (code == 0x000000000) {
-            return "0"; // special case
+            return "0"; // special case -> only one `0`
         }
         result[9 - last_zero_num(code) / 4] = '\0'; // truncate string
     }
-    return result;
+    return result; // char* -> std::string
 }
 
 bool CommonCode::check(uint64_t common_code) { // check whether common code is valid
@@ -63,6 +63,7 @@ bool CommonCode::check(uint64_t common_code) { // check whether common code is v
         return false; // invalid common code
     }
 
+    /// ensure that there are >= 2 space blocks
     uint32_t fill_num = 0, space_num = 0;
     auto range = Common::range_reverse((uint32_t)common_code); // get common code range
     for (int i = 0; i < 32; i += 2) { // traverse range
