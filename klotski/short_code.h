@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <unordered_map>
 
+/// ok
 const char SHORT_CODE_TABLE[32] = {
     '1', '2', '3', '4', '5', '6', '7', '8', '9', // skip `0`
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', // skip `I`
@@ -13,6 +14,7 @@ const char SHORT_CODE_TABLE[32] = {
     'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 };
 
+/// ok
 const char SHORT_CODE_TABLE_REV[42] = {
 //  00  01  02  03  04  05  06  07  08
      0,  1,  2,  3,  4,  5,  6,  7,  8,
@@ -28,9 +30,10 @@ const char SHORT_CODE_TABLE_REV[42] = {
 
 class ShortCode {
 public:
-    // ok
+    /// ok
     enum Mode {NORMAL, FAST};
 
+    /// ok
     ShortCode() = default;
     void speed_up(enum Mode mode);
     explicit ShortCode(enum Mode mode);
@@ -39,19 +42,20 @@ public:
     uint32_t zip_short_code(uint64_t common_code);
     uint64_t unzip_short_code(uint32_t short_code);
 
+    /// ok
     static std::string code_to_string(uint32_t short_code);
     static uint32_t code_from_string(const std::string &short_code);
 
 private:
-    // ok
+    /// ok
     static const uint32_t SHORT_CODE_LIMIT = 29334498;
 
-    // ok
+    /// ok
     std::vector<uint32_t> basic_ranges;
     std::vector<uint64_t> all_cases_list; // short_code -> common_code
     std::unordered_map<uint64_t, uint32_t> all_cases_dict; // common_code -> short_code
 
-    // ok
+    /// ok
     void build_mappings();
     enum Mode check_mode();
     void build_base_ranges();

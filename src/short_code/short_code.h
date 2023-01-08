@@ -20,7 +20,7 @@ public:
     std::string to_string() const;
 
     explicit ShortCode(uint32_t short_code);
-//    explicit CommonCode(const std::string &common_code_str);
+    explicit ShortCode(const std::string &short_code_str);
 
 
 
