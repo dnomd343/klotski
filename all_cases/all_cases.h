@@ -3,22 +3,15 @@
 #include <mutex>
 #include <vector>
 #include <cstdint>
+#include "basic_ranges.h"
 
-//class BasicRanges {
-//public:
-//
-//
-//
-//    static std::vector<uint32_t> basic_ranges;
-//
-//    static void build_basic_ranges();
-//
-//    static bool basic_ranges_available;
-//
-//    static std::mutex basic_ranges_building;
-//
-//private:
-//
-//    void generate_ranges(int n1, int n2, int n3, int n4);
-//
-//};
+class AllCases : public BasicRanges {
+public:
+    static void build_all_cases();
+    static const std::vector<uint32_t> (*get_all_cases())[16];
+
+private:
+    static bool all_cases_available;
+    static std::mutex all_cases_building;
+    static std::vector<uint32_t> all_cases[16];
+};

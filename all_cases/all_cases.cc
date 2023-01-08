@@ -1,45 +1,36 @@
+#include "common.h"
 #include "all_cases.h"
 
-#include <iostream>
-#include <thread>
-#include <unistd.h>
+std::mutex AllCases::all_cases_building;
+bool AllCases::all_cases_available = false;
+std::vector<uint32_t> AllCases::all_cases[];
 
-std::vector<uint32_t> AllCases::basic_ranges;
-
-bool AllCases::basic_ranges_available = false;
-
-std::mutex AllCases::basic_ranges_building;
-
-void AllCases::build_basic_ranges() {
-
-    std::cout << std::this_thread::get_id() << " enter build function" << std::endl;
-
-    if (AllCases::basic_ranges_available) {
-        std::cout << std::this_thread::get_id() << " data already built -> skip" << std::endl;
-        return; // basic ranges already built
+const std::vector<uint32_t> (*AllCases::get_all_cases())[16] { // get const ptr of all cases
+    if (all_cases->empty()) {
+        build_all_cases(); // all cases initialize
     }
+    return &all_cases; // return ptr
+}
 
-    if (AllCases::basic_ranges_building.try_lock()) { // lock success -> not building
-
-        std::cout << std::this_thread::get_id() << " try lock success -> start build process" << std::endl;
-
-        AllCases::basic_ranges.emplace_back(0);
-        AllCases::basic_ranges.emplace_back(1);
-        AllCases::basic_ranges.emplace_back(2);
-        sleep(2); // assume using a lot of time
-
-        AllCases::basic_ranges_available = true; // enable available flag
-
-        std::cout << std::this_thread::get_id() << " build complete -> continue" << std::endl;
-
+void AllCases::build_all_cases() { // build all cases
+    if (AllCases::all_cases_available) {
+        return; // all cases already built
+    }
+    if (AllCases::all_cases_building.try_lock()) { // lock success -> start building
+        /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
+        for (uint32_t head = 0; head < 16; ++head) { // address of 2x2 block
+            if ((head & 0b11) == 0b11) {
+                continue; // invalid 2x2 address
+            }
+            for (uint32_t const &range : *get_basic_ranges()) { // check base on 2x2 address and range
+                if (Common::check_case(head, range)) {
+                    all_cases[head].emplace_back(Common::range_reverse(range)); // found valid case
+                }
+            }
+        }
+        AllCases::all_cases_available = true; // set available flag
     } else { // another thread building
-
-        std::cout << std::this_thread::get_id() << " another thread building -> wait" << std::endl;
-        AllCases::basic_ranges_building.lock(); // blocking wait
-
+        AllCases::all_cases_building.lock(); // blocking waiting
     }
-    std::cout << std::this_thread::get_id() << " work complete -> unlock" << std::endl;
-    AllCases::basic_ranges_building.unlock();
-
-
+    AllCases::all_cases_building.unlock();
 }
