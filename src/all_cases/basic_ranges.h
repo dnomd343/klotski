@@ -11,8 +11,8 @@ public:
         BUILDING,
         AVAILABLE,
     };
+    static enum Status get_status();
     static void build_basic_ranges();
-    static enum Status basic_ranges_status(); // TODO: convert to get_status function
     static const std::vector<uint32_t>* get_basic_ranges();
 
 private:

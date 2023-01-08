@@ -14,3 +14,5 @@ add_executable(klotski main.cc)
 target_link_libraries(klotski all_cases)
 target_link_libraries(klotski short_code)
 target_link_libraries(klotski common_code)
+
+target_link_libraries(klotski pthread)

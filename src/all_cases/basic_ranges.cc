@@ -15,7 +15,7 @@ inline uint32_t binary_count(uint32_t bin) { // get number of non-zero bits
     return bin & 0b111111;
 }
 
-BasicRanges::Status BasicRanges::basic_ranges_status() { // get basic ranges status
+BasicRanges::Status BasicRanges::get_status() { // get basic ranges status
     if (basic_ranges_available) {
         return AVAILABLE; // basic ranges already built
     }

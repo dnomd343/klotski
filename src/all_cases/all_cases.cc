@@ -5,7 +5,7 @@ std::mutex AllCases::all_cases_building;
 bool AllCases::all_cases_available = false;
 std::vector<uint32_t> AllCases::all_cases[];
 
-AllCases::Status AllCases::all_cases_status() { // get all cases status
+AllCases::Status AllCases::get_status() { // get all cases status
     if (all_cases_available) {
         return AVAILABLE; // all cases already built
     }
