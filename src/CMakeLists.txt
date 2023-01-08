@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
-set(CMAKE_CXX_STANDARD 14)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/src/common)
+include_directories(${PROJECT_SOURCE_DIR}/src/all_cases)
 
-aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC)
-add_executable(klotski ${SRC})
+add_subdirectory(common)
+add_subdirectory(all_cases)
+
+add_executable(klotski main.cc)
+target_link_libraries(klotski common all_cases)

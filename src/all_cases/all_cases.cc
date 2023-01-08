@@ -5,6 +5,17 @@ std::mutex AllCases::all_cases_building;
 bool AllCases::all_cases_available = false;
 std::vector<uint32_t> AllCases::all_cases[];
 
+AllCases::Status AllCases::all_cases_status() { // get all cases status
+    if (all_cases_available) {
+        return AVAILABLE; // all cases already built
+    }
+    if (!all_cases_building.try_lock()) { // fail to lock mutex -> another thread working
+        return BUILDING;
+    }
+    all_cases_building.unlock(); // release mutex
+    return NO_INIT;
+}
+
 const std::vector<uint32_t> (*AllCases::get_all_cases())[16] { // get const ptr of all cases
     if (all_cases->empty()) {
         build_all_cases(); // all cases initialize
@@ -33,15 +44,4 @@ void AllCases::build_all_cases() { // build all cases
         AllCases::all_cases_building.lock(); // blocking waiting
     }
     AllCases::all_cases_building.unlock();
-}
-
-AllCases::Status AllCases::all_cases_status() { // get all cases status
-    if (all_cases_available) {
-        return AVAILABLE; // all cases already built
-    }
-    if (!all_cases_building.try_lock()) { // fail to lock mutex -> another thread working
-        return BUILDING;
-    }
-    all_cases_building.unlock(); // release mutex
-    return NO_INIT;
 }
