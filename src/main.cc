@@ -53,7 +53,7 @@ int main() {
 //    std::cout << CommonCode::to_string(0x1A9BF0C00) << std::endl;
 //    std::cout << CommonCode::to_string(0x1A9BF0C00, true) << std::endl;
 
-    auto c = CommonCode::from_string("1A9bF0c0");
+    auto c = CommonCode("1A9bF0c0");
     std::cout << c.to_string(true) << std::endl;
     std::cout << c.to_string() << std::endl;
     printf("%09lX\n", c.unwrap());
