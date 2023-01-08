@@ -7,9 +7,9 @@
 
 class AllCases : public BasicRanges {
 public:
-    static void build_all_cases();
-    static enum Status get_status();
-    static const std::vector<uint32_t> (*get_all_cases())[16];
+    static void build();
+    static enum Status status();
+    static const std::vector<uint32_t> (*fetch())[16];
 
 private:
     static bool all_cases_available;

@@ -5,7 +5,7 @@ std::mutex AllCases::all_cases_building;
 bool AllCases::all_cases_available = false;
 std::vector<uint32_t> AllCases::all_cases[];
 
-AllCases::Status AllCases::get_status() { // get all cases status
+AllCases::Status AllCases::status() { // get all cases status
     if (all_cases_available) {
         return AVAILABLE; // all cases already built
     }
@@ -16,14 +16,14 @@ AllCases::Status AllCases::get_status() { // get all cases status
     return NO_INIT;
 }
 
-const std::vector<uint32_t> (*AllCases::get_all_cases())[16] { // get const ptr of all cases
+const std::vector<uint32_t> (*AllCases::fetch())[16] { // get const ptr of all cases
     if (all_cases->empty()) {
-        build_all_cases(); // all cases initialize
+        AllCases::build(); // all cases initialize
     }
     return &all_cases; // return ptr
 }
 
-void AllCases::build_all_cases() { // build all cases
+void AllCases::build() { // build all cases
     if (AllCases::all_cases_available) {
         return; // all cases already built
     }
@@ -33,7 +33,7 @@ void AllCases::build_all_cases() { // build all cases
             if ((head & 0b11) == 0b11) {
                 continue; // invalid 2x2 address
             }
-            for (uint32_t const &range : *get_basic_ranges()) { // check base on 2x2 address and range
+            for (uint32_t const &range : *BasicRanges::fetch()) { // check base on 2x2 address and range
                 if (Common::check_case(head, range)) {
                     all_cases[head].emplace_back(Common::range_reverse(range)); // found valid case
                 }

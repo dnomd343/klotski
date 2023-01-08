@@ -15,7 +15,7 @@ inline uint32_t binary_count(uint32_t bin) { // get number of non-zero bits
     return bin & 0b111111;
 }
 
-BasicRanges::Status BasicRanges::get_status() { // get basic ranges status
+BasicRanges::Status BasicRanges::status() { // get basic ranges status
     if (basic_ranges_available) {
         return AVAILABLE; // basic ranges already built
     }
@@ -26,14 +26,14 @@ BasicRanges::Status BasicRanges::get_status() { // get basic ranges status
     return NO_INIT;
 }
 
-const std::vector<uint32_t>* BasicRanges::get_basic_ranges() { // get const ptr of basic ranges
+const std::vector<uint32_t>* BasicRanges::fetch() { // get const ptr of basic ranges
     if (basic_ranges.empty()) {
-        build_basic_ranges(); // basic ranges initialize
+        BasicRanges::build(); // basic ranges initialize
     }
     return &basic_ranges; // return ptr
 }
 
-void BasicRanges::build_basic_ranges() { // build basic ranges
+void BasicRanges::build() { // build basic ranges
     if (basic_ranges_available) {
         return; // basic ranges already built
     }

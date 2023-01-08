@@ -15,7 +15,7 @@ void ShortCode::speed_up(ShortCode::Mode mode) {
     if (mode == ShortCode::FAST) { // build fast mode data
         build_mappings();
     } else if (mode == ShortCode::NORMAL && !normal_mode_available) { // build normal mode data
-        BasicRanges::build_basic_ranges(); // blocking function
+        BasicRanges::build(); // blocking function
         normal_mode_available = true;
     }
 }
@@ -34,10 +34,9 @@ ShortCode::Mode ShortCode::check_mode() { // ensure speed up enabled and return 
 /// ensure that fast_mode_available = false
 void ShortCode::build_mappings() { // build fast search mappings
     if (map_building.try_lock()) { // lock success -> start building
-        AllCases::build_all_cases(); // blocking function
         for (int head = 0; head < 16; ++head) {
             uint64_t prefix = (uint64_t)head << 32;
-            for (const auto &range : (*AllCases::get_all_cases())[head]) {
+            for (const auto &range : (*AllCases::fetch())[head]) { // blocking function
                 all_cases_list.emplace_back(prefix | range); // short_code -> common_code
             }
         }
