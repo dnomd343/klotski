@@ -26,6 +26,9 @@ public:
         speed_up(mode);
     }
 
+    static uint64_t tiny_decode(uint32_t short_code);
+    static uint32_t tiny_encode(uint64_t common_code);
+
 private:
     uint32_t code;
     static std::mutex map_building;
@@ -36,4 +39,7 @@ private:
     static std::unordered_map<uint64_t, uint32_t> all_cases_dict; // common_code -> short_code
 
     static void build_mappings();
+
+//    static uint64_t tiny_decode(uint32_t short_code);
+//    static uint32_t tiny_encode(uint64_t common_code);
 };

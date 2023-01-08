@@ -97,13 +97,16 @@ int main() {
 //    std::cout << ShortCode::check_mode() << std::endl;
 
 
-    auto s = ShortCode(14323231);
-//    auto s = ShortCode(14323231, ShortCode::NORMAL);
-//    auto s = ShortCode(14323231, ShortCode::FAST);
-    std::cout << s.unwrap() << std::endl;
-    std::cout << s.to_string() << std::endl;
-    std::cout << ShortCode("EP4HZ", ShortCode::NORMAL).unwrap() << std::endl;
-    std::cout << ShortCode("eP4hZ", ShortCode::FAST).to_string() << std::endl;
+//    auto s = ShortCode(14323231);
+////    auto s = ShortCode(14323231, ShortCode::NORMAL);
+////    auto s = ShortCode(14323231, ShortCode::FAST);
+//    std::cout << s.unwrap() << std::endl;
+//    std::cout << s.to_string() << std::endl;
+//    std::cout << ShortCode("EP4HZ", ShortCode::NORMAL).unwrap() << std::endl;
+//    std::cout << ShortCode("eP4hZ", ShortCode::FAST).to_string() << std::endl;
+
+    std::cout << ShortCode::tiny_encode(0x6EC0F8800) << std::endl;
+    printf("%09lX\n", ShortCode::tiny_decode(14323231));
 
     return 0;
 }
