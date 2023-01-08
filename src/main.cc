@@ -2,6 +2,7 @@
 #include "all_cases.h"
 #include "basic_ranges.h"
 #include "common_code.h"
+#include "short_code.h"
 
 //void get_status() {
 //    switch (BasicRanges::basic_ranges_status()) {
@@ -53,12 +54,23 @@ int main() {
 //    std::cout << CommonCode::to_string(0x1A9BF0C00) << std::endl;
 //    std::cout << CommonCode::to_string(0x1A9BF0C00, true) << std::endl;
 
-    auto c = CommonCode("1A9bF0c0");
-    std::cout << c.to_string(true) << std::endl;
-    std::cout << c.to_string() << std::endl;
-    printf("%09lX\n", c.unwrap());
+//    auto c = CommonCode("1A9bF0c0");
+//    std::cout << c.to_string(true) << std::endl;
+//    std::cout << c.to_string() << std::endl;
+//    printf("%09lX\n", c.unwrap());
+//
+//    std::cout << CommonCode(0x1A9BF0C00).to_string() << std::endl;
 
-    std::cout << CommonCode(0x1A9BF0C00).to_string() << std::endl;
+
+    std::cout << "start NORMAL speed up" << std::endl;
+    ShortCode::speed_up(ShortCode::NORMAL);
+    std::cout << "NORMAL speed up complete" << std::endl;
+
+    std::cout << "start FAST speed up" << std::endl;
+    ShortCode::speed_up(ShortCode::FAST);
+    std::cout << "FAST speed up complete" << std::endl;
+
+    std::cout << ShortCode::all_cases_list.size() << std::endl;
 
     return 0;
 }
