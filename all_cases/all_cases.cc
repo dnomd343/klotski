@@ -34,3 +34,14 @@ void AllCases::build_all_cases() { // build all cases
     }
     AllCases::all_cases_building.unlock();
 }
+
+AllCases::Status AllCases::all_cases_status() { // get all cases status
+    if (all_cases_available) {
+        return AVAILABLE; // all cases already built
+    }
+    if (!all_cases_building.try_lock()) { // fail to lock mutex -> another thread working
+        return BUILDING;
+    }
+    all_cases_building.unlock(); // release mutex
+    return NO_INIT;
+}
