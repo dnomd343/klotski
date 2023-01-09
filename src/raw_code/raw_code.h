@@ -10,15 +10,15 @@
 #define B_1x1   0b011
 #define B_2x2   0b100
 
-#define C_1x1 (uint64_t)0x3
-#define C_1x2 (uint64_t)0x39
-#define C_2x1 (uint64_t)0x7002
-#define C_2x2 (uint64_t)0x3F03C
+#define C_1x1 (uint64_t)0b011 // 011 (0x3)
+#define C_1x2 (uint64_t)0b111001 // 111 001 (0x39)
+#define C_2x1 (uint64_t)0b111000000000010 // 111 000 000 000 010 (0x7002)
+#define C_2x2 (uint64_t)0b111111000000111100 // 111 111 000 000 111 100 (0x3F03C)
 
-//#define F_1x1 uint64_t(0x7)
-//#define F_1x2 uint64_t(0x3F)
-//#define F_2x1 uint64_t(0x7007)
-//#define F_2x2 uint64_t(0x3F03F)
+#define F_1x1 (uint64_t)0b111 // 111 (0x7)
+#define F_1x2 (uint64_t)0b111111 // 111 111 (0x3F)
+#define F_2x1 (uint64_t)0b111000000000111 // 111 000 000 000 111 (0x7007)
+#define F_2x2 (uint64_t)0b111111000000111111 // 111 111 000 000 111 111 (0x3F03F)
 
 class RawCode {
 public:
