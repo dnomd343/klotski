@@ -8,12 +8,18 @@ inline uint8_t last_zero_num(uint32_t bin) { // get last zero number
     return __builtin_popcount(bin >> 1);
 }
 
-uint64_t CommonCode::unwrap() const {
-    return code; // get raw uint64_t code
+uint64_t CommonCode::unwrap() const { // get raw uint64_t code
+    return code;
 }
 
 ShortCode CommonCode::to_short_code() const { // convert to short code
     return ShortCode(*this);
+}
+
+CommonCode CommonCode::unsafe_create(uint64_t code) { // create CommonCode without check
+    auto common_code = CommonCode(); // init directly
+    common_code.code = code;
+    return common_code;
 }
 
 CommonCode::CommonCode(uint64_t common_code) {
@@ -21,6 +27,10 @@ CommonCode::CommonCode(uint64_t common_code) {
         throw std::invalid_argument("invalid common code");
     }
     code = common_code;
+}
+
+CommonCode::CommonCode(const ShortCode &short_code) {
+    code = short_code.to_common_code().unwrap(); // init from short code
 }
 
 CommonCode::CommonCode(const std::string &common_code_str) {

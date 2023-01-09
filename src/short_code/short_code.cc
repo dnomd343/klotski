@@ -2,8 +2,8 @@
 #include "short_code.h"
 #include "short_code_chars.h"
 
-uint32_t ShortCode::unwrap() const {
-    return code; // get raw uint32_t code
+uint32_t ShortCode::unwrap() const { // get raw uint32_t code
+    return code;
 }
 
 bool ShortCode::check(uint32_t short_code) {

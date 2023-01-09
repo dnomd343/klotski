@@ -5,9 +5,9 @@
 
 CommonCode ShortCode::to_common_code() const { // convert to common code
     if (ShortCode::check_mode() == ShortCode::NORMAL) {
-        return CommonCode(tiny_decode(code)); // using normal mode
+        return CommonCode::unsafe_create(tiny_decode(code)); // using normal mode
     }
-    return CommonCode(all_cases_list[code]); // using fast mode
+    return CommonCode::unsafe_create(all_cases_list[code]); // using fast mode
 }
 
 ShortCode::ShortCode(const CommonCode &common_code) { // convert from common code
