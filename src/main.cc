@@ -130,5 +130,7 @@ int main() {
     auto r = RawCode(0x0E58FC85FFEBC4DB);
     printf("%016lX\n", r.unwrap());
 
+    std::cout << r.to_common_code().to_string() << std::endl;
+
     return 0;
 }
