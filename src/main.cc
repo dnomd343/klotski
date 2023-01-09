@@ -128,9 +128,10 @@ int main() {
 
 
     auto r = RawCode(0x0E58FC85FFEBC4DB);
-    printf("%016lX\n", r.unwrap());
+    printf("%015lX\n", r.unwrap());
 
     std::cout << r.to_common_code().to_string() << std::endl;
+    printf("%015lX\n", RawCode(CommonCode(0x4FEA13400)).unwrap());
 
     return 0;
 }
