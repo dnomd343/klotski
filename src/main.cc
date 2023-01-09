@@ -3,6 +3,7 @@
 #include "basic_ranges.h"
 #include "common_code.h"
 #include "short_code.h"
+#include "raw_code.h"
 
 #include <thread>
 
@@ -119,11 +120,15 @@ int main() {
 
 //    std::cout << CommonCode(0x6EC0F8800).to_short_code().to_string() << std::endl;
 
-    std::cout << CommonCode(ShortCode(14323231)).to_string() << std::endl;
-    std::cout << ShortCode(14323231).to_common_code().to_string() << std::endl;
+//    std::cout << CommonCode(ShortCode(14323231)).to_string() << std::endl;
+//    std::cout << ShortCode(14323231).to_common_code().to_string() << std::endl;
+//
+//    std::cout << ShortCode(CommonCode(0x6EC0F8800)).to_string() << std::endl;
+//    std::cout << CommonCode(0x6EC0F8800).to_short_code().to_string() << std::endl;
 
-    std::cout << ShortCode(CommonCode(0x6EC0F8800)).to_string() << std::endl;
-    std::cout << CommonCode(0x6EC0F8800).to_short_code().to_string() << std::endl;
+
+    auto r = RawCode(0x0E58FC85FFEBC4DB);
+    printf("%016lX\n", r.unwrap());
 
     return 0;
 }
