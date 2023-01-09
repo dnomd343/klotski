@@ -70,41 +70,21 @@ RawCode::RawCode(const CommonCode &common_code) {
 }
 
 std::string RawCode::dump_case() const {
-
-    // TODO: result reserve space -> result length
     std::string result;
+    result.reserve(40); // 5 lines * ("x x x x\n")
+    char dump_map[] = {
+    /// 0x0  1x2  2x1  1x1  2x2  b101 b110 fill
+        '.', '~', '|', '*', '@', '?', '?', '+'
+    };
 
     auto raw_code = code;
-
     for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
-        switch (raw_code & 0b111) {
-            case B_space:
-                result.push_back('.');
-                break;
-            case B_fill:
-                result.push_back('+');
-                break;
-            case B_1x1:
-                result.push_back('*');
-                break;
-            case B_1x2:
-                result.push_back('~');
-                break;
-            case B_2x1:
-                result.push_back('|');
-                break;
-            case B_2x2:
-                result.push_back('@');
-                break;
-            default:
-                result.push_back('?');
-        }
-        if (addr % 4 == 3) {
-            result.push_back('\n');
+        result.push_back(dump_map[raw_code & 0b111]);
+        if ((addr & 0b11) == 0b11) {
+            result.push_back('\n'); // new line
         } else {
-            result.push_back(' ');
+            result.push_back(' '); // add space
         }
     }
-
     return result;
 }
