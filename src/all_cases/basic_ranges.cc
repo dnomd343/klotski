@@ -27,7 +27,7 @@ BasicRanges::Status BasicRanges::status() { // get basic ranges status
 }
 
 const std::vector<uint32_t>* BasicRanges::fetch() { // get const ptr of basic ranges
-    if (basic_ranges.empty()) {
+    if (status() != BasicRanges::AVAILABLE) {
         BasicRanges::build(); // basic ranges initialize
     }
     return &basic_ranges; // return ptr

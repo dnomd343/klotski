@@ -17,7 +17,7 @@ AllCases::Status AllCases::status() { // get all cases status
 }
 
 const std::vector<uint32_t> (*AllCases::fetch())[16] { // get const ptr of all cases
-    if (all_cases->empty()) {
+    if (status() != AllCases::AVAILABLE) {
         AllCases::build(); // all cases initialize
     }
     return &all_cases; // return ptr
