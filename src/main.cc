@@ -127,11 +127,15 @@ int main() {
 //    std::cout << CommonCode(0x6EC0F8800).to_short_code().to_string() << std::endl;
 
 
-    auto r = RawCode(0x0E58FC85FFEBC4DB);
-    printf("%015lX\n", r.unwrap());
+//    auto r = RawCode(0x0E58FC85FFEBC4DB);
+//    printf("%015lX\n", r.unwrap());
+//
+//    std::cout << r.to_common_code().to_string() << std::endl;
+//    printf("%015lX\n", RawCode(CommonCode(0x4FEA13400)).unwrap());
 
-    std::cout << r.to_common_code().to_string() << std::endl;
-    printf("%015lX\n", RawCode(CommonCode(0x4FEA13400)).unwrap());
+//    auto r = RawCode(0x0E58FC85FFEBC4DB);
+    auto r = RawCode(0x0E58FC85FFEBC4DD);
+    std::cout << r.dump_case() << std::endl;
 
     return 0;
 }

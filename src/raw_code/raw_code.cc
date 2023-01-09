@@ -1,3 +1,4 @@
+#include <string>
 #include "common.h"
 #include "raw_code.h"
 
@@ -66,4 +67,44 @@ RawCode::RawCode(const CommonCode &common_code) {
                 addr += 3; // next address
         }
     }
+}
+
+std::string RawCode::dump_case() const {
+
+    // TODO: result reserve space -> result length
+    std::string result;
+
+    auto raw_code = code;
+
+    for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
+        switch (raw_code & 0b111) {
+            case B_space:
+                result.push_back('.');
+                break;
+            case B_fill:
+                result.push_back('+');
+                break;
+            case B_1x1:
+                result.push_back('*');
+                break;
+            case B_1x2:
+                result.push_back('~');
+                break;
+            case B_2x1:
+                result.push_back('|');
+                break;
+            case B_2x2:
+                result.push_back('@');
+                break;
+            default:
+                result.push_back('?');
+        }
+        if (addr % 4 == 3) {
+            result.push_back('\n');
+        } else {
+            result.push_back(' ');
+        }
+    }
+
+    return result;
 }

@@ -26,8 +26,7 @@ public:
     std::string dump_case() const;
     CommonCode to_common_code() const;
 
-    RawCode(const CommonCode &common_code);
-
+    explicit RawCode(const CommonCode &common_code);
     explicit RawCode(uint64_t raw_code) : code(raw_code) {}
 
 private:
