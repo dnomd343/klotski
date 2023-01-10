@@ -131,6 +131,8 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
 void Core::next_step(uint64_t raw_code) {
 
     auto temp_code = raw_code;
+//    uint64_t raw_code = _code;
+
     for (int addr = 0; temp_code; addr += 3, temp_code >>= 3) {
 
         switch (temp_code & 0b111) {
@@ -151,8 +153,8 @@ void Core::next_step(uint64_t raw_code) {
         }
         if (cache_size != 1) {
             for (int i = 1; i < cache_size; ++i) {
-                std::cout << RawCode(cache[i].code).dump_case();
-                printf("MASK -> %016lX\n", cache[i].mask);
+//                std::cout << RawCode(cache[i].code).dump_case();
+//                printf("(%016lX)\n\n", cache[i].mask);
             }
 //            std::cout << "found: " << cache_size - 1 << std::endl;
         }

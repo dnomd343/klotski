@@ -36,7 +36,18 @@ public:
     void move_2x1(uint64_t code, int addr);
     void move_2x2(uint64_t code, int addr);
 
+//    void move_1x1(int addr);
+//    void move_1x2(int addr);
+//    void move_2x1(int addr);
+//    void move_2x2(int addr);
+
     void next_step(uint64_t raw_code);
+
+//    void next_step();
+
+//    uint64_t _code;
+
+//    Core(uint64_t raw_code) : _code(raw_code) {}
 
 };
 
