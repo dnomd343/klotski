@@ -1,11 +1,12 @@
 #include <iostream>
+#include "core.h"
 #include "all_cases.h"
 #include "basic_ranges.h"
 #include "common_code.h"
 #include "short_code.h"
 #include "raw_code.h"
 
-#include "core_demo.h"
+//#include "core_demo.h"
 
 #include <thread>
 
@@ -145,8 +146,9 @@ int main() {
 //    next_step(CommonCode("4FEA134").to_raw_code().unwrap(), 0); // mask unset
     auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
 
-//    for (int i = 0; i < 1000000000; ++i) {
-        next_step(raw_code);
+    auto c = Core();
+//    for (int i = 0; i < 100000000; ++i) {
+        c.next_step(raw_code);
 //    }
 
     return 0;

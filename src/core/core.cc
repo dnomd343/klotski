@@ -1,9 +1,6 @@
-#include <iostream>
+#include "bfs.h"
+#include "core.h"
 #include "raw_code.h"
-#include "core_demo.h"
-
-int cache_size;
-cache_t cache[16];
 
 #define ALLOW_UP    (filter != -UP)
 #define ALLOW_DOWN  (filter != -DOWN)
@@ -22,16 +19,6 @@ cache_t cache[16];
 #define TOP_LIMIT(ADDR)    (addr >= ADDR * 3)
 #define BOTTOM_LIMIT(ADDR) (addr <= ADDR * 3)
 
-#define NEXT_CODE_1x1 (code & ~(F_1x1 << addr) | (C_1x1 << next_addr))
-#define NEXT_CODE_1x2 (code & ~(F_1x2 << addr) | (C_1x2 << next_addr))
-#define NEXT_CODE_2x1 (code & ~(F_2x1 << addr) | (C_2x1 << next_addr))
-#define NEXT_CODE_2x2 (code & ~(F_2x2 << addr) | (C_2x2 << next_addr))
-
-#define release_1x1(FILTER) RELEASE(NEXT_CODE_1x1, FILTER)
-#define release_1x2(FILTER) RELEASE(NEXT_CODE_1x2, FILTER)
-#define release_2x1(FILTER) RELEASE(NEXT_CODE_2x1, FILTER)
-#define release_2x2(FILTER) RELEASE(NEXT_CODE_2x2, FILTER)
-
 #define RELEASE(NEXT_CODE, FILTER) { \
     cache_t next_case = { \
         .code = NEXT_CODE, \
@@ -42,37 +29,28 @@ cache_t cache[16];
     cache_insert(next_case); \
 }
 
-#define BFS_INIT \
-int next_addr; \
-cache_size = 1; \
-int current = 0;  \
-cache[0].code = code; \
-cache[0].addr = addr; \
-cache[0].filter = 0;
+#define release_1x1(FILTER) RELEASE(NEXT_CODE_1x1, FILTER)
+#define release_1x2(FILTER) RELEASE(NEXT_CODE_1x2, FILTER)
+#define release_2x1(FILTER) RELEASE(NEXT_CODE_2x1, FILTER)
+#define release_2x2(FILTER) RELEASE(NEXT_CODE_2x2, FILTER)
 
-#define BFS_LOAD \
-code = cache[current].code; \
-addr = cache[current].addr; \
-int filter = cache[current++].filter;
+#define NEXT_CODE_1x1 (code & ~(F_1x1 << addr) | (C_1x1 << next_addr))
+#define NEXT_CODE_1x2 (code & ~(F_1x2 << addr) | (C_1x2 << next_addr))
+#define NEXT_CODE_2x1 (code & ~(F_2x1 << addr) | (C_2x1 << next_addr))
+#define NEXT_CODE_2x2 (code & ~(F_2x2 << addr) | (C_2x2 << next_addr))
 
-#define BFS_STOP (current == cache_size)
-
-inline void cache_insert(cache_t &new_item) {
-
-//    static int insert_num = 0;
-//    std::cout << "insert times: " << ++insert_num << std::endl;
-
+inline void Core::cache_insert(Core::cache_t &next_case) { // try to insert into cache
     auto *p = cache;
     for (; p < cache + cache_size; ++p) {
-        if (p->code == new_item.code) {
+        if (p->code == next_case.code) {
             return; // already exist -> insert failed
         }
     }
-    *p = new_item;
+    *p = next_case;
     ++cache_size;
 }
 
-void move_1x1(uint64_t code, int addr) {
+void Core::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -91,7 +69,7 @@ void move_1x1(uint64_t code, int addr) {
     }
 }
 
-void move_1x2(uint64_t code, int addr) {
+void Core::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -110,7 +88,7 @@ void move_1x2(uint64_t code, int addr) {
     }
 }
 
-void move_2x1(uint64_t code, int addr) {
+void Core::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -129,7 +107,7 @@ void move_2x1(uint64_t code, int addr) {
     }
 }
 
-void move_2x2(uint64_t code, int addr) {
+void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -148,27 +126,9 @@ void move_2x2(uint64_t code, int addr) {
     }
 }
 
+#include <iostream>
 
-void next_step(uint64_t raw_code) {
-
-//    int addr = 17;
-//    raw_code = RawCode(CommonCode("4fea134")).unwrap();
-//    move_1x1(raw_code, addr * 3);
-
-//    int addr = 9;
-//    raw_code = RawCode(CommonCode("1003")).unwrap();
-//    move_1x1(raw_code, addr * 3);
-
-//    int addr = 9;
-//    raw_code = RawCode(CommonCode("1002")).unwrap();
-//    move_2x1(raw_code, addr * 3);
-
-//    int addr = 5;
-//    raw_code = RawCode(CommonCode("5")).unwrap();
-//    move_2x2(raw_code, addr * 3);
-
-
-//    std::cout << RawCode(raw_code).dump_case();
+void Core::next_step(uint64_t raw_code) {
 
     auto temp_code = raw_code;
     for (int addr = 0; temp_code; addr += 3, temp_code >>= 3) {
@@ -191,43 +151,12 @@ void next_step(uint64_t raw_code) {
         }
         if (cache_size != 1) {
             for (int i = 1; i < cache_size; ++i) {
-//                std::cout << RawCode(cache[i].code).dump_case();
-//                printf("MASK -> %016lX\n", cache[i].mask);
+                std::cout << RawCode(cache[i].code).dump_case();
+                printf("MASK -> %016lX\n", cache[i].mask);
             }
 //            std::cout << "found: " << cache_size - 1 << std::endl;
         }
     }
-
-
-
-
-//    for (int i = 0; i < 1000000000; ++i) {
-//    for (int i = 0; i < 50000000; ++i) {
-//        move_1x1(raw_code, addr * 3);
-//    }
-
-//    std::cout << "cache size: " << cache_size << std::endl;
-//
-//    for (int i = 0; i < cache_size; ++i) {
-//        std::cout << "=======" << std::endl;
-//
-//        std::cout << RawCode(cache[i].code).dump_case();
-//
-//        if (i != 0) {
-//            auto _mask = cache[i].mask;
-//            std::cout << std::endl;
-//            for (int n = 0; n < 20; ++n, _mask >>= 3) {
-//                if (_mask & 0b111) {
-//                    std::cout << "+ ";
-//                } else {
-//                    std::cout << ". ";
-//                }
-//                if ((n & 0b11) == 0b11) {
-//                    std::cout << std::endl;
-//                }
-//            }
-//        }
-//
-//        std::cout << "=======" << std::endl << std::endl;
-//    }
 }
+
+

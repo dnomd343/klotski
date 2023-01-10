@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
+include_directories(core)
 include_directories(common)
 include_directories(all_cases)
 
@@ -7,6 +8,7 @@ include_directories(raw_code)
 include_directories(short_code)
 include_directories(common_code)
 
+add_subdirectory(core)
 add_subdirectory(common)
 add_subdirectory(all_cases)
 
@@ -14,8 +16,11 @@ add_subdirectory(raw_code)
 add_subdirectory(short_code)
 add_subdirectory(common_code)
 
-#add_executable(klotski main.cc)
-add_executable(klotski main.cc core_demo.cc)
+add_executable(klotski main.cc)
+#add_executable(klotski main.cc core_demo.cc)
+
+target_link_libraries(klotski core)
+target_link_libraries(klotski common)
 target_link_libraries(klotski all_cases)
 
 target_link_libraries(klotski raw_code)
