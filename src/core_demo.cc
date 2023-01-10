@@ -15,6 +15,9 @@ cache_t cache[16];
 #define MOVE_LEFT  (next_addr = addr + LEFT)
 #define MOVE_RIGHT (next_addr = addr + RIGHT)
 
+#define TOP_LIMIT(ADDR)    (addr >= ADDR * 3)
+#define BOTTOM_LIMIT(ADDR) (addr <= ADDR * 3)
+
 #define release_1x1(_filter) { \
     cache_t next_case = { \
         .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr), \
@@ -84,10 +87,10 @@ void move_1x1(uint64_t code, int addr) {
         int next_addr; // address after block moved
         int filter = cache[current++].filter; // case filter
 
-        if (ALLOW_UP && addr >= 4 * 3 && !(code >> MOVE_UP & F_1x1)) {
+        if (ALLOW_UP && TOP_LIMIT(4) && !(code >> MOVE_UP & F_1x1)) {
             release_1x1(UP) // 1x1 block move up
         }
-        if (ALLOW_DOWN && addr <= 15 * 3 && !(code >> MOVE_DOWN & F_1x1)) {
+        if (ALLOW_DOWN && BOTTOM_LIMIT(15) && !(code >> MOVE_DOWN & F_1x1)) {
             release_1x1(DOWN) // 1x1 block move down
         }
         if (ALLOW_LEFT && (addr & 3) != 0 && !(code >> MOVE_LEFT & F_1x1)) {
@@ -112,10 +115,10 @@ void move_1x2(uint64_t code, int addr) {
         int next_addr; // address after block moved
         int filter = cache[current++].filter; // case filter
 
-        if (ALLOW_UP && addr >= 4 * 3 && !(code >> MOVE_UP & F_1x2)) {
+        if (ALLOW_UP && TOP_LIMIT(4) && !(code >> MOVE_UP & F_1x2)) {
             release_1x2(UP) // 1x2 block move up
         }
-        if (ALLOW_DOWN && addr <= 14 * 3 && !(code >> MOVE_DOWN & F_1x2)) {
+        if (ALLOW_DOWN && BOTTOM_LIMIT(14) && !(code >> MOVE_DOWN & F_1x2)) {
             release_1x2(DOWN) // 1x2 block move down
         }
         if (ALLOW_LEFT && (addr & 3) != 0 && !(code >> MOVE_LEFT & F_1x1)) {
@@ -140,10 +143,10 @@ void move_2x1(uint64_t code, int addr) {
         int next_addr; // address after block moved
         int filter = cache[current++].filter; // case filter
 
-        if (ALLOW_UP && addr >= 4 * 3 && !(code >> MOVE_UP & F_1x1)) {
+        if (ALLOW_UP && TOP_LIMIT(4) && !(code >> MOVE_UP & F_1x1)) {
             release_2x1(UP) // 2x1 block move up
         }
-        if (ALLOW_DOWN && addr <= 11 * 3 && !(code >> MOVE_DOWN & F_1x1_D)) {
+        if (ALLOW_DOWN && BOTTOM_LIMIT(11) && !(code >> MOVE_DOWN & F_1x1_D)) {
             release_2x1(DOWN) // 2x1 block move down
         }
         if (ALLOW_LEFT && (addr & 0x3) != 0 && !(code >> MOVE_LEFT & F_2x1)) {
@@ -154,7 +157,6 @@ void move_2x1(uint64_t code, int addr) {
         }
     }
 }
-
 
 void move_2x2(uint64_t code, int addr) {
     cache_size = 1;
@@ -169,10 +171,10 @@ void move_2x2(uint64_t code, int addr) {
         int next_addr; // address after block moved
         int filter = cache[current++].filter; // case filter
 
-        if (ALLOW_UP && addr >= 4 * 3 && !(code >> MOVE_UP & F_1x2)) {
+        if (ALLOW_UP && TOP_LIMIT(4) && !(code >> MOVE_UP & F_1x2)) {
             release_2x2(UP) // 2x2 block move up
         }
-        if (ALLOW_DOWN && addr <= 10 * 3 && !(code >> MOVE_DOWN & F_1x2_D)) {
+        if (ALLOW_DOWN && BOTTOM_LIMIT(10) && !(code >> MOVE_DOWN & F_1x2_D)) {
             release_2x2(DOWN) // 2x2 block move down
         }
         if (ALLOW_LEFT && (addr & 3) != 0 && !(code >> MOVE_LEFT & F_2x1)) {
