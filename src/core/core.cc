@@ -129,36 +129,33 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
 #include <iostream>
 
 void Core::next_step(uint64_t raw_code) {
-
-    auto temp_code = raw_code;
-//    uint64_t raw_code = _code;
-
-    for (int addr = 0; temp_code; addr += 3, temp_code >>= 3) {
-
-        switch (temp_code & 0b111) {
+    auto code = raw_code;
+    for (int addr = 0; code; addr += 3, code >>= 3) { // traverse every 3-bits
+        switch (code & 0b111) { // match low 3-bits
             case B_1x1:
-                move_1x1(raw_code, addr);
+                move_1x1(raw_code, addr); // try to move 1x1 block
                 break;
             case B_1x2:
-                move_1x2(raw_code, addr);
+                move_1x2(raw_code, addr); // try to move 1x2 block
                 break;
             case B_2x1:
-                move_2x1(raw_code, addr);
+                move_2x1(raw_code, addr); // try to move 2x1 block
                 break;
             case B_2x2:
-                move_2x2(raw_code, addr);
+                move_2x2(raw_code, addr); // try to move 2x2 block
                 break;
             default:
                 continue; // B_space or B_fill
         }
-        if (cache_size != 1) {
+        if (cache_size != 1) { // found one or more next cases
             for (int i = 1; i < cache_size; ++i) {
-//                std::cout << RawCode(cache[i].code).dump_case();
-//                printf("(%016lX)\n\n", cache[i].mask);
+
+                // TODO: release next cases (code and mask)
+
+                std::cout << RawCode(cache[i].code).dump_case();
+                printf("(%016lX)\n\n", cache[i].mask);
+
             }
-//            std::cout << "found: " << cache_size - 1 << std::endl;
         }
     }
 }
-
-

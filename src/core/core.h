@@ -19,36 +19,22 @@
 
 class Core {
 public:
+    void next_step(uint64_t raw_code);
+
+private:
     struct cache_t {
-        uint64_t code; // raw code
+        uint64_t code; // case raw code
         uint64_t mask; // only 000 or 111
-        int filter;
-        int addr;
+        int filter; // UP | DOWN | LEFT | RIGHT
+        int addr; // (0 ~ 19) * 3
     };
 
     int cache_size;
     cache_t cache[16];
 
-    inline void cache_insert(Core::cache_t &next_case);
-
     void move_1x1(uint64_t code, int addr);
     void move_1x2(uint64_t code, int addr);
     void move_2x1(uint64_t code, int addr);
     void move_2x2(uint64_t code, int addr);
-
-//    void move_1x1(int addr);
-//    void move_1x2(int addr);
-//    void move_2x1(int addr);
-//    void move_2x2(int addr);
-
-    void next_step(uint64_t raw_code);
-
-//    void next_step();
-
-//    uint64_t _code;
-
-//    Core(uint64_t raw_code) : _code(raw_code) {}
-
+    inline void cache_insert(Core::cache_t &next_case);
 };
-
-

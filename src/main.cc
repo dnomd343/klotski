@@ -148,9 +148,9 @@ int main() {
 
     auto c = Core();
 //    auto c = Core(raw_code);
-    for (int i = 0; i < 100000000; ++i) {
+//    for (int i = 0; i < 100000000; ++i) {
         c.next_step(raw_code);
-    }
+//    }
 
     return 0;
 }
