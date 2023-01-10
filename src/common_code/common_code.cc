@@ -3,7 +3,7 @@
 #include "common_code.h"
 
 /// WARN: bin should not be zero
-inline uint8_t last_zero_num(uint32_t bin) { // get last zero number
+inline uint32_t last_zero_num(uint32_t bin) { // get last zero number
     bin ^= (bin - 1);
     return __builtin_popcount(bin >> 1);
 }
