@@ -42,6 +42,21 @@ cache_t cache[16];
     cache_insert(next_case); \
 }
 
+#define BFS_INIT \
+int next_addr; \
+cache_size = 1; \
+int current = 0;  \
+cache[0].code = code; \
+cache[0].addr = addr; \
+cache[0].filter = 0;
+
+#define BFS_LOAD \
+code = cache[current].code; \
+addr = cache[current].addr; \
+int filter = cache[current++].filter;
+
+#define BFS_STOP (current == cache_size)
+
 inline void cache_insert(cache_t &new_item) {
 
 //    static int insert_num = 0;
@@ -58,18 +73,9 @@ inline void cache_insert(cache_t &new_item) {
 }
 
 void move_1x1(uint64_t code, int addr) {
-    cache_size = 1;
-    cache[0].code = code;
-    cache[0].addr = addr;
-    cache[0].filter = 0; // filter unset
-
-    int current = 0;
-    while (current != cache_size) { // start bfs search
-        code = cache[current].code;
-        addr = cache[current].addr;
-        int next_addr; // address after block moved
-        int filter = cache[current++].filter; // case filter
-
+    BFS_INIT
+    while (!BFS_STOP) { // bfs search process
+        BFS_LOAD
         if (ALLOW_UP && TOP_LIMIT(4) && !(code >> MOVE_UP & F_1x1)) {
             release_1x1(UP) // 1x1 block move up
         }
@@ -86,18 +92,9 @@ void move_1x1(uint64_t code, int addr) {
 }
 
 void move_1x2(uint64_t code, int addr) {
-    cache_size = 1;
-    cache[0].code = code;
-    cache[0].addr = addr;
-    cache[0].filter = 0; // filter unset
-
-    int current = 0;
-    while (current != cache_size) { // start bfs search
-        code = cache[current].code;
-        addr = cache[current].addr;
-        int next_addr; // address after block moved
-        int filter = cache[current++].filter; // case filter
-
+    BFS_INIT
+    while (!BFS_STOP) { // bfs search process
+        BFS_LOAD
         if (ALLOW_UP && TOP_LIMIT(4) && !(code >> MOVE_UP & F_1x2)) {
             release_1x2(UP) // 1x2 block move up
         }
@@ -114,18 +111,9 @@ void move_1x2(uint64_t code, int addr) {
 }
 
 void move_2x1(uint64_t code, int addr) {
-    cache_size = 1;
-    cache[0].code = code;
-    cache[0].addr = addr;
-    cache[0].filter = 0; // filter unset
-
-    int current = 0;
-    while (current != cache_size) { // start bfs search
-        code = cache[current].code;
-        addr = cache[current].addr;
-        int next_addr; // address after block moved
-        int filter = cache[current++].filter; // case filter
-
+    BFS_INIT
+    while (!BFS_STOP) { // bfs search process
+        BFS_LOAD
         if (ALLOW_UP && TOP_LIMIT(4) && !(code >> MOVE_UP & F_1x1)) {
             release_2x1(UP) // 2x1 block move up
         }
@@ -142,18 +130,9 @@ void move_2x1(uint64_t code, int addr) {
 }
 
 void move_2x2(uint64_t code, int addr) {
-    cache_size = 1;
-    cache[0].code = code;
-    cache[0].addr = addr;
-    cache[0].filter = 0; // filter unset
-
-    int current = 0;
-    while (current != cache_size) { // start bfs search
-        code = cache[current].code;
-        addr = cache[current].addr;
-        int next_addr; // address after block moved
-        int filter = cache[current++].filter; // case filter
-
+    BFS_INIT
+    while (!BFS_STOP) { // bfs search process
+        BFS_LOAD
         if (ALLOW_UP && TOP_LIMIT(4) && !(code >> MOVE_UP & F_1x2)) {
             release_2x2(UP) // 2x2 block move up
         }
