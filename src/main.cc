@@ -142,7 +142,8 @@ int main() {
 //    std::cout << CommonCode(RawCode(0x0E58FC85FFEBC4DB)).to_string() << std::endl;
 
 
-    next_step(CommonCode("4FEA134").to_raw_code().unwrap(), 0); // mask unset
+//    next_step(CommonCode("4FEA134").to_raw_code().unwrap(), 0); // mask unset
+    next_step(0, 0);
 
     return 0;
 }

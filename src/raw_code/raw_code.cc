@@ -78,7 +78,7 @@ std::string RawCode::dump_case() const {
     };
 
     auto raw_code = code;
-    for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
+    for (int addr = 0; addr < 20; ++addr, raw_code >>= 3) {
         result.push_back(dump_map[raw_code & 0b111]);
         if ((addr & 0b11) == 0b11) {
             result.push_back('\n'); // new line
