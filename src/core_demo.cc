@@ -27,6 +27,7 @@ void move_1x1_demo(uint64_t code, int addr) {
     cache_size = 1;
     cache[0].code = code;
     cache[0].addr = addr;
+    cache[0].filter = 0; // filter unset
 
     int count = 0;
 
@@ -34,6 +35,9 @@ void move_1x1_demo(uint64_t code, int addr) {
 
         code = cache[count].code;
         addr = cache[count].addr;
+
+        int filter = cache[count].filter;
+
         ++count;
 
         uint64_t ret_code;
@@ -41,33 +45,33 @@ void move_1x1_demo(uint64_t code, int addr) {
         int next_addr;
 
         /// try to move up
-        if (addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
+        if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
             ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
-            cache_t new_item = {ret_code, next_addr};
+            cache_t new_item = {ret_code, DOWN, next_addr};
             cache_insert(new_item);
 
         }
 
         /// try to move down
-        if (addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
+        if (filter != DOWN && addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
             ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
-            cache_t new_item = {ret_code, next_addr};
+            cache_t new_item = {ret_code, UP, next_addr};
             cache_insert(new_item);
 
         }
 
         /// try to move left
-        if ((addr & 0b11) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
+        if (filter != LEFT && (addr & 0b11) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
             ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
-            cache_t new_item = {ret_code, next_addr};
+            cache_t new_item = {ret_code, RIGHT, next_addr};
             cache_insert(new_item);
 
         }
 
         /// try to move right
-        if ((addr & 0x3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
+        if (filter != RIGHT && (addr & 0x3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
             ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
-            cache_t new_item = {ret_code, next_addr};
+            cache_t new_item = {ret_code, LEFT, next_addr};
             cache_insert(new_item);
 
         }
