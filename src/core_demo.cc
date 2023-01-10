@@ -46,9 +46,16 @@ cache_t cache[16];
 }
 
 inline bool cache_insert(cache_t &new_item) {
+
+    static int match_num = 0;
+//    std::cout << "insert times: " << ++match_num << std::endl;
+
     auto *p = cache;
     for (; p < cache + cache_size; ++p) {
         if (p->code == new_item.code) {
+
+            p->filter |= new_item.filter;
+
             return false; // already exist -> insert failed
         }
     }
@@ -61,7 +68,8 @@ void move_1x1(uint64_t code, int addr) {
     cache_size = 1;
     cache[0].code = code;
     cache[0].addr = addr;
-    cache[0].filter = 0; // filter unset
+//    cache[0].filter = 0; // filter unset
+    cache[0].filter = 0b0000; // filter unset
 
     int current = 0;
     while (current != cache_size) { // start bfs search
@@ -70,18 +78,33 @@ void move_1x1(uint64_t code, int addr) {
         int next_addr; // address after block moved
         int filter = cache[current++].filter; // case filter
 
-        if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
-            release_1x1(-UP); // 1x1 block move up
+
+        if (!(filter & 0b0001) && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
+            release_1x1(0b0010) // 1x1 block move up
         }
-        if (filter != DOWN && addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
-            release_1x1(-DOWN); // 1x1 block move down
+        if (!(filter & 0b0010) && addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
+            release_1x1(0b0001) // 1x1 block move down
         }
-        if (filter != LEFT && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
-            release_1x1(-LEFT); // 1x1 block move left
+        if (!(filter & 0b0100) && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
+            release_1x1(0b1000) // 1x1 block move left
         }
-        if (filter != RIGHT && (addr & 3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
-            release_1x1(-RIGHT); // 1x1 block move right
+        if (!(filter & 0b1000) && (addr & 3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
+            release_1x1(0b0100) // 1x1 block move right
         }
+
+
+//        if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
+//            release_1x1(-UP) // 1x1 block move up
+//        }
+//        if (filter != DOWN && addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
+//            release_1x1(-DOWN) // 1x1 block move down
+//        }
+//        if (filter != LEFT && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
+//            release_1x1(-LEFT) // 1x1 block move left
+//        }
+//        if (filter != RIGHT && (addr & 3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
+//            release_1x1(-RIGHT) // 1x1 block move right
+//        }
     }
 }
 
@@ -99,16 +122,16 @@ void move_1x2(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x2)) {
-            release_1x2(-UP); // 1x2 block move up
+            release_1x2(-UP) // 1x2 block move up
         }
         if (filter != DOWN && addr <= 14 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x2)) {
-            release_1x2(-DOWN); // 1x2 block move down
+            release_1x2(-DOWN) // 1x2 block move down
         }
         if (filter != LEFT && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
-            release_1x2(-LEFT); // 1x2 block move left
+            release_1x2(-LEFT) // 1x2 block move left
         }
         if (filter != RIGHT && (addr & 3) != 2 && !(code >> (next_addr = addr + RIGHT) & F_1x1_R)) {
-            release_1x2(-RIGHT); // 1x2 block move right
+            release_1x2(-RIGHT) // 1x2 block move right
         }
     }
 }
@@ -127,16 +150,16 @@ void move_2x1(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
-            release_2x1(-UP); // 2x1 block move up
+            release_2x1(-UP) // 2x1 block move up
         }
         if (filter != DOWN && addr <= 11 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1_D)) {
-            release_2x1(-DOWN); // 2x1 block move down
+            release_2x1(-DOWN) // 2x1 block move down
         }
         if (filter != LEFT && (addr & 0x3) != 0 && !(code >> (next_addr = addr + LEFT) & F_2x1)) {
-            release_2x1(-LEFT); // 2x1 block move left
+            release_2x1(-LEFT) // 2x1 block move left
         }
         if (filter != RIGHT && (addr & 0x3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_2x1)) {
-            release_2x1(-RIGHT); // 2x1 block move right
+            release_2x1(-RIGHT) // 2x1 block move right
         }
     }
 }
@@ -156,16 +179,16 @@ void move_2x2(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x2)) {
-            release_2x2(-UP); // 2x2 block move up
+            release_2x2(-UP) // 2x2 block move up
         }
         if (filter != DOWN && addr <= 10 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x2_D)) {
-            release_2x2(-DOWN); // 2x2 block move down
+            release_2x2(-DOWN) // 2x2 block move down
         }
         if (filter != LEFT && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_2x1)) {
-            release_2x2(-LEFT); // 2x2 block move left
+            release_2x2(-LEFT) // 2x2 block move left
         }
         if (filter != RIGHT && (addr & 3) != 2 && !(code >> (next_addr = addr + RIGHT) & F_2x1_R)) {
-            release_2x2(-RIGHT); // 2x2 block move right
+            release_2x2(-RIGHT) // 2x2 block move right
         }
     }
 }
@@ -177,47 +200,50 @@ void next_step(uint64_t raw_code, uint64_t mask) {
 //    raw_code = RawCode(CommonCode("4fea134")).unwrap();
 //    move_1x1(raw_code, addr * 3);
 
-//    int addr = 9;
-//    raw_code = RawCode(CommonCode("1003")).unwrap();
+    int addr = 9;
+    raw_code = RawCode(CommonCode("1003")).unwrap();
 //    move_1x1(raw_code, addr * 3);
 
 //    int addr = 9;
 //    raw_code = RawCode(CommonCode("1002")).unwrap();
 //    move_2x1(raw_code, addr * 3);
 
-    int addr = 5;
-    raw_code = RawCode(CommonCode("5")).unwrap();
-    move_2x2(raw_code, addr * 3);
+//    int addr = 5;
+//    raw_code = RawCode(CommonCode("5")).unwrap();
+//    move_2x2(raw_code, addr * 3);
 
 
 //    std::cout << RawCode(raw_code).dump_case();
 //    printf("mask -> %016lX\n", mask);
 
 //    for (int i = 0; i < 1000000000; ++i) {
-//        move_1x1(raw_code, addr * 3);
-//    }
-
-    for (int i = 0; i < cache_size; ++i) {
-        std::cout << "=======" << std::endl;
-
-        std::cout << RawCode(cache[i].code).dump_case();
-
-        if (i != 0) {
-            auto _mask = cache[i].mask;
-            std::cout << std::endl;
-            for (int n = 0; n < 20; ++n, _mask >>= 3) {
-                if (_mask & 0b111) {
-                    std::cout << "+ ";
-                } else {
-                    std::cout << ". ";
-                }
-                if ((n & 0b11) == 0b11) {
-                    std::cout << std::endl;
-                }
-            }
-        }
-
-        std::cout << "=======" << std::endl << std::endl;
+    for (int i = 0; i < 50000000; ++i) {
+        move_1x1(raw_code, addr * 3);
     }
+
+    std::cout << "cache size: " << cache_size << std::endl;
+
+//    for (int i = 0; i < cache_size; ++i) {
+//        std::cout << "=======" << std::endl;
+//
+//        std::cout << RawCode(cache[i].code).dump_case();
+//
+//        if (i != 0) {
+//            auto _mask = cache[i].mask;
+//            std::cout << std::endl;
+//            for (int n = 0; n < 20; ++n, _mask >>= 3) {
+//                if (_mask & 0b111) {
+//                    std::cout << "+ ";
+//                } else {
+//                    std::cout << ". ";
+//                }
+//                if ((n & 0b11) == 0b11) {
+//                    std::cout << std::endl;
+//                }
+//            }
+//        }
+//
+//        std::cout << "=======" << std::endl << std::endl;
+//    }
 
 }
