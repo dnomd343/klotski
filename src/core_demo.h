@@ -9,11 +9,13 @@
 #define RIGHT    (+3) // +1 * 3-bits
 #define RIGHT_2  (+6) // +2 * 3-bits
 
-//struct cache_t {
-//    uint64_t code; // raw code
-//    uint64_t mask; // only 000 or 111
-//};
+struct cache_t {
+    uint64_t code; // raw code
+    uint64_t mask; // only 000 or 111
+    int filter;
+    int addr;
+};
 
-typedef uint64_t cache_t;
+//typedef uint64_t cache_t;
 
 void next_step(uint64_t raw_code, uint64_t mask);
