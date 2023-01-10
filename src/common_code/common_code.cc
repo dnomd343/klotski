@@ -12,6 +12,10 @@ uint64_t CommonCode::unwrap() const { // get raw uint64_t code
     return code;
 }
 
+RawCode CommonCode::to_raw_code() const { // convert to raw code
+    return RawCode(*this);
+}
+
 ShortCode CommonCode::to_short_code() const { // convert to short code
     return ShortCode(*this);
 }
@@ -29,8 +33,12 @@ CommonCode::CommonCode(uint64_t common_code) {
     code = common_code;
 }
 
-CommonCode::CommonCode(const ShortCode &short_code) {
-    code = short_code.to_common_code().unwrap(); // init from short code
+CommonCode::CommonCode(const RawCode &raw_code) { // init from raw code
+    code = raw_code.to_common_code().code;
+}
+
+CommonCode::CommonCode(const ShortCode &short_code) { // init from short code
+    code = short_code.to_common_code().code;
 }
 
 CommonCode::CommonCode(const std::string &common_code_str) {

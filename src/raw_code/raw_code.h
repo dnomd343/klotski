@@ -20,6 +20,8 @@
 #define F_2x1 (uint64_t)0x7007 // 111 000 000 000 111
 #define F_2x2 (uint64_t)0x3F03F // 111 111 000 000 111 111
 
+class CommonCode;
+
 class RawCode {
 public:
     uint64_t unwrap() const;
@@ -31,5 +33,4 @@ public:
 
 private:
     uint64_t code;
-
 };
