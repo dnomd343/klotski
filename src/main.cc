@@ -139,10 +139,10 @@ int main() {
 //    auto r = RawCode(0x0E58FC85FFEBC4DD); // invalid raw code -> only for test
 //    std::cout << r.dump_case() << std::endl;
 
+//    std::cout << CommonCode(RawCode(0x0E58FC85FFEBC4DB)).to_string() << std::endl;
 
-    next_step(0x0E58FC85FFEBC4DB, 0); // mask unset
 
-    std::cout << CommonCode(RawCode(0x0E58FC85FFEBC4DB)).to_string() << std::endl;
+    next_step(CommonCode("4FEA134").to_raw_code().unwrap(), 0); // mask unset
 
     return 0;
 }
