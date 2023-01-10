@@ -9,6 +9,7 @@
 //#include "core_demo.h"
 
 #include <thread>
+#include <algorithm>
 
 //void get_status() {
 //    switch (BasicRanges::status()) {
@@ -143,9 +144,7 @@ int main() {
 //    std::cout << CommonCode(RawCode(0x0E58FC85FFEBC4DB)).to_string() << std::endl;
 
 
-//    next_step(CommonCode("4FEA134").to_raw_code().unwrap(), 0); // mask unset
-
-//    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
+    auto c = Core();
 
     std::vector<uint64_t> all_cases_raw;
     for (int head = 0; head < 16; ++head) {
@@ -157,19 +156,31 @@ int main() {
         }
     }
 
-    std::cout << "start benchmark" << std::endl;
-    auto start_time = clock();
+//    std::cout << "start benchmark" << std::endl;
+//    auto start_time = clock();
 
-    auto c = Core();
+//    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
 //    for (int i = 0; i < 100000000; ++i) {
 //        c.next_step(raw_code);
 //    }
+
+    std::vector<uint32_t> steps;
     for (auto const &raw_code : all_cases_raw) {
-        c.next_step(raw_code);
+        steps.emplace_back(c.next_step(raw_code));
+    }
+//    std::sort(steps.begin(), steps.end());
+//    std::cout << steps[0] << std::endl;
+//    std::cout << steps[steps.size() - 1] << std::endl;
+    for (int i = 0; i < all_cases_raw.size(); ++i) {
+//        if (steps[i] == 0) {
+        if (steps[i] == 68) { // max next steps
+            std::cout << RawCode(all_cases_raw[i]).dump_case();
+            std::cout << CommonCode(RawCode(all_cases_raw[i])).to_string() << std::endl << std::endl;
+        }
     }
 
-    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-    std::cout << "complete benchmark" << std::endl;
+//    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+//    std::cout << "complete benchmark" << std::endl;
 
     return 0;
 }

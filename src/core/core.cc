@@ -128,7 +128,10 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
 
 #include <iostream>
 
-void Core::next_step(uint64_t raw_code) {
+uint32_t Core::next_step(uint64_t raw_code) {
+
+    uint32_t sum = 0;
+
     auto code = raw_code;
     for (int addr = 0; code; addr += 3, code >>= 3) { // traverse every 3-bits
         switch (code & 0b111) { // match low 3-bits
@@ -161,6 +164,13 @@ void Core::next_step(uint64_t raw_code) {
 //                std::cout << std::endl;
 
             }
+
+            sum += cache_size - 1;
+
         }
     }
+
+//    std::cout << "sum = " << sum << std::endl;
+    return sum;
+
 }

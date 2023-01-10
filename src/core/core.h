@@ -19,7 +19,8 @@
 
 class Core {
 public:
-    void next_step(uint64_t raw_code);
+//    void next_step(uint64_t raw_code);
+    uint32_t next_step(uint64_t raw_code);
 
 private:
     struct cache_t {
