@@ -25,6 +25,16 @@ cache_t cache[16];
     cache_insert(next_case); \
 }
 
+#define release_2x1(filter_dir) {\
+    cache_t next_case = { \
+        .code = code & ~(F_2x1 << addr) | (C_2x1 << next_addr), \
+        .mask = (uint64_t)0b111 << next_addr, \
+        .filter = filter_dir, \
+        .addr = next_addr \
+    }; \
+    cache_insert(next_case); \
+}
+
 inline bool cache_insert(cache_t &new_item) {
     auto *p = cache;
     for (; p < cache + cache_size; ++p) {
@@ -51,20 +61,19 @@ void move_1x1(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
-            release_1x1(-UP); // 1x1 block can move up
+            release_1x1(-UP); // 1x1 block move up
         }
         if (filter != DOWN && addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
-            release_1x1(-DOWN); // 1x1 block can move down
+            release_1x1(-DOWN); // 1x1 block move down
         }
         if (filter != LEFT && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
-            release_1x1(-LEFT); // 1x1 block can move left
+            release_1x1(-LEFT); // 1x1 block move left
         }
         if (filter != RIGHT && (addr & 3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
-            release_1x1(-RIGHT); // 1x1 block can move right
+            release_1x1(-RIGHT); // 1x1 block move right
         }
     }
 }
-
 
 void move_1x2(uint64_t code, int addr) {
     cache_size = 1;
@@ -80,19 +89,49 @@ void move_1x2(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x2)) {
-            release_1x2(-UP); // 1x2 block can move up
+            release_1x2(-UP); // 1x2 block move up
         }
         if (filter != DOWN && addr <= 14 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x2)) {
-            release_1x2(-DOWN); // 1x2 block can move down
+            release_1x2(-DOWN); // 1x2 block move down
         }
         if (filter != LEFT && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
-            release_1x2(-LEFT); // 1x2 block can move left
+            release_1x2(-LEFT); // 1x2 block move left
         }
         if (filter != RIGHT && (addr & 3) != 2 && !(code >> (next_addr = addr + RIGHT) & F_1x1_R)) {
-            release_1x2(-RIGHT); // 1x2 block can move right
+            release_1x2(-RIGHT); // 1x2 block move right
         }
     }
 }
+
+void move_2x1(uint64_t code, int addr) {
+    cache_size = 1;
+    cache[0].code = code;
+    cache[0].addr = addr;
+    cache[0].filter = 0; // filter unset
+
+    int current = 0;
+    while (current != cache_size) { // start bfs search
+        code = cache[current].code;
+        addr = cache[current].addr;
+        int next_addr; // address after block moved
+        int filter = cache[current++].filter; // case filter
+
+        if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
+            release_2x1(-UP); // 2x1 block move up
+        }
+        if (filter != DOWN && addr <= 11 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1_D)) {
+            release_2x1(-DOWN); // 2x1 block move down
+        }
+        if (filter != LEFT && (addr & 0x3) != 0 && !(code >> (next_addr = addr + LEFT) & F_2x1)) {
+            release_2x1(-LEFT); // 2x1 block move left
+        }
+        if (filter != RIGHT && (addr & 0x3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_2x1)) {
+            release_2x1(-RIGHT); // 2x1 block move right
+        }
+    }
+}
+
+
 
 
 void next_step(uint64_t raw_code, uint64_t mask) {
@@ -101,15 +140,13 @@ void next_step(uint64_t raw_code, uint64_t mask) {
 //    raw_code = RawCode(CommonCode("4fea134")).unwrap();
 //    move_1x1(raw_code, addr * 3);
 
-
 //    int addr = 9;
 //    raw_code = RawCode(CommonCode("1003")).unwrap();
 //    move_1x1(raw_code, addr * 3);
 
-
     int addr = 9;
-    raw_code = RawCode(CommonCode("1001")).unwrap();
-    move_1x2(raw_code, addr * 3);
+    raw_code = RawCode(CommonCode("1002")).unwrap();
+    move_2x1(raw_code, addr * 3);
 
 
 //    std::cout << RawCode(raw_code).dump_case();
