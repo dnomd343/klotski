@@ -152,13 +152,13 @@ void Core::next_step(uint64_t raw_code) {
 
                 // TODO: release next cases (code and mask)
 
-                std::cout << RawCode(cache[i].code).dump_case();
-                std::cout << "~~~~~~~" << std::endl;
-                auto mask = cache[i].mask;
-                for (int n = 0; n < 20; ++n, mask >>= 3) {
-                    std::cout << "+."[!(mask & 0b111)] << " \n"[!(~n & 0b11)];
-                }
-                std::cout << std::endl;
+//                std::cout << RawCode(cache[i].code).dump_case();
+//                std::cout << "~~~~~~~" << std::endl;
+//                auto mask = cache[i].mask;
+//                for (int n = 0; n < 20; ++n, mask >>= 3) {
+//                    std::cout << "+."[!(mask & 0b111)] << " \n"[!(~n & 0b11)];
+//                }
+//                std::cout << std::endl;
 
             }
         }

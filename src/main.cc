@@ -144,12 +144,32 @@ int main() {
 
 
 //    next_step(CommonCode("4FEA134").to_raw_code().unwrap(), 0); // mask unset
-    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
+
+//    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
+
+    std::vector<uint64_t> all_cases_raw;
+    for (int head = 0; head < 16; ++head) {
+        uint64_t prefix = (uint64_t)head << 32;
+        for (auto const &range : (*AllCases::fetch())[head]) {
+            all_cases_raw.emplace_back(
+                RawCode(CommonCode::unsafe_create(prefix | range)).unwrap()
+            );
+        }
+    }
+
+    std::cout << "start benchmark" << std::endl;
+    auto start_time = clock();
 
     auto c = Core();
 //    for (int i = 0; i < 100000000; ++i) {
-        c.next_step(raw_code);
+//        c.next_step(raw_code);
 //    }
+    for (auto const &raw_code : all_cases_raw) {
+        c.next_step(raw_code);
+    }
+
+    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+    std::cout << "complete benchmark" << std::endl;
 
     return 0;
 }
