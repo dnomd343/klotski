@@ -22,70 +22,24 @@ cache_t cache[16];
 #define TOP_LIMIT(ADDR)    (addr >= ADDR * 3)
 #define BOTTOM_LIMIT(ADDR) (addr <= ADDR * 3)
 
+#define NEXT_CODE_1x1 (code & ~(F_1x1 << addr) | (C_1x1 << next_addr))
+#define NEXT_CODE_1x2 (code & ~(F_1x2 << addr) | (C_1x2 << next_addr))
+#define NEXT_CODE_2x1 (code & ~(F_2x1 << addr) | (C_2x1 << next_addr))
+#define NEXT_CODE_2x2 (code & ~(F_2x2 << addr) | (C_2x2 << next_addr))
+
 #define release_1x1(FILTER) { \
     cache_t next_case = { \
-        .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr), \
+        .code = NEXT_CODE_1x1, \
         .mask = F_1x1 << next_addr, \
         .filter = FILTER, \
         .addr = next_addr \
     }; \
     cache_insert(next_case); \
 }
-//
-//#define release_1x2(FILTER) { \
-//    cache_t next_case = { \
-//        .code = code & ~(F_1x2 << addr) | (C_1x2 << next_addr), \
-//        .mask = F_1x1 << next_addr, \
-//        .filter = FILTER, \
-//        .addr = next_addr \
-//    }; \
-//    cache_insert(next_case); \
-//}
-//
-//#define release_2x1(FILTER) { \
-//    cache_t next_case = { \
-//        .code = code & ~(F_2x1 << addr) | (C_2x1 << next_addr), \
-//        .mask = F_1x1 << next_addr, \
-//        .filter = FILTER, \
-//        .addr = next_addr \
-//    }; \
-//    cache_insert(next_case); \
-//}
-//
-//#define release_2x2(FILTER) { \
-//    cache_t next_case = { \
-//        .code = code & ~(F_2x2 << addr) | (C_2x2 << next_addr), \
-//        .mask = F_1x1 << next_addr, \
-//        .filter = FILTER, \
-//        .addr = next_addr \
-//    }; \
-//    cache_insert(next_case); \
-//}
-
-//#define release_1x1(FILTER) { \
-//    uint64_t next_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr); \
-//    bool flag = true; \
-//    auto *cache_p = cache; \
-//    for (; cache_p < cache + cache_size; ++cache_p) { \
-//        if (cache_p->code == next_code) { \
-//            flag = false; \
-//            break; \
-//        } \
-//    } \
-//    if (flag) { \
-//        *cache_p = { \
-//            .code = next_code, \
-//            .mask = F_1x1 << next_addr, \
-//            .filter = FILTER, \
-//            .addr = next_addr \
-//        }; \
-//        ++cache_size; \
-//    } \
-//}
 
 #define release_1x2(FILTER) { \
     cache_t next_case = { \
-        .code = code & ~(F_1x2 << addr) | (C_1x2 << next_addr), \
+        .code = NEXT_CODE_1x2, \
         .mask = F_1x1 << next_addr, \
         .filter = FILTER, \
         .addr = next_addr \
@@ -95,7 +49,7 @@ cache_t cache[16];
 
 #define release_2x1(FILTER) { \
     cache_t next_case = { \
-        .code = code & ~(F_2x1 << addr) | (C_2x1 << next_addr), \
+        .code = NEXT_CODE_2x1, \
         .mask = F_1x1 << next_addr, \
         .filter = FILTER, \
         .addr = next_addr \
@@ -105,7 +59,7 @@ cache_t cache[16];
 
 #define release_2x2(FILTER) { \
     cache_t next_case = { \
-        .code = code & ~(F_2x2 << addr) | (C_2x2 << next_addr), \
+        .code = NEXT_CODE_2x2, \
         .mask = F_1x1 << next_addr, \
         .filter = FILTER, \
         .addr = next_addr \
