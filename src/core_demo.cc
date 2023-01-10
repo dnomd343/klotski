@@ -27,39 +27,14 @@ cache_t cache[16];
 #define NEXT_CODE_2x1 (code & ~(F_2x1 << addr) | (C_2x1 << next_addr))
 #define NEXT_CODE_2x2 (code & ~(F_2x2 << addr) | (C_2x2 << next_addr))
 
-#define release_1x1(FILTER) { \
-    cache_t next_case = { \
-        .code = NEXT_CODE_1x1, \
-        .mask = F_1x1 << next_addr, \
-        .filter = FILTER, \
-        .addr = next_addr \
-    }; \
-    cache_insert(next_case); \
-}
+#define release_1x1(FILTER) RELEASE(NEXT_CODE_1x1, FILTER)
+#define release_1x2(FILTER) RELEASE(NEXT_CODE_1x2, FILTER)
+#define release_2x1(FILTER) RELEASE(NEXT_CODE_2x1, FILTER)
+#define release_2x2(FILTER) RELEASE(NEXT_CODE_2x2, FILTER)
 
-#define release_1x2(FILTER) { \
+#define RELEASE(NEXT_CODE, FILTER) { \
     cache_t next_case = { \
-        .code = NEXT_CODE_1x2, \
-        .mask = F_1x1 << next_addr, \
-        .filter = FILTER, \
-        .addr = next_addr \
-    }; \
-    cache_insert(next_case); \
-}
-
-#define release_2x1(FILTER) { \
-    cache_t next_case = { \
-        .code = NEXT_CODE_2x1, \
-        .mask = F_1x1 << next_addr, \
-        .filter = FILTER, \
-        .addr = next_addr \
-    }; \
-    cache_insert(next_case); \
-}
-
-#define release_2x2(FILTER) { \
-    cache_t next_case = { \
-        .code = NEXT_CODE_2x2, \
+        .code = NEXT_CODE, \
         .mask = F_1x1 << next_addr, \
         .filter = FILTER, \
         .addr = next_addr \
@@ -246,5 +221,4 @@ void next_step(uint64_t raw_code, uint64_t mask) {
 
         std::cout << "=======" << std::endl << std::endl;
     }
-
 }
