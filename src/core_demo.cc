@@ -14,10 +14,24 @@
 
 cache_t cache[16];
 
-// TODO: use cache_t *move_cache_top?
+/// why is it slower to use pointer?
+//cache_t *cache_top;
+
 int cache_size;
 
 inline bool cache_insert(cache_t &new_item) {
+
+//    auto *p = cache;
+//    for (; p < cache_top; ++p) {
+//        if (p->code == new_item.code) {
+//            return false; // already exist -> insert failed
+//        }
+//    }
+//
+//    *p = new_item;
+//    ++cache_top;
+//    return true;
+
 
     auto *p = cache;
     for (; p < cache + cache_size; ++p) {
@@ -32,42 +46,40 @@ inline bool cache_insert(cache_t &new_item) {
 }
 
 void move_1x1(uint64_t code, int addr) {
-
     cache_size = 1;
-    cache[0].code = code;
+//    cache_top = cache + 1;
+    cache[0].code = code; // load into queue
     cache[0].addr = addr;
     cache[0].filter = 0; // filter unset
 
     int count = 0;
+//    cache_t *current = cache;
 
-    while (count != cache_size) {
+    while (count != cache_size) { // start bfs search
+//    while (current != cache_top) { // start bfs search
 
-        int next_addr;
         code = cache[count].code;
         addr = cache[count].addr;
-        int filter = cache[count++].filter;
+//        code = current->code;
+//        addr = current->addr;
+        int next_addr; // address after block moved
+        int filter = cache[count++].filter; // case filter
+//        int filter = current->filter; // case filter
+//        ++current;
 
-        /// try to move up
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
-            release_1x1(-UP);
+            release_1x1(-UP); // block can move up
         }
-
-        /// try to move down
         if (filter != DOWN && addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
-            release_1x1(-DOWN);
+            release_1x1(-DOWN); // block can move down
         }
-
-        /// try to move left
         if (filter != LEFT && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
-            release_1x1(-LEFT);
+            release_1x1(-LEFT); // block can move left
         }
-
-        /// try to move right
         if (filter != RIGHT && (addr & 3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
-            release_1x1(-RIGHT);
+            release_1x1(-RIGHT); // block can move right
         }
     }
-
 }
 
 
@@ -81,6 +93,7 @@ void next_step(uint64_t raw_code, uint64_t mask) {
     }
 
     std::cout << cache_size << std::endl;
+//    std::cout << (cache_top - cache) << std::endl;
     std::cout << RawCode(cache[0].code).dump_case() << std::endl;
     std::cout << RawCode(cache[1].code).dump_case() << std::endl;
     std::cout << RawCode(cache[2].code).dump_case() << std::endl;
