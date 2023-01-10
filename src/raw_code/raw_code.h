@@ -22,6 +22,8 @@
 
 #define F_1x1_R (uint64_t)0x38 // 111 000
 #define F_1x1_D (uint64_t)0x7000 // 111 000 000 000 000
+#define F_2x1_R (uint64_t)0x38038 // 111 000 000 000 111 000
+#define F_1x2_D (uint64_t)0x3F000 // 111 111 000 000 000 000
 
 class CommonCode;
 
