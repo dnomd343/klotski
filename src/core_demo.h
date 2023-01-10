@@ -11,7 +11,7 @@
 
 struct cache_t {
     uint64_t code; // raw code
-//    uint64_t mask; // only 000 or 111
+    uint64_t mask; // only 000 or 111
     int filter;
     int addr;
 };

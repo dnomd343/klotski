@@ -46,33 +46,53 @@ void move_1x1_demo(uint64_t code, int addr) {
 
         /// try to move up
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
-            ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
-            cache_t new_item = {ret_code, DOWN, next_addr};
-            cache_insert(new_item);
+//            ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
+            cache_t next_case = {
+                .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
+                .mask = (uint64_t)0b111 << next_addr,
+                .filter = DOWN,
+                .addr = next_addr
+            };
+            cache_insert(next_case);
 
         }
 
         /// try to move down
         if (filter != DOWN && addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
-            ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
-            cache_t new_item = {ret_code, UP, next_addr};
-            cache_insert(new_item);
+//            ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
+            cache_t next_case = {
+                .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
+                .mask = (uint64_t)0b111 << next_addr,
+                .filter = UP,
+                .addr = next_addr
+            };
+            cache_insert(next_case);
 
         }
 
         /// try to move left
         if (filter != LEFT && (addr & 0b11) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
             ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
-            cache_t new_item = {ret_code, RIGHT, next_addr};
-            cache_insert(new_item);
+            cache_t next_case = {
+                .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
+                .mask = (uint64_t)0b111 << next_addr,
+                .filter = RIGHT,
+                .addr = next_addr
+            };
+            cache_insert(next_case);
 
         }
 
         /// try to move right
         if (filter != RIGHT && (addr & 0x3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
-            ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
-            cache_t new_item = {ret_code, LEFT, next_addr};
-            cache_insert(new_item);
+//            ret_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr);
+            cache_t next_case = {
+                .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
+                .mask = (uint64_t)0b111 << next_addr,
+                .filter = LEFT,
+                .addr = next_addr
+            };
+            cache_insert(next_case);
 
         }
 
