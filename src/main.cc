@@ -147,7 +147,6 @@ int main() {
     auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
 
     auto c = Core();
-//    auto c = Core(raw_code);
 //    for (int i = 0; i < 100000000; ++i) {
         c.next_step(raw_code);
 //    }
