@@ -5,10 +5,10 @@
 int cache_size;
 cache_t cache[16];
 
-#define ALLOW_UP    (filter != UP)
-#define ALLOW_DOWN  (filter != DOWN)
-#define ALLOW_LEFT  (filter != LEFT)
-#define ALLOW_RIGHT (filter != RIGHT)
+#define ALLOW_UP    (filter != -UP)
+#define ALLOW_DOWN  (filter != -DOWN)
+#define ALLOW_LEFT  (filter != -LEFT)
+#define ALLOW_RIGHT (filter != -RIGHT)
 
 #define MOVE_UP    (next_addr = addr + UP)
 #define MOVE_DOWN  (next_addr = addr + DOWN)
@@ -85,16 +85,16 @@ void move_1x1(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (ALLOW_UP && addr >= 4 * 3 && !(code >> MOVE_UP & F_1x1)) {
-            release_1x1(-UP) // 1x1 block move up
+            release_1x1(UP) // 1x1 block move up
         }
         if (ALLOW_DOWN && addr <= 15 * 3 && !(code >> MOVE_DOWN & F_1x1)) {
-            release_1x1(-DOWN) // 1x1 block move down
+            release_1x1(DOWN) // 1x1 block move down
         }
         if (ALLOW_LEFT && (addr & 3) != 0 && !(code >> MOVE_LEFT & F_1x1)) {
-            release_1x1(-LEFT) // 1x1 block move left
+            release_1x1(LEFT) // 1x1 block move left
         }
         if (ALLOW_RIGHT && (addr & 3) != 1 && !(code >> MOVE_RIGHT & F_1x1)) {
-            release_1x1(-RIGHT) // 1x1 block move right
+            release_1x1(RIGHT) // 1x1 block move right
         }
     }
 }
@@ -113,16 +113,16 @@ void move_1x2(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (ALLOW_UP && addr >= 4 * 3 && !(code >> MOVE_UP & F_1x2)) {
-            release_1x2(-UP) // 1x2 block move up
+            release_1x2(UP) // 1x2 block move up
         }
         if (ALLOW_DOWN && addr <= 14 * 3 && !(code >> MOVE_DOWN & F_1x2)) {
-            release_1x2(-DOWN) // 1x2 block move down
+            release_1x2(DOWN) // 1x2 block move down
         }
         if (ALLOW_LEFT && (addr & 3) != 0 && !(code >> MOVE_LEFT & F_1x1)) {
-            release_1x2(-LEFT) // 1x2 block move left
+            release_1x2(LEFT) // 1x2 block move left
         }
         if (ALLOW_RIGHT && (addr & 3) != 2 && !(code >> MOVE_RIGHT & F_1x1_R)) {
-            release_1x2(-RIGHT) // 1x2 block move right
+            release_1x2(RIGHT) // 1x2 block move right
         }
     }
 }
@@ -141,16 +141,16 @@ void move_2x1(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (ALLOW_UP && addr >= 4 * 3 && !(code >> MOVE_UP & F_1x1)) {
-            release_2x1(-UP) // 2x1 block move up
+            release_2x1(UP) // 2x1 block move up
         }
         if (ALLOW_DOWN && addr <= 11 * 3 && !(code >> MOVE_DOWN & F_1x1_D)) {
-            release_2x1(-DOWN) // 2x1 block move down
+            release_2x1(DOWN) // 2x1 block move down
         }
         if (ALLOW_LEFT && (addr & 0x3) != 0 && !(code >> MOVE_LEFT & F_2x1)) {
-            release_2x1(-LEFT) // 2x1 block move left
+            release_2x1(LEFT) // 2x1 block move left
         }
         if (ALLOW_RIGHT && (addr & 0x3) != 1 && !(code >> MOVE_RIGHT & F_2x1)) {
-            release_2x1(-RIGHT) // 2x1 block move right
+            release_2x1(RIGHT) // 2x1 block move right
         }
     }
 }
@@ -170,16 +170,16 @@ void move_2x2(uint64_t code, int addr) {
         int filter = cache[current++].filter; // case filter
 
         if (ALLOW_UP && addr >= 4 * 3 && !(code >> MOVE_UP & F_1x2)) {
-            release_2x2(-UP) // 2x2 block move up
+            release_2x2(UP) // 2x2 block move up
         }
         if (ALLOW_DOWN && addr <= 10 * 3 && !(code >> MOVE_DOWN & F_1x2_D)) {
-            release_2x2(-DOWN) // 2x2 block move down
+            release_2x2(DOWN) // 2x2 block move down
         }
         if (ALLOW_LEFT && (addr & 3) != 0 && !(code >> MOVE_LEFT & F_2x1)) {
-            release_2x2(-LEFT) // 2x2 block move left
+            release_2x2(LEFT) // 2x2 block move left
         }
         if (ALLOW_RIGHT && (addr & 3) != 2 && !(code >> MOVE_RIGHT & F_2x1_R)) {
-            release_2x2(-RIGHT) // 2x2 block move right
+            release_2x2(RIGHT) // 2x2 block move right
         }
     }
 }
