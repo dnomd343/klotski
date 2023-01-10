@@ -10,6 +10,10 @@ cache_t cache[16];
 #define ALLOW_LEFT  (filter != -LEFT)
 #define ALLOW_RIGHT (filter != -RIGHT)
 
+#define NOT_COLUMN_0 ((addr & 3) != 0)
+#define NOT_COLUMN_2 ((addr & 3) != 2)
+#define NOT_COLUMN_3 ((addr & 3) != 1)
+
 #define MOVE_UP    (next_addr = addr + UP)
 #define MOVE_DOWN  (next_addr = addr + DOWN)
 #define MOVE_LEFT  (next_addr = addr + LEFT)
@@ -18,54 +22,98 @@ cache_t cache[16];
 #define TOP_LIMIT(ADDR)    (addr >= ADDR * 3)
 #define BOTTOM_LIMIT(ADDR) (addr <= ADDR * 3)
 
-#define NOT_COLUMN_0 ((addr & 3) != 0)
-#define NOT_COLUMN_2 ((addr & 3) != 2)
-#define NOT_COLUMN_3 ((addr & 3) != 1)
-
-//#define AT_COLUMN_0 ((addr & 3) == 0)
-//#define AT_COLUMN_3 ((addr & 3) == 1)
-
-#define release_1x1(_filter) { \
+#define release_1x1(FILTER) { \
     cache_t next_case = { \
         .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr), \
         .mask = F_1x1 << next_addr, \
-        .filter = _filter, \
+        .filter = FILTER, \
         .addr = next_addr \
     }; \
     cache_insert(next_case); \
 }
+//
+//#define release_1x2(FILTER) { \
+//    cache_t next_case = { \
+//        .code = code & ~(F_1x2 << addr) | (C_1x2 << next_addr), \
+//        .mask = F_1x1 << next_addr, \
+//        .filter = FILTER, \
+//        .addr = next_addr \
+//    }; \
+//    cache_insert(next_case); \
+//}
+//
+//#define release_2x1(FILTER) { \
+//    cache_t next_case = { \
+//        .code = code & ~(F_2x1 << addr) | (C_2x1 << next_addr), \
+//        .mask = F_1x1 << next_addr, \
+//        .filter = FILTER, \
+//        .addr = next_addr \
+//    }; \
+//    cache_insert(next_case); \
+//}
+//
+//#define release_2x2(FILTER) { \
+//    cache_t next_case = { \
+//        .code = code & ~(F_2x2 << addr) | (C_2x2 << next_addr), \
+//        .mask = F_1x1 << next_addr, \
+//        .filter = FILTER, \
+//        .addr = next_addr \
+//    }; \
+//    cache_insert(next_case); \
+//}
 
-#define release_1x2(_filter) { \
+//#define release_1x1(FILTER) { \
+//    uint64_t next_code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr); \
+//    bool flag = true; \
+//    auto *cache_p = cache; \
+//    for (; cache_p < cache + cache_size; ++cache_p) { \
+//        if (cache_p->code == next_code) { \
+//            flag = false; \
+//            break; \
+//        } \
+//    } \
+//    if (flag) { \
+//        *cache_p = { \
+//            .code = next_code, \
+//            .mask = F_1x1 << next_addr, \
+//            .filter = FILTER, \
+//            .addr = next_addr \
+//        }; \
+//        ++cache_size; \
+//    } \
+//}
+
+#define release_1x2(FILTER) { \
     cache_t next_case = { \
         .code = code & ~(F_1x2 << addr) | (C_1x2 << next_addr), \
         .mask = F_1x1 << next_addr, \
-        .filter = _filter, \
+        .filter = FILTER, \
         .addr = next_addr \
     }; \
     cache_insert(next_case); \
 }
 
-#define release_2x1(_filter) { \
+#define release_2x1(FILTER) { \
     cache_t next_case = { \
         .code = code & ~(F_2x1 << addr) | (C_2x1 << next_addr), \
         .mask = F_1x1 << next_addr, \
-        .filter = _filter, \
+        .filter = FILTER, \
         .addr = next_addr \
     }; \
     cache_insert(next_case); \
 }
 
-#define release_2x2(_filter) { \
+#define release_2x2(FILTER) { \
     cache_t next_case = { \
         .code = code & ~(F_2x2 << addr) | (C_2x2 << next_addr), \
         .mask = F_1x1 << next_addr, \
-        .filter = _filter, \
+        .filter = FILTER, \
         .addr = next_addr \
     }; \
     cache_insert(next_case); \
 }
 
-inline bool cache_insert(cache_t &new_item) {
+inline void cache_insert(cache_t &new_item) {
 
 //    static int insert_num = 0;
 //    std::cout << "insert times: " << ++insert_num << std::endl;
@@ -73,12 +121,11 @@ inline bool cache_insert(cache_t &new_item) {
     auto *p = cache;
     for (; p < cache + cache_size; ++p) {
         if (p->code == new_item.code) {
-            return false; // already exist -> insert failed
+            return; // already exist -> insert failed
         }
     }
     *p = new_item;
     ++cache_size;
-    return true;
 }
 
 void move_1x1(uint64_t code, int addr) {
