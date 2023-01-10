@@ -149,10 +149,10 @@ void move_2x2(uint64_t code, int addr) {
 }
 
 
-void next_step(uint64_t raw_code, uint64_t mask) {
+void next_step(uint64_t raw_code) {
 
-    int addr = 17;
-    raw_code = RawCode(CommonCode("4fea134")).unwrap();
+//    int addr = 17;
+//    raw_code = RawCode(CommonCode("4fea134")).unwrap();
 //    move_1x1(raw_code, addr * 3);
 
 //    int addr = 9;
@@ -169,35 +169,65 @@ void next_step(uint64_t raw_code, uint64_t mask) {
 
 
 //    std::cout << RawCode(raw_code).dump_case();
-//    printf("mask -> %016lX\n", mask);
 
-    for (int i = 0; i < 1000000000; ++i) {
-//    for (int i = 0; i < 50000000; ++i) {
-        move_1x1(raw_code, addr * 3);
-    }
+    auto temp_code = raw_code;
+    for (int addr = 0; temp_code; addr += 3, temp_code >>= 3) {
 
-    std::cout << "cache size: " << cache_size << std::endl;
-
-    for (int i = 0; i < cache_size; ++i) {
-        std::cout << "=======" << std::endl;
-
-        std::cout << RawCode(cache[i].code).dump_case();
-
-        if (i != 0) {
-            auto _mask = cache[i].mask;
-            std::cout << std::endl;
-            for (int n = 0; n < 20; ++n, _mask >>= 3) {
-                if (_mask & 0b111) {
-                    std::cout << "+ ";
-                } else {
-                    std::cout << ". ";
-                }
-                if ((n & 0b11) == 0b11) {
-                    std::cout << std::endl;
-                }
-            }
+        switch (temp_code & 0b111) {
+            case B_1x1:
+                move_1x1(raw_code, addr);
+                break;
+            case B_1x2:
+                move_1x2(raw_code, addr);
+                break;
+            case B_2x1:
+                move_2x1(raw_code, addr);
+                break;
+            case B_2x2:
+                move_2x2(raw_code, addr);
+                break;
+            default:
+                continue; // B_space or B_fill
         }
-
-        std::cout << "=======" << std::endl << std::endl;
+        if (cache_size != 1) {
+            for (int i = 1; i < cache_size; ++i) {
+                std::cout << RawCode(cache[i].code).dump_case();
+                printf("MASK -> %016lX\n", cache[i].mask);
+            }
+//            std::cout << "found: " << cache_size - 1 << std::endl;
+        }
     }
+
+
+
+
+//    for (int i = 0; i < 1000000000; ++i) {
+//    for (int i = 0; i < 50000000; ++i) {
+//        move_1x1(raw_code, addr * 3);
+//    }
+
+//    std::cout << "cache size: " << cache_size << std::endl;
+//
+//    for (int i = 0; i < cache_size; ++i) {
+//        std::cout << "=======" << std::endl;
+//
+//        std::cout << RawCode(cache[i].code).dump_case();
+//
+//        if (i != 0) {
+//            auto _mask = cache[i].mask;
+//            std::cout << std::endl;
+//            for (int n = 0; n < 20; ++n, _mask >>= 3) {
+//                if (_mask & 0b111) {
+//                    std::cout << "+ ";
+//                } else {
+//                    std::cout << ". ";
+//                }
+//                if ((n & 0b11) == 0b11) {
+//                    std::cout << std::endl;
+//                }
+//            }
+//        }
+//
+//        std::cout << "=======" << std::endl << std::endl;
+//    }
 }

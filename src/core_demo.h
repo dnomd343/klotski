@@ -16,4 +16,4 @@ struct cache_t {
     int addr;
 };
 
-void next_step(uint64_t raw_code, uint64_t mask);
+void next_step(uint64_t raw_code);

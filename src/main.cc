@@ -143,7 +143,11 @@ int main() {
 
 
 //    next_step(CommonCode("4FEA134").to_raw_code().unwrap(), 0); // mask unset
-    next_step(0, 0);
+    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
+
+//    for (int i = 0; i < 1000000000; ++i) {
+        next_step(raw_code);
+//    }
 
     return 0;
 }
