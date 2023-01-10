@@ -2,6 +2,16 @@
 #include "raw_code.h"
 #include "core_demo.h"
 
+#define release_1x1(filter_dir) {\
+    cache_t next_case = { \
+        .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr), \
+        .mask = (uint64_t)0b111 << next_addr, \
+        .filter = filter_dir, \
+        .addr = next_addr \
+    }; \
+    cache_insert(next_case); \
+}
+
 cache_t cache[16];
 
 // TODO: use cache_t *move_cache_top?
@@ -17,22 +27,11 @@ inline bool cache_insert(cache_t &new_item) {
     }
 
     *p = new_item;
-
     ++cache_size;
     return true;
 }
 
-//inline void demo(uint64_t code, int addr, int next_addr, int f) {
-//    cache_t next_case = {
-//        .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
-//        .mask = (uint64_t)0b111 << next_addr,
-//        .filter = f,
-//        .addr = next_addr
-//    };
-//    cache_insert(next_case);
-//}
-
-void move_1x1_demo(uint64_t code, int addr) {
+void move_1x1(uint64_t code, int addr) {
 
     cache_size = 1;
     cache[0].code = code;
@@ -41,80 +40,33 @@ void move_1x1_demo(uint64_t code, int addr) {
 
     int count = 0;
 
-    int next_addr;
-
-//    auto demo = [&](int f) {
-//        cache_t next_case = {
-//            .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
-//            .mask = (uint64_t)0b111 << next_addr,
-//            .filter = f,
-//            .addr = next_addr
-//        };
-//        cache_insert(next_case);
-//    };
-
     while (count != cache_size) {
 
+        int next_addr;
         code = cache[count].code;
         addr = cache[count].addr;
-        int filter = cache[count].filter;
-
-        ++count;
-
+        int filter = cache[count++].filter;
 
         /// try to move up
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
-            cache_t next_case = {
-                .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
-                .mask = (uint64_t)0b111 << next_addr,
-                .filter = DOWN,
-                .addr = next_addr
-            };
-            cache_insert(next_case);
-//            demo(DOWN);
-//            demo(code, addr, next_addr, DOWN);
+            release_1x1(-UP);
         }
 
         /// try to move down
         if (filter != DOWN && addr <= 15 * 3 && !(code >> (next_addr = addr + DOWN) & F_1x1)) {
-            cache_t next_case = {
-                .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
-                .mask = (uint64_t)0b111 << next_addr,
-                .filter = UP,
-                .addr = next_addr
-            };
-            cache_insert(next_case);
-//            demo(UP);
-//            demo(code, addr, next_addr, UP);
+            release_1x1(-DOWN);
         }
 
         /// try to move left
         if (filter != LEFT && (addr & 3) != 0 && !(code >> (next_addr = addr + LEFT) & F_1x1)) {
-            cache_t next_case = {
-                .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
-                .mask = (uint64_t)0b111 << next_addr,
-                .filter = RIGHT,
-                .addr = next_addr
-            };
-            cache_insert(next_case);
-//            demo(RIGHT);
-//            demo(code, addr, next_addr, RIGHT);
+            release_1x1(-LEFT);
         }
 
         /// try to move right
         if (filter != RIGHT && (addr & 3) != 1 && !(code >> (next_addr = addr + RIGHT) & F_1x1)) {
-            cache_t next_case = {
-                .code = code & ~(F_1x1 << addr) | (C_1x1 << next_addr),
-                .mask = (uint64_t)0b111 << next_addr,
-                .filter = LEFT,
-                .addr = next_addr
-            };
-            cache_insert(next_case);
-//            demo(LEFT);
-//            demo(code, addr, next_addr, LEFT);
+            release_1x1(-RIGHT);
         }
     }
-
 
 }
 
@@ -125,10 +77,7 @@ void next_step(uint64_t raw_code, uint64_t mask) {
 //    printf("mask -> %016lX\n", mask);
 
     for (int i = 0; i < 1000000000; ++i) {
-//        cache_size = 1;
-//        cache[0].code = raw_code;
-//        move_1x1(raw_code, 17 * 3);
-        move_1x1_demo(raw_code, 17 * 3);
+        move_1x1(raw_code, 17 * 3);
     }
 
     std::cout << cache_size << std::endl;
