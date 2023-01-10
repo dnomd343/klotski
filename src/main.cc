@@ -5,6 +5,8 @@
 #include "short_code.h"
 #include "raw_code.h"
 
+#include "core_demo.h"
+
 #include <thread>
 
 //void get_status() {
@@ -134,8 +136,11 @@ int main() {
 //    printf("%015lX\n", RawCode(CommonCode(0x4FEA13400)).unwrap());
 
 //    auto r = RawCode(0x0E58FC85FFEBC4DB);
-    auto r = RawCode(0x0E58FC85FFEBC4DD);
-    std::cout << r.dump_case() << std::endl;
+//    auto r = RawCode(0x0E58FC85FFEBC4DD); // invalid raw code -> only for test
+//    std::cout << r.dump_case() << std::endl;
+
+
+    next_step(0x0E58FC85FFEBC4DB, 0); // mask unset
 
     return 0;
 }
