@@ -12,26 +12,22 @@
     cache_insert(next_case); \
 }
 
-cache_t cache[16];
-
-/// why is it slower to use pointer?
-//cache_t *cache_top;
-
 int cache_size;
+cache_t cache[16];
 
 inline bool cache_insert(cache_t &new_item) {
 
-//    auto *p = cache;
-//    for (; p < cache_top; ++p) {
-//        if (p->code == new_item.code) {
-//            return false; // already exist -> insert failed
-//        }
-//    }
-//
-//    *p = new_item;
-//    ++cache_top;
-//    return true;
-
+    // TODO: try closed hashing
+//    auto volatile hash = new_item.code;
+//    printf("%016lX -> ", hash); // 64-bits
+//    hash ^= hash >> 32;
+//    printf("%08lX -> ", hash & 0xFFFFFFFF); // 32-bits
+//    hash ^= hash >> 16;
+//    printf("%04lX -> ", hash & 0xFFFF); // 16-bits
+//    hash ^= hash >> 8;
+//    printf("%02lX -> ", hash & 0xFF); // 8-bits
+//    hash ^= hash >> 4;
+//    printf("%01lX\n", hash & 0xF); // 4-bits
 
     auto *p = cache;
     for (; p < cache + cache_size; ++p) {
@@ -39,7 +35,6 @@ inline bool cache_insert(cache_t &new_item) {
             return false; // already exist -> insert failed
         }
     }
-
     *p = new_item;
     ++cache_size;
     return true;
@@ -47,25 +42,17 @@ inline bool cache_insert(cache_t &new_item) {
 
 void move_1x1(uint64_t code, int addr) {
     cache_size = 1;
-//    cache_top = cache + 1;
     cache[0].code = code; // load into queue
     cache[0].addr = addr;
     cache[0].filter = 0; // filter unset
 
-    int count = 0;
-//    cache_t *current = cache;
+    int current = 0;
 
-    while (count != cache_size) { // start bfs search
-//    while (current != cache_top) { // start bfs search
-
-        code = cache[count].code;
-        addr = cache[count].addr;
-//        code = current->code;
-//        addr = current->addr;
+    while (current != cache_size) { // start bfs search
+        code = cache[current].code;
+        addr = cache[current].addr;
         int next_addr; // address after block moved
-        int filter = cache[count++].filter; // case filter
-//        int filter = current->filter; // case filter
-//        ++current;
+        int filter = cache[current++].filter; // case filter
 
         if (filter != UP && addr >= 4 * 3 && !(code >> (next_addr = addr + UP) & F_1x1)) {
             release_1x1(-UP); // block can move up
@@ -93,7 +80,6 @@ void next_step(uint64_t raw_code, uint64_t mask) {
     }
 
     std::cout << cache_size << std::endl;
-//    std::cout << (cache_top - cache) << std::endl;
     std::cout << RawCode(cache[0].code).dump_case() << std::endl;
     std::cout << RawCode(cache[1].code).dump_case() << std::endl;
     std::cout << RawCode(cache[2].code).dump_case() << std::endl;
