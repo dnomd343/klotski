@@ -37,6 +37,15 @@
 //    }
 //}
 
+void release(uint64_t code, uint64_t mask) {
+    std::cout << RawCode(code).dump_case();
+    std::cout << "~~~~~~~" << std::endl;
+    for (int n = 0; n < 20; ++n, mask >>= 3) {
+        std::cout << "+."[!(mask & 0b111)] << " \n"[!(~n & 0b11)];
+    }
+    std::cout << std::endl;
+}
+
 int main() {
 
 //    printf("%p\n", BasicRanges::build);
@@ -146,15 +155,19 @@ int main() {
 
     auto c = Core();
 
-    std::vector<uint64_t> all_cases_raw;
-    for (int head = 0; head < 16; ++head) {
-        uint64_t prefix = (uint64_t)head << 32;
-        for (auto const &range : (*AllCases::fetch())[head]) {
-            all_cases_raw.emplace_back(
-                RawCode(CommonCode::unsafe_create(prefix | range)).unwrap()
-            );
-        }
-    }
+//    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
+    auto raw_code = RawCode(CommonCode("1A9bf0c")).unwrap();
+    c.next_step(raw_code, release);
+
+//    std::vector<uint64_t> all_cases_raw;
+//    for (int head = 0; head < 16; ++head) {
+//        uint64_t prefix = (uint64_t)head << 32;
+//        for (auto const &range : (*AllCases::fetch())[head]) {
+//            all_cases_raw.emplace_back(
+//                RawCode(CommonCode::unsafe_create(prefix | range)).unwrap()
+//            );
+//        }
+//    }
 
 //    std::cout << "start benchmark" << std::endl;
 //    auto start_time = clock();
@@ -164,20 +177,20 @@ int main() {
 //        c.next_step(raw_code);
 //    }
 
-    std::vector<uint32_t> steps;
-    for (auto const &raw_code : all_cases_raw) {
-        steps.emplace_back(c.next_step(raw_code));
-    }
+//    std::vector<uint32_t> steps;
+//    for (auto const &raw_code : all_cases_raw) {
+//        steps.emplace_back(c.next_step(raw_code));
+//    }
 //    std::sort(steps.begin(), steps.end());
 //    std::cout << steps[0] << std::endl;
 //    std::cout << steps[steps.size() - 1] << std::endl;
-    for (int i = 0; i < all_cases_raw.size(); ++i) {
+//    for (int i = 0; i < all_cases_raw.size(); ++i) {
 //        if (steps[i] == 0) {
-        if (steps[i] == 68) { // max next steps
-            std::cout << RawCode(all_cases_raw[i]).dump_case();
-            std::cout << CommonCode(RawCode(all_cases_raw[i])).to_string() << std::endl << std::endl;
-        }
-    }
+//        if (steps[i] == 68) { // max next steps
+//            std::cout << RawCode(all_cases_raw[i]).dump_case();
+//            std::cout << CommonCode(RawCode(all_cases_raw[i])).to_string() << std::endl << std::endl;
+//        }
+//    }
 
 //    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;

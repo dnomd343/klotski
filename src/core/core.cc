@@ -126,12 +126,7 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     }
 }
 
-#include <iostream>
-
-uint32_t Core::next_step(uint64_t raw_code) {
-
-    uint32_t sum = 0;
-
+void Core::next_step(uint64_t raw_code, void (*release)(uint64_t, uint64_t)) { // search next step cases
     auto code = raw_code;
     for (int addr = 0; code; addr += 3, code >>= 3) { // traverse every 3-bits
         switch (code & 0b111) { // match low 3-bits
@@ -153,24 +148,10 @@ uint32_t Core::next_step(uint64_t raw_code) {
         if (cache_size != 1) { // found one or more next cases
             for (int i = 1; i < cache_size; ++i) {
 
-                // TODO: release next cases (code and mask)
-
-//                std::cout << RawCode(cache[i].code).dump_case();
-//                std::cout << "~~~~~~~" << std::endl;
-//                auto mask = cache[i].mask;
-//                for (int n = 0; n < 20; ++n, mask >>= 3) {
-//                    std::cout << "+."[!(mask & 0b111)] << " \n"[!(~n & 0b11)];
-//                }
-//                std::cout << std::endl;
+                // TODO: try to send multi-items data
+                release(cache[i].code, cache[i].mask); // release next cases
 
             }
-
-            sum += cache_size - 1;
-
         }
     }
-
-//    std::cout << "sum = " << sum << std::endl;
-    return sum;
-
 }
