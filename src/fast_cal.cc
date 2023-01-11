@@ -4,6 +4,7 @@
 #include "core.h"
 #include "fast_cal.h"
 #include "raw_code.h"
+#include "common.h"
 
 struct fast_cal_t {
     uint64_t code;

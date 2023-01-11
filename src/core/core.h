@@ -7,16 +7,6 @@
 #define DOWN  (+12) // +4 * 3-bits
 #define RIGHT  (+3) // +1 * 3-bits
 
-#define F_1x1 (uint64_t)0x7 // 111
-#define F_1x2 (uint64_t)0x3F // 111 111
-#define F_2x1 (uint64_t)0x7007 // 111 000 000 000 111
-#define F_2x2 (uint64_t)0x3F03F // 111 111 000 000 111 111
-
-#define F_1x1_R (uint64_t)0x38 // 111 000
-#define F_1x1_D (uint64_t)0x7000 // 111 000 000 000 000
-#define F_2x1_R (uint64_t)0x38038 // 111 000 000 000 111 000
-#define F_1x2_D (uint64_t)0x3F000 // 111 111 000 000 000 000
-
 class Core {
 public:
     void next_step(uint64_t code, uint64_t mask);

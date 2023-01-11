@@ -1,5 +1,5 @@
 #include "core.h"
-#include "raw_code.h"
+#include "common.h"
 
 #define ALLOW_UP    (filter != -UP)
 #define ALLOW_DOWN  (filter != -DOWN)
