@@ -10,6 +10,7 @@ struct fast_cal_t {
     uint64_t code;
     uint64_t mask;
 //    uint32_t step;
+    fast_cal_t *last;
 };
 
 std::queue<fast_cal_t*> cache;
@@ -29,8 +30,12 @@ void add_new_case(uint64_t code, uint64_t mask) {
     cases[code] = fast_cal_t {
         .code = code,
         .mask = mask,
+        .last = cache.front(),
     };;
     cache.emplace(&cases[code]);
+
+    // TODO: try to check head address = 0xD at here
+
 }
 
 uint32_t fast_cal(uint64_t code) {
@@ -39,22 +44,32 @@ uint32_t fast_cal(uint64_t code) {
 
     cases.empty();
 
+    cache.empty();
+
     cases[code] = fast_cal_t {
         .code = code,
         .mask = 0,
+        .last = nullptr,
     };
     cache.emplace(&cases[code]);
 
     while (!cache.empty()) {
 
         if (((cache.front()->code >> (3 * 0xD)) & 0b111) == B_2x2) {
-            std::cout << "Resolve" << std::endl;
-            std::cout << RawCode(cache.front()->code).dump_case() << std::endl;
+            std::cout << "Resolved" << std::endl;
+//            std::cout << RawCode(cache.front()->code).dump_case() << std::endl;
             break;
         }
 
         core.next_step(cache.front()->code, cache.front()->mask);
         cache.pop();
+    }
+
+    auto solution = cache.front();
+
+    while (solution != nullptr) {
+        std::cout << RawCode(solution->code).dump_case() << std::endl;
+        solution = solution->last;
     }
 
     return cases.size();
