@@ -16,8 +16,8 @@ add_subdirectory(raw_code)
 add_subdirectory(short_code)
 add_subdirectory(common_code)
 
-add_executable(klotski main.cc)
-#add_executable(klotski main.cc core_demo.cc)
+#add_executable(klotski main.cc)
+add_executable(klotski main.cc fast_cal.cc)
 
 target_link_libraries(klotski core)
 target_link_libraries(klotski common)

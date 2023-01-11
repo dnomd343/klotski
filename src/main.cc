@@ -5,6 +5,7 @@
 #include "common_code.h"
 #include "short_code.h"
 #include "raw_code.h"
+#include "fast_cal.h"
 
 //#include "core_demo.h"
 
@@ -37,14 +38,14 @@
 //    }
 //}
 
-void release(uint64_t code, uint64_t mask) {
-    std::cout << RawCode(code).dump_case();
-    std::cout << "~~~~~~~" << std::endl;
-    for (int n = 0; n < 20; ++n, mask >>= 3) {
-        std::cout << "+."[!(mask & 0b111)] << " \n"[!(~n & 0b11)];
-    }
-    std::cout << std::endl;
-}
+//void release(uint64_t code, uint64_t mask) {
+//    std::cout << RawCode(code).dump_case();
+//    std::cout << "~~~~~~~" << std::endl;
+//    for (int n = 0; n < 20; ++n, mask >>= 3) {
+//        std::cout << "+."[!(mask & 0b111)] << " \n"[!(~n & 0b11)];
+//    }
+//    std::cout << std::endl;
+//}
 
 int main() {
 
@@ -153,11 +154,11 @@ int main() {
 //    std::cout << CommonCode(RawCode(0x0E58FC85FFEBC4DB)).to_string() << std::endl;
 
 
-    auto c = Core();
+//    auto c = Core();
 
 //    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
-    auto raw_code = RawCode(CommonCode("1A9bf0c")).unwrap();
-    c.next_step(raw_code, release);
+//    auto raw_code = RawCode(CommonCode("1A9bf0c")).unwrap();
+//    c.next_step(raw_code, release);
 
 //    std::vector<uint64_t> all_cases_raw;
 //    for (int head = 0; head < 16; ++head) {
@@ -194,6 +195,8 @@ int main() {
 
 //    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
+
+    fast_cal(CommonCode("1a9bf0c").to_raw_code().unwrap());
 
     return 0;
 }
