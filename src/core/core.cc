@@ -138,7 +138,11 @@ void Core::next_step(uint64_t raw_code, uint64_t mask) { // search next step cas
 
     auto range = raw_code | mask;
 
+    cache[0].filter = 0;
+    cache[0].code = raw_code;
+
     for (int addr = 0; range; addr += 3, range >>= 3) { // traverse every 3-bits
+//        cache[0].addr = addr;
         switch (range & 0b111) { // match low 3-bits
             case B_1x1:
                 move_1x1(raw_code, addr); // try to move 1x1 block
