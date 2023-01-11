@@ -2,16 +2,15 @@
 
 #include <cstdint>
 
-#define UP    (-12) // -4 * 3-bits
-#define LEFT   (-3) // +1 * 3-bits
-#define DOWN  (+12) // +4 * 3-bits
-#define RIGHT  (+3) // +1 * 3-bits
+#define UP    (-4 * 3)
+#define LEFT  (-1 * 3)
+#define DOWN  (+4 * 3)
+#define RIGHT (+1 * 3)
 
 class Core {
 public:
     void next_step(uint64_t code, uint64_t mask);
-
-    Core(void (*release_func)(uint64_t code, uint64_t mask)) : release(release_func) {}
+    explicit Core(void (*release_func)(uint64_t, uint64_t)) : release(release_func) {}
 
 private:
     struct cache_t {
@@ -21,9 +20,9 @@ private:
         int addr; // (0 ~ 19) * 3
     };
 
-    int cache_size;
-    cache_t cache[16];
-    void (*release)(uint64_t code, uint64_t mask);
+    int cache_size = 1;
+    cache_t cache[16] = {0};
+    void (*release)(uint64_t, uint64_t); // release code and mask
 
     void move_1x1(uint64_t code, int addr);
     void move_1x2(uint64_t code, int addr);
