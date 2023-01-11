@@ -126,10 +126,15 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     }
 }
 
-void Core::next_step(uint64_t raw_code, void (*release)(uint64_t, uint64_t)) { // search next step cases
-    auto code = raw_code;
-    for (int addr = 0; code; addr += 3, code >>= 3) { // traverse every 3-bits
-        switch (code & 0b111) { // match low 3-bits
+void Core::next_step(uint64_t raw_code, uint64_t mask) { // search next step cases
+//    auto code = raw_code;
+
+    // TODO: make BFS root aka cache[0] static
+
+    auto range = raw_code | mask;
+
+    for (int addr = 0; range; addr += 3, range >>= 3) { // traverse every 3-bits
+        switch (range & 0b111) { // match low 3-bits
             case B_1x1:
                 move_1x1(raw_code, addr); // try to move 1x1 block
                 break;

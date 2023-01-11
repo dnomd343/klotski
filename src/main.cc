@@ -160,17 +160,17 @@ int main() {
 //    auto raw_code = RawCode(CommonCode("1A9bf0c")).unwrap();
 //    c.next_step(raw_code, release);
 
-    std::vector<uint64_t> all_cases_raw;
-    for (int head = 0; head < 16; ++head) {
-        uint64_t prefix = (uint64_t)head << 32;
-        for (auto const &range : (*AllCases::fetch())[head]) {
-            all_cases_raw.emplace_back(
-                RawCode(CommonCode::unsafe_create(prefix | range)).unwrap()
-            );
-        }
-    }
+//    std::vector<uint64_t> all_cases_raw;
+//    for (int head = 0; head < 16; ++head) {
+//        uint64_t prefix = (uint64_t)head << 32;
+//        for (auto const &range : (*AllCases::fetch())[head]) {
+//            all_cases_raw.emplace_back(
+//                RawCode(CommonCode::unsafe_create(prefix | range)).unwrap()
+//            );
+//        }
+//    }
 
-    std::cout << "start benchmark" << std::endl;
+//    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
 
 //    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
@@ -193,23 +193,24 @@ int main() {
 //        }
 //    }
 
-//    auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
+    auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
+    std::cout << fast_cal(raw_code) << std::endl;
 
-    int sum = 0;
-    for (auto const &raw_code : all_cases_raw) {
+//    int sum = 0;
+//    for (auto const &raw_code : all_cases_raw) {
 //        std::cout << RawCode(raw_code).dump_case();
-        fast_cal(raw_code);
+//        fast_cal(raw_code);
 //        std::cout << fast_cal(raw_code) << std::endl;
 //        std::cout << std::endl;
-        if (sum % 100000 == 0) {
-            std::cout << "sum = " << sum << std::endl;
-        }
-        ++sum;
+//        if (sum % 100000 == 0) {
+//            std::cout << "sum = " << sum << std::endl;
+//        }
+//        ++sum;
 
-    }
+//    }
 
-    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-    std::cout << "complete benchmark" << std::endl;
+    std::cout << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    std::cout << "complete benchmark" << std::endl;
 
     return 0;
 }

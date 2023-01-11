@@ -20,7 +20,9 @@
 class Core {
 public:
 //    void next_step(uint64_t raw_code);
-    void next_step(uint64_t raw_code, void (*release)(uint64_t code, uint64_t mask));
+    void next_step(uint64_t raw_code, uint64_t mask);
+
+    Core(void (*release_func)(uint64_t code, uint64_t mask)) : release(release_func) {}
 
 private:
     struct cache_t {
@@ -32,6 +34,7 @@ private:
 
     int cache_size;
     cache_t cache[16];
+    void (*release)(uint64_t code, uint64_t mask);
 
     void move_1x1(uint64_t code, int addr);
     void move_1x2(uint64_t code, int addr);
