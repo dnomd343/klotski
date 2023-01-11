@@ -19,7 +19,7 @@ void add_new_case(uint64_t code, uint64_t mask) {
     auto exist_case = cal_data.find(code);
     if (exist_case != cal_data.end()) { // find it
         // mask update
-//        std::cout << "match exist case" << std::endl;
+
         return;
     }
 
@@ -42,10 +42,12 @@ void add_new_case(uint64_t code, uint64_t mask) {
 
 }
 
-void fast_cal(uint64_t start_raw_code) {
-    std::cout << RawCode(start_raw_code).dump_case() << std::endl;
+uint32_t fast_cal(uint64_t start_raw_code) {
+//    std::cout << RawCode(start_raw_code).dump_case() << std::endl;
 
     auto core = Core();
+
+    cal_data.empty();
 
     auto setup = fast_cal_t {
         .code = start_raw_code,
@@ -55,23 +57,14 @@ void fast_cal(uint64_t start_raw_code) {
     cal_data[start_raw_code] = setup;
     cal_temp.emplace(&cal_data[start_raw_code]);
 
-//    core.next_step(cal_temp.front()->code, add_new_case);
-//    cal_temp.pop();
-
-//    std::cout << "start cal second case" << std::endl;
-//    std::cout << RawCode(cal_temp.front()->code).dump_case() << std::endl << std::endl;
-
-//    core.next_step(cal_temp.front()->code, add_new_case);
-//    cal_temp.pop();
-
-
     while (!cal_temp.empty()) {
         core.next_step(cal_temp.front()->code, add_new_case);
         cal_temp.pop();
     }
 
-    std::cout << "size = " << cal_data.size() << std::endl;
-    std::cout << "queue size = " << cal_temp.size() << std::endl;
+//    std::cout << "size = " << cal_data.size() << std::endl;
+//    std::cout << "queue size = " << cal_temp.size() << std::endl;
 
+    return cal_data.size();
 
 }
