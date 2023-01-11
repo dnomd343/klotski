@@ -19,8 +19,7 @@
 
 class Core {
 public:
-//    void next_step(uint64_t raw_code);
-    void next_step(uint64_t raw_code, uint64_t mask);
+    void next_step(uint64_t code, uint64_t mask);
 
     Core(void (*release_func)(uint64_t code, uint64_t mask)) : release(release_func) {}
 

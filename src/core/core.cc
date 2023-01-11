@@ -1,4 +1,3 @@
-#include "bfs.h"
 #include "core.h"
 #include "raw_code.h"
 
@@ -43,6 +42,19 @@
 #define NEXT_CODE_1x2 (code & ~(F_1x2 << addr) | (C_1x2 << next_addr))
 #define NEXT_CODE_2x1 (code & ~(F_2x1 << addr) | (C_2x1 << next_addr))
 #define NEXT_CODE_2x2 (code & ~(F_2x2 << addr) | (C_2x2 << next_addr))
+
+#define BFS_INIT \
+int next_addr; \
+cache_size = 1; \
+int current = 0; \
+cache[0].addr = addr;
+
+#define BFS_LOAD \
+code = cache[current].code; \
+addr = cache[current].addr; \
+int filter = cache[current++].filter;
+
+#define BFS_STOP (current == cache_size)
 
 inline void Core::cache_insert(Core::cache_t &next_case) { // try to insert into cache
     auto *p = cache;
@@ -131,30 +143,24 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     }
 }
 
-void Core::next_step(uint64_t raw_code, uint64_t mask) { // search next step cases
-//    auto code = raw_code;
-
-    // TODO: make BFS root aka cache[0] static
-
-    auto range = raw_code | mask;
-
-    cache[0].filter = 0;
-    cache[0].code = raw_code;
+void Core::next_step(uint64_t code, uint64_t mask) { // search next step cases
+    cache[0].filter = 0; // without filter
+    cache[0].code = code; // bfs root code
+    auto range = code | mask;
 
     for (int addr = 0; range; addr += 3, range >>= 3) { // traverse every 3-bits
-//        cache[0].addr = addr;
         switch (range & 0b111) { // match low 3-bits
             case B_1x1:
-                move_1x1(raw_code, addr); // try to move 1x1 block
+                move_1x1(code, addr); // try to move 1x1 block
                 break;
             case B_1x2:
-                move_1x2(raw_code, addr); // try to move 1x2 block
+                move_1x2(code, addr); // try to move 1x2 block
                 break;
             case B_2x1:
-                move_2x1(raw_code, addr); // try to move 2x1 block
+                move_2x1(code, addr); // try to move 2x1 block
                 break;
             case B_2x2:
-                move_2x2(raw_code, addr); // try to move 2x2 block
+                move_2x2(code, addr); // try to move 2x2 block
                 break;
             default:
                 continue; // B_space or B_fill
