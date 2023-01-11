@@ -13,6 +13,7 @@ struct fast_cal_t {
 };
 
 std::unordered_map<uint64_t, fast_cal_t> cal_data;
+//std::unordered_map<uint64_t, fast_cal_t*> cal_data;
 std::queue<fast_cal_t*> cal_temp;
 
 void add_new_case(uint64_t code, uint64_t mask) {
@@ -29,6 +30,7 @@ void add_new_case(uint64_t code, uint64_t mask) {
     if (exist_case != cal_data.end()) { // find it
 
         exist_case->second.mask |= mask; // mask update
+//        exist_case->second->mask |= mask; // mask update
 
         return;
     }
@@ -42,6 +44,7 @@ void add_new_case(uint64_t code, uint64_t mask) {
 //    std::cout << std::endl;
 
     auto new_case = fast_cal_t {
+//    auto new_case = new fast_cal_t {
         .code = code,
         .mask = mask,
     };
@@ -51,6 +54,7 @@ void add_new_case(uint64_t code, uint64_t mask) {
     // TODO: avoid redundancy map search
     cal_temp.emplace(&cal_data[code]);
 
+//    cal_temp.emplace(new_case);
 }
 
 uint32_t fast_cal(uint64_t start_raw_code) {
@@ -67,6 +71,10 @@ uint32_t fast_cal(uint64_t start_raw_code) {
 
     cal_data[start_raw_code] = setup;
     cal_temp.emplace(&cal_data[start_raw_code]);
+
+    // TODO: setup should not be stack var
+//    cal_data[start_raw_code] = &setup;
+//    cal_temp.emplace(&setup);
 
     while (!cal_temp.empty()) {
 
