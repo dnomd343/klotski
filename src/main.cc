@@ -193,8 +193,8 @@ int main() {
 //        }
 //    }
 
-//    auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
-//    std::cout << fast_cal(raw_code) << std::endl;
+    auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
+    std::cout << fast_cal(raw_code) << std::endl;
 
 //    int sum = 0;
 //    for (auto const &raw_code : all_cases_raw) {
@@ -210,13 +210,11 @@ int main() {
 //    }
 
 //    BasicRanges::build();
-
 //    for (auto const &range : *BasicRanges::fetch()) {
 //        printf("%08X\n", range);
 //    }
 
-    AllCases::build();
-
+//    AllCases::build();
 //    for (uint32_t head = 0; head < 16; ++head) {
 //        uint64_t prefix = (uint64_t)head << 32;
 //        for (auto const &range : (*AllCases::fetch())[head]) {
@@ -224,8 +222,8 @@ int main() {
 //        }
 //    }
 
-    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-//    std::cout << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+    std::cout << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
 
 //    while(1);
