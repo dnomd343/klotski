@@ -209,10 +209,19 @@ int main() {
 
 //    }
 
-    BasicRanges::build();
+//    BasicRanges::build();
 
 //    for (auto const &range : *BasicRanges::fetch()) {
 //        printf("%08X\n", range);
+//    }
+
+    AllCases::build();
+
+//    for (uint32_t head = 0; head < 16; ++head) {
+//        uint64_t prefix = (uint64_t)head << 32;
+//        for (auto const &range : (*AllCases::fetch())[head]) {
+//            printf("%09lX\n", prefix | range);
+//        }
 //    }
 
     std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;

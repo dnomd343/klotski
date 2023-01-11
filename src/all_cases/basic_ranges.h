@@ -4,6 +4,8 @@
 #include <vector>
 #include <cstdint>
 
+const uint32_t BASIC_RANGES_SIZE = 7311921;
+
 class BasicRanges {
 public:
     enum Status {
@@ -19,7 +21,6 @@ private:
     static bool available;
     static std::mutex building;
     static std::vector<uint32_t> data;
-    static const uint32_t DATA_SIZE = 7311921;
 
     static void build_data();
     static void generate(int n1, int n2, int n3, int n4);

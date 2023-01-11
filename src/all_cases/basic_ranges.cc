@@ -26,7 +26,7 @@ BasicRanges::Status BasicRanges::status() { // get basic ranges status
     return NO_INIT;
 }
 
-const std::vector<uint32_t>* BasicRanges::fetch() { // get const ptr of basic ranges
+const std::vector<uint32_t>* BasicRanges::fetch() { // get basic ranges content
     if (status() != AVAILABLE) {
         BasicRanges::build(); // basic ranges initialize
     }
@@ -46,7 +46,7 @@ void BasicRanges::build() { // ensure that basic ranges available
 }
 
 void BasicRanges::build_data() { // build basic ranges
-    BasicRanges::data.reserve(DATA_SIZE); // pre-allocated memory
+    BasicRanges::data.reserve(BASIC_RANGES_SIZE); // memory pre-allocated
     for (int n = 0; n <= 7; ++n) { // number of 1x2 and 2x1 block -> 0 ~ 7
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // number of 2x1 block -> 0 ~ n
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // number of 1x1 block -> 0 ~ (14 - 2n)
