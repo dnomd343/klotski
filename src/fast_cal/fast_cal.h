@@ -17,6 +17,6 @@ public:
 
     void fast_cal(uint64_t code);
 
-    void add_new_case(uint64_t code, uint64_t mask);
+    void new_case(uint64_t code, uint64_t mask);
 
 };
