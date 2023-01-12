@@ -11,7 +11,9 @@ void FastCal::fast_cal(uint64_t code) {
     std::cout << RawCode(code).dump_case() << std::endl;
 
     auto core = Core(
-        std::bind(&FastCal::add_new_case, this, std::placeholders::_1, std::placeholders::_2)
+        [this](auto &&p1, auto &&p2) {
+            add_new_case(std::forward<decltype(p1)>(p1), std::forward<decltype(p2)>(p2));
+        }
     );
 
     cases.empty();
@@ -60,7 +62,7 @@ void FastCal::add_new_case(uint64_t code, uint64_t mask) {
         .code = code,
         .mask = mask,
         .last = cache.front(),
-    };;
+    };
     cache.emplace(&cases[code]);
 
 }

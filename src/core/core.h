@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <utility>
 #include <functional>
 
 #define UP    (-4 * 3)
@@ -13,7 +14,7 @@ public:
     typedef std::function<void(uint64_t, uint64_t)> release_t;
 
     void next_step(uint64_t code, uint64_t mask);
-    explicit Core(release_t release_func) : release(release_func) {}
+    explicit Core(release_t release_func) : release(std::move(release_func)) {}
 
 private:
     struct cache_t {
