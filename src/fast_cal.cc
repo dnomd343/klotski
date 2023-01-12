@@ -1,5 +1,6 @@
 #include <iostream>
 #include <unordered_map>
+#include <functional>
 #include <queue>
 #include "core.h"
 #include "fast_cal.h"
@@ -21,18 +22,25 @@ std::unordered_map<uint64_t, fast_cal_t> cases;
 class FastCal;
 class GlobalCal;
 
-template<typename T>
+//template<typename T>
 class CoreDemo {
 public:
-    typedef void (T::*release_t)(uint64_t);
+//    typedef void (T::*release_t)(uint64_t);
 
-    void next(uint64_t code, T *f, release_t release_func) {
+    std::function<void(uint64_t)> release;
+
+//    void next(uint64_t code, T *f, release_t release_func) {
+    void next(uint64_t code) {
+
         std::cout << "Core get code = " << code << std::endl;
         std::cout << "Core callback first time" << std::endl;
-        (f->*release_func)(++code);
+//        (f->*release_func)(++code);
+        release(++code);
         std::cout << "Core callback second time" << std::endl;
-        (f->*release_func)(++code);
+//        (f->*release_func)(++code);
+        release(++code);
         std::cout << "Core function exit" << std::endl;
+
     }
 
 };
@@ -50,11 +58,14 @@ public:
     }
 
     void run() {
-        auto cd = CoreDemo<FastCal>();
+//        auto cd = CoreDemo<FastCal>();
+        auto cd = CoreDemo();
+        cd.release = std::bind(&FastCal::callback, this, std::placeholders::_1);
 
         std::cout << "FastCal data = " << data << std::endl;
 
-        cd.next(data, this, &FastCal::callback);
+//        cd.next(data, this, &FastCal::callback);
+        cd.next(data);
     }
 
 };
@@ -72,11 +83,14 @@ public:
     }
 
     void run() {
-        auto cd = CoreDemo<GlobalCal>();
+//        auto cd = CoreDemo<GlobalCal>();
+        auto cd = CoreDemo();
+        cd.release = std::bind(&GlobalCal::callback, this, std::placeholders::_1);
 
         std::cout << "GlobalCal data = " << data << std::endl;
 
-        cd.next(data, this, &GlobalCal::callback);
+//        cd.next(data, this, &GlobalCal::callback);
+        cd.next(data);
     }
 
 };
