@@ -11,21 +11,18 @@
 
 class Core {
 public:
+    typedef std::function<void(uint64_t, uint64_t)> release_t;
 
+    void next_step(uint64_t code, uint64_t mask);
+    explicit Core(release_t release_func) : release(std::move(release_func)) {}
+
+private:
     struct cache_t {
         uint64_t code; // case raw code
         uint64_t mask; // only 000 or 111
         int filter; // UP | DOWN | LEFT | RIGHT
         int addr; // (0 ~ 19) * 3
     };
-
-//    typedef std::function<void(uint64_t, uint64_t)> release_t;
-    typedef std::function<void(cache_t*, int)> release_t;
-
-    void next_step(uint64_t code, uint64_t mask);
-    explicit Core(release_t release_func) : release(std::move(release_func)) {}
-
-private:
 
     int cache_size = 1;
     cache_t cache[16] = {0};
