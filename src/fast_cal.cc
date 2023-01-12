@@ -17,9 +17,6 @@ std::queue<fast_cal_t*> cache;
 
 std::unordered_map<uint64_t, fast_cal_t> cases;
 
-void add_global_demo(uint64_t code) {
-    std::cout << RawCode(code).dump_case() << std::endl;
-}
 
 class FastCal;
 class GlobalCal;
@@ -27,78 +24,63 @@ class GlobalCal;
 template<typename T>
 class CoreDemo {
 public:
-    int code{0};
-
     typedef void (T::*release_t)(uint64_t);
 
-//    void next(release_t release_func) {
-//        release_func(1);
-//        release_func(2);
-//        release_func(3);
-//        ++code;
-//    }
-
-    void next(T *f, release_t release_func) {
-
-        (f->*release_func)(1);
-
-//        release_func(2);
-//        release_func(3);
-        ++code;
+    void next(uint64_t code, T *f, release_t release_func) {
+        std::cout << "Core get code = " << code << std::endl;
+        std::cout << "Core callback first time" << std::endl;
+        (f->*release_func)(++code);
+        std::cout << "Core callback second time" << std::endl;
+        (f->*release_func)(++code);
+        std::cout << "Core function exit" << std::endl;
     }
 
 };
 
-
 class FastCal {
 public:
-    int dat;
+    uint64_t data;
 
-    void add(uint64_t code) {
-        std::cout << RawCode(code).dump_case() << std::endl;
-        ++dat;
+    explicit FastCal(uint64_t dat) : data(dat) {}
+
+    void callback(uint64_t code) {
+        std::cout << "FastCal get callback " << code << std::endl;
+        data = code;
+        std::cout << "FastCal set data " << data << std::endl;
     }
 
     void run() {
         auto cd = CoreDemo<FastCal>();
 
-//        cd.next(add_global_demo);
-//        cd.next(this->*add);
+        std::cout << "FastCal data = " << data << std::endl;
 
-        cd.next(this, &FastCal::add);
-
-        ++dat;
+        cd.next(data, this, &FastCal::callback);
     }
 
 };
 
-
 class GlobalCal {
 public:
-    int dat;
+    uint64_t data;
 
-    void add(uint64_t code) {
-        std::cout << RawCode(code).dump_case() << std::endl;
-        ++dat;
+    explicit GlobalCal(uint64_t dat) : data(dat) {}
+
+    void callback(uint64_t code) {
+        std::cout << "GlobalCal get callback " << code << std::endl;
+        data = code;
+        std::cout << "GlobalCal set data " << data << std::endl;
     }
 
     void run() {
         auto cd = CoreDemo<GlobalCal>();
 
-        cd.next(this, &GlobalCal::add);
+        std::cout << "GlobalCal data = " << data << std::endl;
 
-        ++dat;
+        cd.next(data, this, &GlobalCal::callback);
     }
 
 };
 
-//void (FastCal::*ptrStaticFun)(uint64_t) = &FastCal::add;
-//release_t ptrFun = &FastCal::add;
-
-//void demo() {
-//    auto f = new FastCal();
-//    (f->*ptrFun)(1);
-//}
 
 void add_new_case(uint64_t code, uint64_t mask) {
 
@@ -129,11 +111,17 @@ void add_new_case(uint64_t code, uint64_t mask) {
 
 uint32_t fast_cal(uint64_t code) {
 
-    auto f = FastCal();
-    f.run();
+    auto f1 = FastCal(1000);
+    auto f2 = FastCal(2000);
+    auto g = GlobalCal(3000);
 
-    auto g = GlobalCal();
+    f2.run();
+    f1.run();
+    f1.run();
     g.run();
+
+//    auto g = GlobalCal();
+//    g.run();
 
     return 0;
 
