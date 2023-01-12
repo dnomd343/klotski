@@ -17,13 +17,90 @@ std::queue<fast_cal_t*> cache;
 
 std::unordered_map<uint64_t, fast_cal_t> cases;
 
-//bool stop_flag;
+void add_global_demo(uint64_t code) {
+    std::cout << RawCode(code).dump_case() << std::endl;
+}
+
+class FastCal;
+class GlobalCal;
+
+template<typename T>
+class CoreDemo {
+public:
+    int code{0};
+
+    typedef void (T::*release_t)(uint64_t);
+
+//    void next(release_t release_func) {
+//        release_func(1);
+//        release_func(2);
+//        release_func(3);
+//        ++code;
+//    }
+
+    void next(T *f, release_t release_func) {
+
+        (f->*release_func)(1);
+
+//        release_func(2);
+//        release_func(3);
+        ++code;
+    }
+
+};
+
+
+class FastCal {
+public:
+    int dat;
+
+    void add(uint64_t code) {
+        std::cout << RawCode(code).dump_case() << std::endl;
+        ++dat;
+    }
+
+    void run() {
+        auto cd = CoreDemo<FastCal>();
+
+//        cd.next(add_global_demo);
+//        cd.next(this->*add);
+
+        cd.next(this, &FastCal::add);
+
+        ++dat;
+    }
+
+};
+
+
+class GlobalCal {
+public:
+    int dat;
+
+    void add(uint64_t code) {
+        std::cout << RawCode(code).dump_case() << std::endl;
+        ++dat;
+    }
+
+    void run() {
+        auto cd = CoreDemo<GlobalCal>();
+
+        cd.next(this, &GlobalCal::add);
+
+        ++dat;
+    }
+
+};
+
+//void (FastCal::*ptrStaticFun)(uint64_t) = &FastCal::add;
+//release_t ptrFun = &FastCal::add;
+
+//void demo() {
+//    auto f = new FastCal();
+//    (f->*ptrFun)(1);
+//}
 
 void add_new_case(uint64_t code, uint64_t mask) {
-
-//    if (stop_flag) {
-//        return;
-//    }
 
     auto exist_case = cases.find(code);
     if (exist_case != cases.end()) { // find existed case
@@ -36,7 +113,6 @@ void add_new_case(uint64_t code, uint64_t mask) {
     cases[code] = fast_cal_t {
         .code = code,
         .mask = mask,
-//        .step = cache.front()->step + 1,
         .last = cache.front(),
     };;
     cache.emplace(&cases[code]);
@@ -53,18 +129,24 @@ void add_new_case(uint64_t code, uint64_t mask) {
 
 uint32_t fast_cal(uint64_t code) {
 
+    auto f = FastCal();
+    f.run();
+
+    auto g = GlobalCal();
+    g.run();
+
+    return 0;
+
+
     auto core = Core(add_new_case);
 
     cases.empty();
 
     cache.empty();
 
-//    stop_flag = false;
-
     cases[code] = fast_cal_t {
         .code = code,
         .mask = 0,
-//        .step = 0,
         .last = nullptr,
     };
     cache.emplace(&cases[code]);
@@ -78,11 +160,7 @@ uint32_t fast_cal(uint64_t code) {
             break;
         }
 
-//        if (stop_flag) {
-//            break;
-//        }
-
-        core.next_step(cache.front()->code, cache.front()->mask);
+//        core.next_step(cache.front()->code, cache.front()->mask);
         cache.pop();
     }
 

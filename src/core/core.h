@@ -9,8 +9,11 @@
 
 class Core {
 public:
+
+    typedef void (*release_t)(uint64_t, uint64_t);
+
     void next_step(uint64_t code, uint64_t mask);
-    explicit Core(void (*release_func)(uint64_t, uint64_t)) : release(release_func) {}
+    explicit Core(release_t release_func) : release(release_func) {}
 
 private:
     struct cache_t {
@@ -22,7 +25,7 @@ private:
 
     int cache_size = 1;
     cache_t cache[16] = {0};
-    void (*release)(uint64_t, uint64_t); // release code and mask
+    release_t release; // release code and mask
 
     void move_1x1(uint64_t code, int addr);
     void move_1x2(uint64_t code, int addr);
