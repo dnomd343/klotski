@@ -194,7 +194,9 @@ int main() {
 //    }
 
     auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
-    std::cout << fast_cal(raw_code) << std::endl;
+//    std::cout << fast_cal(raw_code) << std::endl;
+    auto f = FastCal();
+    f.fast_cal(raw_code);
 
 //    int sum = 0;
 //    for (auto const &raw_code : all_cases_raw) {
