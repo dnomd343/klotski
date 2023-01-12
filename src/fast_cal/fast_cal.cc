@@ -12,12 +12,33 @@ void FastCal::new_case(uint64_t code, uint64_t mask) { // callback function for 
         current->second.mask |= mask; // update mask info
         return;
     }
-    cases[code] = fast_cal_t { // insert into cases map
+
+    cache.emplace(&cases.emplace(code, fast_cal_t {
         .code = code,
         .mask = mask,
-        .last = cache.front(), // parent case
-    };
-    cache.emplace(&cases[code]); // add in working queue
+        .last = cache.front(),
+    }).first->second);
+
+
+//    auto insert_ret = cases.emplace(code, fast_cal_t {
+//        .code = code,
+//        .mask = mask,
+//        .last = cache.front(),
+//    });
+//
+//    if (insert_ret.second) { // insert success
+//        cache.emplace(&insert_ret.first->second);
+//    } else {
+//        insert_ret.first->second.mask |= mask;
+//    }
+
+
+//    cases[code] = fast_cal_t { // insert into cases map
+//        .code = code,
+//        .mask = mask,
+//        .last = cache.front(), // parent case
+//    };
+//    cache.emplace(&cases[code]); // add in working queue
 }
 
 void FastCal::fast_cal(uint64_t code) {
@@ -31,12 +52,18 @@ void FastCal::fast_cal(uint64_t code) {
     cases.empty();
     cache.empty();
 
-    cases[code] = fast_cal_t {
+//    cases[code] = fast_cal_t {
+//        .code = code,
+//        .mask = 0,
+//        .last = nullptr,
+//    };
+//    cache.emplace(&cases[code]);
+
+    cache.emplace(&cases.emplace(code, fast_cal_t {
         .code = code,
         .mask = 0,
         .last = nullptr,
-    };
-    cache.emplace(&cases[code]);
+    }).first->second);
 
     while (!cache.empty()) {
 
@@ -50,6 +77,8 @@ void FastCal::fast_cal(uint64_t code) {
         core.next_step(cache.front()->code, cache.front()->mask);
         cache.pop();
     }
+
+    std::cout << "size: " << cases.size() << std::endl;
 
     auto solution = cache.front();
 
