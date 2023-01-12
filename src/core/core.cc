@@ -60,7 +60,9 @@ cache_insert(next_case);
 
 ////////////////////////////////////////
 
-inline void Core::cache_insert(Core::cache_t &next_case) { // try to insert into cache
+//inline void Core::cache_insert(Core::cache_t &next_case) { // try to insert into cache
+template<typename T>
+inline void Core<T>::cache_insert(Core::cache_t &next_case) { // try to insert into cache
     auto *p = cache;
     for (; p < cache + cache_size; ++p) {
         if (p->code == next_case.code) {
@@ -71,7 +73,9 @@ inline void Core::cache_insert(Core::cache_t &next_case) { // try to insert into
     ++cache_size;
 }
 
-void Core::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
+//void Core::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
+template<typename T>
+void Core<T>::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -90,7 +94,9 @@ void Core::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
     }
 }
 
-void Core::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
+//void Core::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
+template<typename T>
+void Core<T>::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -109,7 +115,9 @@ void Core::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
     }
 }
 
-void Core::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
+//void Core::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
+template<typename T>
+void Core<T>::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -128,7 +136,9 @@ void Core::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
     }
 }
 
-void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
+//void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
+template<typename T>
+void Core<T>::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -147,7 +157,9 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     }
 }
 
-void Core::next_step(uint64_t code, uint64_t mask) { // search next step cases
+//void Core::next_step(uint64_t code, uint64_t mask) { // search next step cases
+template<typename T>
+void Core<T>::next_step(uint64_t code, uint64_t mask) { // search next step cases
     cache[0].filter = 0; // without filter
     cache[0].code = code; // bfs root code
     auto range = code | mask;
@@ -173,8 +185,9 @@ void Core::next_step(uint64_t code, uint64_t mask) { // search next step cases
 
             // TODO: try to send multi-items data
             for (int i = 1; i < cache_size; ++i) {
+                (src_class->*release)(cache[i].code, cache[i].mask);
 //                release(cache[i].code, cache[i].mask); // release next cases
-                release_next(cache[i].code, cache[i].mask); // release next cases
+//                release_next(cache[i].code, cache[i].mask); // release next cases
             }
 
             cache_size = 1; // reset cache size

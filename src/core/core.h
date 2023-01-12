@@ -8,10 +8,16 @@
 #define DOWN  (+4 * 3)
 #define RIGHT (+1 * 3)
 
+class FastCal;
+
+template<typename T>
 class Core {
 public:
 
-//    typedef void (*release_t)(uint64_t, uint64_t);
+    typedef void (T::*release_t)(uint64_t, uint64_t);
+
+    T *src_class;
+    release_t release;
 
     std::function<void(uint64_t, uint64_t)> release_next;
 
