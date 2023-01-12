@@ -12,7 +12,8 @@ void FastCal::fast_cal(uint64_t code) {
 
     auto core = Core(
         [this](auto &&p1, auto &&p2) {
-            add_new_case(std::forward<decltype(p1)>(p1), std::forward<decltype(p2)>(p2));
+//            add_new_case(std::forward<decltype(p1)>(p1), std::forward<decltype(p2)>(p2));
+            add_new_case_demo(std::forward<decltype(p1)>(p1), std::forward<decltype(p2)>(p2));
         }
     );
 
@@ -64,5 +65,29 @@ void FastCal::add_new_case(uint64_t code, uint64_t mask) {
         .last = cache.front(),
     };
     cache.emplace(&cases[code]);
+
+}
+
+void FastCal::add_new_case_demo(Core::cache_t *cache_dat, int cache_size) {
+
+    for (int i = 1; i < cache_size; ++i) {
+        uint64_t code = cache_dat[i].code;
+        uint64_t mask = cache_dat[i].mask;
+
+        auto exist_case = cases.find(code);
+        if (exist_case != cases.end()) {
+            exist_case->second.mask |= mask;
+            continue;
+        }
+
+        cases[code] = fast_cal_t {
+            .code = code,
+            .mask = mask,
+            .last = cache.front(),
+        };
+        cache.emplace(&cases[code]);
+
+    }
+
 
 }

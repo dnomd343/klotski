@@ -172,9 +172,10 @@ void Core::next_step(uint64_t code, uint64_t mask) { // search next step cases
         if (cache_size != 1) { // found one or more next cases
 
             // TODO: try to send multi-items data
-            for (int i = 1; i < cache_size; ++i) {
-                release(cache[i].code, cache[i].mask); // release next cases
-            }
+//            for (int i = 1; i < cache_size; ++i) {
+//                release(cache[i].code, cache[i].mask); // release next cases
+//            }
+            release(cache, cache_size);
 
             cache_size = 1; // reset cache size
         }
