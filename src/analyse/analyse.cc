@@ -17,7 +17,7 @@ Core Analyse::new_core() {
 void Analyse::backtrack(uint64_t code) {
 
     // backtrack start at code
-    std::cout << "start backtrack" << std::endl;
+//    std::cout << "start backtrack" << std::endl;
 
 
     std::queue<analyse_t*> track_cache;
@@ -83,49 +83,50 @@ void Analyse::backtrack(uint64_t code) {
 
     backtrack_t *root = &track_data[track_cache.front()->code];
 
-    std::cout << "Size = " << track_data.size() << std::endl;
-    std::cout << "Root" << std::endl;
-    std::cout << RawCode(root->code).dump_case() << std::endl;
+//    std::cout << "Size = " << track_data.size() << std::endl;
+//    std::cout << "Root" << std::endl;
+//    std::cout << RawCode(root->code).dump_case() << std::endl;
 
-    for (auto layer : layer_data) {
-        std::cout << "-----------------------" << std::endl;
-        std::cout << "layer size = " << layer.size() << std::endl;
-
-        for (auto element : layer) {
-            std::cout << "(" << element->layer_num << ", " << element->layer_index << ") -> ";
-            for (auto next : element->next) {
-                std::cout << "(" << next->layer_num << ", " << next->layer_index << ") ";
-            }
-            std::cout << std::endl;
-
-            std::cout << RawCode(element->code).dump_case() << std::endl;
-        }
-    }
+//    for (auto layer : layer_data) {
+//        std::cout << "-----------------------" << std::endl;
+//        std::cout << "layer size = " << layer.size() << std::endl;
+//
+//        for (auto element : layer) {
+//            std::cout << "(" << element->layer_num << ", " << element->layer_index << ") -> ";
+//            for (auto next : element->next) {
+//                std::cout << "(" << next->layer_num << ", " << next->layer_index << ") ";
+//            }
+//            std::cout << std::endl;
+//
+//            std::cout << RawCode(element->code).dump_case() << std::endl;
+//        }
+//    }
 
 
     printf("layer:\n");
-    for (const auto &layer : layer_data) {
+    for (uint32_t num = 0; num < layer_data.size(); ++num) {
+        auto layer = &layer_data[num];
         printf("- [");
-        for (auto element : layer) {
-            printf(&",%015lX"[element == layer[0]], element->code);
+        for (auto element : *layer) {
+            printf(&",\"%015lX\""[element == (*layer)[0]], element->code);
         }
-        printf("]\n");
+        printf("] # layer %d\n", num);
     }
+    printf("\n");
 
     printf("next:\n");
     for (uint32_t num = 0; num + 1 < layer_data.size(); ++num) {
-        auto layer = layer_data[num];
-        printf("// layer %d -> %d\n- ", num, num + 1);
-        for (auto element : layer) {
-
-            printf("%s", &"  - ["[(element == layer[0]) * 2]);
-
+        auto layer = &layer_data[num];
+        printf("- ");
+        for (uint32_t index = 0; index < layer->size(); ++index) {
+            auto element = &(*layer)[index];
+            printf("%s", &"  - ["[!index * 2]);
             bool first_flag = true;
-            for (auto next : element->next) {
+            for (auto next : (*element)->next) {
                 printf(&",%d"[first_flag], next->layer_index);
                 if (first_flag) { first_flag = false; }
             }
-            printf("]\n");
+            printf("] # (%d, %d) -> %d\n", num, index, num + 1);
         }
     }
 
@@ -156,7 +157,7 @@ void Analyse::start_analyse(uint64_t code) {
         cache.pop();
     }
 
-    std::cout << "size: " << cases.size() << std::endl;
+//    std::cout << "size: " << cases.size() << std::endl;
 
 }
 
