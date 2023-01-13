@@ -59,6 +59,11 @@ void FastCal::fast_cal(uint64_t code) {
 //    };
 //    cache.emplace(&cases[code]);
 
+//    cases.reserve(30000);
+    cases.reserve(65536);
+//    cases.reserve(65536 * 2);
+//    cases.reserve(65536 * 4);
+
     cache.emplace(&cases.emplace(code, fast_cal_t {
         .code = code,
         .mask = 0,

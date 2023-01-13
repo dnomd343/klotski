@@ -11,6 +11,7 @@
 
 #include <thread>
 #include <algorithm>
+#include <unistd.h>
 
 //void get_status() {
 //    switch (BasicRanges::status()) {
@@ -214,6 +215,8 @@ int main() {
 //    std::cout << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cout << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
+
+//    pause();
 
     return 0;
 }
