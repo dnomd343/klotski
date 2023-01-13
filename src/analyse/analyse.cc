@@ -1,6 +1,8 @@
+#include <queue>
 #include "core.h"
 #include "analyse.h"
 
+#include <list>
 #include <iostream>
 #include "raw_code.h"
 
@@ -17,12 +19,65 @@ void Analyse::backtrack(uint64_t code) {
     // backtrack start at code
     std::cout << "start backtrack" << std::endl;
 
-    std::cout << RawCode(code).dump_case() << std::endl;
-    std::cout << "src size: " << cases[code].src.size() << std::endl;
+//    std::cout << RawCode(code).dump_case() << std::endl;
+//    std::cout << "src size: " << cases[code].src.size() << std::endl;
+//
+//    auto last_1 = cases[code].src.front();
+//    std::cout << RawCode(last_1->code).dump_case() << std::endl;
+//    std::cout << "src size: " << last_1->src.size() << std::endl;
 
-    auto last_1 = cases[code].src.front();
-    std::cout << RawCode(last_1->code).dump_case() << std::endl;
-    std::cout << "src size: " << last_1->src.size() << std::endl;
+
+    std::vector<backtrack_t*> track_data;
+
+    std::queue<analyse_t*> track_cache;
+
+    // TODO: confirm that code exist
+
+    track_cache.emplace(&cases[code]);
+    track_data.emplace_back(new backtrack_t {
+        .code = code,
+//        .next = nullptr,
+        .next = std::list<backtrack_t*>{}, // without next cases
+    });
+
+    auto me = 0;
+
+    for (;;) {
+
+        if (track_cache.front()->src.empty()) {
+            break;
+        }
+
+        for (auto t : track_cache.front()->src) {
+            track_cache.emplace(t);
+            track_data.emplace_back(new backtrack_t {
+                .code = t->code,
+                .layer_num = track_cache.front()->step - 1,
+                .next = std::list<backtrack_t*>{track_data[me]},
+            });
+        }
+        track_cache.pop();
+        ++me;
+
+    }
+
+    std::cout << "size: " << track_data.size() << std::endl;
+
+    auto root = track_data.back();
+
+    std::cout << "layer " << root->layer_num << std::endl;
+    std::cout << RawCode(root->code).dump_case() << std::endl;
+
+    for (auto t : root->next) {
+        std::cout << "layer " << t->layer_num << std::endl;
+        std::cout << RawCode(t->code).dump_case() << std::endl;
+    }
+
+    for (auto t : root->next.front()->next) {
+        std::cout << "layer " << t->layer_num << std::endl;
+        std::cout << RawCode(t->code).dump_case() << std::endl;
+    }
+
 
 }
 

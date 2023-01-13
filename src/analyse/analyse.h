@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <unordered_map>
 
-#include <set>
+//#include <set>
 #include <list>
-#include <unordered_set>
+//#include <unordered_set>
 
 class Analyse {
 public:
@@ -14,7 +14,7 @@ public:
         uint64_t code;
         uint64_t mask;
 
-        int step;
+        uint32_t step;
 
 //        bool highlight;
 
@@ -26,6 +26,10 @@ public:
 
     struct backtrack_t {
         uint64_t code;
+
+        uint32_t layer_num;
+//        uint32_t layer_index;
+
         std::list<backtrack_t*> next;
     };
 
