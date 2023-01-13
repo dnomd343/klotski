@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-CASE_WIDTH = 120
-CASE_HEIGHT = 180
+CASE_WIDTH = 24
+CASE_HEIGHT = 36
 
-CASE_DISTANCE_X = 200
-CASE_DISTANCE_Y = 100
+CASE_DISTANCE_X = 40
+CASE_DISTANCE_Y = 20
 
 MAIN_MARGIN_X = 10
 MAIN_MARGIN_Y = 8
@@ -34,8 +34,8 @@ link = [[
     [0], # (4, 0) -> 5
 ]]
 
-print(layer)
-print(link)
+# print(layer)
+# print(link)
 
 MAX_CASE_X = 2
 MAX_CASE_Y = 6
@@ -61,5 +61,24 @@ def case_address(layer_num: int, layer_index: int) -> (int, int):
     )
 
 
-for case in [(0, 0), (1, 0), (1, 1)]: # (layer_num, layer_index)
-    print(case_address(case[0], case[1]))
+def svg_rect(left: int, top: int, width: int, height: int):
+    return '<rect x="%d" y="%d" width="%d" height="%d" style="fill:pink;stroke-width:2;stroke:rgb(0,0,0)"/>' % (
+        left, top, width, height
+    )
+
+
+print('<svg xmlns="http://www.w3.org/2000/svg" version="1.1">')
+
+for layer_num in range(0, len(layer)):
+    for layer_index in range(0, len(layer[layer_num])):
+        x, y = case_address(layer_num, layer_index)
+        print(' ', svg_rect(x, y, CASE_WIDTH, CASE_HEIGHT))
+
+
+# for case in [(0, 0), (1, 0), (1, 1)]: # (layer_num, layer_index)
+#     x, y = case_address(case[0], case[1])
+#
+#     print(' ', svg_rect(x, y, CASE_WIDTH, CASE_HEIGHT))
+    # print(case_address(case[0], case[1]))
+
+print('</svg>')
