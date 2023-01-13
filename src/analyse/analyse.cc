@@ -249,10 +249,15 @@ void Analyse::new_case(uint64_t code, uint64_t mask) {
 
     auto current = cases.find(code);
     if (current != cases.end()) { // find existed case
-        current->second.mask |= mask; // update mask info
 
-        if (current->second.step != cache.front()->step) {
-            current->second.src.push_back(cache.front());
+        if (current->second.step == cache.front()->step + 1) {
+
+            current->second.mask |= mask; // update mask info
+
+            if (current->second.step != cache.front()->step) {
+                current->second.src.push_back(cache.front());
+            }
+
         }
 
         return;
