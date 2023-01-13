@@ -64,7 +64,15 @@ void Analyse::backtrack(const std::vector<uint64_t> &raw_code_list) {
     /// layer init
 //    auto max_step = cases[code].step; // TODO: update max step cal
 //    auto max_step = 81;
-    auto max_step = 14; // TODO: search max_step value
+
+    uint32_t max_step = 0;
+    for (const auto &code : raw_code_list) {
+        // TODO: check whether cases include code
+        if (cases[code].step > max_step) {
+            max_step = cases[code].step;
+        }
+    }
+
     layer_data.resize(max_step + 1);
 
     /// init track begin cases
