@@ -23,7 +23,11 @@ void Analyse::start_analyse(uint64_t code) {
     cache.emplace(&cases.emplace(code, analyse_t {
         .code = code,
         .mask = 0,
+        .step = 0,
+        .src = std::move(std::set<analyse_t*>{}),
     }).first->second);
+
+//    std::cout << "src size: " << cases[code].src.size() << std::endl;
 
     while (!cache.empty()) {
 
@@ -39,11 +43,20 @@ void Analyse::new_case(uint64_t code, uint64_t mask) {
     auto current = cases.find(code);
     if (current != cases.end()) { // find existed case
         current->second.mask |= mask; // update mask info
+
+//        current->second.src.emplace()
+
+        if (current->second.step != cache.front()->step) {
+            current->second.src.emplace(cache.front());
+        }
+
         return;
     }
 
     cache.emplace(&cases.emplace(code, analyse_t {
         .code = code,
         .mask = mask,
+        .step = cache.front()->step + 1,
+        .src = std::move(std::set<analyse_t*>{cache.front()}),
     }).first->second);
 }

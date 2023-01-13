@@ -4,15 +4,19 @@
 #include <cstdint>
 #include <unordered_map>
 
+#include <set>
+#include <list>
+
 class Analyse {
 public:
     struct analyse_t {
         uint64_t code;
         uint64_t mask;
 
-//        int step;
+        int step;
         // TODO: try set / unordered_set
 //        std::list<analyse_t*> src;
+        std::set<analyse_t*> src;
     };
 
     std::queue<analyse_t*> cache;
