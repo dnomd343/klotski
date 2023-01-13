@@ -5,6 +5,7 @@
 #include <list>
 #include <iostream>
 #include "raw_code.h"
+#include "common.h"
 
 Core Analyse::new_core() {
     return Core(
@@ -14,11 +15,43 @@ Core Analyse::new_core() {
     );
 }
 
+void dump_python_case(uint64_t raw_code) {
+    std::string result;
+    for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
+        uint32_t x = addr % 4;
+        uint32_t y = (addr - x) / 4;
+
+        char block[11]; // eg: `[0,0,1,1]`
+
+        switch (raw_code & 0b111) {
+            case B_1x1:
+                sprintf(block, "[%d,%d,1,1],", x, y);
+                result += block;
+                break;
+            case B_1x2:
+                sprintf(block, "[%d,%d,1,2],", x, y);
+                result += block;
+                break;
+            case B_2x1:
+                sprintf(block, "[%d,%d,2,1],", x, y);
+                result += block;
+                break;
+            case B_2x2:
+                sprintf(block, "[%d,%d,2,2],", x, y);
+                result += block;
+                break;
+            default:
+                continue;
+        }
+    }
+    result[result.length() - 1] = '\0'; // remove last `,`
+    std::cout << '[' << result.c_str() << ']';
+}
+
 void Analyse::backtrack(uint64_t code) {
 
     // backtrack start at code
 //    std::cout << "start backtrack" << std::endl;
-
 
     std::queue<analyse_t*> track_cache;
 
@@ -108,7 +141,9 @@ void Analyse::backtrack(uint64_t code) {
         auto layer = &layer_data[num];
         printf("- [");
         for (auto element : *layer) {
-            printf(&",\"%015lX\""[element == (*layer)[0]], element->code);
+//            printf(&",\"%015lX\""[element == (*layer)[0]], element->code);
+            printf("%s", &","[element == (*layer)[0]]);
+            dump_python_case(element->code);
         }
         printf("] # layer %d\n", num);
     }
