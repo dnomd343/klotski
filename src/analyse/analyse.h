@@ -28,7 +28,7 @@ public:
         uint64_t code;
 
         uint32_t layer_num;
-//        uint32_t layer_index;
+        uint32_t layer_index;
 
         std::list<backtrack_t*> next;
     };
