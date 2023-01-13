@@ -11,7 +11,26 @@ Core Analyse::new_core() {
     );
 }
 
+class test_c {
+public:
+    test_c() {
+        std::cout << "class init" << std::endl;
+    }
+};
+
+struct test_t {
+    uint64_t data;
+    test_c demo;
+};
+
 void Analyse::start_analyse(uint64_t code) {
+
+    auto t = test_t {
+        .data = 123,
+//        data: 123,
+    };
+
+    return;
 
     auto core = new_core();
 
