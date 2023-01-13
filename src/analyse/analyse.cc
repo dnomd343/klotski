@@ -19,109 +19,117 @@ void Analyse::backtrack(uint64_t code) {
     // backtrack start at code
     std::cout << "start backtrack" << std::endl;
 
-//    std::cout << RawCode(code).dump_case() << std::endl;
-//    std::cout << "src size: " << cases[code].src.size() << std::endl;
-//
-//    auto last_1 = cases[code].src.front();
-//    std::cout << RawCode(last_1->code).dump_case() << std::endl;
-//    std::cout << "src size: " << last_1->src.size() << std::endl;
-
-
-    std::unordered_map<uint64_t, backtrack_t> track_data;
-
-//    std::vector<backtrack_t*> track_data;
 
     std::queue<analyse_t*> track_cache;
 
-    std::vector<std::vector<backtrack_t*> > layer;
+    std::vector<std::vector<backtrack_t*> > layer_data;
+
+    std::unordered_map<uint64_t, backtrack_t> track_data;
 
     // TODO: confirm that code exist
 
-    track_cache.emplace(&cases[code]);
+    /// layer init
+    auto max_step = cases[code].step; // TODO: update max step cal
+    layer_data.resize(max_step + 1);
 
-    track_data.emplace(code, backtrack_t {
-        .code = code,
-        .layer_num = track_cache.front()->step,
-        .layer_index = 0, // TODO: pay attention to multi-code
-        .next = std::list<backtrack_t*>{}, // without next cases
-    });
+    /// init track begin cases
+    {
+        auto layer_num = cases[code].step;
 
-    layer.resize(track_cache.front()->step + 1);
-    layer[track_cache.front()->step].emplace_back(&track_data[code]);
+        track_cache.emplace(&cases[code]);
 
-    backtrack_t *root;
-    for (;;) {
+        auto ptr = track_data.emplace(code, backtrack_t {
+            .code = code,
+            .layer_num = layer_num,
+            .layer_index = (uint32_t)layer_data[layer_num].size(),
+        });
 
-        if (track_cache.front()->src.empty()) {
-            root = &track_data[track_cache.front()->code];
-            break;
-        }
+        layer_data[layer_num].emplace_back(&ptr.first->second);
+    }
 
-        for (auto t : track_cache.front()->src) {
 
-            auto current = track_data.find(t->code);
+    while (!track_cache.front()->src.empty()) {
 
-            if (current != track_data.end()) { // already exist
-                // link
-                current->second.next.emplace_back(
-                    &track_data[track_cache.front()->code]
+        auto current = track_cache.front();
+        for (auto src : current->src) {
+
+            auto find_ret = track_data.find(src->code);
+
+            if (find_ret != track_data.end()) { // already exist
+
+                find_ret->second.next.emplace_back(
+                    &track_data[current->code]
                 );
+
             } else { // insert new case
-                track_cache.emplace(t);
-                track_data.emplace(t->code, backtrack_t {
-                    .code = t->code,
-                    .layer_num = t->step,
-                    .layer_index = (uint32_t)layer[t->step].size(),
-                    .next = std::list<backtrack_t*>{&track_data[track_cache.front()->code]},
+
+                track_cache.emplace(src);
+
+                auto ptr = track_data.emplace(src->code, backtrack_t {
+                    .code = src->code,
+                    .layer_num = src->step,
+                    .layer_index = (uint32_t)layer_data[src->step].size(),
+                    .next = std::list<backtrack_t*>{&track_data[current->code]},
                 });
 
-                layer[t->step].emplace_back(&track_data[t->code]);
+                layer_data[src->step].emplace_back(&ptr.first->second);
 
             }
 
         }
-
         track_cache.pop();
 
     }
 
-    std::cout << "size: " << track_data.size() << std::endl;
+    backtrack_t *root = &track_data[track_cache.front()->code];
 
+    std::cout << "Size = " << track_data.size() << std::endl;
     std::cout << "Root" << std::endl;
     std::cout << RawCode(root->code).dump_case() << std::endl;
-//
-//    std::queue<backtrack_t*> t_cache;
-//    t_cache.emplace(root);
-//
-//    while (!t_cache.empty()) {
-//
-//        for (auto t : t_cache.front()->next) {
-//            std::cout << "layer " << t->layer_num << std::endl;
-//            std::cout << RawCode(t->code).dump_case() << std::endl;
-//            t_cache.emplace(t);
-//        }
-//
-//        t_cache.pop();
-//
-//    }
 
-    for (auto l : layer) {
+    for (auto layer : layer_data) {
         std::cout << "-----------------------" << std::endl;
-        std::cout << "layer " << l.front()->layer_num;
-        std::cout << " -> size = " << l.size() << std::endl;
+        std::cout << "layer size = " << layer.size() << std::endl;
 
-        for (auto c : l) {
-            std::cout << "(" << c->layer_num << ", " << c->layer_index << ") -> ";
-            for (auto t : c->next) {
-                std::cout << "(" << t->layer_num << ", " << t->layer_index << ") ";
+        for (auto element : layer) {
+            std::cout << "(" << element->layer_num << ", " << element->layer_index << ") -> ";
+            for (auto next : element->next) {
+                std::cout << "(" << next->layer_num << ", " << next->layer_index << ") ";
             }
             std::cout << std::endl;
 
-            std::cout << RawCode(c->code).dump_case() << std::endl;
-
+            std::cout << RawCode(element->code).dump_case() << std::endl;
         }
-
     }
+
+
+    printf("layer:\n");
+    for (const auto &layer : layer_data) {
+        printf("- [");
+        for (auto element : layer) {
+            printf(&",%015lX"[element == layer[0]], element->code);
+        }
+        printf("]\n");
+    }
+
+    printf("next:\n");
+    for (uint32_t num = 0; num + 1 < layer_data.size(); ++num) {
+        auto layer = layer_data[num];
+        printf("// layer %d -> %d\n- ", num, num + 1);
+        for (auto element : layer) {
+
+            printf("%s", &"  - ["[(element == layer[0]) * 2]);
+
+            bool first_flag = true;
+            for (auto next : element->next) {
+                printf(&",%d"[first_flag], next->layer_index);
+                if (first_flag) { first_flag = false; }
+            }
+            printf("]\n");
+        }
+    }
+
+
 
 }
 
