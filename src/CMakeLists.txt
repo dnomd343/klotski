@@ -11,6 +11,7 @@ include_directories(short_code)
 include_directories(common_code)
 
 include_directories(fast_cal)
+include_directories(analyse)
 
 ################################
 
@@ -23,6 +24,7 @@ add_subdirectory(short_code)
 add_subdirectory(common_code)
 
 add_subdirectory(fast_cal)
+add_subdirectory(analyse)
 
 ################################
 
@@ -39,6 +41,7 @@ target_link_libraries(klotski short_code)
 target_link_libraries(klotski common_code)
 
 target_link_libraries(klotski fast_cal)
+target_link_libraries(klotski analyse)
 
 target_link_libraries(klotski pthread)
 
