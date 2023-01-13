@@ -202,6 +202,7 @@ int main() {
 
     auto a = Analyse();
     a.start_analyse(raw_code);
+    a.backtrack(0x07F87E0E5BFFF492);
 
 //    int sum = 0;
 //    for (auto const &raw_code : all_cases_raw) {

@@ -88,6 +88,7 @@ void FastCal::fast_cal(uint64_t code) {
     auto solution = cache.front();
 
     while (solution != nullptr) {
+//        printf("%016lX\n", solution->code);
 //        std::cout << RawCode(solution->code).dump_case() << std::endl;
         solution = solution->last;
     }
