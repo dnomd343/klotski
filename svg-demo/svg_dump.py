@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import yaml
+
 CASE_WIDTH = 48
 CASE_HEIGHT = 72
 
@@ -12,36 +14,39 @@ MAIN_MARGIN_Y = 8
 
 LINK_OFFSET = 1
 
-layer = [
-    ["603EDF5CAFFF5E2"], # layer 0
-    ["61BEC75CAFFF5E2","0C3EDF5CAFFF5E2"], # layer 1
-    ["0DBEC75CAFFF5E2","EC34DF1CAFFF5E2"], # layer 2
-    ["EDB4C71CAFFF5E2","EC34DFE42FFF5E2"], # layer 3
-    ["EDB4C7E42FFF5E2"], # layer 4
-    ["EDB4F8E50FFF5E2"], # layer 5
-]
+# layer = [
+#     ["603EDF5CAFFF5E2"], # layer 0
+#     ["61BEC75CAFFF5E2","0C3EDF5CAFFF5E2"], # layer 1
+#     ["0DBEC75CAFFF5E2","EC34DF1CAFFF5E2"], # layer 2
+#     ["EDB4C71CAFFF5E2","EC34DFE42FFF5E2"], # layer 3
+#     ["EDB4C7E42FFF5E2"], # layer 4
+#     ["EDB4F8E50FFF5E2"], # layer 5
+# ]
+#
+# link = [[
+#     [0, 1] # (0, 0) -> 1
+# ], [
+#     [0], # (1, 0) -> 2
+#     [0, 1] # (1, 1) -> 2
+# ], [
+#     [0], # (2, 0) -> 3
+#     [0, 1], # (2, 1) -> 3
+# ], [
+#     [0], # (3, 0) -> 4
+#     [0], # (3, 1) -> 4
+# ], [
+#     [0], # (4, 0) -> 5
+# ]]
 
-link = [[
-    [0, 1] # (0, 0) -> 1
-], [
-    [0], # (1, 0) -> 2
-    [0, 1] # (1, 1) -> 2
-], [
-    [0], # (2, 0) -> 3
-    [0, 1], # (2, 1) -> 3
-], [
-    [0], # (3, 0) -> 4
-    [0], # (3, 1) -> 4
-], [
-    [0], # (4, 0) -> 5
-]]
+raw_data = yaml.load(open('demo.yml').read(), Loader = yaml.FullLoader)
+layer = raw_data['layer']
+link = raw_data['next']
 
 # print(layer)
 # print(link)
 
-MAX_CASE_X = 2
-MAX_CASE_Y = 6
-
+MAX_CASE_X = max([len(x)for x in layer])
+MAX_CASE_Y = len(layer)
 
 # def cal_length(num: int, single_length: int, distance: int):
 #     return num * single_length + (num - 1) * distance
