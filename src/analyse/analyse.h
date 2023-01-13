@@ -6,6 +6,7 @@
 
 #include <set>
 #include <list>
+#include <unordered_set>
 
 class Analyse {
 public:
@@ -14,9 +15,11 @@ public:
         uint64_t mask;
 
         int step;
-        // TODO: try set / unordered_set
-//        std::list<analyse_t*> src;
-        std::set<analyse_t*> src;
+
+//        std::vector<analyse_t*> src;
+        std::list<analyse_t*> src;
+//        std::set<analyse_t*> src;
+//        std::unordered_set<analyse_t*> src;
     };
 
     std::queue<analyse_t*> cache;

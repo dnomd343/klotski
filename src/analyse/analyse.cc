@@ -24,7 +24,10 @@ void Analyse::start_analyse(uint64_t code) {
         .code = code,
         .mask = 0,
         .step = 0,
-        .src = std::move(std::set<analyse_t*>{}),
+//        .src = std::move(std::vector<analyse_t*>{}),
+        .src = std::move(std::list<analyse_t*>{}),
+//        .src = std::move(std::set<analyse_t*>{}),
+//        .src = std::move(std::unordered_set<analyse_t*>{}),
     }).first->second);
 
 //    std::cout << "src size: " << cases[code].src.size() << std::endl;
@@ -47,7 +50,8 @@ void Analyse::new_case(uint64_t code, uint64_t mask) {
 //        current->second.src.emplace()
 
         if (current->second.step != cache.front()->step) {
-            current->second.src.emplace(cache.front());
+//            current->second.src.emplace(cache.front());
+            current->second.src.push_back(cache.front());
         }
 
         return;
@@ -57,6 +61,9 @@ void Analyse::new_case(uint64_t code, uint64_t mask) {
         .code = code,
         .mask = mask,
         .step = cache.front()->step + 1,
-        .src = std::move(std::set<analyse_t*>{cache.front()}),
+//        .src = std::move(std::vector<analyse_t*>{cache.front()}),
+        .src = std::move(std::list<analyse_t*>{cache.front()}),
+//        .src = std::move(std::set<analyse_t*>{cache.front()}),
+//        .src = std::move(std::unordered_set<analyse_t*>{cache.front()}),
     }).first->second);
 }
