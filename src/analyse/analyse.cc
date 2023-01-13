@@ -63,7 +63,8 @@ void Analyse::backtrack(const std::vector<uint64_t> &raw_code_list) {
 
     /// layer init
 //    auto max_step = cases[code].step; // TODO: update max step cal
-    auto max_step = 81;
+//    auto max_step = 81;
+    auto max_step = 14; // TODO: search max_step value
     layer_data.resize(max_step + 1);
 
     /// init track begin cases
@@ -105,8 +106,6 @@ void Analyse::backtrack(const std::vector<uint64_t> &raw_code_list) {
 
         auto current = track_cache.front();
 
-        std::cout << "Handle" << std::endl << RawCode(current->code).dump_case();
-
         for (auto src : current->src) {
 
             auto find_ret = track_data.find(src->code);
@@ -136,8 +135,6 @@ void Analyse::backtrack(const std::vector<uint64_t> &raw_code_list) {
         track_cache.pop();
 
     }
-
-    return;
 
     backtrack_t *root = &track_data[track_cache.front()->code];
 
