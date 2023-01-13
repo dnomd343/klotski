@@ -97,8 +97,9 @@ for layer_num in range(0, len(layer)):
 
 for layer_num in range(0, len(link)):
     for layer_index in range(0, len(link[layer_num])):
-        for next_index in range(0, len(link[layer_num][layer_index])):
+        for next_index in link[layer_num][layer_index]:
             x1, y1, x2, y2 = link_address(layer_num, layer_index, layer_num + 1, next_index)
+            # print('(%d, %d) -> (%d, %d)' % (layer_num, layer_index, layer_num + 1, next_index))
             print(' ', svg_line(x1, y1, x2, y2))
 
 

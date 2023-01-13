@@ -202,7 +202,14 @@ int main() {
 
     auto a = Analyse();
     a.start_analyse(raw_code);
-    a.backtrack(0x07F87E0E5BFFF492);
+
+//    a.backtrack(0x07F87E0E5BFFF492);
+
+    std::vector<uint64_t> raw_codes = {
+        CommonCode(0xDAAF4CC00).to_raw_code().unwrap(),
+        CommonCode(0xDAA7F3000).to_raw_code().unwrap()
+    };
+    a.backtrack(raw_codes);
 
 //    int sum = 0;
 //    for (auto const &raw_code : all_cases_raw) {

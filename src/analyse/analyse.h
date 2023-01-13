@@ -39,7 +39,8 @@ public:
     inline Core new_core();
 
     // TODO: backtrack for multi-codes
-    void backtrack(uint64_t code);
+//    void backtrack(uint64_t code);
+    void backtrack(const std::vector<uint64_t> &raw_code_list);
 
     void start_analyse(uint64_t code);
 

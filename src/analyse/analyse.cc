@@ -48,7 +48,7 @@ void dump_python_case(uint64_t raw_code) {
     std::cout << '[' << result.c_str() << ']';
 }
 
-void Analyse::backtrack(uint64_t code) {
+void Analyse::backtrack(const std::vector<uint64_t> &raw_code_list) {
 
     // backtrack start at code
 //    std::cout << "start backtrack" << std::endl;
@@ -62,11 +62,27 @@ void Analyse::backtrack(uint64_t code) {
     // TODO: confirm that code exist
 
     /// layer init
-    auto max_step = cases[code].step; // TODO: update max step cal
+//    auto max_step = cases[code].step; // TODO: update max step cal
+    auto max_step = 81;
     layer_data.resize(max_step + 1);
 
     /// init track begin cases
-    {
+//    {
+//        auto layer_num = cases[code].step;
+//
+//        track_cache.emplace(&cases[code]);
+//
+//        auto ptr = track_data.emplace(code, backtrack_t {
+//            .code = code,
+//            .layer_num = layer_num,
+//            .layer_index = (uint32_t)layer_data[layer_num].size(),
+//        });
+//
+//        layer_data[layer_num].emplace_back(&ptr.first->second);
+//    }
+
+    for (auto code : raw_code_list) {
+
         auto layer_num = cases[code].step;
 
         track_cache.emplace(&cases[code]);
@@ -80,10 +96,17 @@ void Analyse::backtrack(uint64_t code) {
         layer_data[layer_num].emplace_back(&ptr.first->second);
     }
 
+//    for (const auto &t : track_data) {
+//        std::cout << RawCode(t.second.code).dump_case() << std::endl;
+//        std::cout << t.second.layer_num << " " << t.second.layer_index << std::endl;
+//    }
 
     while (!track_cache.front()->src.empty()) {
 
         auto current = track_cache.front();
+
+        std::cout << "Handle" << std::endl << RawCode(current->code).dump_case();
+
         for (auto src : current->src) {
 
             auto find_ret = track_data.find(src->code);
@@ -113,6 +136,8 @@ void Analyse::backtrack(uint64_t code) {
         track_cache.pop();
 
     }
+
+    return;
 
     backtrack_t *root = &track_data[track_cache.front()->code];
 
