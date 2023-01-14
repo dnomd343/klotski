@@ -16,6 +16,8 @@ struct br_t {
     int n4;
 };
 
+std::vector<uint32_t> unsort_data;
+
 std::vector<uint32_t> release_data;
 
 br_t dat_s;
@@ -229,7 +231,7 @@ br_t dat[] = {
 
 int dat_size = 204;
 
-std::vector<std::vector<uint32_t> > temps;
+//std::vector<std::vector<uint32_t> > temps;
 
 void func_test(int n1, int n2, int n3, int n4) {
 
@@ -266,7 +268,7 @@ void func_test(int n1, int n2, int n3, int n4) {
         .offset = 0,
     });
 
-    std::vector<uint32_t> temp;
+//    std::vector<uint32_t> temp;
 
     while (!data.empty()) {
 
@@ -275,7 +277,7 @@ void func_test(int n1, int n2, int n3, int n4) {
             /// range release
 //            release_data.emplace_back(data.front().prefix);
 
-            temp.emplace_back(data.front().prefix);
+            unsort_data.emplace_back(data.front().prefix);
 
             data.pop();
             continue;
@@ -316,24 +318,76 @@ void func_test(int n1, int n2, int n3, int n4) {
         data.pop();
     }
 
-    temps.emplace_back(temp);
+//    temps.emplace_back(temp);
 
 }
 
 struct node {
-    uint32_t val;
-    int k;
-    int i;
+    uint32_t value;
+    int index;
+    int limit;
 };
 
 struct compare {
     bool operator() (node node1, node node2) {
-        return node1.val > node2.val;
+        return node1.value > node2.value;
     }
 };
 
 void load_ranges() {
 //    std::cout << "ok" << std::endl;
+
+//    std::vector<uint32_t> unsort_data = {
+//    //  0  1  2   3  4  5   6  7  8  9
+//        2, 4, 8,  0, 1, 6,  3, 5, 7, 9
+//    };
+//    std::vector<int> start_point = {0, 3, 6, 10};
+//
+//    std::vector<uint32_t> release;
+//
+//    std::priority_queue<node, std::vector<node>, compare> min_heap;
+//
+//    for (int i = 0; i < start_point.size() - 1; ++i) {
+//        min_heap.push({
+//            .value = unsort_data[start_point[i]],
+//            .index = start_point[i],
+//            .limit = start_point[i + 1] - 1,
+//        });
+//    }
+
+//    while (!min_heap.empty()) {
+//        std::cout << "value: " << min_heap.top().value << std::endl;
+//        std::cout << "index: " << min_heap.top().index << std::endl;
+//        std::cout << "limit: " << min_heap.top().limit << std::endl;
+//        std::cout << "----------------" << std::endl;
+//        min_heap.pop();
+//    }
+
+//    while (!min_heap.empty()) {
+//        auto current = min_heap.top();
+//        min_heap.pop();
+//
+//        release.emplace_back(current.value);
+//
+//        if (current.index == current.limit) {
+//            continue;
+//        }
+//
+//        node next {
+//            .value = unsort_data[current.index + 1],
+//            .index = current.index + 1,
+//            .limit = current.limit,
+//        };
+//        min_heap.push(next);
+//
+//    }
+
+//    for (const auto &d : release) {
+//        std::cout << d << std::endl;
+//    }
+
+//    return;
+
 
 //    for (int n = 0; n <= 7; ++n) { // number of 1x2 and 2x1 block -> 0 ~ 7
 //        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // number of 2x1 block -> 0 ~ n
@@ -350,47 +404,56 @@ void load_ranges() {
 //    }
 
 
+    std::vector<int> start_point;
+
+    unsort_data.reserve(7311921);
     release_data.reserve(7311921);
 
     for (int i = 0; i < dat_size; ++i) {
+        start_point.emplace_back(unsort_data.size());
         func_test(dat[i].n1, dat[i].n2, dat[i].n3, dat[i].n4);
     }
+    start_point.emplace_back(unsort_data.size());
 
+//    std::cout << "start point size: " << start_point.size() << std::endl;
+
+//    std::cout << start_point[204] << std::endl;
 
     /// self-build sort
-    auto k = temps.size();
-    std::priority_queue<node, std::vector<node>, compare> que;
+    std::priority_queue<node, std::vector<node>, compare> min_heap;
 
-    for (int i = 0; i < k; i++) {
-        que.push({
-             temps[i][0], i, 0
+    for (int i = 0; i < start_point.size() - 1; ++i) {
+        min_heap.push({
+            .value = unsort_data[start_point[i]],
+            .index = start_point[i],
+            .limit = start_point[i + 1] - 1,
         });
     }
 
-    for (int j = 0; j < 7311921; ++j) {
-        node current = que.top();
-        que.pop();
+    while (!min_heap.empty()) {
+        auto current = min_heap.top();
+        min_heap.pop();
 
-        release_data.emplace_back(current.val);
-        node next {
-            .val = (current.i + 1) >= temps[current.k].size() ? INT_MAX : temps[current.k][current.i + 1],
-            .k = current.k,
-            .i = current.i + 1,
-        };
-        que.push(next);
+        release_data.emplace_back(current.value);
+
+        if (current.index != current.limit) {
+            min_heap.push({
+                .value = unsort_data[current.index + 1],
+                .index = current.index + 1,
+                .limit = current.limit,
+            });
+        }
     }
 
 
     /// stl quick sort
-//    for (const auto &temp : temps) {
-//        release_data.insert(release_data.begin(), temp.begin(), temp.end());
-//    }
-//    sort(release_data.begin(), release_data.end());
+//    sort(unsort_data.begin(), unsort_data.end());
+//    release_data.insert(release_data.begin(), unsort_data.begin(), unsort_data.end());
 
-    std::cout << "size: " << release_data.size() << std::endl;
+//    std::cout << "size: " << release_data.size() << std::endl;
 
-//    for (const auto &range: release_data) {
-//        printf("%08X\n", Common::range_reverse(range));
-//    }
+    for (const auto &range: release_data) {
+        printf("%08X\n", Common::range_reverse(range));
+    }
 
 }
