@@ -9,6 +9,7 @@
 #include "analyse.h"
 
 //#include "core_demo.h"
+#include "basic_ranges_demo.h"
 
 #include <thread>
 #include <algorithm>
@@ -196,13 +197,13 @@ int main() {
 //    }
 
 //    auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
-    auto raw_code = CommonCode("A5D3AF0").to_raw_code().unwrap();
+//    auto raw_code = CommonCode("A5D3AF0").to_raw_code().unwrap();
 //    std::cout << fast_cal(raw_code) << std::endl;
 //    auto f = FastCal();
 //    f.fast_cal(raw_code);
 
-    auto a = Analyse();
-    a.start_analyse(raw_code);
+//    auto a = Analyse();
+//    a.start_analyse(raw_code);
 
 //    a.backtrack(0x07F87E0E5BFFF492);
 
@@ -212,19 +213,19 @@ int main() {
 //    };
 //    a.backtrack(raw_codes);
 
-    std::vector<uint64_t> raw_codes = {
-        CommonCode("DE77D80").to_raw_code().unwrap(),
-        CommonCode("DF6DD80").to_raw_code().unwrap(),
-        CommonCode("DF69730").to_raw_code().unwrap(),
-        CommonCode("DE76D30").to_raw_code().unwrap(),
-        CommonCode("D5AF730").to_raw_code().unwrap(),
-        CommonCode("D5B43BC").to_raw_code().unwrap(),
-    };
+//    std::vector<uint64_t> raw_codes = {
+//        CommonCode("DE77D80").to_raw_code().unwrap(),
+//        CommonCode("DF6DD80").to_raw_code().unwrap(),
+//        CommonCode("DF69730").to_raw_code().unwrap(),
+//        CommonCode("DE76D30").to_raw_code().unwrap(),
+//        CommonCode("D5AF730").to_raw_code().unwrap(),
+//        CommonCode("D5B43BC").to_raw_code().unwrap(),
+//    };
 //    std::vector<uint64_t> raw_codes = {
 //        CommonCode("EF697C0").to_raw_code().unwrap(),
 //    };
     // TODO: FATAL ERROR -> don't using mask in Analyse
-    a.backtrack(raw_codes);
+//    a.backtrack(raw_codes);
 
 
 //    int sum = 0;
@@ -239,6 +240,11 @@ int main() {
 //        ++sum;
 
 //    }
+
+
+    load_ranges();
+
+//    BasicRanges::build();
 
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
