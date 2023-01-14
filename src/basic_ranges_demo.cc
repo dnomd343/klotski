@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <climits>
 
 #include "common.h"
 
@@ -228,6 +229,8 @@ br_t dat[] = {
 
 int dat_size = 204;
 
+std::vector<std::vector<uint32_t> > temps;
+
 void func_test(int n1, int n2, int n3, int n4) {
 
     struct inner_t {
@@ -263,12 +266,17 @@ void func_test(int n1, int n2, int n3, int n4) {
         .offset = 0,
     });
 
+    std::vector<uint32_t> temp;
+
     while (!data.empty()) {
 
         if (!data.front().n) {
 
             /// range release
-            release_data.emplace_back(data.front().prefix);
+//            release_data.emplace_back(data.front().prefix);
+
+            temp.emplace_back(data.front().prefix);
+
             data.pop();
             continue;
         }
@@ -307,8 +315,22 @@ void func_test(int n1, int n2, int n3, int n4) {
         }
         data.pop();
     }
+
+    temps.emplace_back(temp);
+
 }
 
+struct node {
+    uint32_t val;
+    int k;
+    int i;
+};
+
+struct compare {
+    bool operator() (node node1, node node2) {
+        return node1.val > node2.val;
+    }
+};
 
 void load_ranges() {
 //    std::cout << "ok" << std::endl;
@@ -334,11 +356,41 @@ void load_ranges() {
         func_test(dat[i].n1, dat[i].n2, dat[i].n3, dat[i].n4);
     }
 
-    sort(release_data.begin(), release_data.end());
-//    std::cout << "size: " << release_data.size() << std::endl;
 
-    for (const auto &range: release_data) {
-        printf("%08X\n", Common::range_reverse(range));
+    /// self-build sort
+    auto k = temps.size();
+    std::priority_queue<node, std::vector<node>, compare> que;
+
+    for (int i = 0; i < k; i++) {
+        que.push({
+             temps[i][0], i, 0
+        });
     }
+
+    for (int j = 0; j < 7311921; ++j) {
+        node current = que.top();
+        que.pop();
+
+        release_data.emplace_back(current.val);
+        node next {
+            .val = (current.i + 1) >= temps[current.k].size() ? INT_MAX : temps[current.k][current.i + 1],
+            .k = current.k,
+            .i = current.i + 1,
+        };
+        que.push(next);
+    }
+
+
+    /// stl quick sort
+//    for (const auto &temp : temps) {
+//        release_data.insert(release_data.begin(), temp.begin(), temp.end());
+//    }
+//    sort(release_data.begin(), release_data.end());
+
+    std::cout << "size: " << release_data.size() << std::endl;
+
+//    for (const auto &range: release_data) {
+//        printf("%08X\n", Common::range_reverse(range));
+//    }
 
 }
