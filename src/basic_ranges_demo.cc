@@ -1,7 +1,10 @@
 #include "basic_ranges_demo.h"
 
+#include <algorithm>
+
 #include <iostream>
 #include <vector>
+#include <queue>
 
 struct br_t {
     int n1;
@@ -10,7 +13,7 @@ struct br_t {
     int n4;
 };
 
-//std::vector<uint32_t> release_data;
+std::vector<uint32_t> release_data;
 
 br_t dat_s;
 
@@ -237,6 +240,7 @@ void func(uint32_t prefix, int offset) {
 
     if (dat_s.n1 == 0 && dat_s.n2 == 0 && dat_s.n3 == 0 && dat_s.n4 == 0) {
 //        printf("release -> %08X\n", prefix);
+        release_data.emplace_back(prefix);
         return;
     }
 
@@ -312,6 +316,107 @@ void func(uint32_t prefix, int offset) {
 
 }
 
+void func_test(const br_t &start) {
+
+    struct inner_t {
+        int n1;
+        int n2;
+        int n3;
+        int n4;
+        uint32_t prefix;
+        uint32_t offset;
+    };
+
+    auto show_inner = [](inner_t &d) {
+        printf("(%d, %d, %d, %d) | %08X [%d]\n", d.n1, d.n2, d.n3, d.n4, d.prefix, d.offset);
+    };
+
+    std::queue<inner_t> data;
+
+    data.emplace(inner_t {
+        .n1 = start.n1,
+        .n2 = start.n2,
+        .n3 = start.n3,
+        .n4 = start.n4,
+        .prefix = 0,
+        .offset = 0,
+    });
+
+
+    while (!data.empty()) {
+
+//        show_inner(data.front());
+
+        if (data.front().n1 == 0 && data.front().n2 == 0 && data.front().n3 == 0 && data.front().n4 == 0) {
+//            printf("%08X\n", data.front().prefix);
+
+            release_data.push_back(data.front().prefix);
+
+            data.pop();
+            continue;
+        }
+
+        if (data.front().n1 != 0) {
+            auto next = inner_t{
+                .n1 = data.front().n1 - 1,
+                .n2 = data.front().n2,
+                .n3 = data.front().n3,
+                .n4 = data.front().n4,
+                .prefix = data.front().prefix | (((uint32_t) 0b00 << 30) >> data.front().offset),
+                .offset = data.front().offset + 2,
+            };
+            data.emplace(next);
+        }
+        if (data.front().n2 != 0) {
+            auto next = inner_t{
+                .n1 = data.front().n1,
+                .n2 = data.front().n2 - 1,
+                .n3 = data.front().n3,
+                .n4 = data.front().n4,
+                .prefix = data.front().prefix | (((uint32_t) 0b01 << 30) >> data.front().offset),
+                .offset = data.front().offset + 2,
+            };
+            data.emplace(next);
+        }
+        if (data.front().n3 != 0) {
+            auto next = inner_t{
+                .n1 = data.front().n1,
+                .n2 = data.front().n2,
+                .n3 = data.front().n3 - 1,
+                .n4 = data.front().n4,
+                .prefix = data.front().prefix | (((uint32_t) 0b10 << 30) >> data.front().offset),
+                .offset = data.front().offset + 2,
+            };
+            data.emplace(next);
+        }
+        if (data.front().n4 != 0) {
+            auto next = inner_t{
+                .n1 = data.front().n1,
+                .n2 = data.front().n2,
+                .n3 = data.front().n3,
+                .n4 = data.front().n4 - 1,
+                .prefix = data.front().prefix | (((uint32_t) 0b11 << 30) >> data.front().offset),
+                .offset = data.front().offset + 2,
+            };
+            data.emplace(next);
+        }
+
+        data.pop();
+    }
+
+
+//    std::cout << "Size: " << data.size() << std::endl;
+
+//    data.pop();
+//
+//    show_inner(data.front());
+//
+//    data.pop();
+//
+//    show_inner(data.front());
+
+}
+
 
 void load_ranges() {
 //    std::cout << "ok" << std::endl;
@@ -331,18 +436,36 @@ void load_ranges() {
 //    }
 
 
-//    release_data.reserve(8000000);
+    release_data.reserve(8000000);
 
-    for (int i = 0; i < dat_size; ++i) {
-        dat_s = dat[i];
-        func(0, 0);
-    }
+//    for (int i = 0; i < dat_size; ++i) {
+//        dat_s = dat[i];
+//        func(0, 0);
+//    }
+//    sort(release_data.begin(), release_data.end());
 
+//    func_test(br_t {
+//        .n1 = 7,
+//        .n2 = 2,
+//        .n3 = 1,
+//        .n4 = 3,
+
+//        .n1 = 0,
+//        .n2 = 1,
+//        .n3 = 2,
+//        .n4 = 0,
+//    });
 
 //    dat_s = {3, 1, 3, 5};
 //
 //    func(0, 0);
 
+    for (int i = 0; i < dat_size; ++i) {
+        func_test(dat[i]);
+    }
+    // TODO: try merge data
+    sort(release_data.begin(), release_data.end());
+    std::cout << "size: " << release_data.size() << std::endl;
 
 //    br_t demo = {2, 0, 0, 1};
 //    func(0, 0, demo);
