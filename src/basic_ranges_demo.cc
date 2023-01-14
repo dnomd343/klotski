@@ -224,11 +224,8 @@ br_t dat[] = {
     {2, 0, 7, 0},
 };
 
-//int dat_size = 4;
 int dat_size = 204;
-//int dat_size = 1;
 
-//void func(uint32_t prefix, int offset, br_t &r) {
 void func(uint32_t prefix, int offset) {
 
 //    std::cout << "build: ";
@@ -237,164 +234,161 @@ void func(uint32_t prefix, int offset) {
 //    show_br_t(dat[1]);
 //    printf(" | prefix = %08X | offset = %d\n", prefix, offset);
 
-
     if (dat_s.n1 == 0 && dat_s.n2 == 0 && dat_s.n3 == 0 && dat_s.n4 == 0) {
 //        printf("release -> %08X\n", prefix);
         release_data.emplace_back(prefix);
         return;
     }
 
-//    for (int i = 0; i < dat_size; ++i) {
-//        if (dat[i].n1 == 0 && dat[i].n2 == 0 && dat[i].n3 == 0 && dat[i].n4 == 0) {
-////            printf("release -> %08X\n", prefix);
-//            return;
-//        }
-//    }
-
     if (dat_s.n1 < 0 || dat_s.n2 < 0 || dat_s.n3 < 0 || dat_s.n4 < 0) {
 //        std::cout << "break" << std::endl;
         return;
     }
 
-//    bool flag = false;
-//    for (int i = 0; i < dat_size; ++i) {
-//        if (!(dat[i].n1 < 0 || dat[i].n2 < 0 || dat[i].n3 < 0 || dat[i].n4 < 0)) {
-//            flag = true;
-//        }
-//    }
-//    if (!flag) {
-//        return;
-//    }
-
     /// generate start with 00
     --dat_s.n1;
     func(prefix | ((uint32_t)0b00 << 30) >> offset, offset + 2);
     ++dat_s.n1;
-//    for (int i = 0; i < dat_size; ++i) {
-//        --dat[i].n1;
-//    }
-//    func(prefix | ((uint32_t)0b00 << 30) >> offset, offset + 2);
-//    for (int i = 0; i < dat_size; ++i) {
-//        ++dat[i].n1;
-//    }
 
     /// generate start with 01
     --dat_s.n2;
     func(prefix | ((uint32_t)0b01 << 30) >> offset, offset + 2);
     ++dat_s.n2;
-//    for (int i = 0; i < dat_size; ++i) {
-//        --dat[i].n2;
-//    }
-//    func(prefix | ((uint32_t)0b01 << 30) >> offset, offset + 2);
-//    for (int i = 0; i < dat_size; ++i) {
-//        ++dat[i].n2;
-//    }
 
     /// generate start with 10
     --dat_s.n3;
     func(prefix | ((uint32_t)0b10 << 30) >> offset, offset + 2);
     ++dat_s.n3;
-//    for (int i = 0; i < dat_size; ++i) {
-//        --dat[i].n3;
-//    }
-//    func(prefix | ((uint32_t)0b10 << 30) >> offset, offset + 2);
-//    for (int i = 0; i < dat_size; ++i) {
-//        ++dat[i].n3;
-//    }
 
     /// generate start with 11
     --dat_s.n4;
     func(prefix | ((uint32_t)0b11 << 30) >> offset, offset + 2);
     ++dat_s.n4;
-//    for (int i = 0; i < dat_size; ++i) {
-//        --dat[i].n4;
-//    }
-//    func(prefix | ((uint32_t)0b11 << 30) >> offset, offset + 2);
-//    for (int i = 0; i < dat_size; ++i) {
-//        ++dat[i].n4;
-//    }
 
 }
 
 void func_test(const br_t &start) {
 
     struct inner_t {
-        int n1;
-        int n2;
-        int n3;
-        int n4;
+//        int n1;
+//        int n2;
+//        int n3;
+//        int n4;
+        /// n4       n3       n2       n1
+        /// 00000000 00000000 00000000 00000000
+        uint32_t n;
         uint32_t prefix;
-        uint32_t offset;
+        int offset;
     };
 
     auto show_inner = [](inner_t &d) {
-        printf("(%d, %d, %d, %d) | %08X [%d]\n", d.n1, d.n2, d.n3, d.n4, d.prefix, d.offset);
+//        printf("(%d, %d, %d, %d) | %08X [%d]\n", d.n1, d.n2, d.n3, d.n4, d.prefix, d.offset);
+        printf(
+            "(%d, %d, %d, %d) | %08X [%d]\n",
+            d.n & 0xFF,
+            (d.n >> 8) & 0xFF,
+            (d.n >> 16) & 0xFF,
+            (d.n >> 24) & 0xFF,
+            d.prefix,
+            d.offset
+        );
     };
 
     std::queue<inner_t> data;
 
     data.emplace(inner_t {
-        .n1 = start.n1,
-        .n2 = start.n2,
-        .n3 = start.n3,
-        .n4 = start.n4,
+//        .n1 = start.n1,
+//        .n2 = start.n2,
+//        .n3 = start.n3,
+//        .n4 = start.n4,
+        .n = static_cast<uint32_t>(start.n1 | (start.n2 << 8) | (start.n3 << 16) | (start.n4 << 24)),
         .prefix = 0,
         .offset = 0,
     });
 
+//    show_inner(data.front());
 
     while (!data.empty()) {
 
 //        show_inner(data.front());
 
-        if (data.front().n1 == 0 && data.front().n2 == 0 && data.front().n3 == 0 && data.front().n4 == 0) {
-//            printf("%08X\n", data.front().prefix);
+//        if (data.front().n1 == 0 && data.front().n2 == 0 && data.front().n3 == 0 && data.front().n4 == 0) {
+////            printf("%08X\n", data.front().prefix);
+//
+//            release_data.push_back(data.front().prefix);
+//
+//            data.pop();
+//            continue;
+//        }
 
-            release_data.push_back(data.front().prefix);
-
-            data.pop();
-            continue;
+        if (data.front().n == 0) {
+//            printf("release -> %08X\n", data.front().prefix);
+            release_data.emplace_back(data.front().prefix);
         }
 
-        if (data.front().n1 != 0) {
-            auto next = inner_t{
-                .n1 = data.front().n1 - 1,
-                .n2 = data.front().n2,
-                .n3 = data.front().n3,
-                .n4 = data.front().n4,
+//        if (data.front().n1 != 0) {
+        if ((data.front().n & 0xFF) != 0) {
+//            auto next = inner_t{
+//                .n1 = data.front().n1 - 1,
+//                .n2 = data.front().n2,
+//                .n3 = data.front().n3,
+//                .n4 = data.front().n4,
+//                .prefix = data.front().prefix | (((uint32_t) 0b00 << 30) >> data.front().offset),
+//                .offset = data.front().offset + 2,
+//            };
+            auto next = inner_t {
+                .n = data.front().n - 0x01,
                 .prefix = data.front().prefix | (((uint32_t) 0b00 << 30) >> data.front().offset),
                 .offset = data.front().offset + 2,
             };
             data.emplace(next);
         }
-        if (data.front().n2 != 0) {
-            auto next = inner_t{
-                .n1 = data.front().n1,
-                .n2 = data.front().n2 - 1,
-                .n3 = data.front().n3,
-                .n4 = data.front().n4,
+//        if (data.front().n2 != 0) {
+        if ((data.front().n & 0xFF00) != 0) {
+//            auto next = inner_t{
+//                .n1 = data.front().n1,
+//                .n2 = data.front().n2 - 1,
+//                .n3 = data.front().n3,
+//                .n4 = data.front().n4,
+//                .prefix = data.front().prefix | (((uint32_t) 0b01 << 30) >> data.front().offset),
+//                .offset = data.front().offset + 2,
+//            };
+            auto next = inner_t {
+                .n = data.front().n - 0x0100,
                 .prefix = data.front().prefix | (((uint32_t) 0b01 << 30) >> data.front().offset),
                 .offset = data.front().offset + 2,
             };
             data.emplace(next);
         }
-        if (data.front().n3 != 0) {
-            auto next = inner_t{
-                .n1 = data.front().n1,
-                .n2 = data.front().n2,
-                .n3 = data.front().n3 - 1,
-                .n4 = data.front().n4,
+//        if (data.front().n3 != 0) {
+        if ((data.front().n & 0xFF0000) != 0) {
+//            auto next = inner_t{
+//                .n1 = data.front().n1,
+//                .n2 = data.front().n2,
+//                .n3 = data.front().n3 - 1,
+//                .n4 = data.front().n4,
+//                .prefix = data.front().prefix | (((uint32_t) 0b10 << 30) >> data.front().offset),
+//                .offset = data.front().offset + 2,
+//            };
+            auto next = inner_t {
+                .n = data.front().n - 0x010000,
                 .prefix = data.front().prefix | (((uint32_t) 0b10 << 30) >> data.front().offset),
                 .offset = data.front().offset + 2,
             };
             data.emplace(next);
         }
-        if (data.front().n4 != 0) {
-            auto next = inner_t{
-                .n1 = data.front().n1,
-                .n2 = data.front().n2,
-                .n3 = data.front().n3,
-                .n4 = data.front().n4 - 1,
+//        if (data.front().n4 != 0) {
+        if ((data.front().n & 0xFF000000) != 0) {
+//            auto next = inner_t{
+//                .n1 = data.front().n1,
+//                .n2 = data.front().n2,
+//                .n3 = data.front().n3,
+//                .n4 = data.front().n4 - 1,
+//                .prefix = data.front().prefix | (((uint32_t) 0b11 << 30) >> data.front().offset),
+//                .offset = data.front().offset + 2,
+//            };
+            auto next = inner_t {
+                .n = data.front().n - 0x01000000,
                 .prefix = data.front().prefix | (((uint32_t) 0b11 << 30) >> data.front().offset),
                 .offset = data.front().offset + 2,
             };
@@ -403,17 +397,6 @@ void func_test(const br_t &start) {
 
         data.pop();
     }
-
-
-//    std::cout << "Size: " << data.size() << std::endl;
-
-//    data.pop();
-//
-//    show_inner(data.front());
-//
-//    data.pop();
-//
-//    show_inner(data.front());
 
 }
 
@@ -444,6 +427,7 @@ void load_ranges() {
 //    }
 //    sort(release_data.begin(), release_data.end());
 
+
 //    func_test(br_t {
 //        .n1 = 7,
 //        .n2 = 2,
@@ -456,20 +440,11 @@ void load_ranges() {
 //        .n4 = 0,
 //    });
 
-//    dat_s = {3, 1, 3, 5};
-//
-//    func(0, 0);
-
     for (int i = 0; i < dat_size; ++i) {
         func_test(dat[i]);
     }
     // TODO: try merge data
     sort(release_data.begin(), release_data.end());
     std::cout << "size: " << release_data.size() << std::endl;
-
-//    br_t demo = {2, 0, 0, 1};
-//    func(0, 0, demo);
-
-//    show_br_t(r);
 
 }

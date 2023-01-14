@@ -57,7 +57,7 @@ void BasicRanges::build_data() { // build basic ranges
             }
         }
     }
-//    std::sort(BasicRanges::data.begin(), BasicRanges::data.end()); // sort basic ranges
+    std::sort(BasicRanges::data.begin(), BasicRanges::data.end()); // sort basic ranges
 //    for (auto &range : BasicRanges::data) {
 //        range = Common::range_reverse(range); // basic ranges reverse
 //    }
