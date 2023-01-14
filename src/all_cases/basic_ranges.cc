@@ -45,8 +45,6 @@ void BasicRanges::build() { // ensure that basic ranges available
     }
 }
 
-#include <iostream>
-
 void BasicRanges::build_data() { // build basic ranges
     BasicRanges::data.reserve(BASIC_RANGES_SIZE); // memory pre-allocated
     for (int n = 0; n <= 7; ++n) { // number of 1x2 and 2x1 block -> 0 ~ 7
@@ -54,33 +52,15 @@ void BasicRanges::build_data() { // build basic ranges
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // number of 1x1 block -> 0 ~ (14 - 2n)
                 int n_1x2 = n - n_2x1;
                 int n_space = 16 - n * 2 - n_1x1;
-
-//                if (n_space == 7 && n_1x2 == 2 && n_2x1 == 1 && n_1x1 == 3) {
-//                    std::cout << "Start: " << data.size() << std::endl;
-//                }
-                if (n_space == 6 && n_1x2 == 2 && n_2x1 == 1 && n_1x1 == 4) {
-                    std::cout << "Start: " << data.size() << std::endl;
-                }
-                /// (7, 2, 1, 3) -> 102960
-                /// (6, 2, 1, 4) -> 180180
-
                 generate(n_space, n_1x2, n_2x1, n_1x1); // generate target ranges
                 /// 0x0 -> 00 | 1x2 -> 01 | 2x1 -> 10 | 1x1 -> 11
-
-//                if (n_space == 7 && n_1x2 == 2 && n_2x1 == 1 && n_1x1 == 3) {
-//                    std::cout << "End: " << data.size() << std::endl;
-//                }
-                if (n_space == 6 && n_1x2 == 2 && n_2x1 == 1 && n_1x1 == 4) {
-                    std::cout << "End: " << data.size() << std::endl;
-                }
-
             }
         }
     }
-    std::sort(BasicRanges::data.begin(), BasicRanges::data.end()); // sort basic ranges
-    for (auto &range : BasicRanges::data) {
-        range = Common::range_reverse(range); // basic ranges reverse
-    }
+//    std::sort(BasicRanges::data.begin(), BasicRanges::data.end()); // sort basic ranges
+//    for (auto &range : BasicRanges::data) {
+//        range = Common::range_reverse(range); // basic ranges reverse
+//    }
 }
 
 void BasicRanges::generate(int n1, int n2, int n3, int n4) { // generate specific basic ranges

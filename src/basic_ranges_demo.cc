@@ -1,6 +1,7 @@
 #include "basic_ranges_demo.h"
 
 #include <iostream>
+#include <vector>
 
 struct br_t {
     int n1;
@@ -9,18 +10,11 @@ struct br_t {
     int n4;
 };
 
-void show_br_t(br_t &dat) {
-    printf("(%d, %d, %d, %d)", dat.n1, dat.n2, dat.n3, dat.n4);
-}
+//std::vector<uint32_t> release_data;
+
+br_t dat_s;
 
 br_t dat[] = {
-//    {2, 0, 0, 1},
-//    {1, 0, 2, 0},
-//    {7, 2, 1, 3},
-//    {6, 2, 1, 4},
-//    {5, 2, 1, 5},
-//    {4, 2, 1, 6},
-
     {16, 0, 0, 0},
     {15, 0, 0, 1},
     {14, 0, 0, 2},
@@ -241,88 +235,80 @@ void func(uint32_t prefix, int offset) {
 //    printf(" | prefix = %08X | offset = %d\n", prefix, offset);
 
 
-//    if (dat[0].n1 == 0 && dat[0].n2 == 0 && dat[0].n3 == 0 && dat[0].n4 == 0) {
+    if (dat_s.n1 == 0 && dat_s.n2 == 0 && dat_s.n3 == 0 && dat_s.n4 == 0) {
 //        printf("release -> %08X\n", prefix);
-//        return;
-//    }
-//    if (dat[1].n1 == 0 && dat[1].n2 == 0 && dat[1].n3 == 0 && dat[1].n4 == 0) {
-//        printf("release -> %08X\n", prefix);
-//        return;
-//    }
-
-    for (int i = 0; i < dat_size; ++i) {
-        if (dat[i].n1 == 0 && dat[i].n2 == 0 && dat[i].n3 == 0 && dat[i].n4 == 0) {
-            printf("release -> %08X\n", prefix);
-            return;
-        }
-    }
-
-//    if ((dat[0].n1 < 0 || dat[0].n2 < 0 || dat[0].n3 < 0 || dat[0].n4 < 0) && (dat[1].n1 < 0 || dat[1].n2 < 0 || dat[1].n3 < 0 || dat[1].n4 < 0)) {
-//        std::cout << "break" << std::endl;
-//        return;
-//    }
-
-    bool flag = false;
-    for (int i = 0; i < dat_size; ++i) {
-        if (!(dat[i].n1 < 0 || dat[i].n2 < 0 || dat[i].n3 < 0 || dat[i].n4 < 0)) {
-            flag = true;
-        }
-    }
-    if (!flag) {
         return;
     }
 
-    // generate start with 00
-//    --dat[0].n1;
-//    --dat[1].n1;
-    for (int i = 0; i < dat_size; ++i) {
-        --dat[i].n1;
+//    for (int i = 0; i < dat_size; ++i) {
+//        if (dat[i].n1 == 0 && dat[i].n2 == 0 && dat[i].n3 == 0 && dat[i].n4 == 0) {
+////            printf("release -> %08X\n", prefix);
+//            return;
+//        }
+//    }
+
+    if (dat_s.n1 < 0 || dat_s.n2 < 0 || dat_s.n3 < 0 || dat_s.n4 < 0) {
+//        std::cout << "break" << std::endl;
+        return;
     }
+
+//    bool flag = false;
+//    for (int i = 0; i < dat_size; ++i) {
+//        if (!(dat[i].n1 < 0 || dat[i].n2 < 0 || dat[i].n3 < 0 || dat[i].n4 < 0)) {
+//            flag = true;
+//        }
+//    }
+//    if (!flag) {
+//        return;
+//    }
+
+    /// generate start with 00
+    --dat_s.n1;
     func(prefix | ((uint32_t)0b00 << 30) >> offset, offset + 2);
-//    ++dat[0].n1;
-//    ++dat[1].n1;
-    for (int i = 0; i < dat_size; ++i) {
-        ++dat[i].n1;
-    }
+    ++dat_s.n1;
+//    for (int i = 0; i < dat_size; ++i) {
+//        --dat[i].n1;
+//    }
+//    func(prefix | ((uint32_t)0b00 << 30) >> offset, offset + 2);
+//    for (int i = 0; i < dat_size; ++i) {
+//        ++dat[i].n1;
+//    }
 
-    // generate start with 01
-//    --dat[0].n2;
-//    --dat[1].n2;
-    for (int i = 0; i < dat_size; ++i) {
-        --dat[i].n2;
-    }
+    /// generate start with 01
+    --dat_s.n2;
     func(prefix | ((uint32_t)0b01 << 30) >> offset, offset + 2);
-//    ++dat[0].n2;
-//    ++dat[1].n2;
-    for (int i = 0; i < dat_size; ++i) {
-        ++dat[i].n2;
-    }
+    ++dat_s.n2;
+//    for (int i = 0; i < dat_size; ++i) {
+//        --dat[i].n2;
+//    }
+//    func(prefix | ((uint32_t)0b01 << 30) >> offset, offset + 2);
+//    for (int i = 0; i < dat_size; ++i) {
+//        ++dat[i].n2;
+//    }
 
-    // generate start with 10
-//    --dat[0].n3;
-//    --dat[1].n3;
-    for (int i = 0; i < dat_size; ++i) {
-        --dat[i].n3;
-    }
+    /// generate start with 10
+    --dat_s.n3;
     func(prefix | ((uint32_t)0b10 << 30) >> offset, offset + 2);
-//    ++dat[0].n3;
-//    ++dat[1].n3;
-    for (int i = 0; i < dat_size; ++i) {
-        ++dat[i].n3;
-    }
+    ++dat_s.n3;
+//    for (int i = 0; i < dat_size; ++i) {
+//        --dat[i].n3;
+//    }
+//    func(prefix | ((uint32_t)0b10 << 30) >> offset, offset + 2);
+//    for (int i = 0; i < dat_size; ++i) {
+//        ++dat[i].n3;
+//    }
 
-    // generate start with 11
-//    --dat[0].n4;
-//    --dat[1].n4;
-    for (int i = 0; i < dat_size; ++i) {
-        --dat[i].n4;
-    }
+    /// generate start with 11
+    --dat_s.n4;
     func(prefix | ((uint32_t)0b11 << 30) >> offset, offset + 2);
-//    ++dat[0].n4;
-//    ++dat[1].n4;
-    for (int i = 0; i < dat_size; ++i) {
-        ++dat[i].n4;
-    }
+    ++dat_s.n4;
+//    for (int i = 0; i < dat_size; ++i) {
+//        --dat[i].n4;
+//    }
+//    func(prefix | ((uint32_t)0b11 << 30) >> offset, offset + 2);
+//    for (int i = 0; i < dat_size; ++i) {
+//        ++dat[i].n4;
+//    }
 
 }
 
@@ -344,7 +330,18 @@ void load_ranges() {
 //        }
 //    }
 
-    func(0, 0);
+
+//    release_data.reserve(8000000);
+
+    for (int i = 0; i < dat_size; ++i) {
+        dat_s = dat[i];
+        func(0, 0);
+    }
+
+
+//    dat_s = {3, 1, 3, 5};
+//
+//    func(0, 0);
 
 
 //    br_t demo = {2, 0, 0, 1};
