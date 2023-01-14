@@ -110,70 +110,10 @@ uint32_t AllCases::check_case(uint32_t head, uint32_t range) { // whether the he
 
 void AllCases::build_data() { // find all cases
 
-//    auto range = Common::range_reverse(0xA5740000);
+    uint32_t sum = 0;
 
-    // A     5     7     4
-    // 10 10 01 01 01 11 01 00
-    //                   !!
-    // search start at
-    // 10 10 01 01 01 11 10 ...
-
-//    auto offset = check_case(0, range);
-//
-//    auto delta = (uint32_t)1 << (32 - check_case(0, range) * 2);
-//
-//    auto next_at_least = Common::range_reverse(range) + delta;
-//
-//    printf("next at least -> %08X\n", next_at_least);
-
-    /// 4258152: 0xA573F000
-    /// 4258153: 0xA5740000
-    /// 4258154: 0xA5743000
-    /// 4258155: 0xA574C000
-    /// 4258156: 0xA5770000
-    /// 4258157: 0xA5780000
-    /// 4258158: 0xA5783000
-    /// 4258159: 0xA578C000
-
-//    auto br = BasicRanges::fetch();
-//
-//    uint32_t ret;
-//    for (auto i = 4258152; i <= 4258159; ++i) {
-//        printf("check: %08X (%d) -> ", Common::range_reverse(br->at(i)), i);
-//
-//        if ((ret = check_case(0, br->at(i))) == 0) {
-//            std::cout << "ok" << std::endl;
-//        } else {
-//            std::cout << "error" << std::endl;
-//
-////            std::cout << "ret = " << ret << std::endl;
-//
-//            auto delta = (uint32_t)1 << (32 - ret * 2);
-//            auto mask = 0xFFFFFFFF << (32 - ret * 2);
-//            auto next_at_least = (Common::range_reverse(br->at(i)) & mask) + delta;
-//
-//            for (;;) {
-//                ++i;
-//                if (Common::range_reverse(br->at(i)) >= next_at_least) {
-//                    break;
-//                }
-//                std::cout << "skip -> next" << std::endl;
-//            }
-//
-//
-//            printf("next at least: %08X\n", next_at_least);
-//
-//        }
-//    }
-
-    /// A    5    7    7    0    0    00
-    /// 1010 0101 0111 0111 0000 0000 ...
-
-//    return;
-
-
-//    for (uint32_t head = 0; head < 16; ++head) { // address of 2x2 block
-    for (uint32_t head = 0; head < 1; ++head) { // address of 2x2 block
+    for (uint32_t head = 0; head < 16; ++head) { // address of 2x2 block
+//    for (uint32_t head = 0; head < 1; ++head) { // address of 2x2 block
         if ((head & 0b11) == 0b11) {
             continue; // invalid 2x2 address
         }
@@ -183,7 +123,9 @@ void AllCases::build_data() { // find all cases
 
 //            printf("%08X -> ", Common::range_reverse(range));
 
-//            if (check_case(head, range)) {
+//            if (check_case(head, range) == 0) {
+//                ++sum;
+//            }
 //                printf("ok\n");
 //                data[head].emplace_back(Common::range_reverse(range)); // found valid case
 //            } else {
@@ -192,37 +134,45 @@ void AllCases::build_data() { // find all cases
 
 //        }
 
+//        continue;
+
         uint32_t ret;
+
 
         auto br = BasicRanges::fetch();
 
         for (auto i = 0; i < br->size(); ++i) {
 
-            printf("%d: %08X -> ", i, Common::range_reverse(br->at(i)));
+//            printf("%d: %08X -> ", i, Common::range_reverse(br->at(i)));
 
-            if ((ret = check_case(0, br->at(i))) == 0) {
-                printf("ok\n");
+            if ((ret = check_case(head, br->at(i))) == 0) {
+                ++sum;
+
+//                printf("%08X\n", Common::range_reverse(br->at(i)));
+
+//                printf("ok\n");
             } else {
-                printf("error\n");
+//                printf("error\n");
 
                 auto delta = (uint32_t)1 << (32 - ret * 2);
                 auto mask = 0xFFFFFFFF << (32 - ret * 2);
                 auto next_at_least = (Common::range_reverse(br->at(i)) & mask) + delta;
-                printf("next at least: %08X\n", next_at_least);
+//                printf("next at least: %08X\n", next_at_least);
 
                 for (;;) {
                     ++i;
                     if (Common::range_reverse(br->at(i)) >= next_at_least) {
+                        --i;
                         break;
                     }
-                    std::cout << "skip -> next" << std::endl;
+//                    std::cout << "skip -> next" << std::endl;
                 }
 
             }
 
         }
 
-
-
     }
+    std::cout << sum << std::endl;
+
 }
