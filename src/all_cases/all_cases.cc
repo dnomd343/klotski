@@ -113,60 +113,32 @@ void AllCases::build_data() { // find all cases
     uint32_t sum = 0;
 
     for (uint32_t head = 0; head < 16; ++head) { // address of 2x2 block
-//    for (uint32_t head = 0; head < 1; ++head) { // address of 2x2 block
         if ((head & 0b11) == 0b11) {
             continue; // invalid 2x2 address
         }
         /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
         data[head].reserve(ALL_CASES_SIZE[head]); // memory pre-allocated
-//        for (const auto &range : *BasicRanges::fetch()) { // check base on 2x2 address and range
-
-//            printf("%08X -> ", Common::range_reverse(range));
-
-//            if (check_case(head, range) == 0) {
-//                ++sum;
-//            }
-//                printf("ok\n");
-//                data[head].emplace_back(Common::range_reverse(range)); // found valid case
-//            } else {
-//                printf("error\n");
-//            }
-
-//        }
-
-//        continue;
 
         uint32_t ret;
-
 
         auto br = BasicRanges::fetch();
 
         for (auto i = 0; i < br->size(); ++i) {
 
-//            printf("%d: %08X -> ", i, Common::range_reverse(br->at(i)));
+            auto rev = Common::range_reverse((*br)[i]);
 
-            if ((ret = check_case(head, br->at(i))) == 0) {
+            if ((ret = check_case(head, (*br)[i])) == 0) {
                 ++sum;
 
 //                printf("%08X\n", Common::range_reverse(br->at(i)));
 
-//                printf("ok\n");
             } else {
-//                printf("error\n");
 
                 auto delta = (uint32_t)1 << (32 - ret * 2);
-                auto mask = 0xFFFFFFFF << (32 - ret * 2);
-                auto next_at_least = (Common::range_reverse(br->at(i)) & mask) + delta;
-//                printf("next at least: %08X\n", next_at_least);
+                auto next = (rev & ~(delta - 1)) + delta;
 
-                for (;;) {
-                    ++i;
-                    if (Common::range_reverse(br->at(i)) >= next_at_least) {
-                        --i;
-                        break;
-                    }
-//                    std::cout << "skip -> next" << std::endl;
-                }
+                while (Common::range_reverse((*br)[++i]) < next);
+                --i;
 
             }
 
