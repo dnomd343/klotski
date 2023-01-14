@@ -249,6 +249,13 @@ int main() {
 
     AllCases::build();
 
+    for (auto head = 0; head < 16; ++head) {
+        uint64_t prefix = (uint64_t)head << 32;
+        for (const auto &range : (*AllCases::fetch())[head]) {
+            printf("%09lX\n", prefix | range);
+        }
+    }
+
     std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;

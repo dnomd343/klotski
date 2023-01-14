@@ -25,6 +25,6 @@ private:
 
     static void build_data();
 
-    static uint32_t check_case(uint32_t head, uint32_t range);
+    static int check_case(uint32_t head, uint32_t range);
 
 };
