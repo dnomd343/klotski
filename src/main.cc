@@ -242,9 +242,8 @@ int main() {
 //    }
 
 
-    load_ranges();
-
-//    BasicRanges::build();
+//    load_ranges();
+    BasicRanges::build();
 
     std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;

@@ -28,8 +28,8 @@ add_subdirectory(analyse)
 
 ################################
 
-#add_executable(klotski main.cc)
-add_executable(klotski main.cc basic_ranges_demo.cc)
+add_executable(klotski main.cc)
+#add_executable(klotski main.cc basic_ranges_demo.cc)
 
 ################################
 
