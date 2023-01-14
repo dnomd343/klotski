@@ -24,4 +24,7 @@ private:
     static std::vector<uint32_t> data[16];
 
     static void build_data();
+
+    static uint32_t check_case(uint32_t head, uint32_t range);
+
 };
