@@ -2,6 +2,15 @@
 #include "common.h"
 #include "common_code.h"
 
+inline uint32_t binary_count(uint32_t bin) { // get number of non-zero bits
+    bin -= (bin >> 1) & 0x55555555;
+    bin = (bin & 0x33333333) + ((bin >> 2) & 0x33333333);
+    bin = ((bin >> 4) + bin) & 0x0F0F0F0F;
+    bin += bin >> 8;
+    bin += bin >> 16;
+    return bin & 0b111111;
+}
+
 /// WARN: bin should not be zero
 inline uint32_t last_zero_num(uint32_t bin) { // get last zero number
     bin ^= (bin - 1);

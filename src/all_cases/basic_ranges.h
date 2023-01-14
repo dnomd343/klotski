@@ -30,6 +30,5 @@ private:
     static std::vector<uint32_t> data;
 
     static void build_data();
-    static void sort_data(std::vector<int> &flags, std::vector<uint32_t> &raw);
-    static void generate(std::vector<uint32_t> &release, generate_t info);
+    static void generate(generate_t info);
 };
