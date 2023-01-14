@@ -5,233 +5,11 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <climits>
 
 #include "common.h"
 
-struct br_t {
-    int n1;
-    int n2;
-    int n3;
-    int n4;
-};
-
 std::vector<uint32_t> unsort_data;
-
 std::vector<uint32_t> release_data;
-
-br_t dat_s;
-
-br_t dat[] = {
-    {16, 0, 0, 0},
-    {15, 0, 0, 1},
-    {14, 0, 0, 2},
-    {13, 0, 0, 3},
-    {12, 0, 0, 4},
-    {11, 0, 0, 5},
-    {10, 0, 0, 6},
-    {9, 0, 0, 7},
-    {8, 0, 0, 8},
-    {7, 0, 0, 9},
-    {6, 0, 0, 10},
-    {5, 0, 0, 11},
-    {4, 0, 0, 12},
-    {3, 0, 0, 13},
-    {2, 0, 0, 14},
-    {14, 1, 0, 0},
-    {13, 1, 0, 1},
-    {12, 1, 0, 2},
-    {11, 1, 0, 3},
-    {10, 1, 0, 4},
-    {9, 1, 0, 5},
-    {8, 1, 0, 6},
-    {7, 1, 0, 7},
-    {6, 1, 0, 8},
-    {5, 1, 0, 9},
-    {4, 1, 0, 10},
-    {3, 1, 0, 11},
-    {2, 1, 0, 12},
-    {14, 0, 1, 0},
-    {13, 0, 1, 1},
-    {12, 0, 1, 2},
-    {11, 0, 1, 3},
-    {10, 0, 1, 4},
-    {9, 0, 1, 5},
-    {8, 0, 1, 6},
-    {7, 0, 1, 7},
-    {6, 0, 1, 8},
-    {5, 0, 1, 9},
-    {4, 0, 1, 10},
-    {3, 0, 1, 11},
-    {2, 0, 1, 12},
-    {12, 2, 0, 0},
-    {11, 2, 0, 1},
-    {10, 2, 0, 2},
-    {9, 2, 0, 3},
-    {8, 2, 0, 4},
-    {7, 2, 0, 5},
-    {6, 2, 0, 6},
-    {5, 2, 0, 7},
-    {4, 2, 0, 8},
-    {3, 2, 0, 9},
-    {2, 2, 0, 10},
-    {12, 1, 1, 0},
-    {11, 1, 1, 1},
-    {10, 1, 1, 2},
-    {9, 1, 1, 3},
-    {8, 1, 1, 4},
-    {7, 1, 1, 5},
-    {6, 1, 1, 6},
-    {5, 1, 1, 7},
-    {4, 1, 1, 8},
-    {3, 1, 1, 9},
-    {2, 1, 1, 10},
-    {12, 0, 2, 0},
-    {11, 0, 2, 1},
-    {10, 0, 2, 2},
-    {9, 0, 2, 3},
-    {8, 0, 2, 4},
-    {7, 0, 2, 5},
-    {6, 0, 2, 6},
-    {5, 0, 2, 7},
-    {4, 0, 2, 8},
-    {3, 0, 2, 9},
-    {2, 0, 2, 10},
-    {10, 3, 0, 0},
-    {9, 3, 0, 1},
-    {8, 3, 0, 2},
-    {7, 3, 0, 3},
-    {6, 3, 0, 4},
-    {5, 3, 0, 5},
-    {4, 3, 0, 6},
-    {3, 3, 0, 7},
-    {2, 3, 0, 8},
-    {10, 2, 1, 0},
-    {9, 2, 1, 1},
-    {8, 2, 1, 2},
-    {7, 2, 1, 3},
-    {6, 2, 1, 4},
-    {5, 2, 1, 5},
-    {4, 2, 1, 6},
-    {3, 2, 1, 7},
-    {2, 2, 1, 8},
-    {10, 1, 2, 0},
-    {9, 1, 2, 1},
-    {8, 1, 2, 2},
-    {7, 1, 2, 3},
-    {6, 1, 2, 4},
-    {5, 1, 2, 5},
-    {4, 1, 2, 6},
-    {3, 1, 2, 7},
-    {2, 1, 2, 8},
-    {10, 0, 3, 0},
-    {9, 0, 3, 1},
-    {8, 0, 3, 2},
-    {7, 0, 3, 3},
-    {6, 0, 3, 4},
-    {5, 0, 3, 5},
-    {4, 0, 3, 6},
-    {3, 0, 3, 7},
-    {2, 0, 3, 8},
-    {8, 4, 0, 0},
-    {7, 4, 0, 1},
-    {6, 4, 0, 2},
-    {5, 4, 0, 3},
-    {4, 4, 0, 4},
-    {3, 4, 0, 5},
-    {2, 4, 0, 6},
-    {8, 3, 1, 0},
-    {7, 3, 1, 1},
-    {6, 3, 1, 2},
-    {5, 3, 1, 3},
-    {4, 3, 1, 4},
-    {3, 3, 1, 5},
-    {2, 3, 1, 6},
-    {8, 2, 2, 0},
-    {7, 2, 2, 1},
-    {6, 2, 2, 2},
-    {5, 2, 2, 3},
-    {4, 2, 2, 4},
-    {3, 2, 2, 5},
-    {2, 2, 2, 6},
-    {8, 1, 3, 0},
-    {7, 1, 3, 1},
-    {6, 1, 3, 2},
-    {5, 1, 3, 3},
-    {4, 1, 3, 4},
-    {3, 1, 3, 5},
-    {2, 1, 3, 6},
-    {8, 0, 4, 0},
-    {7, 0, 4, 1},
-    {6, 0, 4, 2},
-    {5, 0, 4, 3},
-    {4, 0, 4, 4},
-    {3, 0, 4, 5},
-    {2, 0, 4, 6},
-    {6, 5, 0, 0},
-    {5, 5, 0, 1},
-    {4, 5, 0, 2},
-    {3, 5, 0, 3},
-    {2, 5, 0, 4},
-    {6, 4, 1, 0},
-    {5, 4, 1, 1},
-    {4, 4, 1, 2},
-    {3, 4, 1, 3},
-    {2, 4, 1, 4},
-    {6, 3, 2, 0},
-    {5, 3, 2, 1},
-    {4, 3, 2, 2},
-    {3, 3, 2, 3},
-    {2, 3, 2, 4},
-    {6, 2, 3, 0},
-    {5, 2, 3, 1},
-    {4, 2, 3, 2},
-    {3, 2, 3, 3},
-    {2, 2, 3, 4},
-    {6, 1, 4, 0},
-    {5, 1, 4, 1},
-    {4, 1, 4, 2},
-    {3, 1, 4, 3},
-    {2, 1, 4, 4},
-    {6, 0, 5, 0},
-    {5, 0, 5, 1},
-    {4, 0, 5, 2},
-    {3, 0, 5, 3},
-    {2, 0, 5, 4},
-    {4, 6, 0, 0},
-    {3, 6, 0, 1},
-    {2, 6, 0, 2},
-    {4, 5, 1, 0},
-    {3, 5, 1, 1},
-    {2, 5, 1, 2},
-    {4, 4, 2, 0},
-    {3, 4, 2, 1},
-    {2, 4, 2, 2},
-    {4, 3, 3, 0},
-    {3, 3, 3, 1},
-    {2, 3, 3, 2},
-    {4, 2, 4, 0},
-    {3, 2, 4, 1},
-    {2, 2, 4, 2},
-    {4, 1, 5, 0},
-    {3, 1, 5, 1},
-    {2, 1, 5, 2},
-    {4, 0, 6, 0},
-    {3, 0, 6, 1},
-    {2, 0, 6, 2},
-    {2, 7, 0, 0},
-    {2, 6, 1, 0},
-    {2, 5, 2, 0},
-    {2, 4, 3, 0},
-    {2, 3, 4, 0},
-    {2, 2, 5, 0},
-    {2, 1, 6, 0},
-    {2, 0, 7, 0},
-};
-
-int dat_size = 204;
-
-//std::vector<std::vector<uint32_t> > temps;
 
 void func_test(int n1, int n2, int n3, int n4) {
 
@@ -241,19 +19,6 @@ void func_test(int n1, int n2, int n3, int n4) {
         uint32_t n;
         uint32_t prefix;
         int offset;
-    };
-
-    auto show_inner = [](inner_t &d) {
-//        printf("(%d, %d, %d, %d) | %08X [%d]\n", d.n1, d.n2, d.n3, d.n4, d.prefix, d.offset);
-        printf(
-            "(%d, %d, %d, %d) | %08X [%d]\n",
-            d.n & 0xFF,
-            (d.n >> 8) & 0xFF,
-            (d.n >> 16) & 0xFF,
-            (d.n >> 24) & 0xFF,
-            d.prefix,
-            d.offset
-        );
     };
 
     constexpr uint32_t MASK_01 = (uint32_t)0b01 << 30;
@@ -268,15 +33,11 @@ void func_test(int n1, int n2, int n3, int n4) {
         .offset = 0,
     });
 
-//    std::vector<uint32_t> temp;
-
     while (!data.empty()) {
-
         if (!data.front().n) {
 
             /// range release
 //            release_data.emplace_back(data.front().prefix);
-
             unsort_data.emplace_back(data.front().prefix);
 
             data.pop();
@@ -317,109 +78,46 @@ void func_test(int n1, int n2, int n3, int n4) {
         }
         data.pop();
     }
-
-//    temps.emplace_back(temp);
-
 }
-
-struct node {
-    uint32_t value;
-    int index;
-    int limit;
-};
-
-struct compare {
-    bool operator() (node node1, node node2) {
-        return node1.value > node2.value;
-    }
-};
 
 void load_ranges() {
 //    std::cout << "ok" << std::endl;
 
-//    std::vector<uint32_t> unsort_data = {
-//    //  0  1  2   3  4  5   6  7  8  9
-//        2, 4, 8,  0, 1, 6,  3, 5, 7, 9
-//    };
-//    std::vector<int> start_point = {0, 3, 6, 10};
-//
-//    std::vector<uint32_t> release;
-//
-//    std::priority_queue<node, std::vector<node>, compare> min_heap;
-//
-//    for (int i = 0; i < start_point.size() - 1; ++i) {
-//        min_heap.push({
-//            .value = unsort_data[start_point[i]],
-//            .index = start_point[i],
-//            .limit = start_point[i + 1] - 1,
-//        });
-//    }
-
-//    while (!min_heap.empty()) {
-//        std::cout << "value: " << min_heap.top().value << std::endl;
-//        std::cout << "index: " << min_heap.top().index << std::endl;
-//        std::cout << "limit: " << min_heap.top().limit << std::endl;
-//        std::cout << "----------------" << std::endl;
-//        min_heap.pop();
-//    }
-
-//    while (!min_heap.empty()) {
-//        auto current = min_heap.top();
-//        min_heap.pop();
-//
-//        release.emplace_back(current.value);
-//
-//        if (current.index == current.limit) {
-//            continue;
-//        }
-//
-//        node next {
-//            .value = unsort_data[current.index + 1],
-//            .index = current.index + 1,
-//            .limit = current.limit,
-//        };
-//        min_heap.push(next);
-//
-//    }
-
-//    for (const auto &d : release) {
-//        std::cout << d << std::endl;
-//    }
-
-//    return;
-
-
-//    for (int n = 0; n <= 7; ++n) { // number of 1x2 and 2x1 block -> 0 ~ 7
-//        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // number of 2x1 block -> 0 ~ n
-//            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // number of 1x1 block -> 0 ~ (14 - 2n)
-//                int n_1x2 = n - n_2x1;
-//                int n_space = 16 - n * 2 - n_1x1;
-
-//                printf("(%d, %d, %d, %d)\n", n_space, n_1x2, n_2x1, n_1x1);
-//                printf("{%d, %d, %d, %d},\n", n_space, n_1x2, n_2x1, n_1x1);
-
-                /// 0x0 -> 00 | 1x2 -> 01 | 2x1 -> 10 | 1x1 -> 11
-//            }
-//        }
-//    }
-
-
-    std::vector<int> start_point;
-
     unsort_data.reserve(7311921);
     release_data.reserve(7311921);
 
-    for (int i = 0; i < dat_size; ++i) {
-        start_point.emplace_back(unsort_data.size());
-        func_test(dat[i].n1, dat[i].n2, dat[i].n3, dat[i].n4);
+    std::vector<int> start_point;
+
+    for (int n = 0; n <= 7; ++n) { // number of 1x2 and 2x1 block -> 0 ~ 7
+        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // number of 2x1 block -> 0 ~ n
+            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // number of 1x1 block -> 0 ~ (14 - 2n)
+                int n_1x2 = n - n_2x1;
+                int n_space = 16 - n * 2 - n_1x1;
+
+                start_point.emplace_back(unsort_data.size());
+
+                func_test(n_space, n_1x2, n_2x1, n_1x1);
+
+                /// 0x0 -> 00 | 1x2 -> 01 | 2x1 -> 10 | 1x1 -> 11
+            }
+        }
     }
     start_point.emplace_back(unsort_data.size());
 
-//    std::cout << "start point size: " << start_point.size() << std::endl;
-
-//    std::cout << start_point[204] << std::endl;
-
     /// self-build sort
+
+    struct node {
+        uint32_t value;
+        int index;
+        int limit;
+    };
+
+    struct compare {
+        bool operator() (node node1, node node2) {
+            return node1.value > node2.value;
+        }
+    };
+
     std::priority_queue<node, std::vector<node>, compare> min_heap;
 
     for (int i = 0; i < start_point.size() - 1; ++i) {
@@ -450,10 +148,10 @@ void load_ranges() {
 //    sort(unsort_data.begin(), unsort_data.end());
 //    release_data.insert(release_data.begin(), unsort_data.begin(), unsort_data.end());
 
-//    std::cout << "size: " << release_data.size() << std::endl;
+    std::cout << "size: " << release_data.size() << std::endl;
 
-    for (const auto &range: release_data) {
-        printf("%08X\n", Common::range_reverse(range));
-    }
+//    for (const auto &range: release_data) {
+//        printf("%08X\n", Common::range_reverse(range));
+//    }
 
 }
