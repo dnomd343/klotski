@@ -15,7 +15,7 @@ public:
     };
     static void build();
     static enum Status status();
-    static const std::vector<uint32_t>* fetch();
+    static const std::vector<uint32_t>& fetch();
 
 private:
     struct generate_t {

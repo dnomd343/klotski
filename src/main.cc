@@ -242,19 +242,22 @@ int main() {
 //    }
 
 //    BasicRanges::build();
-//    std::cout << "size: " << BasicRanges::fetch()->size() << std::endl;
+//    const auto &br = BasicRanges::fetch();
+//    br.push_back(123);
+//    std::cout << "size: " << BasicRanges::fetch().size() << std::endl;
+//    std::cout << "size: " << br.size() << std::endl;
 //    for (const auto &range : *BasicRanges::fetch()) {
 //        printf("%08X\n", range);
 //    }
 
     AllCases::build();
 
-    for (auto head = 0; head < 16; ++head) {
-        uint64_t prefix = (uint64_t)head << 32;
-        for (const auto &range : (*AllCases::fetch())[head]) {
-            printf("%09lX\n", prefix | range);
-        }
-    }
+//    for (auto head = 0; head < 16; ++head) {
+//        uint64_t prefix = (uint64_t)head << 32;
+//        for (const auto &range : AllCases::fetch()[head]) {
+//            printf("%09lX\n", prefix | range);
+//        }
+//    }
 
     std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;

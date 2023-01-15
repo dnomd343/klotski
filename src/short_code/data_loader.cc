@@ -37,7 +37,7 @@ void ShortCode::build_mappings() { // build fast search mappings
     if (map_building.try_lock()) { // lock success -> start building
         for (int head = 0; head < 16; ++head) {
             uint64_t prefix = (uint64_t)head << 32;
-            for (const auto &range : (*AllCases::fetch())[head]) { // blocking function
+            for (const auto &range : AllCases::fetch()[head]) { // blocking function
                 all_cases_list.emplace_back(prefix | range); // short_code -> common_code
             }
         }

@@ -16,7 +16,7 @@ class AllCases : public BasicRanges {
 public:
     static void build();
     static enum Status status();
-    static const std::vector<uint32_t> (*fetch())[16];
+    static const std::vector<uint32_t> (&fetch())[16];
 
 private:
     static bool available;
@@ -24,7 +24,5 @@ private:
     static std::vector<uint32_t> data[16];
 
     static void build_data();
-
     static int check_case(uint32_t head, uint32_t range);
-
 };

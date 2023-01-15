@@ -26,7 +26,7 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common_code --low-mem
     auto target = Common::range_reverse((uint32_t)common_code); // target range
 
     for (int index = 0; index < BASIC_RANGES_INDEX[prefix]; ++index) { // traverse basic ranges
-        uint32_t range = (*BasicRanges::fetch())[index + BASIC_RANGES_OFFSET[prefix]];
+        uint32_t range = BasicRanges::fetch()[index + BASIC_RANGES_OFFSET[prefix]];
         if (range == target) {
             break; // found target range
         }
@@ -55,7 +55,7 @@ uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short_code --low-memor
 
     uint32_t range;
     for (int index = 0; index < BASIC_RANGES_INDEX[prefix]; ++index) { // traverse basic ranges
-        range = (*BasicRanges::fetch())[index + BASIC_RANGES_OFFSET[prefix]];
+        range = BasicRanges::fetch()[index + BASIC_RANGES_OFFSET[prefix]];
         if (Common::check_case(head, range)) { // search for valid cases
             if (short_code == 0) {
                 break; // found target range

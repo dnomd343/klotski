@@ -7,11 +7,11 @@ std::mutex BasicRanges::building;
 bool BasicRanges::available = false;
 std::vector<uint32_t> BasicRanges::data;
 
-const std::vector<uint32_t>* BasicRanges::fetch() { // get basic ranges content
+const std::vector<uint32_t>& BasicRanges::fetch() { // get basic ranges content
     if (status() != AVAILABLE) {
         BasicRanges::build(); // basic ranges initialize
     }
-    return &BasicRanges::data; // return const ptr
+    return BasicRanges::data; // return const ref
 }
 
 BasicRanges::Status BasicRanges::status() { // get basic ranges status

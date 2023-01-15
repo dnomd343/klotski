@@ -5,11 +5,11 @@ std::mutex AllCases::building;
 bool AllCases::available = false;
 std::vector<uint32_t> AllCases::data[];
 
-const std::vector<uint32_t> (*AllCases::fetch())[16] { // get all cases content
+const std::vector<uint32_t> (&AllCases::fetch())[16] { // get all cases content
     if (status() != AVAILABLE) {
         AllCases::build(); // all cases initialize
     }
-    return &AllCases::data; // return const ptr
+    return AllCases::data; // return const ref
 }
 
 AllCases::Status AllCases::status() { // get all cases status
@@ -36,20 +36,20 @@ void AllCases::build() { // ensure that all cases available
 }
 
 void AllCases::build_data() { // find all cases
-    auto basic_ranges = BasicRanges::fetch();
+    const auto &basic_ranges = BasicRanges::fetch();
     for (uint32_t head = 0; head < 15; ++head) { // address of 2x2 block
         if ((head & 0b11) == 0b11) {
             ++head; // skip invalid address
         }
         /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
         data[head].reserve(ALL_CASES_SIZE[head]); // memory pre-allocated
-        for (auto index = 0; index < basic_ranges->size(); ++index) {
-            uint32_t broken = check_case(head, (*basic_ranges)[index]); // check and get broken address
-            auto range_rev = Common::range_reverse((*basic_ranges)[index]); // reversed range
+        for (auto index = 0; index < basic_ranges.size(); ++index) {
+            uint32_t broken = check_case(head, basic_ranges[index]); // check and get broken address
+            auto range_rev = Common::range_reverse(basic_ranges[index]); // reversed range
             if (broken) { // invalid case
                 auto delta = (uint32_t)1 << (32 - broken * 2); // this <--delta--> next possible range
-                auto min_next = (range_rev & ~(delta - 1)) + delta;
-                while (Common::range_reverse((*basic_ranges)[++index]) < min_next); // located next range
+                auto next_min = (range_rev & ~(delta - 1)) + delta;
+                while (Common::range_reverse(basic_ranges[++index]) < next_min); // located next range
                 --index;
             } else {
                 AllCases::data[head].emplace_back(range_rev); // release valid cases
@@ -89,5 +89,5 @@ int AllCases::check_case(uint32_t head, uint32_t range) { // check the head and 
                 break;
         }
     }
-    return 0; // pass
+    return 0; // pass check
 }
