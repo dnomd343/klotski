@@ -269,7 +269,8 @@ int main() {
 //        }
 //    }
 
-    printf("%09lX\n", ShortCode::tiny_decode_demo(14323231));
+//    printf("%09lX\n", ShortCode::tiny_decode_demo(14323231));
+    std::cout << ShortCode::tiny_encode_demo(0x6EC0F8800) << std::endl;
 
 //    auto br = BasicRanges::fetch();
 //    for (auto &range : br) {

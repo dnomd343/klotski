@@ -114,17 +114,43 @@ uint64_t ShortCode::tiny_decode_demo(uint32_t short_code) {
 
         }
 
-//        if (Common::check_case(head, range)) { // search for valid cases
-//
-//            if (!short_code--) { // short code approximate
-//
-//                /// found target range
-//                return head << 32 | Common::range_reverse(range);
-//
-//            }
-//
-//        }
     }
 
     return 0; // never reach when input valid
+}
+
+uint32_t ShortCode::tiny_encode_demo(uint64_t common_code) {
+
+//    printf("%09lX\n", common_code);
+
+    uint32_t head = common_code >> 32;
+    uint32_t prefix = (common_code >> 20) & 0xFFF;
+
+//    printf("head = %d\n", head);
+//    printf("prefix = %X\n", prefix);
+
+    uint32_t offset = 0;
+    auto target = Common::range_reverse((uint32_t)common_code); // target range
+
+    const auto &basic_ranges = BasicRanges::fetch();
+
+    for (auto index = BASIC_RANGES_OFFSET_[prefix]; index < basic_ranges.size(); ++index) { // traverse basic ranges
+
+        uint32_t range = basic_ranges[index];
+
+        if (Common::check_case(head, range)) { // search for valid cases
+
+            if (range == target) { // found target range
+                return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET_[head][prefix] + offset;
+
+            }
+
+            ++offset; // record sub offset
+
+        }
+
+    }
+
+
+    return 0;
 }
