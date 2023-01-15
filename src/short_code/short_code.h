@@ -34,6 +34,9 @@ public:
         speed_up(mode);
     }
 
+    static uint64_t fast_decode(uint32_t short_code);
+    static uint32_t fast_encode(uint64_t common_code);
+
 private:
     uint32_t code;
     static std::mutex map_building;

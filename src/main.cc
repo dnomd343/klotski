@@ -173,6 +173,9 @@ int main() {
 //        }
 //    }
 
+//    ShortCode::speed_up(ShortCode::FAST);
+    AllCases::build();
+
 //    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
 
@@ -278,7 +281,20 @@ int main() {
     /// 8146205 -> 4
     /// 29334497 -> 14
 
-    std::cout << std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, 8146203) - ALL_CASES_OFFSET - 1 << std::endl;
+//    std::cout << std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, 8146203) - ALL_CASES_OFFSET - 1 << std::endl;
+
+
+    for (uint32_t i = 0; i < 29334498; ++i) {
+//        std::cout << ShortCode(i).to_common_code().to_string() << std::endl;
+//        if (CommonCode::unsafe_create(ShortCode::fast_decode(i)).to_short_code().unwrap() != i) {
+//        if (ShortCode(i).to_common_code().to_short_code().unwrap() != i) {
+        if (ShortCode::fast_encode(ShortCode::fast_decode(i)) != i) {
+            std::cout << "error" << std::endl;
+        }
+    }
+
+//    printf("%09lX\n", ShortCode::fast_decode(14323231));
+//    std::cout << ShortCode::fast_encode(0x6EC0F8800) << std::endl;
 
     std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
