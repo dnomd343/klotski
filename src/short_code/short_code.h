@@ -37,8 +37,8 @@ public:
     static uint64_t fast_decode(uint32_t short_code);
     static uint32_t fast_encode(uint64_t common_code);
 
-    static uint64_t tidy_decode_demo(uint32_t short_code);
-    static uint32_t tidy_encode_demo(uint64_t common_code);
+    static uint64_t tiny_decode_demo(uint32_t short_code);
+    static uint32_t tiny_encode_demo(uint64_t common_code);
 
 private:
     uint32_t code;

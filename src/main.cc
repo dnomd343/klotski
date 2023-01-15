@@ -269,14 +269,16 @@ int main() {
 //        }
 //    }
 
-    auto br = BasicRanges::fetch();
-    for (auto &range : br) {
-        range = Common::range_reverse(range);
-    }
+    printf("%09lX\n", ShortCode::tiny_decode_demo(14323231));
+
+//    auto br = BasicRanges::fetch();
+//    for (auto &range : br) {
+//        range = Common::range_reverse(range);
+//    }
     /// 1017983: 0FFFFFFF
     /// 1017984: 10000000
     /// 1017985: 1000000C
-    int sum = 0;
+//    int sum = 0;
 //    printf("    ");
 //    for (uint32_t prefix = 0; prefix < 0x1000; ++prefix) {
 //        printf("%7td, ", std::lower_bound(br.begin(), br.end(), prefix << 20) - br.begin());
@@ -285,17 +287,17 @@ int main() {
 //        }
 //    }
 
-    for (int head = 0; head < 16; ++head) {
-        auto &a = AllCases::fetch()[head];
-        printf("\n/// --------------------------------- 0x%X ---------------------------------\n    ", head);
-        for (uint32_t prefix = 0; prefix < 0x1000; ++prefix) {
-            printf("%7td, ", std::lower_bound(a.begin(), a.end(), prefix << 20) - a.begin());
-            if (sum++ % 8 == 7 and prefix != 0xFFF) {
-                printf("\n    ");
-            }
-        }
-    }
-    printf("\n");
+//    for (int head = 0; head < 16; ++head) {
+//        auto &a = AllCases::fetch()[head];
+//        printf("\n/// --------------------------------- 0x%X ---------------------------------\n    ", head);
+//        for (uint32_t prefix = 0; prefix < 0x1000; ++prefix) {
+//            printf("%7td, ", std::lower_bound(a.begin(), a.end(), prefix << 20) - a.begin());
+//            if (sum++ % 8 == 7 and prefix != 0xFFF) {
+//                printf("\n    ");
+//            }
+//        }
+//    }
+//    printf("\n");
 
 //    printf("%09lX\n", ShortCode::fast_decode(14323231));
 //    std::cout << ShortCode::fast_encode(0x6EC0F8800) << std::endl;
