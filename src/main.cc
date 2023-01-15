@@ -262,32 +262,7 @@ int main() {
 //        }
 //    }
 
-
-    const uint32_t ALL_CASES_OFFSET[16] = {
-    ///        0         1         2         3
-               0,  2942906,  5203298,  8146204,
-    ///        4         5         6         7
-         8146204, 10468254, 12345199, 14667249,
-    ///        8         9        10        11
-        14667249, 16989299, 18866244, 21188294,
-    ///       12        13        14        15
-        21188294, 24131200, 26391592, 29334498,
-    };
-
-    /// 2942905 -> 0
-    /// 2942906 -> 1
-    /// 8146203 -> 2
-    /// 8146204 -> 4
-    /// 8146205 -> 4
-    /// 29334497 -> 14
-
-//    std::cout << std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, 8146203) - ALL_CASES_OFFSET - 1 << std::endl;
-
-
     for (uint32_t i = 0; i < 29334498; ++i) {
-//        std::cout << ShortCode(i).to_common_code().to_string() << std::endl;
-//        if (CommonCode::unsafe_create(ShortCode::fast_decode(i)).to_short_code().unwrap() != i) {
-//        if (ShortCode(i).to_common_code().to_short_code().unwrap() != i) {
         if (ShortCode::fast_encode(ShortCode::fast_decode(i)) != i) {
             std::cout << "error" << std::endl;
         }

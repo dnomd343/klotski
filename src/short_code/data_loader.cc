@@ -52,29 +52,17 @@ void ShortCode::build_mappings() { // build fast search mappings
     map_building.unlock();
 }
 
-#include <iostream>
 #include <algorithm>
 
 uint64_t ShortCode::fast_decode(uint32_t short_code) {
-//    std::cout << "short code: " << short_code << std::endl;
-
-    uint32_t head = std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code) - ALL_CASES_OFFSET - 1;
-//    std::cout << head << std::endl;
-
-//    printf("%08X\n", AllCases::fetch()[head][ short_code - ALL_CASES_OFFSET[head] ]);
-
-    return ((uint64_t)head << 32) | AllCases::fetch()[head][short_code - ALL_CASES_OFFSET[head]];
+    auto offset = std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code) - 1; // binary search
+    uint64_t head = offset - ALL_CASES_OFFSET; // head index
+    return (head << 32) | AllCases::fetch()[head][short_code - *offset]; // release common code
 }
 
 uint32_t ShortCode::fast_encode(uint64_t common_code) {
-//    printf("common code: %09lX\n", common_code);
-
-    uint32_t head = common_code >> 32;
-
-//    std::cout << "head = " << head << std::endl;
-
-    const auto &a = AllCases::fetch();
-
-    return std::lower_bound(a[head].begin(), a[head].end(), (uint32_t)common_code) - a[head].begin() + ALL_CASES_OFFSET[head];
-
+    auto head = common_code >> 32; // head index
+    const auto &ranges = AllCases::fetch()[head]; // available ranges
+    auto offset = std::lower_bound(ranges.begin(), ranges.end(), (uint32_t)common_code) - ranges.begin();
+    return ALL_CASES_OFFSET[head] + offset; // release short code
 }
