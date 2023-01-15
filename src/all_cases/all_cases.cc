@@ -47,7 +47,7 @@ void AllCases::build_data() { // find all cases
             uint32_t broken = check_case(head, basic_ranges[index]); // check and get broken address
             auto range_rev = Common::range_reverse(basic_ranges[index]); // reversed range
             if (broken) { // invalid case
-                auto delta = (uint32_t)1 << (32 - broken * 2); // this <--delta--> next possible range
+                auto delta = (uint32_t)1 << (32 - broken * 2); // this --delta--> next possible range
                 auto next_min = (range_rev & ~(delta - 1)) + delta;
                 while (Common::range_reverse(basic_ranges[++index]) < next_min); // located next range
                 --index;

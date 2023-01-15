@@ -88,27 +88,43 @@ uint64_t ShortCode::tiny_decode_demo(uint32_t short_code) {
     uint32_t prefix = offset - RANGE_PREFIX_OFFSET_[head]; // range prefix
     short_code -= *offset;
 
-    uint32_t start_point = BASIC_RANGES_OFFSET_[prefix];
+    /// search target range
+    const auto &basic_ranges = BasicRanges::fetch();
+    for (auto index = BASIC_RANGES_OFFSET_[prefix]; index < basic_ranges.size(); ++index) {
 
-    printf("prefix: %X\n", prefix);
-    printf("start at %d\n", start_point);
-    printf("next %d valid case\n", short_code);
+        uint32_t range = basic_ranges[index]; // traverse basic ranges
 
-    uint32_t range;
+        uint32_t broken = AllCases::check_case(head, basic_ranges[index]); // check and get broken address
 
-    for (auto index = start_point; index < BasicRanges::fetch().size(); ++index) { // traverse basic ranges
-        range = BasicRanges::fetch()[index];
-        if (Common::check_case(head, range)) { // search for valid cases
+        auto range_rev = Common::range_reverse(basic_ranges[index]); // reversed range
+
+        if (broken) { // invalid case
+            auto delta = (uint32_t)1 << (32 - broken * 2); // this --delta--> next possible range
+            auto next_min = (range_rev & ~(delta - 1)) + delta;
+            while (Common::range_reverse(basic_ranges[++index]) < next_min); // located next range
+            --index;
+        } else {
 
             if (!short_code--) { // short code approximate
-                break; // found target range
+
+                /// found target range
+                return head << 32 | range_rev;
+
             }
 
         }
+
+//        if (Common::check_case(head, range)) { // search for valid cases
+//
+//            if (!short_code--) { // short code approximate
+//
+//                /// found target range
+//                return head << 32 | Common::range_reverse(range);
+//
+//            }
+//
+//        }
     }
 
-    printf("range -> %08X\n", Common::range_reverse(range));
-
-    return (uint64_t)head << 32 | Common::range_reverse(range);
-
+    return 0; // never reach when input valid
 }
