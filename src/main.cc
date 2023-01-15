@@ -250,7 +250,7 @@ int main() {
 //        printf("%08X\n", range);
 //    }
 
-    AllCases::build();
+//    AllCases::build();
 
 //    for (auto head = 0; head < 16; ++head) {
 //        uint64_t prefix = (uint64_t)head << 32;
@@ -258,6 +258,27 @@ int main() {
 //            printf("%09lX\n", prefix | range);
 //        }
 //    }
+
+
+    const uint32_t ALL_CASES_OFFSET[16] = {
+    ///        0         1         2         3
+               0,  2942906,  5203298,  8146204,
+    ///        4         5         6         7
+         8146204, 10468254, 12345199, 14667249,
+    ///        8         9        10        11
+        14667249, 16989299, 18866244, 21188294,
+    ///       12        13        14        15
+        21188294, 24131200, 26391592, 29334498,
+    };
+
+    /// 2942905 -> 0
+    /// 2942906 -> 1
+    /// 8146203 -> 2
+    /// 8146204 -> 4
+    /// 8146205 -> 4
+    /// 29334497 -> 14
+
+    std::cout << std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, 8146203) - ALL_CASES_OFFSET - 1 << std::endl;
 
     std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
