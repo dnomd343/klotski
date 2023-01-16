@@ -337,7 +337,7 @@ int main() {
 
 //    int sum = 0;
     for (uint64_t common_code = 0; common_code < 0x1000000000; ++common_code) {
-        if (CommonCode::check_demo(common_code)) {
+        if (CommonCode::check(common_code)) {
             printf("%09lX\n", common_code);
 //            ++sum;
         }
