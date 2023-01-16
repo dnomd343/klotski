@@ -43,8 +43,8 @@ public:
     static uint64_t tiny_decode(uint32_t short_code);
     static uint32_t tiny_encode(uint64_t common_code);
 
-    static uint64_t tiny_decode_10b(uint32_t short_code);
-    static uint32_t tiny_encode_10b(uint64_t common_code);
+//    static uint64_t tiny_decode_10b(uint32_t short_code);
+//    static uint32_t tiny_encode_10b(uint64_t common_code);
 
     // TODO: ShortCode::create() / ShortCode::from_str(...) / ShortCode::from_common_code(...)
 

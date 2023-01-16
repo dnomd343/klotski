@@ -280,12 +280,12 @@ int main() {
 //        ShortCode::fast_encode(all_cases[i]);
 //    }
 
-    for (uint32_t i = 1000000; i < 1100000; ++i) {
+//    for (uint32_t i = 1000000; i < 1100000; ++i) {
 //        ShortCode::tiny_decode(i);
 //        ShortCode::tiny_decode_10b(i);
 //        ShortCode::tiny_encode(all_cases[i]);
-        ShortCode::tiny_encode_10b(all_cases[i]);
-    }
+//        ShortCode::tiny_encode_10b(all_cases[i]);
+//    }
 
 
 //    printf("%09lX\n", ShortCode::tiny_decode(14323231));
@@ -310,12 +310,23 @@ int main() {
 //        }
 //    }
 
+//    const uint32_t TEST[3][4] = {
+//            {1,1,1,1}, {2,2,}, {3,3,3,}
+//    };
+//    for (auto &x : TEST) {
+//        for (auto &y: x) {
+//            std::cout << y << std::endl;
+//        }
+//    }
+
+//    int sum = 0;
 //    for (int head = 0; head < 16; ++head) {
 //        auto &a = AllCases::fetch()[head];
 //        printf("\n/// --------------------------------- 0x%X ---------------------------------\n    ", head);
-//        for (uint32_t prefix = 0; prefix < 0x400; ++prefix) {
-//            printf("%7td, ", std::lower_bound(a.begin(), a.end(), prefix << 22) - a.begin());
-//            if (sum++ % 8 == 7 and prefix != 0x3FF) {
+//        printf("\n/// --------------------------------------------------------------------- 0x%X ---------------------------------------------------------------------\n    ", head);
+//        for (uint32_t prefix = 0; prefix < 0x1000; ++prefix) {
+//            printf("%7td, ", std::lower_bound(a.begin(), a.end(), prefix << 20) - a.begin());
+//            if (sum++ % 16 == 15 and prefix != 0xFFF) {
 //                printf("\n    ");
 //            }
 //        }
