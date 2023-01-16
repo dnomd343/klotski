@@ -245,7 +245,7 @@ int main() {
 
 //    }
 
-    BasicRanges::build();
+//    BasicRanges::build();
 //    const auto &br = BasicRanges::fetch();
 //    br.push_back(123);
 //    std::cout << "size: " << BasicRanges::fetch().size() << std::endl;
@@ -254,14 +254,13 @@ int main() {
 //        printf("%08X\n", range);
 //    }
 
-//    AllCases::build();
-
-//    for (auto head = 0; head < 16; ++head) {
-//        uint64_t prefix = (uint64_t)head << 32;
-//        for (const auto &range : AllCases::fetch()[head]) {
-//            printf("%09lX\n", prefix | range);
-//        }
-//    }
+    AllCases::build();
+    for (auto head = 0; head < 16; ++head) {
+        uint64_t prefix = (uint64_t)head << 32;
+        for (const auto &range : AllCases::fetch()[head]) {
+            printf("%09lX\n", prefix | range);
+        }
+    }
 
 //    for (uint32_t i = 0; i < 29334498; ++i) {
 //        if (ShortCode::fast_encode(ShortCode::fast_decode(i)) != i) {

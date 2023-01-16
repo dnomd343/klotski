@@ -43,51 +43,22 @@ void AllCases::build_data() { // find all cases
         }
         /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
         data[head].reserve(ALL_CASES_SIZE[head]); // memory pre-allocated
+        /// head(4-bits) + basic ranges(32-bits) ==check==> release valid cases
         for (auto index = 0; index < basic_ranges.size(); ++index) {
-            uint32_t broken = check_case(head, basic_ranges[index]); // check and get broken address
-            auto range_rev = Common::range_reverse(basic_ranges[index]); // reversed range
-            if (broken) { // invalid case
-                auto delta = (uint32_t)1 << (32 - broken * 2); // this --delta--> next possible range
-                auto next_min = (range_rev & ~(delta - 1)) + delta;
+            auto broken_offset = Common::check_range(head, basic_ranges[index]);
+            if (broken_offset) { // case invalid
+                auto delta = (uint32_t)1 << (32 - broken_offset * 2); // delta to next possible range
+                ///         !! -> broken
+                /// ( xx xx xx ) xx xx xx ... (reversed range)
+                ///         +1   00 00 00 ... (delta)
+                auto next_min = (Common::range_reverse(basic_ranges[index]) & ~(delta - 1)) + delta;
                 while (Common::range_reverse(basic_ranges[++index]) < next_min); // located next range
                 --index;
             } else {
-                AllCases::data[head].emplace_back(range_rev); // release valid cases
+                AllCases::data[head].emplace_back(
+                    Common::range_reverse(basic_ranges[index]) // release valid cases
+                );
             }
         }
     }
-}
-
-int AllCases::check_case(uint32_t head, uint32_t range) { // check the head and range
-    constexpr uint32_t M_1x1 = 0b1;
-    constexpr uint32_t M_1x2 = 0b11;
-    constexpr uint32_t M_2x1 = 0b10001;
-    constexpr uint32_t M_2x2 = 0b110011;
-
-    int block_num = 1;
-    uint32_t cache = M_2x2 << head; // fill 2x2 block
-    for (int addr = 0; range; range >>= 2, ++block_num) { // traverse every 2-bits
-        while (cache >> addr & 0b1) {
-            ++addr; // search next not filled block
-        }
-        switch (range & 0b11) {
-            case 0b00: // space
-            case 0b11: // 1x1 block
-                cache |= M_1x1 << addr; // fill space or 1x1 block
-                break;
-            case 0b10: // 2x1 block
-                if (addr > 15 || cache >> (addr + 4) & 0b1) { // invalid address
-                    return block_num; // broken block number
-                }
-                cache |= M_2x1 << addr; // fill 2x1 block
-                break;
-            case 0b01: // 1x2 block
-                if ((addr & 0b11) == 0b11 || cache >> (addr + 1) & 0b1) { // invalid address
-                    return block_num; // broken block number
-                }
-                cache |= M_1x2 << addr; // fill 1x2 block
-                break;
-        }
-    }
-    return 0; // pass check
 }

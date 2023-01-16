@@ -18,8 +18,7 @@ public:
     static enum Status status();
     static const std::vector<uint32_t> (&fetch())[16];
 
-    // TODO: only for test
-    static int check_case(uint32_t head, uint32_t range);
+//    static int check_case(uint32_t head, uint32_t range);
 
 private:
     static bool available;

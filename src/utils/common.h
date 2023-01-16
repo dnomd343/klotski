@@ -43,4 +43,7 @@ class Common {
 public:
     static uint32_t range_reverse(uint32_t bin);
     static bool check_case(uint32_t head, uint32_t range);
+
+    // TODO: with broken block offset return
+    static uint8_t check_range(uint32_t head, uint32_t range);
 };

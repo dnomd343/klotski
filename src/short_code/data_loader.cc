@@ -94,7 +94,7 @@ uint64_t ShortCode::tiny_decode_demo(uint32_t short_code) {
 
         uint32_t range = basic_ranges[index]; // traverse basic ranges
 
-        uint32_t broken = AllCases::check_case(head, basic_ranges[index]); // check and get broken address
+        uint32_t broken = Common::check_range(head, basic_ranges[index]); // check and get broken address
 
         auto range_rev = Common::range_reverse(basic_ranges[index]); // reversed range
 
