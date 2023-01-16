@@ -336,13 +336,19 @@ int main() {
 //    std::cout << sizeof(ShortCode) << std::endl;
 
 //    int sum = 0;
-    for (uint64_t common_code = 0; common_code < 0x100000000; ++common_code) {
-//        if (CommonCode::check_demo(common_code)) {
-//            ++sum;
-//        }
-        if (CommonCode::check(common_code) != CommonCode::check_demo(common_code)) {
+    for (uint64_t common_code = 0; common_code < 0x1000000000; ++common_code) {
+        if (CommonCode::check_demo(common_code)) {
             printf("%09lX\n", common_code);
+//            ++sum;
         }
+
+        if (common_code % 0x10000000 == 0) {
+            std::cerr << common_code / 0x10000000 << std::endl;
+        }
+
+//        if (CommonCode::check(common_code) != CommonCode::check_demo(common_code)) {
+//            printf("%09lX\n", common_code);
+//        }
     }
 //    std::cout << "sum = " << sum << std::endl;
 

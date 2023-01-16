@@ -118,8 +118,6 @@ bool CommonCode::check(uint64_t common_code) { // check whether common code is v
     return Common::check_case(head, range); // check by head and range
 }
 
-#include <iostream>
-
 bool CommonCode::check_demo(uint64_t common_code) {
     ///   M_1x1     M_1x2     M_2x1     M_2x2
     ///  1 0 0 0   1 1 0 0   1 0 0 0   1 1 0 0
@@ -136,31 +134,17 @@ bool CommonCode::check_demo(uint64_t common_code) {
         return false; // invalid common code
     }
 
-    auto range = Common::range_reverse((uint32_t)common_code);
-
-    uint32_t mask = M_2x2 << head; // fill 2x2 block
-
+    /// check range status (low 32-bits)
     int space_num = 0;
+    uint32_t mask = M_2x2 << head; // fill 2x2 block
+    auto range = Common::range_reverse((uint32_t)common_code);
     for (int addr = 0;; range >>= 2) { // traverse every 2-bits
-
-
         while (mask >> addr & 0b1) {
             ++addr; // search next unfilled block
         }
         if (addr >= 20) {
-            return range == 0 && space_num > 1;
+            return !range && space_num > 1; // empty range and >= 2 space
         }
-
-//        std::cout << "addr = " << addr;
-//        std::cout << " | block = " << (range & 0b11) << std::endl;
-
-        // FEA13400 -> 1111 1110 1010 0001 0011 0100 0000 0000
-        // * * * |
-        // # + | +
-        // + + + |
-        // . ~ + +
-        // . * ~ +
-
         switch (range & 0b11) {
             case 0b00: // space
                 ++space_num;
@@ -174,7 +158,7 @@ bool CommonCode::check_demo(uint64_t common_code) {
                 mask |= M_2x1 << addr; // fill 2x1 block
                 break;
             case 0b01: // 1x2 block
-                if (addr > 18 || (addr & 0b11) == 0b11 || mask >> (addr + 1) & 0b1) { // invalid address
+                if ((addr & 0b11) == 0b11 || mask >> (addr + 1) & 0b1) { // invalid address
                     return false;
                 }
                 mask |= M_1x2 << addr; // fill 1x2 block
