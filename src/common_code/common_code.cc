@@ -47,6 +47,13 @@ CommonCode::CommonCode(const ShortCode &short_code) { // load from short code
     code = short_code.to_common_code().code;
 }
 
+std::ostream& operator<<(std::ostream &out, const CommonCode &self) {
+    char str[10];
+    sprintf(str, "%09lX", self.code);
+    out << str;
+    return out;
+}
+
 bool CommonCode::check(uint64_t common_code) { // whether common code is valid
     ///   M_1x1     M_1x2     M_2x1     M_2x2
     ///  1 0 0 0   1 1 0 0   1 0 0 0   1 1 0 0

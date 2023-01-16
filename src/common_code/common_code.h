@@ -2,6 +2,7 @@
 
 #include <string>
 #include <cstdint>
+#include <ostream>
 #include "raw_code.h"
 #include "short_code.h"
 
@@ -16,7 +17,7 @@ public:
     std::string to_string(bool shorten = false) const;
 
     static bool check(uint64_t common_code);
-    // TODO: std::cout << CommonCode(...)
+    friend std::ostream& operator<<(std::ostream &out, const CommonCode &self);
 
     explicit CommonCode(uint64_t common_code);
     explicit CommonCode(const RawCode &raw_code);

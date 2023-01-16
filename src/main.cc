@@ -360,6 +360,7 @@ int main() {
 //    std::cout << CommonCode(0x4FEA13400).to_string() << std::endl;
 
     printf("%09lX\n", CommonCode::from_string("1a9bf0c").unwrap());
+    std::cout << CommonCode("4feA134") << std::endl;
 
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
