@@ -1,6 +1,8 @@
 #pragma once
 
-const char SHORT_CODE_TABLE[32] = {
+#include <cstdint>
+
+const int8_t SHORT_CODE_TABLE[32] = {
     '1', '2', '3', '4', '5', '6', '7', '8', '9', // skip `0`
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', // skip `I`
     'J', 'K', // skip `L`
@@ -9,7 +11,7 @@ const char SHORT_CODE_TABLE[32] = {
 };
 
 /// `1`(49) ~ `Z`(90)
-const char SHORT_CODE_TABLE_REV[42] = {
+const int8_t SHORT_CODE_TABLE_REV[42] = {
      0,  1,  2,  3,  4,  5,  6,  7,  8, // `1`(49) ~ `9`(57)
     -1, -1, -1, -1, -1, -1, -1, // `:`(58) ~ `@`(64)
      9, 10, 11, 12, 13, 14, 15, 16, -1, 17, // `A`(65) ~ `J`(74)

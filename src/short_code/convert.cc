@@ -6,19 +6,23 @@
 #include "basic_ranges_offset.h"
 #include "range_prefix_offset.h"
 
-CommonCode ShortCode::to_common_code() const { // convert to common code
-    if (ShortCode::check_mode() == ShortCode::NORMAL) {
-        return CommonCode::unsafe_create(tiny_decode(code)); // normal mode
-    }
-    return CommonCode::unsafe_create(fast_decode(code)); // fast mode
+ShortCode ShortCode::from_common_code(const CommonCode &common_code) {
+    return ShortCode(common_code); // convert from common code
 }
 
 ShortCode::ShortCode(const CommonCode &common_code) { // convert from common code
-    if (ShortCode::check_mode() == ShortCode::NORMAL) {
+    if (ShortCode::mode() == ShortCode::NORMAL) {
         code = tiny_encode(common_code.unwrap()); // normal mode
     } else {
         code = fast_encode(common_code.unwrap()); // fast mode
     }
+}
+
+CommonCode ShortCode::to_common_code() const { // convert to common code
+    if (ShortCode::mode() == ShortCode::NORMAL) {
+        return CommonCode::unsafe_create(tiny_decode(code)); // normal mode
+    }
+    return CommonCode::unsafe_create(fast_decode(code)); // fast mode
 }
 
 /// NOTE: ensure that input common code is valid !!!

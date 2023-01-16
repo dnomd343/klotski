@@ -178,13 +178,13 @@ int main() {
 //    AllCases::build();
     BasicRanges::build();
 
-    std::vector<uint64_t> all_cases;
-    for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto &range : AllCases::fetch()[head]) {
-            all_cases.emplace_back(head << 32 | range);
-        }
-    }
-    std::cout << "test data size: " << all_cases.size() << std::endl;
+//    std::vector<uint64_t> all_cases;
+//    for (uint64_t head = 0; head < 16; ++head) {
+//        for (const auto &range : AllCases::fetch()[head]) {
+//            all_cases.emplace_back(head << 32 | range);
+//        }
+//    }
+//    std::cout << "test data size: " << all_cases.size() << std::endl;
 
 //    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
@@ -271,13 +271,16 @@ int main() {
 //        }
 //    }
 
-    for (uint32_t i = 1000000; i < 1010000; ++i) {
-        ShortCode::tiny_decode(i);
-        ShortCode::tiny_encode(all_cases[i]);
-    }
+//    for (uint32_t i = 1000000; i < 1010000; ++i) {
+//        ShortCode::tiny_decode(i);
+//        ShortCode::tiny_encode(all_cases[i]);
+//    }
 
 //    printf("%09lX\n", ShortCode::tiny_decode(14323231));
 //    std::cout << ShortCode::tiny_encode(0x6EC0F8800) << std::endl;
+
+    std::cout << ShortCode(14323231).to_string() << std::endl;
+    std::cout << ShortCode::from_string("EP4HZ").unwrap() << std::endl;
 
 //    printf("%09lX\n", ShortCode::fast_decode(14323231));
 //    std::cout << ShortCode::fast_encode(0x6EC0F8800) << std::endl;
