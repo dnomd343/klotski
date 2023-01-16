@@ -11,7 +11,7 @@ inline uint32_t binary_count(uint32_t bin) { // get number of non-zero bits
     return bin & 0b111111;
 }
 
-/// WARN: bin should not be zero
+/// NOTE: bin should not be zero
 inline uint32_t last_zero_num(uint32_t bin) { // get last zero number
     bin ^= (bin - 1);
     return __builtin_popcount(bin >> 1);

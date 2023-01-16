@@ -23,7 +23,15 @@ public:
     explicit CommonCode(const ShortCode &short_code);
     explicit CommonCode(const std::string &common_code_str);
 
+    // TODO: std::cout << CommonCode(...)
+
+    // TODO: CommonCode::create(...) / CommonCode::from_string(...)
+    // TODO: CommonCode::from_short_code(...) / CommonCode::from_raw_code(...)
+
+    // TODO: single check function for CommonCode
+    // TODO: single `.cc` file for serialize
+
 private:
     uint64_t code;
-    CommonCode() = default; // unsafe init
+    CommonCode() = default; // unsafe initialize
 };

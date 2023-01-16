@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <cstdint>
 #include <ostream>
 #include "common_code.h"

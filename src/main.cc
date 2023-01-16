@@ -282,11 +282,13 @@ int main() {
 //    std::cout << ShortCode(14323231).to_string() << std::endl;
 //    std::cout << ShortCode::from_string("EP4HZ").unwrap() << std::endl;
 
-    std::cout << ShortCode("EP4HZ") << std::endl;
-    std::cout << ShortCode(14323231) << std::endl;
+//    std::cout << ShortCode("EP4HZ") << std::endl;
+//    std::cout << ShortCode(14323231) << std::endl;
 
 //    printf("%09lX\n", ShortCode::fast_decode(14323231));
 //    std::cout << ShortCode::fast_encode(0x6EC0F8800) << std::endl;
+
+    std::cout << sizeof(ShortCode) << std::endl;
 
     std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
