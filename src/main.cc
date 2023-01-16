@@ -53,6 +53,32 @@
 
 int main() {
 
+    AllCases::build();
+
+    std::vector<uint64_t> all_cases;
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : AllCases::fetch()[head]) {
+            all_cases.emplace_back(head << 32 | range);
+        }
+    }
+
+    ShortCode::speed_up(ShortCode::FAST);
+    std::cout << "start verify" << std::endl;
+
+    auto start_time = clock();
+
+    for (uint32_t short_code = 0; short_code < all_cases.size(); ++short_code) {
+        auto common_code = all_cases[short_code]; // correct result
+
+        if (ShortCode(short_code).to_common_code().unwrap() != common_code) {
+            std::cout << "error" << std::endl;
+        }
+
+        if (ShortCode(CommonCode(common_code)).unwrap() != short_code) {
+            std::cout << "error" << std::endl;
+        }
+    }
+
 //    printf("%p\n", BasicRanges::build);
 //    printf("%p\n", AllCases::build);
 //
@@ -176,7 +202,7 @@ int main() {
 
 //    ShortCode::speed_up(ShortCode::FAST);
 //    AllCases::build();
-    BasicRanges::build();
+//    BasicRanges::build();
 
 //    std::vector<uint64_t> all_cases;
 //    for (uint64_t head = 0; head < 16; ++head) {
@@ -185,9 +211,6 @@ int main() {
 //        }
 //    }
 //    std::cout << "test data size: " << all_cases.size() << std::endl;
-
-//    std::cout << "start benchmark" << std::endl;
-    auto start_time = clock();
 
 //    auto raw_code = RawCode(CommonCode("4fea134")).unwrap();
 //    for (int i = 0; i < 100000000; ++i) {
@@ -288,7 +311,7 @@ int main() {
 //    printf("%09lX\n", ShortCode::fast_decode(14323231));
 //    std::cout << ShortCode::fast_encode(0x6EC0F8800) << std::endl;
 
-    std::cout << sizeof(ShortCode) << std::endl;
+//    std::cout << sizeof(ShortCode) << std::endl;
 
     std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
