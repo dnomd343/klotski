@@ -18,13 +18,10 @@ public:
     static enum Status status();
     static const std::vector<uint32_t> (&fetch())[16];
 
-//    static int check_case(uint32_t head, uint32_t range);
-
 private:
     static bool available;
     static std::mutex building;
     static std::vector<uint32_t> data[16];
 
     static void build_data();
-//    static int check_case(uint32_t head, uint32_t range);
 };

@@ -1,21 +1,24 @@
 #pragma once
 
 #include <cstdint>
+#include <ostream>
 #include "common_code.h"
+
+const uint32_t SHORT_CODE_LIMIT = 29334498;
 
 class CommonCode;
 
 class ShortCode {
 public:
     enum Mode {NORMAL, FAST};
-    static void speed_up(enum Mode mode);
 
     uint32_t unwrap() const;
     std::string to_string() const;
     CommonCode to_common_code() const;
-    static bool check(uint32_t short_code);
 
-    // TODO: std::cout << ShortCode(...) << std::endl;
+    static void speed_up(enum Mode mode);
+    static bool check(uint32_t short_code);
+    friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
     explicit ShortCode(uint32_t short_code);
     explicit ShortCode(const std::string &short_code);
@@ -33,10 +36,8 @@ private:
     uint32_t code;
     static bool fast_mode_available;
     static bool normal_mode_available;
-    static const uint32_t SHORT_CODE_LIMIT = 29334498;
 
     static enum Mode mode();
-
     static uint64_t fast_decode(uint32_t short_code);
     static uint32_t fast_encode(uint64_t common_code);
     static uint64_t tiny_decode(uint32_t short_code);
