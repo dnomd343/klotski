@@ -8,6 +8,7 @@
 #include "fast_cal.h"
 #include "analyse.h"
 #include "common.h"
+#include "offset/all_cases_offset.h"
 
 //#include "core_demo.h"
 //#include "basic_ranges_demo.h"
@@ -51,33 +52,54 @@
 //    std::cout << std::endl;
 //}
 
+std::vector<uint64_t> all_cases;
+
+void short_code_verify(uint32_t start, uint32_t end) {
+    for (uint32_t short_code = start; short_code < end; ++short_code) {
+        auto common_code = all_cases[short_code]; // correct result
+
+        if (ShortCode(short_code).to_common_code().unwrap() != common_code) {
+            std::cout << "Error decode: " << ShortCode(short_code) << std::endl;
+        }
+
+        if (ShortCode(CommonCode(common_code)).unwrap() != short_code) {
+            std::cout << "Error encode: " << ShortCode(short_code) << std::endl;
+        }
+    }
+    std::cout << "[" << start << ", " << end << ")" << std::endl;
+}
+
 int main() {
 
     AllCases::build();
 
-    std::vector<uint64_t> all_cases;
     for (uint64_t head = 0; head < 16; ++head) {
         for (const auto &range : AllCases::fetch()[head]) {
             all_cases.emplace_back(head << 32 | range);
         }
     }
 
-    ShortCode::speed_up(ShortCode::FAST);
+    ShortCode::speed_up(ShortCode::NORMAL);
     std::cout << "start verify" << std::endl;
 
-    auto start_time = clock();
+//    auto start_time = clock();
 
-    for (uint32_t short_code = 0; short_code < all_cases.size(); ++short_code) {
-        auto common_code = all_cases[short_code]; // correct result
+    std::thread tasks[16];
 
-        if (ShortCode(short_code).to_common_code().unwrap() != common_code) {
-            std::cout << "error" << std::endl;
-        }
-
-        if (ShortCode(CommonCode(common_code)).unwrap() != short_code) {
-            std::cout << "error" << std::endl;
-        }
+    for (int head = 0; head < 16; ++head) {
+        uint32_t start = ALL_CASES_OFFSET[head];
+        uint32_t end = start + AllCases::fetch()[head].size();
+        tasks[head] = std::thread(short_code_verify, start, end);
     }
+
+    for (auto &t : tasks) {
+        t.join();
+    }
+
+    std::cout << "verify complete" << std::endl;
+    return 0;
+
+
 
 //    printf("%p\n", BasicRanges::build);
 //    printf("%p\n", AllCases::build);
@@ -313,7 +335,7 @@ int main() {
 
 //    std::cout << sizeof(ShortCode) << std::endl;
 
-    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
 
