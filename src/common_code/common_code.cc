@@ -2,22 +2,34 @@
 #include "common.h"
 #include "common_code.h"
 
-uint64_t CommonCode::unwrap() const { // get raw uint64_t code
-    return code;
+uint64_t CommonCode::unwrap() const {
+    return code; // raw uint64_t code
 }
 
-RawCode CommonCode::to_raw_code() const { // convert to raw code
-    return RawCode(*this);
+RawCode CommonCode::to_raw_code() const {
+    return RawCode(*this); // convert to raw code
 }
 
-ShortCode CommonCode::to_short_code() const { // convert to short code
-    return ShortCode(*this);
+ShortCode CommonCode::to_short_code() const {
+    return ShortCode(*this); // convert to short code
 }
 
-CommonCode CommonCode::unsafe_create(uint64_t code) { // create CommonCode without check
-    auto common_code = CommonCode(); // init directly
-    common_code.code = code;
-    return common_code;
+CommonCode CommonCode::create(uint64_t common_code) {
+    return CommonCode(common_code); // create from uint64_t
+}
+
+CommonCode CommonCode::from_raw_code(const RawCode &raw_code) {
+    return raw_code.to_common_code(); // create from raw code
+}
+
+CommonCode CommonCode::from_short_code(const ShortCode &short_code) {
+    return short_code.to_common_code(); // create from short code
+}
+
+CommonCode CommonCode::unsafe_create(uint64_t common_code) { // create without check
+    auto common = CommonCode(); // init directly
+    common.code = common_code;
+    return common;
 }
 
 CommonCode::CommonCode(uint64_t common_code) {

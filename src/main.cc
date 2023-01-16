@@ -356,8 +356,10 @@ int main() {
 //    std::cout << CommonCode::check_demo(0x0000011CE) << std::endl;
 //    std::cout << CommonCode::check_demo(0x02ED67000) << std::endl;
 
-    std::cout << CommonCode("1a9bf0C0").to_string() << std::endl;
-    std::cout << CommonCode(0x4FEA13400).to_string() << std::endl;
+//    std::cout << CommonCode("1a9bf0C0").to_string() << std::endl;
+//    std::cout << CommonCode(0x4FEA13400).to_string() << std::endl;
+
+    printf("%09lX\n", CommonCode::from_string("1a9bf0c").unwrap());
 
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;

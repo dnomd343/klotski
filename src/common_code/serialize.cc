@@ -15,6 +15,10 @@ inline uint32_t last_zero_num(uint32_t bin) { // get last zero number
     return binary_count(bin >> 1);
 }
 
+CommonCode CommonCode::from_string(const std::string &common_code) {
+    return CommonCode(common_code); // load from string
+}
+
 std::string CommonCode::to_string(bool shorten) const { // convert uint64_t code to string
     char result[10]; // max length 9-bits
     sprintf(result, "%09lX", code);
