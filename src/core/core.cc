@@ -35,6 +35,17 @@
 
 ////////////////////////////////////////
 
+#define RELEASE(NEXT_CODE, FILTER) \
+cache_t next_case = { \
+    .code = NEXT_CODE, \
+    .mask = F_1x1 << next_addr, \
+    .filter = FILTER, \
+    .addr = next_addr \
+}; \
+cache_insert(next_case);
+
+////////////////////////////////////////
+
 #define BFS_INIT \
 int next_addr; \
 int current = 0; \
@@ -46,17 +57,6 @@ addr = cache[current].addr; \
 int filter = cache[current++].filter;
 
 #define BFS_STOP (current == cache_size)
-
-////////////////////////////////////////
-
-#define RELEASE(NEXT_CODE, FILTER) \
-cache_t next_case = { \
-    .code = NEXT_CODE, \
-    .mask = F_1x1 << next_addr, \
-    .filter = FILTER, \
-    .addr = next_addr \
-}; \
-cache_insert(next_case);
 
 ////////////////////////////////////////
 
