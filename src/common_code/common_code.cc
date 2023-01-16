@@ -2,21 +2,6 @@
 #include "common.h"
 #include "common_code.h"
 
-inline uint32_t binary_count(uint32_t bin) { // get number of non-zero bits
-    bin -= (bin >> 1) & 0x55555555;
-    bin = (bin & 0x33333333) + ((bin >> 2) & 0x33333333);
-    bin = ((bin >> 4) + bin) & 0x0F0F0F0F;
-    bin += bin >> 8;
-    bin += bin >> 16;
-    return bin & 0b111111;
-}
-
-/// NOTE: bin should not be zero
-inline uint32_t last_zero_num(uint32_t bin) { // get last zero number
-    bin ^= (bin - 1);
-    return __builtin_popcount(bin >> 1);
-}
-
 uint64_t CommonCode::unwrap() const { // get raw uint64_t code
     return code;
 }
@@ -42,50 +27,12 @@ CommonCode::CommonCode(uint64_t common_code) {
     code = common_code;
 }
 
-CommonCode::CommonCode(const RawCode &raw_code) { // init from raw code
+CommonCode::CommonCode(const RawCode &raw_code) { // load from raw code
     code = raw_code.to_common_code().code;
 }
 
-CommonCode::CommonCode(const ShortCode &short_code) { // init from short code
+CommonCode::CommonCode(const ShortCode &short_code) { // load from short code
     code = short_code.to_common_code().code;
-}
-
-CommonCode::CommonCode(const std::string &common_code_str) {
-    if (common_code_str.length() > 9 || common_code_str.length() == 0) { // check string length
-        throw std::invalid_argument("common code format error");
-    }
-
-    uint64_t common_code = 0;
-    for (auto const &bit : common_code_str) {
-        common_code <<= 4;
-        if (bit >= '0' && bit <= '9') { // 0 ~ 9
-            common_code |= (bit - 48);
-        } else if (bit >= 'A' && bit <= 'Z') { // A ~ Z
-            common_code |= (bit - 55);
-        } else if (bit >= 'a' && bit <= 'z') { // a ~ z
-            common_code |= (bit - 87);
-        } else {
-            throw std::invalid_argument("common code format error"); // unknown characters
-        }
-    }
-    common_code <<= (9 - common_code_str.length()) * 4; // low-bits fill with zero
-
-    if (!CommonCode::check(common_code)) { // check converted common code
-        throw std::invalid_argument("invalid common code");
-    }
-    code = common_code;
-}
-
-std::string CommonCode::to_string(bool shorten) const { // convert uint64_t code to string
-    char result[10]; // max length 9-bits
-    sprintf(result, "%09lX", code);
-    if (shorten) { // remove `0` after common code
-        if (code == 0x000000000) {
-            return "0"; // special case -> only one `0`
-        }
-        result[9 - last_zero_num(code) / 4] = '\0'; // truncate string
-    }
-    return result; // char* -> std::string
 }
 
 bool CommonCode::check(uint64_t common_code) { // whether common code is valid

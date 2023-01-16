@@ -336,25 +336,28 @@ int main() {
 //    std::cout << sizeof(ShortCode) << std::endl;
 
 //    int sum = 0;
-    for (uint64_t common_code = 0; common_code < 0x1000000000; ++common_code) {
-        if (CommonCode::check(common_code)) {
-            printf("%09lX\n", common_code);
+//    for (uint64_t common_code = 0; common_code < 0x1000000000; ++common_code) {
+//        if (CommonCode::check(common_code)) {
+//            printf("%09lX\n", common_code);
 //            ++sum;
-        }
+//        }
 
-        if (common_code % 0x10000000 == 0) {
-            std::cerr << common_code / 0x10000000 << std::endl;
-        }
+//        if (common_code % 0x10000000 == 0) {
+//            std::cerr << common_code / 0x10000000 << std::endl;
+//        }
 
 //        if (CommonCode::check(common_code) != CommonCode::check_demo(common_code)) {
 //            printf("%09lX\n", common_code);
 //        }
-    }
+//    }
 //    std::cout << "sum = " << sum << std::endl;
 
 //    std::cout << CommonCode::check_demo(0x4FEA13400) << std::endl;
 //    std::cout << CommonCode::check_demo(0x0000011CE) << std::endl;
 //    std::cout << CommonCode::check_demo(0x02ED67000) << std::endl;
+
+    std::cout << CommonCode("1a9bf0C0").to_string() << std::endl;
+    std::cout << CommonCode(0x4FEA13400).to_string() << std::endl;
 
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
