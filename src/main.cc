@@ -178,13 +178,13 @@ int main() {
 //    AllCases::build();
     BasicRanges::build();
 
-    std::vector<uint64_t> all_cases;
-    for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto &range : AllCases::fetch()[head]) {
-            all_cases.emplace_back(head << 32 | range);
-        }
-    }
-    std::cout << "test data size: " << all_cases.size() << std::endl;
+//    std::vector<uint64_t> all_cases;
+//    for (uint64_t head = 0; head < 16; ++head) {
+//        for (const auto &range : AllCases::fetch()[head]) {
+//            all_cases.emplace_back(head << 32 | range);
+//        }
+//    }
+//    std::cout << "test data size: " << all_cases.size() << std::endl;
 
 //    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
@@ -271,67 +271,12 @@ int main() {
 //        }
 //    }
 
-//    for (uint32_t i = 0; i < 29334498; ++i) {
-//        if (ShortCode::fast_encode(ShortCode::fast_decode(i)) != i) {
-//            std::cout << "error" << std::endl;
-//        }
-//        ShortCode::fast_encode_legacy(i);
-//        ShortCode::fast_decode(i);
-//        ShortCode::fast_encode(all_cases[i]);
-//    }
-
-//    for (uint32_t i = 1000000; i < 1100000; ++i) {
-//        ShortCode::tiny_decode(i);
-//        ShortCode::tiny_decode_10b(i);
-//        ShortCode::tiny_encode(all_cases[i]);
-//        ShortCode::tiny_encode_10b(all_cases[i]);
-//    }
-
+    for (uint32_t i = 1000000; i < 1010000; ++i) {
+        ShortCode::tiny_decode(i);
+    }
 
 //    printf("%09lX\n", ShortCode::tiny_decode(14323231));
-//    std::cout << ShortCode::tiny_encode_demo(0x6EC0F8800) << std::endl;
-
-//    printf("%09lX\n", ShortCode::tiny_decode_10b(14323231));
-//    std::cout << ShortCode::tiny_encode_10b(0x6EC0F8800) << std::endl;
-
-//    auto br = BasicRanges::fetch();
-//    for (auto &range : br) {
-//        range = Common::range_reverse(range);
-//    }
-    /// 1017983: 0FFFFFFF
-    /// 1017984: 10000000
-    /// 1017985: 1000000C
-//    int sum = 0;
-//    printf("    ");
-//    for (uint32_t prefix = 0; prefix < 0x400; ++prefix) {
-//        printf("%7td, ", std::lower_bound(br.begin(), br.end(), prefix << 22) - br.begin());
-//        if (sum++ % 8 == 7) {
-//            printf("\n    ");
-//        }
-//    }
-
-//    const uint32_t TEST[3][4] = {
-//            {1,1,1,1}, {2,2,}, {3,3,3,}
-//    };
-//    for (auto &x : TEST) {
-//        for (auto &y: x) {
-//            std::cout << y << std::endl;
-//        }
-//    }
-
-//    int sum = 0;
-//    for (int head = 0; head < 16; ++head) {
-//        auto &a = AllCases::fetch()[head];
-//        printf("\n/// --------------------------------- 0x%X ---------------------------------\n    ", head);
-//        printf("\n/// --------------------------------------------------------------------- 0x%X ---------------------------------------------------------------------\n    ", head);
-//        for (uint32_t prefix = 0; prefix < 0x1000; ++prefix) {
-//            printf("%7td, ", std::lower_bound(a.begin(), a.end(), prefix << 20) - a.begin());
-//            if (sum++ % 16 == 15 and prefix != 0xFFF) {
-//                printf("\n    ");
-//            }
-//        }
-//    }
-//    printf("\n");
+//    std::cout << ShortCode::tiny_encode(0x6EC0F8800) << std::endl;
 
 //    printf("%09lX\n", ShortCode::fast_decode(14323231));
 //    std::cout << ShortCode::fast_encode(0x6EC0F8800) << std::endl;
