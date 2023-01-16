@@ -136,9 +136,13 @@ uint64_t ShortCode::tiny_decode(uint32_t short_code) {
     return 0; // never reach when input valid
 }
 
+#include <iostream>
+
 uint32_t ShortCode::tiny_encode(uint64_t common_code) {
 
 //    printf("%09lX\n", common_code);
+
+//    uint64_t raw = common_code;
 
     uint32_t head = common_code >> 32;
     uint32_t prefix = (common_code >> 20) & 0xFFF;
@@ -149,16 +153,129 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
     uint32_t offset = 0;
     auto target = Common::range_reverse((uint32_t)common_code); // target range
 
+//    printf("target range: %08X\n", target);
+//    printf("start search at %d\n", BASIC_RANGES_OFFSET[prefix]);
+//
     const auto &basic_ranges = BasicRanges::fetch();
 
+//    auto true_index = std::find(basic_ranges.begin(), basic_ranges.end(), 0x0FF00F34) - basic_ranges.begin();
+
+//    printf("true index: %td\n", true_index);
+//    printf("basic_ranges[1294828] = %08X\n", basic_ranges[1294828]);
+
     for (auto index = BASIC_RANGES_OFFSET[prefix]; index < basic_ranges.size(); ++index) { // traverse basic ranges
+
+        uint32_t range = basic_ranges[index];
+
+//        bool flag = false;
+//        if (range == 0x0FF00F34) {
+//            flag = true;
+//            std::cout << "get target range" << std::endl;
+//            std::cout << "check result -> " << Common::check_case(head, range) << std::endl;
+//        }
+
+        // TODO: using Common::check_range
+        if (Common::check_case(head, range)) { // search for valid cases
+
+//            if (flag) {
+//                std::cout << "check ok" << std::endl;
+//            }
+
+            if (range == target) { // found target range
+//                std::cout << "sum = " << sum << std::endl;
+                return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
+
+            }
+
+            ++offset; // record sub offset
+
+        }
+
+    }
+
+
+//    std::cout << "sum = " << sum << std::endl;
+
+//    printf("error common code -> %09lX\n", raw);
+    printf("error\n");
+
+    return 0;
+}
+
+
+
+
+
+
+uint64_t ShortCode::tiny_decode_10b(uint32_t short_code) {
+    /// match head index
+    auto offset = std::upper_bound( // binary search
+        ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code
+    ) - 1;
+    uint64_t head = offset - ALL_CASES_OFFSET; // head index
+    short_code -= *offset;
+
+    /// match range prefix
+    offset = std::upper_bound( // binary search
+        RANGE_PREFIX_OFFSET_10b[head], RANGE_PREFIX_OFFSET_10b[head] + 1024, short_code
+    ) - 1;
+    uint32_t prefix = offset - RANGE_PREFIX_OFFSET_10b[head]; // range prefix
+    short_code -= *offset;
+
+    /// search target range
+    const auto &basic_ranges = BasicRanges::fetch();
+    for (auto index = BASIC_RANGES_OFFSET_10b[prefix]; index < basic_ranges.size(); ++index) {
+
+        uint32_t range = basic_ranges[index]; // traverse basic ranges
+
+        uint32_t broken = Common::check_range(head, basic_ranges[index]); // check and get broken address
+
+        auto range_rev = Common::range_reverse(basic_ranges[index]); // reversed range
+
+        if (broken) { // invalid case
+            auto delta = (uint32_t)1 << (32 - broken * 2); // this --delta--> next possible range
+            auto next_min = (range_rev & ~(delta - 1)) + delta;
+            while (Common::range_reverse(basic_ranges[++index]) < next_min); // located next range
+            --index;
+        } else {
+
+            if (!short_code--) { // short code approximate
+
+                /// found target range
+                return head << 32 | range_rev;
+
+            }
+
+        }
+
+    }
+
+    return 0; // never reach when input valid
+}
+
+uint32_t ShortCode::tiny_encode_10b(uint64_t common_code) {
+
+//    printf("%09lX\n", common_code);
+
+    uint32_t head = common_code >> 32;
+    uint32_t prefix = (common_code >> 22) & 0x3FF;
+
+//    printf("head = %d\n", head);
+//    printf("prefix = %X\n", prefix);
+
+    uint32_t offset = 0;
+    auto target = Common::range_reverse((uint32_t)common_code); // target range
+
+    const auto &basic_ranges = BasicRanges::fetch();
+
+    for (auto index = BASIC_RANGES_OFFSET_10b[prefix]; index < basic_ranges.size(); ++index) { // traverse basic ranges
 
         uint32_t range = basic_ranges[index];
 
         if (Common::check_case(head, range)) { // search for valid cases
 
             if (range == target) { // found target range
-                return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
+                return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET_10b[head][prefix] + offset;
 
             }
 
@@ -171,4 +288,6 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
 
     return 0;
 }
+
+
 

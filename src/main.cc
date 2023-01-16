@@ -174,15 +174,17 @@ int main() {
 //        }
 //    }
 
-    ShortCode::speed_up(ShortCode::FAST);
-    AllCases::build();
+//    ShortCode::speed_up(ShortCode::FAST);
+//    AllCases::build();
+    BasicRanges::build();
 
     std::vector<uint64_t> all_cases;
     for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto &range : BasicRanges::fetch()) {
+        for (const auto &range : AllCases::fetch()[head]) {
             all_cases.emplace_back(head << 32 | range);
         }
     }
+    std::cout << "test data size: " << all_cases.size() << std::endl;
 
 //    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
@@ -269,17 +271,28 @@ int main() {
 //        }
 //    }
 
-    for (uint32_t i = 0; i < 29334498; ++i) {
+//    for (uint32_t i = 0; i < 29334498; ++i) {
 //        if (ShortCode::fast_encode(ShortCode::fast_decode(i)) != i) {
 //            std::cout << "error" << std::endl;
 //        }
 //        ShortCode::fast_encode_legacy(i);
 //        ShortCode::fast_decode(i);
-        ShortCode::fast_encode(all_cases[i]);
+//        ShortCode::fast_encode(all_cases[i]);
+//    }
+
+    for (uint32_t i = 1000000; i < 1100000; ++i) {
+//        ShortCode::tiny_decode(i);
+//        ShortCode::tiny_decode_10b(i);
+//        ShortCode::tiny_encode(all_cases[i]);
+        ShortCode::tiny_encode_10b(all_cases[i]);
     }
+
 
 //    printf("%09lX\n", ShortCode::tiny_decode(14323231));
 //    std::cout << ShortCode::tiny_encode_demo(0x6EC0F8800) << std::endl;
+
+//    printf("%09lX\n", ShortCode::tiny_decode_10b(14323231));
+//    std::cout << ShortCode::tiny_encode_10b(0x6EC0F8800) << std::endl;
 
 //    auto br = BasicRanges::fetch();
 //    for (auto &range : br) {
@@ -290,8 +303,8 @@ int main() {
     /// 1017985: 1000000C
 //    int sum = 0;
 //    printf("    ");
-//    for (uint32_t prefix = 0; prefix < 0x1000; ++prefix) {
-//        printf("%7td, ", std::lower_bound(br.begin(), br.end(), prefix << 20) - br.begin());
+//    for (uint32_t prefix = 0; prefix < 0x400; ++prefix) {
+//        printf("%7td, ", std::lower_bound(br.begin(), br.end(), prefix << 22) - br.begin());
 //        if (sum++ % 8 == 7) {
 //            printf("\n    ");
 //        }
@@ -300,9 +313,9 @@ int main() {
 //    for (int head = 0; head < 16; ++head) {
 //        auto &a = AllCases::fetch()[head];
 //        printf("\n/// --------------------------------- 0x%X ---------------------------------\n    ", head);
-//        for (uint32_t prefix = 0; prefix < 0x1000; ++prefix) {
-//            printf("%7td, ", std::lower_bound(a.begin(), a.end(), prefix << 20) - a.begin());
-//            if (sum++ % 8 == 7 and prefix != 0xFFF) {
+//        for (uint32_t prefix = 0; prefix < 0x400; ++prefix) {
+//            printf("%7td, ", std::lower_bound(a.begin(), a.end(), prefix << 22) - a.begin());
+//            if (sum++ % 8 == 7 and prefix != 0x3FF) {
 //                printf("\n    ");
 //            }
 //        }
@@ -312,8 +325,8 @@ int main() {
 //    printf("%09lX\n", ShortCode::fast_decode(14323231));
 //    std::cout << ShortCode::fast_encode(0x6EC0F8800) << std::endl;
 
-//    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
 
 //    pause();

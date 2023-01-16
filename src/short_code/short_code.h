@@ -43,14 +43,17 @@ public:
     static uint64_t tiny_decode(uint32_t short_code);
     static uint32_t tiny_encode(uint64_t common_code);
 
+    static uint64_t tiny_decode_10b(uint32_t short_code);
+    static uint32_t tiny_encode_10b(uint64_t common_code);
+
     // TODO: ShortCode::create() / ShortCode::from_str(...) / ShortCode::from_common_code(...)
 
-    static uint32_t fast_encode_legacy(uint64_t common_code);
+//    static uint32_t fast_encode_legacy(uint64_t common_code);
 
 private:
     uint32_t code;
 
-    static std::mutex map_building;
+//    static std::mutex map_building;
     static bool fast_mode_available;
     static bool normal_mode_available;
 
@@ -60,10 +63,10 @@ private:
     ///       for some test, the new function only using < 170MB memory, while the legacy using > 1.5GB
     ///       but the legacy one is more easy and a little fast.
     ///       BTW, the new one init less than 1.2s, legacy one need about 15s
-    static std::vector<uint64_t> all_cases_list; // short_code -> common_code
-    static std::unordered_map<uint64_t, uint32_t> all_cases_dict; // common_code -> short_code
+//    static std::vector<uint64_t> all_cases_list; // short_code -> common_code
+//    static std::unordered_map<uint64_t, uint32_t> all_cases_dict; // common_code -> short_code
 
-    static void build_mappings();
+//    static void build_mappings();
 //    static uint64_t tiny_decode(uint32_t short_code);
 //    static uint32_t tiny_encode(uint64_t common_code);
 };
