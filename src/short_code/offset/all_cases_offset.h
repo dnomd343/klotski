@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-const uint32_t ALL_CASES_OFFSET_[16] = {
+const uint32_t ALL_CASES_OFFSET[16] = {
            0,  2942906,  5203298,  8146204,
      8146204, 10468254, 12345199, 14667249,
     14667249, 16989299, 18866244, 21188294,

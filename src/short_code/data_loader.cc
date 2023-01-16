@@ -16,6 +16,10 @@ void ShortCode::speed_up(ShortCode::Mode mode) {
     }
     if (mode == ShortCode::FAST) { // build fast mode data
         build_mappings();
+
+        // TODO: confirm AllCases data available
+        AllCases::build();
+
     } else if (mode == ShortCode::NORMAL && !normal_mode_available) { // build normal mode data
         BasicRanges::build(); // blocking function
         normal_mode_available = true;
@@ -52,20 +56,11 @@ void ShortCode::build_mappings() { // build fast search mappings
     map_building.unlock();
 }
 
+uint32_t ShortCode::fast_encode_legacy(uint64_t common_code) {
+    return all_cases_dict[common_code];
+}
+
 #include <algorithm>
-
-uint64_t ShortCode::fast_decode(uint32_t short_code) {
-    auto offset = std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code) - 1; // binary search
-    uint64_t head = offset - ALL_CASES_OFFSET; // head index
-    return (head << 32) | AllCases::fetch()[head][short_code - *offset]; // release common code
-}
-
-uint32_t ShortCode::fast_encode(uint64_t common_code) {
-    auto head = common_code >> 32; // head index
-    const auto &ranges = AllCases::fetch()[head]; // available ranges
-    auto offset = std::lower_bound(ranges.begin(), ranges.end(), (uint32_t)common_code) - ranges.begin();
-    return ALL_CASES_OFFSET[head] + offset; // release short code
-}
 
 #include "basic_ranges_offset.h"
 #include "range_prefix_offset.h"
@@ -73,84 +68,3 @@ uint32_t ShortCode::fast_encode(uint64_t common_code) {
 #include <iostream>
 #include "common.h"
 
-uint64_t ShortCode::tiny_decode_demo(uint32_t short_code) {
-    /// match head index
-    auto offset = std::upper_bound( // binary search
-        ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code
-    ) - 1;
-    uint64_t head = offset - ALL_CASES_OFFSET; // head index
-    short_code -= *offset;
-
-    /// match range prefix
-    offset = std::upper_bound( // binary search
-        RANGE_PREFIX_OFFSET_[head], RANGE_PREFIX_OFFSET_[head] + 4096, short_code
-    ) - 1;
-    uint32_t prefix = offset - RANGE_PREFIX_OFFSET_[head]; // range prefix
-    short_code -= *offset;
-
-    /// search target range
-    const auto &basic_ranges = BasicRanges::fetch();
-    for (auto index = BASIC_RANGES_OFFSET_[prefix]; index < basic_ranges.size(); ++index) {
-
-        uint32_t range = basic_ranges[index]; // traverse basic ranges
-
-        uint32_t broken = Common::check_range(head, basic_ranges[index]); // check and get broken address
-
-        auto range_rev = Common::range_reverse(basic_ranges[index]); // reversed range
-
-        if (broken) { // invalid case
-            auto delta = (uint32_t)1 << (32 - broken * 2); // this --delta--> next possible range
-            auto next_min = (range_rev & ~(delta - 1)) + delta;
-            while (Common::range_reverse(basic_ranges[++index]) < next_min); // located next range
-            --index;
-        } else {
-
-            if (!short_code--) { // short code approximate
-
-                /// found target range
-                return head << 32 | range_rev;
-
-            }
-
-        }
-
-    }
-
-    return 0; // never reach when input valid
-}
-
-uint32_t ShortCode::tiny_encode_demo(uint64_t common_code) {
-
-//    printf("%09lX\n", common_code);
-
-    uint32_t head = common_code >> 32;
-    uint32_t prefix = (common_code >> 20) & 0xFFF;
-
-//    printf("head = %d\n", head);
-//    printf("prefix = %X\n", prefix);
-
-    uint32_t offset = 0;
-    auto target = Common::range_reverse((uint32_t)common_code); // target range
-
-    const auto &basic_ranges = BasicRanges::fetch();
-
-    for (auto index = BASIC_RANGES_OFFSET_[prefix]; index < basic_ranges.size(); ++index) { // traverse basic ranges
-
-        uint32_t range = basic_ranges[index];
-
-        if (Common::check_case(head, range)) { // search for valid cases
-
-            if (range == target) { // found target range
-                return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET_[head][prefix] + offset;
-
-            }
-
-            ++offset; // record sub offset
-
-        }
-
-    }
-
-
-    return 0;
-}

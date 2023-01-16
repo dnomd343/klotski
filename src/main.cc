@@ -174,8 +174,15 @@ int main() {
 //        }
 //    }
 
-//    ShortCode::speed_up(ShortCode::FAST);
-//    AllCases::build();
+    ShortCode::speed_up(ShortCode::FAST);
+    AllCases::build();
+
+    std::vector<uint64_t> all_cases;
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : BasicRanges::fetch()) {
+            all_cases.emplace_back(head << 32 | range);
+        }
+    }
 
 //    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
@@ -254,21 +261,24 @@ int main() {
 //        printf("%08X\n", range);
 //    }
 
-    AllCases::build();
-    for (auto head = 0; head < 16; ++head) {
-        uint64_t prefix = (uint64_t)head << 32;
-        for (const auto &range : AllCases::fetch()[head]) {
-            printf("%09lX\n", prefix | range);
-        }
-    }
-
-//    for (uint32_t i = 0; i < 29334498; ++i) {
-//        if (ShortCode::fast_encode(ShortCode::fast_decode(i)) != i) {
-//            std::cout << "error" << std::endl;
+//    AllCases::build();
+//    for (auto head = 0; head < 16; ++head) {
+//        uint64_t prefix = (uint64_t)head << 32;
+//        for (const auto &range : AllCases::fetch()[head]) {
+//            printf("%09lX\n", prefix | range);
 //        }
 //    }
 
-//    printf("%09lX\n", ShortCode::tiny_decode_demo(14323231));
+    for (uint32_t i = 0; i < 29334498; ++i) {
+//        if (ShortCode::fast_encode(ShortCode::fast_decode(i)) != i) {
+//            std::cout << "error" << std::endl;
+//        }
+//        ShortCode::fast_encode_legacy(i);
+//        ShortCode::fast_decode(i);
+        ShortCode::fast_encode(all_cases[i]);
+    }
+
+//    printf("%09lX\n", ShortCode::tiny_decode(14323231));
 //    std::cout << ShortCode::tiny_encode_demo(0x6EC0F8800) << std::endl;
 
 //    auto br = BasicRanges::fetch();
@@ -302,8 +312,8 @@ int main() {
 //    printf("%09lX\n", ShortCode::fast_decode(14323231));
 //    std::cout << ShortCode::fast_encode(0x6EC0F8800) << std::endl;
 
-    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
 
 //    pause();
