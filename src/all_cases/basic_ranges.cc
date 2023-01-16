@@ -51,7 +51,7 @@ void BasicRanges::build_data() { // build basic ranges
             }
         }
     }
-    std::sort(BasicRanges::data.begin(), BasicRanges::data.end()); // sort basic ranges
+    std::stable_sort(BasicRanges::data.begin(), BasicRanges::data.end()); // sort basic ranges
     for (auto &range : BasicRanges::data) {
         range = Common::range_reverse(range); // basic ranges reverse
     }
@@ -84,7 +84,6 @@ void BasicRanges::generate(generate_t info) { // generate specific basic ranges
             cache.pop();
             continue; // skip search
         }
-
         if (current.nx & 0xFF) { // n1 -> `00`
             cache.emplace(build_t {
                 .nx = current.nx - 0x01, // --n1

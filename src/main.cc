@@ -245,7 +245,7 @@ int main() {
 
 //    }
 
-//    BasicRanges::build();
+    BasicRanges::build();
 //    const auto &br = BasicRanges::fetch();
 //    br.push_back(123);
 //    std::cout << "size: " << BasicRanges::fetch().size() << std::endl;
@@ -270,7 +270,7 @@ int main() {
 //    }
 
 //    printf("%09lX\n", ShortCode::tiny_decode_demo(14323231));
-    std::cout << ShortCode::tiny_encode_demo(0x6EC0F8800) << std::endl;
+//    std::cout << ShortCode::tiny_encode_demo(0x6EC0F8800) << std::endl;
 
 //    auto br = BasicRanges::fetch();
 //    for (auto &range : br) {
