@@ -71,33 +71,33 @@ void short_code_verify(uint32_t start, uint32_t end) {
 
 int main() {
 
-    AllCases::build();
-
-    for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto &range : AllCases::fetch()[head]) {
-            all_cases.emplace_back(head << 32 | range);
-        }
-    }
-
-    ShortCode::speed_up(ShortCode::NORMAL);
-    std::cout << "start verify" << std::endl;
-
-//    auto start_time = clock();
-
-    std::thread tasks[16];
-
-    for (int head = 0; head < 16; ++head) {
-        uint32_t start = ALL_CASES_OFFSET[head];
-        uint32_t end = start + AllCases::fetch()[head].size();
-        tasks[head] = std::thread(short_code_verify, start, end);
-    }
-
-    for (auto &t : tasks) {
-        t.join();
-    }
-
-    std::cout << "verify complete" << std::endl;
-    return 0;
+//    AllCases::build();
+//
+//    for (uint64_t head = 0; head < 16; ++head) {
+//        for (const auto &range : AllCases::fetch()[head]) {
+//            all_cases.emplace_back(head << 32 | range);
+//        }
+//    }
+//
+//    ShortCode::speed_up(ShortCode::NORMAL);
+//    std::cout << "start verify" << std::endl;
+//
+    auto start_time = clock();
+//
+//    std::thread tasks[16];
+//
+//    for (int head = 0; head < 16; ++head) {
+//        uint32_t start = ALL_CASES_OFFSET[head];
+//        uint32_t end = start + AllCases::fetch()[head].size();
+//        tasks[head] = std::thread(short_code_verify, start, end);
+//    }
+//
+//    for (auto &t : tasks) {
+//        t.join();
+//    }
+//
+//    std::cout << "verify complete" << std::endl;
+//    return 0;
 
 
 
@@ -335,8 +335,23 @@ int main() {
 
 //    std::cout << sizeof(ShortCode) << std::endl;
 
+//    int sum = 0;
+    for (uint64_t common_code = 0; common_code < 0x100000000; ++common_code) {
+//        if (CommonCode::check_demo(common_code)) {
+//            ++sum;
+//        }
+        if (CommonCode::check(common_code) != CommonCode::check_demo(common_code)) {
+            printf("%09lX\n", common_code);
+        }
+    }
+//    std::cout << "sum = " << sum << std::endl;
+
+//    std::cout << CommonCode::check_demo(0x4FEA13400) << std::endl;
+//    std::cout << CommonCode::check_demo(0x0000011CE) << std::endl;
+//    std::cout << CommonCode::check_demo(0x02ED67000) << std::endl;
+
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
 
 //    pause();

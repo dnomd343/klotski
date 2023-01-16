@@ -14,6 +14,8 @@ public:
     static bool check(uint64_t common_code);
     static CommonCode unsafe_create(uint64_t code);
 
+    static bool check_demo(uint64_t common_code);
+
     RawCode to_raw_code() const;
     ShortCode to_short_code() const;
     std::string to_string(bool shorten = false) const;
