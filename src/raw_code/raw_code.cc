@@ -31,7 +31,6 @@ std::ostream& operator<<(std::ostream &out, const RawCode &self) {
 }
 
 std::string RawCode::dump_case() const {
-    // TODO: using stack char *
     std::string result;
     result.reserve(40); // 5 lines * ("x x x x\n")
     char dump_map[] = {
@@ -51,7 +50,11 @@ std::string RawCode::dump_case() const {
 }
 
 bool RawCode::check(uint64_t raw_code) { // check whether raw code is valid
-    constexpr uint64_t MASK_1x1 = ~B_1x1 & 0b111;
+    ///     MASK_1x2          MASK_2x1         MASK_2x2
+    ///  000 100 000 000   000 000 000 000  000 100 000 000
+    ///  000 000 000 000   100 000 000 000  100 100 000 000
+    ///  ...               ...              ...
+    constexpr uint64_t MASK_1x1 = ~B_1x1 & 0b111; /// 0b100
     constexpr uint64_t MASK_1x2 = MASK_1x1 << 3;
     constexpr uint64_t MASK_2x1 = MASK_1x1 << 12;
     constexpr uint64_t MASK_2x2 = MASK_1x1 << 3 | MASK_1x1 << 12 | MASK_1x1 << 15;
