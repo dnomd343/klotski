@@ -94,7 +94,7 @@ int main() {
 //    ShortCode::speed_up(ShortCode::NORMAL);
 //    std::cout << "start verify" << std::endl;
 //
-    auto start_time = clock();
+//    auto start_time = clock();
 //
 //    std::thread tasks[16];
 //
@@ -436,18 +436,50 @@ int main() {
             used_ranges.emplace(Common::range_reverse(range));
         }
     }
-//    std::cout << used_ranges.size() << std::endl;
+//    std::cout << "used number: " << used_ranges.size() << std::endl;
 
-    for (const auto &range : BasicRanges::fetch()) {
-        if (used_ranges.find(range) == used_ranges.end()) {
-            printf("%08X -> no\n", Common::range_reverse(range)); // never used
-        } else {
-            printf("%08X -> yes\n", Common::range_reverse(range));
-        }
+//    for (const auto &range : BasicRanges::fetch()) {
+//        if (used_ranges.find(range) == used_ranges.end()) {
+//            printf("%08X -> no\n", Common::range_reverse(range)); // never used
+//        } else {
+//            printf("%08X -> yes\n", Common::range_reverse(range));
+//        }
+//    }
+
+//    BasicRanges::build();
+
+    BasicRanges::data.clear();
+    for (const auto &range : used_ranges) {
+        BasicRanges::data.emplace_back(Common::range_reverse(range));
     }
+    std::sort(BasicRanges::data.begin(), BasicRanges::data.end());
+    for (auto &range : BasicRanges::data) {
+        range = Common::range_reverse(range);
+    }
+//    std::cout << "basic ranges size: " << BasicRanges::data.size() << std::endl;
 
-    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
-//    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+    for (auto &a : AllCases::data) {
+        a.clear(); // clear built data
+    }
+    AllCases::available = false;
+
+    std::cout << "wait 3s" << std::endl;
+    sleep(3);
+
+    std::cout << "start benchmark" << std::endl;
+    auto start_time = clock();
+
+    // rebuild all cases
+    AllCases::build();
+
+//    uint32_t sum = 0;
+//    for (const auto &a : AllCases::fetch()) {
+//        sum += a.size();
+//    }
+//    std::cout << "sum = " << sum << std::endl;
+
+//    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
+    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
 

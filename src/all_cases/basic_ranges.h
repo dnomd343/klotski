@@ -17,6 +17,9 @@ public:
     static enum Status status();
     static const std::vector<uint32_t>& fetch();
 
+    // TODO: remove after test
+    static std::vector<uint32_t> data;
+
 private:
     struct generate_t {
         int n1; // number of `00`
@@ -27,7 +30,7 @@ private:
 
     static bool available;
     static std::mutex building;
-    static std::vector<uint32_t> data;
+//    static std::vector<uint32_t> data;
 
     static void build_data();
     static void generate(generate_t info);
