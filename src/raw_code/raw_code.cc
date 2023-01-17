@@ -1,9 +1,26 @@
-#include <string>
+#include <stdexcept>
 #include "common.h"
 #include "raw_code.h"
 
-uint64_t RawCode::unwrap() const { // get raw uint64_t code
-    return code;
+uint64_t RawCode::unwrap() const {
+    return code; // raw uint64_t code
+}
+
+RawCode RawCode::create(uint64_t raw_code) {
+    return RawCode(raw_code);
+}
+
+RawCode RawCode::unsafe_create(uint64_t raw_code) { // create without check
+    auto raw = RawCode(); // init directly
+    raw.code = raw_code;
+    return raw;
+}
+
+RawCode::RawCode(uint64_t raw_code) {
+    if (!RawCode::check(raw_code)) { // check input raw code
+        throw std::invalid_argument("invalid raw code");
+    }
+    code = raw_code;
 }
 
 std::string RawCode::dump_case() const {

@@ -57,12 +57,6 @@ uint64_t RawCode::extract(uint64_t common_code) { // common code --> raw code
         while ((code >> addr) & 0b111 && addr < 60) { // check low 3-bits -> next empty address
             addr += 3; // found available address
         }
-
-        // TODO: remove after test
-        if (addr >= 60) {
-            return 0;
-        }
-
         switch (range & 0b11) { // match low 2-bits
             case 0b01: // 1x2 block
                 code |= C_1x2 << addr;
