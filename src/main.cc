@@ -428,15 +428,50 @@ int main() {
 
 //    std::cout << RawCode::create(CommonCode(0x4FEA13400).to_raw_code().unwrap()) << std::endl;
 
-    AllCases::build();
-
-    std::set<uint32_t> used_ranges;
-    for (const auto &ranges : AllCases::fetch()) {
-        for (const auto &range : ranges) {
-            used_ranges.emplace(Common::range_reverse(range));
-        }
-    }
+//    AllCases::build();
+//
+//    std::set<uint32_t> used_ranges;
+//    for (const auto &ranges : AllCases::fetch()) {
+//        for (const auto &range : ranges) {
+//            used_ranges.emplace(Common::range_reverse(range));
+//            used_ranges.emplace(range);
+//        }
+//    }
 //    std::cout << "used number: " << used_ranges.size() << std::endl;
+//
+//    auto basic_ranges = BasicRanges::fetch();
+//    for (auto &range : basic_ranges) {
+//        range = Common::range_reverse(range);
+//    }
+
+
+//    int deep = 16;
+//    int deep = 6;
+//    std::cout << "check deep -> " << deep << "-bits" << std::endl;
+
+//    std::vector<std::vector<uint32_t> > data(1 << deep);
+//    for (auto &range : basic_ranges) {
+//        data[range >> (32 - deep)].emplace_back(range);
+//    }
+//
+//    int sum = 0;
+//    for (uint32_t i = 0; i < data.size(); ++i) {
+//        auto &dat = data[i];
+//
+//        int num = 0;
+//        for (auto &range : dat) {
+//            if (used_ranges.find(range) == used_ranges.end()) {
+//                ++num;
+//            }
+//        }
+//        printf("%02X: %d/%zu\n", i, num, dat.size());
+//        if (num == dat.size()) {
+//            printf("%02X -> %d\n", i, num);
+//            sum += num;
+//        }
+//
+//    }
+//    std::cout << "sum = " << sum << std::endl;
 
 //    for (const auto &range : BasicRanges::fetch()) {
 //        if (used_ranges.find(range) == used_ranges.end()) {
@@ -448,28 +483,29 @@ int main() {
 
 //    BasicRanges::build();
 
-    BasicRanges::data.clear();
-    for (const auto &range : used_ranges) {
-        BasicRanges::data.emplace_back(Common::range_reverse(range));
-    }
-    std::sort(BasicRanges::data.begin(), BasicRanges::data.end());
-    for (auto &range : BasicRanges::data) {
-        range = Common::range_reverse(range);
-    }
+//    BasicRanges::data.clear();
+//    for (const auto &range : used_ranges) {
+//        BasicRanges::data.emplace_back(Common::range_reverse(range));
+//    }
+//    std::sort(BasicRanges::data.begin(), BasicRanges::data.end());
+//    for (auto &range : BasicRanges::data) {
+//        range = Common::range_reverse(range);
+//    }
 //    std::cout << "basic ranges size: " << BasicRanges::data.size() << std::endl;
 
-    for (auto &a : AllCases::data) {
-        a.clear(); // clear built data
-    }
-    AllCases::available = false;
+//    for (auto &a : AllCases::data) {
+//        a.clear(); // clear built data
+//    }
+//    AllCases::available = false;
+//
+//    std::cout << "wait 3s" << std::endl;
+//    sleep(3);
 
-    std::cout << "wait 3s" << std::endl;
-    sleep(3);
+    BasicRanges::build();
 
     std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
 
-    // rebuild all cases
     AllCases::build();
 
 //    uint32_t sum = 0;
