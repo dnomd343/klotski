@@ -45,11 +45,6 @@ void AllCases::build_data() { // find all cases
         data[head].reserve(ALL_CASES_SIZE[head]); // memory pre-allocated
         /// head(4-bits) + basic ranges(32-bits) ==check==> release valid cases
         for (auto index = 0; index < basic_ranges.size(); ++index) {
-
-            if ((basic_ranges[index] & 0b111111) == 0b010111) {
-                continue;
-            }
-
             auto broken_offset = Common::check_range(head, basic_ranges[index]);
             if (broken_offset) { // case invalid
                 auto delta = (uint32_t)1 << (32 - broken_offset * 2); // delta to next possible range
@@ -60,12 +55,9 @@ void AllCases::build_data() { // find all cases
                 while (Common::range_reverse(basic_ranges[++index]) < next_min); // located next range
                 --index;
             } else {
-//            if (!Common::check_range(head, basic_ranges[index])) {
-//            if (Common::check_case(head, basic_ranges[index])) {
                 AllCases::data[head].emplace_back(
                     Common::range_reverse(basic_ranges[index]) // release valid cases
                 );
-//            }
             }
         }
     }
