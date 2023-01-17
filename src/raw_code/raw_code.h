@@ -14,7 +14,7 @@ public:
     CommonCode to_common_code() const;
 
     static bool check(uint64_t raw_code);
-//    friend std::ostream& operator<<(std::ostream &out, const RawCode &self);
+    friend std::ostream& operator<<(std::ostream &out, const RawCode &self);
 
     explicit RawCode(uint64_t raw_code);
     explicit RawCode(const CommonCode &common_code);

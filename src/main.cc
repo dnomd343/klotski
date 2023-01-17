@@ -425,7 +425,7 @@ int main() {
 //    std::cout << RawCode(RawCode::extract(0x0000FF004)).dump_case() << std::endl;
 //    std::cout << RawCode::extract(0x555a4001) << std::endl;
 
-    std::cout << RawCode::create(CommonCode(0x4FEA13400).to_raw_code().unwrap()).dump_case() << std::endl;
+    std::cout << RawCode::create(CommonCode(0x4FEA13400).to_raw_code().unwrap()) << std::endl;
 
     std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;

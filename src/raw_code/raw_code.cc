@@ -23,6 +23,13 @@ RawCode::RawCode(uint64_t raw_code) {
     code = raw_code;
 }
 
+std::ostream& operator<<(std::ostream &out, const RawCode &self) {
+    char str[16];
+    sprintf(str, "%015lX", self.code);
+    out << str;
+    return out;
+}
+
 std::string RawCode::dump_case() const {
     // TODO: using stack char *
     std::string result;
