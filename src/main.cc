@@ -13,6 +13,7 @@
 //#include "core_demo.h"
 //#include "basic_ranges_demo.h"
 
+#include <set>
 #include <thread>
 #include <algorithm>
 #include <unistd.h>
@@ -425,7 +426,25 @@ int main() {
 //    std::cout << RawCode(RawCode::extract(0x0000FF004)).dump_case() << std::endl;
 //    std::cout << RawCode::extract(0x555a4001) << std::endl;
 
-    std::cout << RawCode::create(CommonCode(0x4FEA13400).to_raw_code().unwrap()) << std::endl;
+//    std::cout << RawCode::create(CommonCode(0x4FEA13400).to_raw_code().unwrap()) << std::endl;
+
+    AllCases::build();
+
+    std::set<uint32_t> used_ranges;
+    for (const auto &ranges : AllCases::fetch()) {
+        for (const auto &range : ranges) {
+            used_ranges.emplace(Common::range_reverse(range));
+        }
+    }
+//    std::cout << used_ranges.size() << std::endl;
+
+    for (const auto &range : BasicRanges::fetch()) {
+        if (used_ranges.find(range) == used_ranges.end()) {
+            printf("%08X -> no\n", Common::range_reverse(range)); // never used
+        } else {
+            printf("%08X -> yes\n", Common::range_reverse(range));
+        }
+    }
 
     std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
