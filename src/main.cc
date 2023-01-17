@@ -362,13 +362,13 @@ int main() {
 //    printf("%09lX\n", CommonCode::from_string("1a9bf0c").unwrap());
 //    std::cout << CommonCode("4feA134") << std::endl;
 
-//    std::vector<uint64_t> all_cases;
-//    for (uint64_t head = 0; head < 16; ++head) {
-//        for (const auto &range : AllCases::fetch()[head]) {
-//            all_cases.emplace_back(head << 32 | range);
-//        }
-//    }
-//    std::cout << "test size: " << all_cases.size() << std::endl;
+    std::vector<uint64_t> all_cases;
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : AllCases::fetch()[head]) {
+            all_cases.emplace_back(head << 32 | range);
+        }
+    }
+    std::cout << "test size: " << all_cases.size() << std::endl;
 
 //    for (const auto &common_code : all_cases) {
 //        if (RawCode::compact(RawCode::extract(common_code)) != common_code) {
@@ -380,7 +380,14 @@ int main() {
 
 //    std::cout << CommonCode(0x4FEA13400).to_raw_code().to_common_code() << std::endl;
 
-    std::cout << RawCode::check(CommonCode(0x4FEA13400).to_raw_code().unwrap()) << std::endl;
+//    std::cout << RawCode::check(CommonCode(0x4FEA13400).to_raw_code().unwrap()) << std::endl;
+
+    for (const auto &common_code : all_cases) {
+        if (!RawCode::check(RawCode::extract(common_code))) {
+            std::cout << "Error: " << CommonCode(common_code) << std::endl;
+        }
+    }
+
 
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
