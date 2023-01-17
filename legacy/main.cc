@@ -1,26 +1,4 @@
-#ifndef _KLOTSKI_H_
-#define _KLOTSKI_H_
-
-#include <cstdint>
-
-//#define B_space 0x0
-//#define B_fill  0x7
-//#define B_1x2   0x1
-//#define B_2x1   0x2
-//#define B_1x1   0x3
-//#define B_2x2   0x4
-
-//#define C_1x1 uint64_t(0x3)
-//#define C_1x2 uint64_t(0x39)
-//#define C_2x1 uint64_t(0x7002)
-//#define C_2x2 uint64_t(0x3F03C)
-//
-//#define F_1x1 uint64_t(0x7)
-//#define F_1x2 uint64_t(0x3F)
-//#define F_2x1 uint64_t(0x7007)
-//#define F_2x2 uint64_t(0x3F03F)
-
-#endif
+#include <cstdio>
 
 /*
 
@@ -68,3 +46,25 @@
 
 ======================================================
 */
+
+int main() {
+    printf("Klotski engine\n");
+
+    // 0x4FEA13400
+    //  # # # @  |  011 011 011 010 => 0100 1101 1011 -> 4DB
+    //  * * & @  |  100 111 010 111 => 1110 1011 1100 -> EBC
+    //  * * & $  |  111 111 111 010 => 0101 1111 1111 -> 5FF
+    //  . + + $  |  000 001 111 111 => 1111 1100 1000 -> FC8
+    //  . # ~ ~  |  000 011 001 111 => 1110 0101 1000 -> E58
+    // 0x0E58FC85FFEBC4DB
+
+    // 0x1A9BF0C00
+    //  @ * * @  |  010 100 111 010 => 0101 1110 0010 -> 5E2
+    //  @ * * @  |  111 111 111 111 => 1111 1111 1111 -> FFF
+    //  $ ~ ~ $  |  010 001 111 010 => 0101 1100 1010 -> 5CA
+    //  $ # # $  |  111 011 011 111 => 1110 1101 1111 -> EDF
+    //  # . . #  |  011 000 000 011 => 0110 0000 0011 -> 603
+    // 0x0603EDF5CAFFF5E2
+
+    return 0;
+}
