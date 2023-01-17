@@ -20,9 +20,6 @@
 //#define F_2x1 uint64_t(0x7007)
 //#define F_2x2 uint64_t(0x3F03F)
 
-//uint64_t compact_code(uint64_t code);
-//uint64_t extract_code(uint64_t code);
-
 #endif
 
 /*
