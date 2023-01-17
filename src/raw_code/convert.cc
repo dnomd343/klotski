@@ -1,7 +1,21 @@
-#include "raw_code.h"
+#include <stdexcept>
 #include "common.h"
+#include "raw_code.h"
 
-// TODO: for check function -> one 2x2 / >=2 space
+RawCode::RawCode(const CommonCode &common_code) {
+    code = RawCode::extract(common_code.unwrap()); // load from common code
+}
+
+CommonCode RawCode::to_common_code() const {
+
+    // TODO: check before release common code
+    // TODO: raw code pass RawCode::check -> using CommonCode::unsafe_create directly
+
+    if (!RawCode::check(code)) {
+        throw std::runtime_error("invalid raw code");
+    }
+    return CommonCode::unsafe_create(RawCode::compact(code)); // release common code
+}
 
 /// NOTE: ensure that input raw code is valid !!!
 uint64_t RawCode::compact(uint64_t raw_code) { // raw code --> common code
