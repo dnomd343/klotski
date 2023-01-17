@@ -378,7 +378,9 @@ int main() {
 
 //    std::cout << CommonCode(RawCode(RawCode::extract(0x4FEA13400))) << std::endl;
 
-    std::cout << CommonCode(0x4FEA13400).to_raw_code().to_common_code() << std::endl;
+//    std::cout << CommonCode(0x4FEA13400).to_raw_code().to_common_code() << std::endl;
+
+    std::cout << RawCode::check(CommonCode(0x4FEA13400).to_raw_code().unwrap()) << std::endl;
 
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;

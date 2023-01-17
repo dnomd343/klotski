@@ -6,14 +6,15 @@ RawCode::RawCode(const CommonCode &common_code) {
     code = RawCode::extract(common_code.unwrap()); // load from common code
 }
 
+RawCode RawCode::from_common_code(const CommonCode &common_code) {
+    return RawCode(common_code); // load from common code
+}
+
 CommonCode RawCode::to_common_code() const {
-
-    // TODO: check before release common code
-    // TODO: raw code pass RawCode::check -> using CommonCode::unsafe_create directly
-
     if (!RawCode::check(code)) {
         throw std::runtime_error("invalid raw code");
     }
+    /// pass check -> common code must valid
     return CommonCode::unsafe_create(RawCode::compact(code)); // release common code
 }
 

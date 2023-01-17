@@ -25,7 +25,7 @@ public:
 
 
 //    static RawCode create(uint64_t raw_code);
-//    static RawCode from_common_code(const CommonCode &common_code);
+    static RawCode from_common_code(const CommonCode &common_code);
 
     // TODO: unsafe_create static function
 
