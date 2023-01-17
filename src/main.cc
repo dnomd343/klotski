@@ -69,6 +69,17 @@
 //    std::cout << "[" << start << ", " << end << ")" << std::endl;
 //}
 
+void raw_code_check_verify(uint64_t index) {
+    uint64_t start = index * 0x100000000;
+    uint64_t end = start + 0x100000000;
+    for (uint64_t common_code = start; common_code < end; ++common_code) {
+        if (RawCode::check(RawCode::extract(common_code)) != CommonCode::check(common_code)) {
+            printf("Error -> %09lX\n", common_code);
+        }
+    }
+    std::cout << "verify ok: " << std::hex << "[" << start << ", " << end << ")" << std::endl;
+}
+
 int main() {
 
 //    AllCases::build();
@@ -393,19 +404,30 @@ int main() {
 //        if (RawCode::check(RawCode::extract(common_code)) != CommonCode::check(common_code)) {
 //            printf("%09lX\n", common_code);
 //        }
-//        if (common_code % 0x1000 == 0) {
-//            std::cout << std::hex << common_code << std::endl;
+//        if (common_code % 0x1000000 == 0) {
+//            std::cout << (common_code / 0x1000000) << std::endl;
 //        }
 //    }
+
+    std::thread tasks[16];
+    std::cout << "verify start" << std::endl;
+    for (int i = 0; i < 16; ++i) {
+        tasks[i] = std::thread(raw_code_check_verify, i);
+    }
+    for (auto &t : tasks) {
+        t.join();
+    }
+    std::cout << "verify complete" << std::endl;
 
     // TODO: why 0x555a4001 broken extract function?
 //    std::cout << RawCode(RawCode::extract(0x00000FEC4)).dump_case() << std::endl;
 //    std::cout << RawCode(RawCode::extract(0x000055480)).dump_case() << std::endl;
 //    std::cout << RawCode(RawCode::extract(0x0000FF004)).dump_case() << std::endl;
-    std::cout << RawCode::extract(0x555a4001) << std::endl;
+//    std::cout << RawCode::extract(0x555a4001) << std::endl;
 
+    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 //    std::cout << "complete benchmark" << std::endl;
 
 //    pause();

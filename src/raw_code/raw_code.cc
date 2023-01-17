@@ -32,19 +32,11 @@ bool RawCode::check(uint64_t raw_code) { // check whether raw code is valid
     constexpr uint64_t MASK_2x1 = MASK_1x1 << 12;
     constexpr uint64_t MASK_2x2 = MASK_1x1 << 3 | MASK_1x1 << 12 | MASK_1x1 << 15;
 
-//    if (MASK_1x2 != 0b100000) {
-//        printf("error\n");
-//    }
-//    if (MASK_2x1 != 0b100000000000000) {
-//        printf("error\n");
-//    }
-//    if (MASK_2x2 != 0b100100000000100000) {
-//        printf("error\n");
-//    }
-
+    /// high 4-bits check
     if (raw_code >> 60) {
         return false; // high 4-bits must be zero
     }
+    /// check each block
     int head_num = 0, space_num = 0; // statistics for space and 2x2 number
     for (int addr = 0; addr < 20; ++addr, raw_code >>= 3) {
         switch (raw_code & 0b111) {
