@@ -52,22 +52,22 @@
 //    std::cout << std::endl;
 //}
 
-std::vector<uint64_t> all_cases;
-
-void short_code_verify(uint32_t start, uint32_t end) {
-    for (uint32_t short_code = start; short_code < end; ++short_code) {
-        auto common_code = all_cases[short_code]; // correct result
-
-        if (ShortCode(short_code).to_common_code().unwrap() != common_code) {
-            std::cout << "Error decode: " << ShortCode(short_code) << std::endl;
-        }
-
-        if (ShortCode(CommonCode(common_code)).unwrap() != short_code) {
-            std::cout << "Error encode: " << ShortCode(short_code) << std::endl;
-        }
-    }
-    std::cout << "[" << start << ", " << end << ")" << std::endl;
-}
+//std::vector<uint64_t> all_cases;
+//
+//void short_code_verify(uint32_t start, uint32_t end) {
+//    for (uint32_t short_code = start; short_code < end; ++short_code) {
+//        auto common_code = all_cases[short_code]; // correct result
+//
+//        if (ShortCode(short_code).to_common_code().unwrap() != common_code) {
+//            std::cout << "Error decode: " << ShortCode(short_code) << std::endl;
+//        }
+//
+//        if (ShortCode(CommonCode(common_code)).unwrap() != short_code) {
+//            std::cout << "Error encode: " << ShortCode(short_code) << std::endl;
+//        }
+//    }
+//    std::cout << "[" << start << ", " << end << ")" << std::endl;
+//}
 
 int main() {
 
@@ -359,8 +359,24 @@ int main() {
 //    std::cout << CommonCode("1a9bf0C0").to_string() << std::endl;
 //    std::cout << CommonCode(0x4FEA13400).to_string() << std::endl;
 
-    printf("%09lX\n", CommonCode::from_string("1a9bf0c").unwrap());
-    std::cout << CommonCode("4feA134") << std::endl;
+//    printf("%09lX\n", CommonCode::from_string("1a9bf0c").unwrap());
+//    std::cout << CommonCode("4feA134") << std::endl;
+
+    std::vector<uint64_t> all_cases;
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : AllCases::fetch()[head]) {
+            all_cases.emplace_back(head << 32 | range);
+        }
+    }
+    std::cout << "test size: " << all_cases.size() << std::endl;
+
+    for (const auto &common_code : all_cases) {
+        if (RawCode::compact(RawCode::extract(common_code)) != common_code) {
+            std::cout << "Error: " << CommonCode(common_code) << std::endl;
+        }
+    }
+
+//    std::cout << CommonCode(RawCode(RawCode::extract(0x4FEA13400))) << std::endl;
 
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;

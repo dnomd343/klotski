@@ -22,9 +22,12 @@ public:
 
     // TODO: mirror functions
 
+    static uint64_t compact(uint64_t raw_code);
+    static uint64_t extract(uint64_t common_code);
+
 private:
     uint64_t code;
 
-    static uint64_t compact(uint64_t raw_code);
-    static uint64_t extract(uint64_t common_code);
+//    static uint64_t compact(uint64_t raw_code);
+//    static uint64_t extract(uint64_t common_code);
 };

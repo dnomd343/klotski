@@ -44,29 +44,31 @@ CommonCode RawCode::to_common_code() const {
     return CommonCode(head | (range << unfilled_num));
 }
 
-RawCode::RawCode(const CommonCode &common_code) {
-    auto common_code_raw = common_code.unwrap(); // common code with uint64_t format
-    code = C_2x2 << (common_code_raw >> 32) * 3; // flag for 2x2 block
-    auto range = Common::range_reverse((uint32_t)common_code_raw); // load reversed range
+// TODO: check function for RawCode
 
-    for (int addr = 0; range; range >>= 2) {
-        while (0b111 & code >> addr) { // check low 3-bits -> until empty address
-            addr += 3; // found available address
-        }
-        switch (range & 0b11) { // match low 2-bits
-            case 0x1:
-                code |= C_1x2 << addr; // add 1x2 block
-                break;
-            case 0x2:
-                code |= C_2x1 << addr; // add 2x1 block
-                break;
-            case 0x3:
-                code |= C_1x1 << addr; // add 1x1 block
-                break;
-            case 0x0:
-                addr += 3; // next address
-        }
-    }
+RawCode::RawCode(const CommonCode &common_code) {
+//    auto common_code_raw = common_code.unwrap(); // common code with uint64_t format
+//    code = C_2x2 << (common_code_raw >> 32) * 3; // flag for 2x2 block
+//    auto range = Common::range_reverse((uint32_t)common_code_raw); // load reversed range
+//
+//    for (int addr = 0; range; range >>= 2) {
+//        while (0b111 & code >> addr) { // check low 3-bits -> until empty address
+//            addr += 3; // found available address
+//        }
+//        switch (range & 0b11) { // match low 2-bits
+//            case 0x1:
+//                code |= C_1x2 << addr; // add 1x2 block
+//                break;
+//            case 0x2:
+//                code |= C_2x1 << addr; // add 2x1 block
+//                break;
+//            case 0x3:
+//                code |= C_1x1 << addr; // add 1x1 block
+//                break;
+//            case 0x0:
+//                addr += 3; // next address
+//        }
+//    }
 }
 
 std::string RawCode::dump_case() const {
