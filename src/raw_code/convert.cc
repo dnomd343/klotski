@@ -47,6 +47,8 @@ uint64_t RawCode::compact(uint64_t raw_code) { // raw code --> common code
     return head | (range << (unfilled << 1)); // fill low bits as zero
 }
 
+#include <iostream>
+
 /// NOTE: ensure that input common code is valid !!!
 uint64_t RawCode::extract(uint64_t common_code) { // common code --> raw code
     auto code = C_2x2 << (common_code >> 32) * 3; // flag for 2x2 block
@@ -55,6 +57,13 @@ uint64_t RawCode::extract(uint64_t common_code) { // common code --> raw code
         while (0b111 & code >> addr) { // check low 3-bits -> next empty address
             addr += 3; // found available address
         }
+
+        // TODO: remove after test
+        if (addr >= 60) {
+            return 0;
+        }
+//        std::cout << "addr = " << addr << " | block = " << (range & 0b11) << std::endl;
+
         switch (range & 0b11) { // match low 2-bits
             case 0b01: // 1x2 block
                 code |= C_1x2 << addr;

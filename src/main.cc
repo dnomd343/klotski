@@ -362,14 +362,14 @@ int main() {
 //    printf("%09lX\n", CommonCode::from_string("1a9bf0c").unwrap());
 //    std::cout << CommonCode("4feA134") << std::endl;
 
-    std::vector<uint64_t> all_cases;
-    for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto &range : AllCases::fetch()[head]) {
-            all_cases.emplace_back(head << 32 | range);
-        }
-    }
-    std::cout << "test size: " << all_cases.size() << std::endl;
-
+//    std::vector<uint64_t> all_cases;
+//    for (uint64_t head = 0; head < 16; ++head) {
+//        for (const auto &range : AllCases::fetch()[head]) {
+//            all_cases.emplace_back(head << 32 | range);
+//        }
+//    }
+//    std::cout << "test size: " << all_cases.size() << std::endl;
+//
 //    for (const auto &common_code : all_cases) {
 //        if (RawCode::compact(RawCode::extract(common_code)) != common_code) {
 //            std::cout << "Error: " << CommonCode(common_code) << std::endl;
@@ -382,12 +382,27 @@ int main() {
 
 //    std::cout << RawCode::check(CommonCode(0x4FEA13400).to_raw_code().unwrap()) << std::endl;
 
-    for (const auto &common_code : all_cases) {
-        if (!RawCode::check(RawCode::extract(common_code))) {
-            std::cout << "Error: " << CommonCode(common_code) << std::endl;
-        }
-    }
+//    for (const auto &common_code : all_cases) {
+//        if (!RawCode::check(RawCode::extract(common_code))) {
+//            std::cout << "Error: " << CommonCode(common_code) << std::endl;
+//        }
+//    }
 
+//    for (uint64_t common_code = 0; common_code < 0x100000000; ++common_code) {
+//    for (uint64_t common_code = 0x555A4000; common_code < 0x100000000; ++common_code) {
+//        if (RawCode::check(RawCode::extract(common_code)) != CommonCode::check(common_code)) {
+//            printf("%09lX\n", common_code);
+//        }
+//        if (common_code % 0x1000 == 0) {
+//            std::cout << std::hex << common_code << std::endl;
+//        }
+//    }
+
+    // TODO: why 0x555a4001 broken extract function?
+//    std::cout << RawCode(RawCode::extract(0x00000FEC4)).dump_case() << std::endl;
+//    std::cout << RawCode(RawCode::extract(0x000055480)).dump_case() << std::endl;
+//    std::cout << RawCode(RawCode::extract(0x0000FF004)).dump_case() << std::endl;
+    std::cout << RawCode::extract(0x555a4001) << std::endl;
 
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
