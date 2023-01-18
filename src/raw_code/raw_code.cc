@@ -24,29 +24,18 @@ RawCode::RawCode(uint64_t raw_code) {
 }
 
 std::ostream& operator<<(std::ostream &out, const RawCode &self) {
-    char str[16];
-    sprintf(str, "%015lX", self.code);
-    out << str;
-    return out;
-}
-
-std::string RawCode::dump_case() const {
-    std::string result;
-    result.reserve(40); // 5 lines * ("x x x x\n")
+    char code[16];
     char dump_map[] = {
     /// 0x0  1x2  2x1  1x1  2x2  b101 b110 fill
         '.', '~', '|', '*', '@', '?', '?', '+'
     };
-    auto raw_code = code;
-    for (int addr = 0; addr < 20; ++addr, raw_code >>= 3) {
-        result.push_back(dump_map[raw_code & 0b111]);
-        if ((addr & 0b11) == 0b11) {
-            result.push_back('\n'); // new line
-        } else {
-            result.push_back(' '); // add space
-        }
+    sprintf(code, "%015lX", self.code); // code length -> 15
+    out << code << '\n';
+    for (int addr = 0; addr < 60; addr += 3) {
+        out << dump_map[(self.code >> addr) & 0b111];
+        out << " " << &"\n"[(addr & 0b11) != 0b01];
     }
-    return result;
+    return out;
 }
 
 bool RawCode::check(uint64_t raw_code) { // check whether raw code is valid

@@ -10,7 +10,6 @@ class CommonCode;
 class RawCode {
 public:
     uint64_t unwrap() const;
-    std::string dump_case() const;
     CommonCode to_common_code() const;
 
     static bool check(uint64_t raw_code);
@@ -21,7 +20,9 @@ public:
 
     static RawCode create(uint64_t raw_code);
     static RawCode unsafe_create(uint64_t raw_code);
+    static RawCode from_common_code(uint64_t common_code);
     static RawCode from_common_code(const CommonCode &common_code);
+    static RawCode from_common_code(const std::string &common_code);
 
     // TODO: mirror functions
 

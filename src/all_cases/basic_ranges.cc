@@ -51,6 +51,7 @@ void BasicRanges::build_data() { // build basic ranges
             }
         }
     }
+    /// NOTE: multiple sets of ordered data -> use merge sort instead of quick sort
     std::stable_sort(BasicRanges::data.begin(), BasicRanges::data.end()); // sort basic ranges
     for (auto &range : BasicRanges::data) {
         range = Common::range_reverse(range); // basic ranges reverse

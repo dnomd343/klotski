@@ -2,12 +2,20 @@
 #include "common.h"
 #include "raw_code.h"
 
-RawCode::RawCode(const CommonCode &common_code) {
-    code = RawCode::extract(common_code.unwrap()); // load from common code
-}
-
 RawCode RawCode::from_common_code(const CommonCode &common_code) {
     return RawCode(common_code); // load from common code
+}
+
+RawCode RawCode::from_common_code(uint64_t common_code) {
+    return RawCode(CommonCode(common_code)); // load from common code
+}
+
+RawCode RawCode::from_common_code(const std::string &common_code) {
+    return RawCode(CommonCode(common_code)); // load from common code
+}
+
+RawCode::RawCode(const CommonCode &common_code) {
+    code = RawCode::extract(common_code.unwrap()); // load from common code
 }
 
 CommonCode RawCode::to_common_code() const {

@@ -20,7 +20,7 @@ int main() {
 //    std::cout << "wait 3s" << std::endl;
 //    sleep(3);
 
-    std::cout << "start benchmark" << std::endl;
+//    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
 
     AllCases::build();
@@ -74,6 +74,8 @@ int main() {
 
 //    std::cout << ShortCode("EP4HZ") << std::endl;
 //    std::cout << ShortCode(14323231) << std::endl;
+
+    std::cout << RawCode::from_common_code("4fea134") << std::endl;
 
 
 //    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
