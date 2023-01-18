@@ -31,7 +31,7 @@ void FastCal::new_case(uint64_t code, uint64_t mask) { // callback function for 
 
 }
 
-std::vector<uint64_t> FastCal::solve() {
+uint64_t FastCal::solve() {
 
     auto resolved = [](uint64_t code) {
         return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
@@ -40,7 +40,24 @@ std::vector<uint64_t> FastCal::solve() {
 
 }
 
-std::vector<uint64_t> FastCal::target(const std::function<bool(uint64_t)> &match) {
+// TODO: single backtrack function
+std::vector<uint64_t> FastCal::backtrack(uint64_t code) {
+    std::vector<uint64_t> path;
+
+    // TODO: confirm code exist
+    auto node = &cases[code];
+
+    while (node != nullptr) {
+        path.emplace_back(node->code);
+        node = node->last;
+    }
+
+    std::reverse(path.begin(), path.end());
+    return path;
+
+}
+
+uint64_t FastCal::target(const std::function<bool(uint64_t)> &match) {
 
     auto core = import_core();
 
@@ -62,7 +79,6 @@ std::vector<uint64_t> FastCal::target(const std::function<bool(uint64_t)> &match
 
     while (!cache.empty()) {
 
-        /// break check point
         if (match(cache.front()->code)) {
             break;
         }
@@ -73,20 +89,12 @@ std::vector<uint64_t> FastCal::target(const std::function<bool(uint64_t)> &match
 
     std::cout << "size: " << cases.size() << std::endl;
 
-    // TODO: single backtrack function
-
     // TODO: cache may empty -> never found
+    if (!cache.empty()) {
 
-    auto solution = cache.front();
+        return cache.front()->code;
 
-    std::vector<uint64_t> solution_path;
-
-    while (solution != nullptr) {
-        solution_path.emplace_back(solution->code);
-        solution = solution->last;
     }
-
-    std::reverse(solution_path.begin(), solution_path.end());
-    return solution_path;
+    return FastCal::NOT_FOUND;
 
 }

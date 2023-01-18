@@ -20,15 +20,20 @@ public:
     /// xxx_multi only search until same layer
 
 //    std::vector<uint64_t> solve(uint64_t code);
-    std::vector<uint64_t> solve();
+//    std::vector<uint64_t> solve();
+    uint64_t solve();
 //    solve_multi
 
-    std::vector<uint64_t> target(const std::function<bool(uint64_t)> &match);
+//    std::vector<uint64_t> target(const std::function<bool(uint64_t)> &match);
+    uint64_t target(const std::function<bool(uint64_t)> &match);
 
+    std::vector<uint64_t> backtrack(uint64_t code);
 
     // TODO: continue search process? -> reuse exist data (ensure working code not changed)
 
     // TODO: static search functions
+
+    const static auto NOT_FOUND = (uint64_t)0;
 
 private:
     struct fast_cal_t {

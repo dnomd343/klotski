@@ -30,6 +30,7 @@ int main() {
 
     auto f = FastCal(RawCode::from_common_code("1a9bf0c").unwrap());
     auto ret = f.solve();
+    std::cout << RawCode(ret) << std::endl;
 
 //    for (const auto &c : ret) {
 //        std::cout << RawCode(c) << std::endl;
