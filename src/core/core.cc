@@ -1,33 +1,40 @@
 #include "core.h"
 #include "common.h"
 
+/// block direction limit
 #define ALLOW_UP    (filter != -UP)
 #define ALLOW_DOWN  (filter != -DOWN)
 #define ALLOW_LEFT  (filter != -LEFT)
 #define ALLOW_RIGHT (filter != -RIGHT)
 
-#define NOT_COLUMN_0 ((addr & 3) != 0)
-#define NOT_COLUMN_2 ((addr & 3) != 2)
-#define NOT_COLUMN_3 ((addr & 3) != 1)
+/// horizontal restraints
+#define NOT_COLUMN_0 ((addr & 3) != 0b00)
+#define NOT_COLUMN_2 ((addr & 3) != 0b10)
+#define NOT_COLUMN_3 ((addr & 3) != 0b01)
 
+/// try to move block
 #define MOVE_UP    (next_addr = addr + UP)
 #define MOVE_DOWN  (next_addr = addr + DOWN)
 #define MOVE_LEFT  (next_addr = addr + LEFT)
 #define MOVE_RIGHT (next_addr = addr + RIGHT)
 
+/// vertical restraints
 #define TOP_LIMIT(ADDR)    (addr >= ADDR * 3)
 #define BOTTOM_LIMIT(ADDR) (addr <= ADDR * 3)
 
+/// check if the block can move
 #define CHECK_UP(MASK)    !(code >> MOVE_UP & MASK)
 #define CHECK_DOWN(MASK)  !(code >> MOVE_DOWN & MASK)
 #define CHECK_LEFT(MASK)  !(code >> MOVE_LEFT & MASK)
 #define CHECK_RIGHT(MASK) !(code >> MOVE_RIGHT & MASK)
 
+/// release next code
 #define RELEASE_1x1(FILTER) RELEASE(NEXT_CODE_1x1, FILTER)
 #define RELEASE_1x2(FILTER) RELEASE(NEXT_CODE_1x2, FILTER)
 #define RELEASE_2x1(FILTER) RELEASE(NEXT_CODE_2x1, FILTER)
 #define RELEASE_2x2(FILTER) RELEASE(NEXT_CODE_2x2, FILTER)
 
+/// calculate next code
 #define NEXT_CODE_1x1 ((code & ~(F_1x1 << addr)) | (C_1x1 << next_addr))
 #define NEXT_CODE_1x2 ((code & ~(F_1x2 << addr)) | (C_1x2 << next_addr))
 #define NEXT_CODE_2x1 ((code & ~(F_2x1 << addr)) | (C_2x1 << next_addr))
@@ -36,13 +43,12 @@
 ////////////////////////////////////////
 
 #define RELEASE(NEXT_CODE, FILTER) \
-cache_t next_case = { \
+cache_insert(cache_t { \
     .code = NEXT_CODE, \
     .mask = F_1x1 << next_addr, \
     .filter = FILTER, \
     .addr = next_addr \
-}; \
-cache_insert(next_case);
+});
 
 ////////////////////////////////////////
 
@@ -60,7 +66,7 @@ int filter = cache[current++].filter;
 
 ////////////////////////////////////////
 
-inline void Core::cache_insert(Core::cache_t &next_case) { // try to insert into cache
+inline void Core::cache_insert(Core::cache_t next_case) { // try to insert into cache
     auto *cache_ptr = cache;
     for (; cache_ptr < cache + cache_size; ++cache_ptr) {
         if (cache_ptr->code == next_case.code) {

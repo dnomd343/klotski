@@ -34,5 +34,5 @@ private:
     void move_1x2(uint64_t code, int addr);
     void move_2x1(uint64_t code, int addr);
     void move_2x2(uint64_t code, int addr);
-    inline void cache_insert(Core::cache_t &next_case);
+    inline void cache_insert(Core::cache_t next_case);
 };

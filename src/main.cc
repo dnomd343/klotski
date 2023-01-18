@@ -23,12 +23,10 @@ int main() {
 //    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
 
-    for (uint32_t common_code = 0x10000000; common_code < 0x20000000; ++common_code) {
-        CommonCode::check(common_code);
-    }
-
 //    AllCases::build();
 
+    auto f = FastCal();
+    f.fast_cal(RawCode::from_common_code("1a9bf0c").unwrap());
 
 //    auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
 //    auto raw_code = CommonCode("A5D3AF0").to_raw_code().unwrap();
@@ -86,8 +84,8 @@ int main() {
 
 
 //    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
-    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 
 //    std::cout << "complete benchmark" << std::endl;
 
