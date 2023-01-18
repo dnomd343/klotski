@@ -185,6 +185,20 @@ std::vector<uint64_t> FastCal::furthest(uint64_t code) {
 
 }
 
+uint32_t FastCal::step_num(uint64_t code) {
+
+    uint32_t num = 0;
+
+    // TODO: confirm code exist
+    auto node = &cases[code];
+
+    while ((node = node->last) != nullptr) {
+        ++num;
+    }
+
+    return num;
+}
+
 
 
 

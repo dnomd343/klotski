@@ -39,6 +39,8 @@ public:
 
     std::vector<uint64_t> backtrack(uint64_t code);
 
+    uint32_t step_num(uint64_t code);
+
     // TODO: static search functions
 
 

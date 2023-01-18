@@ -27,14 +27,16 @@ int main() {
 
     auto f = FastCal();
 //    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
-    auto ret = f.furthest((uint64_t)RawCode::from_common_code("1a9bf0c"));
+    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
+
+    std::cout << f.step_num(ret) << std::endl;
 
 //    auto f = FastCal(RawCode::from_common_code("1a9bf0c").unwrap());
 //    auto ret = f.solve();
 //    std::cout << RawCode(ret) << std::endl;
-    for (const auto &r : ret) {
-        std::cout << RawCode(r) << std::endl;
-    }
+//    for (const auto &r : ret) {
+//        std::cout << RawCode(r) << std::endl;
+//    }
 
 //    for (const auto &c : ret) {
 //        std::cout << RawCode(c) << std::endl;
