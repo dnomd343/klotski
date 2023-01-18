@@ -27,7 +27,7 @@ int main() {
 
     auto f = FastCal();
 //    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
-    auto ret = f.solve_multi((uint64_t)RawCode::from_common_code("1a9bf0c"));
+    auto ret = f.furthest((uint64_t)RawCode::from_common_code("1a9bf0c"));
 
 //    auto f = FastCal(RawCode::from_common_code("1a9bf0c").unwrap());
 //    auto ret = f.solve();

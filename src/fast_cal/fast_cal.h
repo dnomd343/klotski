@@ -11,6 +11,8 @@ public:
 
     typedef std::function<bool(uint64_t)> check_t;
 
+    const static auto NOT_FOUND = (uint64_t)0;
+
 //    explicit FastCal(uint64_t code) : root(code) {}
 
     // search resolve
@@ -23,18 +25,22 @@ public:
 
 //    solve_multi
 
+    // TODO: shall we using RawCode instead of uint64_t?
+
     uint64_t solve(uint64_t code);
 
     uint64_t target(uint64_t code, const check_t &match);
 
     std::vector<uint64_t> solve_multi(uint64_t code);
+
     std::vector<uint64_t> target_multi(uint64_t code, const check_t &match);
+
+    std::vector<uint64_t> furthest(uint64_t code);
 
     std::vector<uint64_t> backtrack(uint64_t code);
 
     // TODO: static search functions
 
-    const static auto NOT_FOUND = (uint64_t)0;
 
 private:
     struct fast_cal_t {
