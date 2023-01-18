@@ -21,7 +21,8 @@ uint8_t Common::check_range(uint32_t head, uint32_t range) { // check generated 
     int block_offset = 1;
     uint32_t cache = M_2x2 << head; // fill 2x2 block
     for (int addr = 0; range; range >>= 2, ++block_offset) { // traverse every 2-bits
-        while (cache >> addr & 0b1) {
+        // TODO: will addr >= 32 in some special cases?
+        while ((cache >> addr) & 0b1) {
             ++addr; // search next unfilled block
         }
         switch (range & 0b11) {
