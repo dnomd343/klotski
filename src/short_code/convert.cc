@@ -6,8 +6,17 @@
 #include "basic_ranges_offset.h"
 #include "range_prefix_offset.h"
 
+/// CommonCode to ShortCode
+ShortCode ShortCode::from_common_code(uint64_t common_code) {
+    return ShortCode(CommonCode(common_code));
+}
+
 ShortCode ShortCode::from_common_code(const CommonCode &common_code) {
-    return ShortCode(common_code); // convert from common code
+    return ShortCode(common_code);
+}
+
+ShortCode ShortCode::from_common_code(const std::string &common_code) {
+    return ShortCode(CommonCode(common_code));
 }
 
 ShortCode::ShortCode(const CommonCode &common_code) { // convert from common code
@@ -18,6 +27,7 @@ ShortCode::ShortCode(const CommonCode &common_code) { // convert from common cod
     }
 }
 
+/// ShortCode to CommonCode
 CommonCode ShortCode::to_common_code() const { // convert to common code
     if (ShortCode::mode() == ShortCode::NORMAL) {
         return CommonCode::unsafe_create(tiny_decode(code)); // normal mode
@@ -25,7 +35,7 @@ CommonCode ShortCode::to_common_code() const { // convert to common code
     return CommonCode::unsafe_create(fast_decode(code)); // fast mode
 }
 
-/// NOTE: ensure that input common code is valid !!!
+/// NOTE: ensure that input common code is valid!
 uint32_t ShortCode::fast_encode(uint64_t common_code) { // common code --> short code
     auto head = common_code >> 32; // head index
     const auto &ranges = AllCases::fetch()[head]; // available ranges
@@ -33,7 +43,7 @@ uint32_t ShortCode::fast_encode(uint64_t common_code) { // common code --> short
     return ALL_CASES_OFFSET[head] + offset; // release short code
 }
 
-/// NOTE: ensure that input short code is valid !!!
+/// NOTE: ensure that input short code is valid!
 uint64_t ShortCode::fast_decode(uint32_t short_code) { // short code --> common code
     auto offset = std::upper_bound( // using binary search
             ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code
@@ -42,7 +52,7 @@ uint64_t ShortCode::fast_decode(uint32_t short_code) { // short code --> common 
     return (head << 32) | AllCases::fetch()[head][short_code - *offset]; // release common code
 }
 
-/// NOTE: ensure that input common code is valid !!!
+/// NOTE: ensure that input common code is valid!
 uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common code --> short code
     /// load head index and range prefix
     uint32_t head = common_code >> 32;
@@ -70,7 +80,7 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common code --> short
     return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
 }
 
-/// NOTE: ensure that input short code is valid !!!
+/// NOTE: ensure that input short code is valid!
 uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common code
     /// match head index
     auto offset = std::upper_bound( // binary search

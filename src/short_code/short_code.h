@@ -13,25 +13,31 @@ class ShortCode {
 public:
     enum Mode {NORMAL, FAST};
 
-    uint32_t unwrap() const;
-    std::string to_string() const;
-    CommonCode to_common_code() const;
-
     static void speed_up(enum Mode mode);
     static bool check(uint32_t short_code);
     friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
+    /// Export functions
+    uint32_t unwrap() const;
+    std::string to_string() const;
+    CommonCode to_common_code() const;
+
+    /// ShortCode constructors
     explicit ShortCode(uint32_t short_code);
     explicit ShortCode(const std::string &short_code);
     explicit ShortCode(const CommonCode &common_code);
 
-    static ShortCode create(uint32_t short_code);
-    static ShortCode from_string(const std::string &short_code);
-    static ShortCode from_common_code(const CommonCode &common_code);
-
     ShortCode(uint32_t short_code, enum Mode mode) : ShortCode(short_code) { speed_up(mode); }
     ShortCode(const std::string &short_code, enum Mode mode) : ShortCode(short_code) { speed_up(mode); }
     ShortCode(const CommonCode &common_code, enum Mode mode) : ShortCode(common_code) { speed_up(mode); }
+
+    /// Rust-style initialization
+    static ShortCode create(uint32_t short_code);
+    static ShortCode from_string(const std::string &short_code);
+
+    static ShortCode from_common_code(uint64_t common_code);
+    static ShortCode from_common_code(const CommonCode &common_code);
+    static ShortCode from_common_code(const std::string &common_code);
 
 private:
     uint32_t code;

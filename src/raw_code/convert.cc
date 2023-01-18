@@ -2,6 +2,7 @@
 #include "common.h"
 #include "raw_code.h"
 
+/// CommonCode to RawCode
 RawCode RawCode::from_common_code(const CommonCode &common_code) {
     return RawCode(common_code); // load from common code
 }
@@ -18,6 +19,7 @@ RawCode::RawCode(const CommonCode &common_code) {
     code = RawCode::extract(common_code.unwrap()); // load from common code
 }
 
+/// RawCode to CommonCode
 CommonCode RawCode::to_common_code() const {
     if (!RawCode::check(code)) {
         throw std::runtime_error("invalid raw code");
@@ -26,7 +28,7 @@ CommonCode RawCode::to_common_code() const {
     return CommonCode::unsafe_create(RawCode::compact(code)); // release common code
 }
 
-/// NOTE: ensure that input raw code is valid !!!
+/// NOTE: ensure that input raw code is valid!
 uint64_t RawCode::compact(uint64_t raw_code) { // raw code --> common code
     int unfilled = 16;
     uint64_t head = 0; // 2x2 block address
@@ -55,7 +57,7 @@ uint64_t RawCode::compact(uint64_t raw_code) { // raw code --> common code
     return head | (range << (unfilled << 1)); // fill low bits as zero
 }
 
-/// NOTE: ensure that input common code is valid !!!
+/// NOTE: ensure that input common code is valid!
 uint64_t RawCode::extract(uint64_t common_code) { // common code --> raw code
     auto code = C_2x2 << (common_code >> 32) * 3; // flag for 2x2 block
     auto range = Common::range_reverse((uint32_t)common_code); // reversed range
