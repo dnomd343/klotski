@@ -5,8 +5,18 @@
 #include "raw_code.h"
 
 #include <iostream>
+#include <algorithm>
+
+Core FastCal::import_core() {
+    return Core(
+        [this](auto &&code, auto &&mask) { // lambda as function pointer
+            new_case(std::forward<decltype(code)>(code), std::forward<decltype(mask)>(mask));
+        }
+    );
+}
 
 void FastCal::new_case(uint64_t code, uint64_t mask) { // callback function for new case
+
     auto current = cases.find(code);
     if (current != cases.end()) { // find existed case
         current->second.mask |= mask; // update mask info
@@ -19,50 +29,21 @@ void FastCal::new_case(uint64_t code, uint64_t mask) { // callback function for 
         .last = cache.front(),
     }).first->second);
 
-
-//    auto insert_ret = cases.emplace(code, fast_cal_t {
-//        .code = code,
-//        .mask = mask,
-//        .last = cache.front(),
-//    });
-//
-//    if (insert_ret.second) { // insert success
-//        cache.emplace(&insert_ret.first->second);
-//    } else {
-//        insert_ret.first->second.mask |= mask;
-//    }
-
-
-//    cases[code] = fast_cal_t { // insert into cases map
-//        .code = code,
-//        .mask = mask,
-//        .last = cache.front(), // parent case
-//    };
-//    cache.emplace(&cases[code]); // add in working queue
 }
 
-void FastCal::fast_cal(uint64_t code) {
+std::vector<uint64_t> FastCal::search(uint64_t code) {
 
-    auto core = Core(
-        [this](auto &&code, auto &&mask) { // lambda as function pointer
-            new_case(std::forward<decltype(code)>(code), std::forward<decltype(mask)>(mask));
-        }
-    );
+    auto core = import_core();
 
-    cases.empty();
-    cache.empty();
+    // clear data
+    cases.clear();
 
-//    cases[code] = fast_cal_t {
-//        .code = code,
-//        .mask = 0,
-//        .last = nullptr,
-//    };
-//    cache.emplace(&cases[code]);
+    auto empty = std::queue<fast_cal_t*>{};
+    std::swap(empty, cache);
 
-//    cases.reserve(30000);
+
     cases.reserve(65536);
-//    cases.reserve(65536 * 2);
-//    cases.reserve(65536 * 4);
+
 
     cache.emplace(&cases.emplace(code, fast_cal_t {
         .code = code,
@@ -73,7 +54,6 @@ void FastCal::fast_cal(uint64_t code) {
     while (!cache.empty()) {
 
         /// break check point
-
         if (((cache.front()->code >> (3 * 0xD)) & 0b111) == B_2x2) {
             std::cout << "Resolved" << std::endl;
             break;
@@ -87,10 +67,14 @@ void FastCal::fast_cal(uint64_t code) {
 
     auto solution = cache.front();
 
+    std::vector<uint64_t> solution_path;
+
     while (solution != nullptr) {
-//        printf("%016lX\n", solution->code);
-//        std::cout << RawCode(solution->code).dump_case() << std::endl;
+        solution_path.emplace_back(solution->code);
         solution = solution->last;
     }
+
+    std::reverse(solution_path.begin(), solution_path.end());
+    return solution_path;
 
 }
