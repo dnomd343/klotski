@@ -25,11 +25,11 @@ int main() {
 
 //    AllCases::build();
 
-//    auto f = FastCal();
-//    auto ret = f.solve(RawCode::from_common_code("1a9bf0c").unwrap());
+    auto f = FastCal();
+    auto ret = f.solve(RawCode::from_common_code("1a9bf0c").unwrap());
 
-    auto f = FastCal(RawCode::from_common_code("1a9bf0c").unwrap());
-    auto ret = f.solve();
+//    auto f = FastCal(RawCode::from_common_code("1a9bf0c").unwrap());
+//    auto ret = f.solve();
     std::cout << RawCode(ret) << std::endl;
 
 //    for (const auto &c : ret) {

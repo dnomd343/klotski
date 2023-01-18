@@ -9,7 +9,9 @@
 class FastCal {
 public:
 
-    explicit FastCal(uint64_t code) : root(code) {}
+    typedef std::function<bool(uint64_t)> check_t;
+
+//    explicit FastCal(uint64_t code) : root(code) {}
 
     // search resolve
     // search all min-step resolve
@@ -19,17 +21,13 @@ public:
 
     /// xxx_multi only search until same layer
 
-//    std::vector<uint64_t> solve(uint64_t code);
-//    std::vector<uint64_t> solve();
-    uint64_t solve();
 //    solve_multi
 
-//    std::vector<uint64_t> target(const std::function<bool(uint64_t)> &match);
-    uint64_t target(const std::function<bool(uint64_t)> &match);
+    uint64_t solve(uint64_t code);
+
+    uint64_t target(uint64_t code, const check_t &match);
 
     std::vector<uint64_t> backtrack(uint64_t code);
-
-    // TODO: continue search process? -> reuse exist data (ensure working code not changed)
 
     // TODO: static search functions
 
@@ -43,12 +41,12 @@ private:
     };
 
 
-    uint64_t root;
+//    uint64_t root;
 
     std::queue<fast_cal_t*> cache;
     std::unordered_map<uint64_t, fast_cal_t> cases;
 
-    Core import_core();
+    Core init();
 
     void new_case(uint64_t code, uint64_t mask);
 

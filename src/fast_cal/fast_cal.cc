@@ -7,7 +7,15 @@
 #include <iostream>
 #include <algorithm>
 
-Core FastCal::import_core() {
+Core FastCal::init() { // initialization process
+    /// clear working data
+    cases.clear();
+    std::queue<fast_cal_t*>{}.swap(cache);
+
+    // TODO: test the speed without hashmap reserve
+    cases.reserve(65536);
+
+    /// import klotski core
     return Core(
         [this](auto &&code, auto &&mask) { // lambda as function pointer
             new_case(std::forward<decltype(code)>(code), std::forward<decltype(mask)>(mask));
@@ -16,31 +24,18 @@ Core FastCal::import_core() {
 }
 
 void FastCal::new_case(uint64_t code, uint64_t mask) { // callback function for new case
-
     auto current = cases.find(code);
     if (current != cases.end()) { // find existed case
         current->second.mask |= mask; // update mask info
         return;
     }
-
-    cache.emplace(&cases.emplace(code, fast_cal_t {
+    cache.emplace(&cases.emplace(code, fast_cal_t { // record new case
         .code = code,
         .mask = mask,
-        .last = cache.front(),
+        .last = cache.front(), // link parent case
     }).first->second);
-
 }
 
-uint64_t FastCal::solve() {
-
-    auto resolved = [](uint64_t code) {
-        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
-    };
-    return target(resolved);
-
-}
-
-// TODO: single backtrack function
 std::vector<uint64_t> FastCal::backtrack(uint64_t code) {
     std::vector<uint64_t> path;
 
@@ -57,44 +52,27 @@ std::vector<uint64_t> FastCal::backtrack(uint64_t code) {
 
 }
 
-uint64_t FastCal::target(const std::function<bool(uint64_t)> &match) {
+uint64_t FastCal::solve(uint64_t code) {
+    return FastCal::target(code, [](uint64_t code) {
+        return ((code >> (3 * 0xD)) & 0b111) == B_2x2; // check 2x2 block address
+    });
+}
 
-    auto core = import_core();
+uint64_t FastCal::target(uint64_t code, const check_t &match) {
+    auto core = init();
 
-    // clear data
-    cases.clear();
-
-    std::queue<fast_cal_t*>{}.swap(cache);
-
-//    auto empty = std::queue<fast_cal_t*>{};
-//    std::swap(empty, cache);
-
-    cases.reserve(65536);
-
-    cache.emplace(&cases.emplace(root, fast_cal_t {
-        .code = root,
+    cache.emplace(&cases.emplace(code, fast_cal_t {
+        .code = code,
         .mask = 0,
-        .last = nullptr,
+        .last = nullptr, // without parent node
     }).first->second);
 
     while (!cache.empty()) {
-
         if (match(cache.front()->code)) {
-            break;
+            return cache.front()->code; // match target
         }
-
         core.next_cases(cache.front()->code, cache.front()->mask);
         cache.pop();
     }
-
-    std::cout << "size: " << cases.size() << std::endl;
-
-    // TODO: cache may empty -> never found
-    if (!cache.empty()) {
-
-        return cache.front()->code;
-
-    }
-    return FastCal::NOT_FOUND;
-
+    return FastCal::NOT_FOUND; // target not found
 }
