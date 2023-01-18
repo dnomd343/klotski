@@ -10,6 +10,7 @@ class CommonCode;
 class RawCode {
 public:
     static bool check(uint64_t raw_code);
+    explicit operator uint64_t() const { return code; }
     friend std::ostream& operator<<(std::ostream &out, const RawCode &self);
 
     /// Export functions

@@ -12,6 +12,7 @@ class ShortCode;
 class CommonCode {
 public:
     static bool check(uint64_t common_code);
+    explicit operator uint64_t() const { return code; }
     friend std::ostream& operator<<(std::ostream &out, const CommonCode &self);
 
     /// Export functions

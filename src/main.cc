@@ -15,7 +15,7 @@
 
 int main() {
 
-    BasicRanges::build();
+//    BasicRanges::build();
 
 //    std::cout << "wait 3s" << std::endl;
 //    sleep(3);
@@ -26,7 +26,7 @@ int main() {
 //    AllCases::build();
 
     auto f = FastCal();
-    auto ret = f.solve(RawCode::from_common_code("1a9bf0c").unwrap());
+    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
 
 //    auto f = FastCal(RawCode::from_common_code("1a9bf0c").unwrap());
 //    auto ret = f.solve();

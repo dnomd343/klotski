@@ -15,6 +15,7 @@ public:
 
     static void speed_up(enum Mode mode);
     static bool check(uint32_t short_code);
+    explicit operator uint32_t() const { return code; }
     friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
     /// Export functions
