@@ -6,24 +6,8 @@ uint64_t CommonCode::unwrap() const {
     return code; // raw uint64_t code
 }
 
-RawCode CommonCode::to_raw_code() const {
-    return RawCode(*this); // convert to raw code
-}
-
-ShortCode CommonCode::to_short_code() const {
-    return ShortCode(*this); // convert to short code
-}
-
 CommonCode CommonCode::create(uint64_t common_code) {
     return CommonCode(common_code); // create from uint64_t
-}
-
-CommonCode CommonCode::from_raw_code(const RawCode &raw_code) {
-    return raw_code.to_common_code(); // create from raw code
-}
-
-CommonCode CommonCode::from_short_code(const ShortCode &short_code) {
-    return short_code.to_common_code(); // create from short code
 }
 
 CommonCode CommonCode::unsafe_create(uint64_t common_code) { // create without check
@@ -37,14 +21,6 @@ CommonCode::CommonCode(uint64_t common_code) {
         throw std::invalid_argument("invalid common code");
     }
     code = common_code;
-}
-
-CommonCode::CommonCode(const RawCode &raw_code) { // load from raw code
-    code = raw_code.to_common_code().code;
-}
-
-CommonCode::CommonCode(const ShortCode &short_code) { // load from short code
-    code = short_code.to_common_code().code;
 }
 
 std::ostream& operator<<(std::ostream &out, const CommonCode &self) {

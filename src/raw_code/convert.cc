@@ -2,6 +2,15 @@
 #include "common.h"
 #include "raw_code.h"
 
+/// RawCode to CommonCode
+CommonCode RawCode::to_common_code() const {
+    if (!RawCode::check(code)) {
+        throw std::runtime_error("invalid raw code");
+    }
+    /// pass raw code checker -> common code must valid
+    return CommonCode::unsafe_create(RawCode::compact(code));
+}
+
 /// CommonCode to RawCode
 RawCode RawCode::from_common_code(const CommonCode &common_code) {
     return RawCode(common_code); // load from common code
@@ -17,15 +26,6 @@ RawCode RawCode::from_common_code(const std::string &common_code) {
 
 RawCode::RawCode(const CommonCode &common_code) {
     code = RawCode::extract(common_code.unwrap()); // load from common code
-}
-
-/// RawCode to CommonCode
-CommonCode RawCode::to_common_code() const {
-    if (!RawCode::check(code)) {
-        throw std::runtime_error("invalid raw code");
-    }
-    /// pass check -> common code must valid
-    return CommonCode::unsafe_create(RawCode::compact(code)); // release common code
 }
 
 /// NOTE: ensure that input raw code is valid!
