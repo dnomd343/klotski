@@ -28,10 +28,10 @@
 #define RELEASE_2x1(FILTER) RELEASE(NEXT_CODE_2x1, FILTER)
 #define RELEASE_2x2(FILTER) RELEASE(NEXT_CODE_2x2, FILTER)
 
-#define NEXT_CODE_1x1 (code & ~(F_1x1 << addr) | (C_1x1 << next_addr))
-#define NEXT_CODE_1x2 (code & ~(F_1x2 << addr) | (C_1x2 << next_addr))
-#define NEXT_CODE_2x1 (code & ~(F_2x1 << addr) | (C_2x1 << next_addr))
-#define NEXT_CODE_2x2 (code & ~(F_2x2 << addr) | (C_2x2 << next_addr))
+#define NEXT_CODE_1x1 ((code & ~(F_1x1 << addr)) | (C_1x1 << next_addr))
+#define NEXT_CODE_1x2 ((code & ~(F_1x2 << addr)) | (C_1x2 << next_addr))
+#define NEXT_CODE_2x1 ((code & ~(F_2x1 << addr)) | (C_2x1 << next_addr))
+#define NEXT_CODE_2x2 ((code & ~(F_2x2 << addr)) | (C_2x2 << next_addr))
 
 ////////////////////////////////////////
 

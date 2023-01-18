@@ -18,14 +18,14 @@ public:
 
 private:
     struct cache_t {
-        uint64_t code; // case raw code
-        uint64_t mask; // only 000 or 111
-        int filter; // UP | DOWN | LEFT | RIGHT
-        int addr; // (0 ~ 19) * 3
+        uint64_t code;
+        uint64_t mask; /// 000 or 111
+        int filter; /// UP | DOWN | LEFT | RIGHT
+        int addr; /// (0 ~ 19) * 3
     };
 
     int cache_size = 1;
-    cache_t cache[16] = {0};
+    cache_t cache[16]{};
     release_t release; // release code and mask
 
     void move_1x1(uint64_t code, int addr);
