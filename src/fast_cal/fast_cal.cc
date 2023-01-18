@@ -58,6 +58,12 @@ uint64_t FastCal::solve(uint64_t code) {
     });
 }
 
+std::vector<uint64_t> FastCal::solve_multi(uint64_t code) {
+    return FastCal::target_multi(code, [](uint64_t code) {
+        return ((code >> (3 * 0xD)) & 0b111) == B_2x2; // check 2x2 block address
+    });
+}
+
 uint64_t FastCal::target(uint64_t code, const check_t &match) {
     auto core = init();
 
@@ -76,3 +82,59 @@ uint64_t FastCal::target(uint64_t code, const check_t &match) {
     }
     return FastCal::NOT_FOUND; // target not found
 }
+
+std::vector<uint64_t> FastCal::target_multi(uint64_t code, const FastCal::check_t &match) {
+
+    auto core = init();
+
+    cache.emplace(&cases.emplace(code, fast_cal_t {
+        .code = code,
+        .mask = 0,
+        .last = nullptr, // without parent node
+    }).first->second);
+
+    auto layer_end = cache.back();
+
+    int layer_num = 0;
+
+//    bool matched = false;
+
+    std::vector<uint64_t> matched;
+
+    while (!cache.empty()) {
+
+        if (match(cache.front()->code)) {
+//            matched = true;
+            matched.emplace_back(cache.front()->code);
+//            std::cout << "found: " << std::endl;
+//            std::cout << RawCode(cache.front()->code);
+
+        }
+
+        core.next_cases(cache.front()->code, cache.front()->mask);
+
+        if (cache.front() == layer_end) {
+
+            if (!matched.empty()) {
+                std::cout << "layer " << layer_num << " end -> exit search" << std::endl;
+                return matched;
+            }
+
+            std::cout << "reach layer " << layer_num << " ending" << std::endl;
+            ++layer_num;
+
+            layer_end = cache.back();
+
+        }
+
+        cache.pop();
+
+    }
+
+    return std::vector<uint64_t>{}; // no target found
+
+}
+
+
+
+

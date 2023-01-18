@@ -27,6 +27,9 @@ public:
 
     uint64_t target(uint64_t code, const check_t &match);
 
+    std::vector<uint64_t> solve_multi(uint64_t code);
+    std::vector<uint64_t> target_multi(uint64_t code, const check_t &match);
+
     std::vector<uint64_t> backtrack(uint64_t code);
 
     // TODO: static search functions
