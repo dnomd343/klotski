@@ -79,7 +79,7 @@ void FastCal::fast_cal(uint64_t code) {
             break;
         }
 
-        core.next_step(cache.front()->code, cache.front()->mask);
+        core.next_cases(cache.front()->code, cache.front()->mask);
         cache.pop();
     }
 

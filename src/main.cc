@@ -23,7 +23,11 @@ int main() {
 //    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
 
-    AllCases::build();
+    for (uint32_t common_code = 0x10000000; common_code < 0x20000000; ++common_code) {
+        CommonCode::check(common_code);
+    }
+
+//    AllCases::build();
 
 
 //    auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
@@ -75,10 +79,10 @@ int main() {
 //    std::cout << ShortCode("EP4HZ") << std::endl;
 //    std::cout << ShortCode(14323231) << std::endl;
 
-    std::cout << RawCode::from_common_code("4fea134") << std::endl;
-    std::cout << CommonCode::from_raw_code(0xE58FC85FFEBC4DB) << std::endl;
-    std::cout << ShortCode::from_common_code("4fea134") << std::endl;
-    std::cout << CommonCode::from_short_code("AXCZN") << std::endl;
+//    std::cout << RawCode::from_common_code("4fea134") << std::endl;
+//    std::cout << CommonCode::from_raw_code(0xE58FC85FFEBC4DB) << std::endl;
+//    std::cout << ShortCode::from_common_code("4fea134") << std::endl;
+//    std::cout << CommonCode::from_short_code("AXCZN") << std::endl;
 
 
 //    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;

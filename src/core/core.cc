@@ -147,7 +147,7 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     }
 }
 
-void Core::next_step(uint64_t code, uint64_t mask) { // search next step cases
+void Core::next_cases(uint64_t code, uint64_t mask) { // search next step cases
     cache[0].filter = 0; // without filter
     cache[0].code = code; // bfs root code
     auto range = code | mask;
@@ -171,7 +171,7 @@ void Core::next_step(uint64_t code, uint64_t mask) { // search next step cases
         }
         if (cache_size != 1) { // found one or more next cases
             for (int i = 1; i < cache_size; ++i) {
-                release(cache[i].code, cache[i].mask); // release next cases
+                Core::release(cache[i].code, cache[i].mask); // release next cases
             }
             cache_size = 1; // reset cache size
         }

@@ -44,7 +44,7 @@ void AllCases::build_data() { // find all cases
         /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
         data[head].reserve(ALL_CASES_SIZE[head]); // memory pre-allocated
         /// head(4-bits) + basic ranges(32-bits) ==check==> release valid cases
-        for (auto index = 0; index < basic_ranges.size(); ++index) {
+        for (uint32_t index = 0; index < basic_ranges.size(); ++index) {
             auto broken_offset = Common::check_range(head, basic_ranges[index]);
             if (broken_offset) { // case invalid
                 auto delta = (uint32_t)1 << (32 - broken_offset * 2); // delta to next possible range

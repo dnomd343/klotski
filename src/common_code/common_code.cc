@@ -51,30 +51,32 @@ bool CommonCode::check(uint64_t common_code) { // whether common code is valid
     uint32_t mask = M_2x2 << head; // fill 2x2 block
     auto range = Common::range_reverse((uint32_t)common_code);
     for (int addr = 0;; range >>= 2) { // traverse every 2-bits
-        while (mask >> addr & 0b1) {
+        while ((mask >> addr) & 0b1) {
             ++addr; // search next unfilled block
         }
         if (addr >= 20) {
             return !range && space_num > 1; // empty range and >= 2 space
         }
         switch (range & 0b11) {
-            case 0b00: // space
+            case 0b00: /// space
+                mask |= M_1x1 << addr; // fill space
                 ++space_num;
-            case 0b11: // 1x1 block
-                mask |= M_1x1 << addr; // fill space or 1x1 block
-                break;
-            case 0b10: // 2x1 block
-                if (addr > 15 || mask >> (addr + 4) & 0b1) { // invalid address
-                    return false;
+                continue;
+            case 0b11: /// 1x1 block
+                mask |= M_1x1 << addr; // fill 1x1 block
+                continue;
+            case 0b10: /// 2x1 block
+                if (addr > 15 || mask >> (addr + 4) & 0b1) {
+                    return false; // invalid address
                 }
                 mask |= M_2x1 << addr; // fill 2x1 block
-                break;
-            case 0b01: // 1x2 block
-                if ((addr & 0b11) == 0b11 || mask >> (addr + 1) & 0b1) { // invalid address
-                    return false;
+                continue;
+            case 0b01: /// 1x2 block
+                if ((addr & 0b11) == 0b11 || mask >> (addr + 1) & 0b1) {
+                    return false; // invalid address
                 }
                 mask |= M_1x2 << addr; // fill 1x2 block
-                break;
+                continue;
         }
     }
 }
