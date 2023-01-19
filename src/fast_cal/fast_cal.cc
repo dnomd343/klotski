@@ -4,17 +4,17 @@
 #include "fast_cal.h"
 #include "raw_code.h"
 
+auto resolved = [](uint64_t code) {
+    return ((code >> (3 * 0xD)) & 0b111) == B_2x2; // check 2x2 block address
+};
+
 /// klotski resolved -> 2x2 block at address 13 (aka 0xD)
 RawCode FastCal::solve(RawCode code) {
-    return FastCal::target(code, [](uint64_t code) {
-        return ((code >> (3 * 0xD)) & 0b111) == B_2x2; // check 2x2 block address
-    });
+    return FastCal::target(code, resolved);
 }
 
 std::vector<RawCode> FastCal::solve_multi(RawCode code) {
-    return FastCal::target_multi(code, [](uint64_t code) {
-        return ((code >> (3 * 0xD)) & 0b111) == B_2x2; // check 2x2 block address
-    });
+    return FastCal::target_multi(code, resolved);
 }
 
 /// backtrack of FastCal tree
@@ -44,4 +44,17 @@ std::vector<RawCode> FastCal::backtrack(RawCode code) {
     }
     std::reverse(path.begin(), path.end()); // reverse path cases
     return path;
+}
+
+std::vector<RawCode> FastCal::resolve(RawCode start) {
+    return FastCal::search(start, resolved);
+}
+
+std::vector<RawCode> FastCal::search(RawCode start, const FastCal::match_t &match) {
+    auto fc = FastCal();
+    auto result = fc.target(start, match);
+    if (result == FC_NOT_FOUND) {
+        return std::vector<RawCode>{}; // target not matched
+    }
+    return fc.backtrack(result); // backtrack target path
 }

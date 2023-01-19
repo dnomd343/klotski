@@ -25,9 +25,9 @@ int main() {
 
 //    AllCases::build();
 
-    auto f = FastCal();
+//    auto f = FastCal();
 //    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
-    auto ret = f.solve(RawCode::from_common_code("1a9bf0c"));
+//    auto ret = f.solve(RawCode::from_common_code("1a9bf0c"));
 
 //    auto ret = f.target(RawCode::from_common_code("1a9bf0c"), [](uint64_t code) {
 //        return code == (uint64_t)RawCode::from_common_code(0xDB23B6C00);
@@ -36,14 +36,19 @@ int main() {
 
 //    auto ret = f.solve(RawCode::from_common_code("1aaef0c"));
 
-    if (ret == FC_NOT_FOUND) {
-        std::cout << "not found" << std::endl;
-    } else {
-        for (const auto &r : f.backtrack(ret)) {
-            std::cout << r << std::endl;
-        }
-        std::cout << "step number: " << f.step_num(ret) << std::endl;
+//    if (ret == FC_NOT_FOUND) {
+//        std::cout << "not found" << std::endl;
+//    } else {
+//        for (const auto &r : f.backtrack(ret)) {
+//            std::cout << r << std::endl;
+//        }
+//        std::cout << "step number: " << f.step_num(ret) << std::endl;
+//    }
+
+    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
+        std::cout << c << std::endl;
     }
+
 
 //    std::cout << f.step_num(ret) << std::endl;
 
