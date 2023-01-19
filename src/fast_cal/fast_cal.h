@@ -19,6 +19,8 @@ public:
     int step_num(const RawCode &code);
     std::vector<RawCode> backtrack(const RawCode &code);
 
+    // TODO: should we using code as class member
+
     /// BFS search functions
     void build(const RawCode &code);
     RawCode solve(const RawCode &code);

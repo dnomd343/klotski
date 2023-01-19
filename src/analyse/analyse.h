@@ -37,7 +37,11 @@ public:
 //    void backtrack(uint64_t code);
 //    void backtrack(const std::vector<uint64_t> &raw_code_list);
 
+    typedef std::function<bool(uint64_t)> match_t;
+
     void build(uint64_t code);
+
+    std::vector<uint64_t> build_until(uint64_t code, const match_t &match);
 
 //    inline Core init(uint64_t code);
     inline Core init();

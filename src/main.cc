@@ -59,7 +59,13 @@ int main() {
 
 
     auto a = Analyse();
-    a.build((uint64_t)RawCode::from_common_code("1a9bf0c"));
+//    a.build((uint64_t)RawCode::from_common_code("1a9bf0c"));
+    auto ret = a.build_until((uint64_t)RawCode::from_common_code("1a9bf0c"), [](uint64_t code) {
+        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
+    });
+    for (const auto &r : ret) {
+        std::cout << RawCode(r) << std::endl;
+    }
 
 //    auto raw_code = CommonCode("A5D3AF0").to_raw_code().unwrap();
 
