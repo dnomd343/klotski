@@ -44,6 +44,6 @@ private:
     std::queue<fast_cal_t*> cache;
     std::unordered_map<uint64_t, fast_cal_t> cases;
 
-    Core init(uint64_t code);
+    inline Core init(uint64_t code);
     void new_case(uint64_t code, uint64_t mask);
 };

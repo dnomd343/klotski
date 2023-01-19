@@ -15,45 +15,51 @@
 
 int main() {
 
-//    BasicRanges::build();
+    BasicRanges::build();
 
-    std::vector<RawCode> test_cases;
-    {
-        AllCases::build();
-        std::vector<uint64_t> all_cases;
-        for (uint64_t head = 0; head < 16; ++head) {
-            for (const auto &range : AllCases::fetch()[head]) {
-                all_cases.emplace_back(head << 32 | range);
-            }
-        }
-        for (uint32_t i = 0; i < 10000; ++i) {
-            test_cases.emplace_back(
-                    RawCode::from_common_code(all_cases.at(i * 2933))
-            );
-        }
-    }
-    std::cout << "test size -> " << test_cases.size() << std::endl;
+//    std::vector<RawCode> test_cases;
+//    {
+//        AllCases::build();
+//        std::vector<uint64_t> all_cases;
+//        for (uint64_t head = 0; head < 16; ++head) {
+//            for (const auto &range : AllCases::fetch()[head]) {
+//                all_cases.emplace_back(head << 32 | range);
+//            }
+//        }
+//        for (uint32_t i = 0; i < 1000; ++i) {
+//            test_cases.emplace_back(
+//                RawCode::from_common_code(all_cases.at(i * 29334))
+//            );
+//        }
+//    }
+//    std::cout << "test size -> " << test_cases.size() << std::endl;
 
 
 //    std::cout << "wait 3s" << std::endl;
 //    sleep(3);
 
-    std::cout << "start benchmark" << std::endl;
+//    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
 
 //    AllCases::build();
 
 
-    {
-        auto fc = FastCal();
-        for (uint32_t i = 0; i < test_cases.size(); ++i) {
-            fc.solve(test_cases[i]);
-            if (i % 1000 == 0) {
-                std::cout << (i * 100 / test_cases.size()) << "%" << std::endl;
-            }
-        }
-    }
+//    {
+//        auto fc = FastCal();
+//        for (uint32_t i = 0; i < test_cases.size(); ++i) {
+//            fc.solve(test_cases[i]);
+//            if (i % 1000 == 0) {
+//                std::cout << (i * 100 / test_cases.size()) << "%" << std::endl;
+//            }
+//        }
+//        for (auto code : test_cases) {
+//            fc.solve(code);
+//        }
+//    }
 
+
+    auto a = Analyse();
+    a.build((uint64_t)RawCode::from_common_code("1a9bf0c"));
 
 //    auto raw_code = CommonCode("A5D3AF0").to_raw_code().unwrap();
 
@@ -92,11 +98,11 @@ int main() {
 //    std::cout << CommonCode::from_short_code("AXCZN") << std::endl;
 
 
-    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
+//    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 
-    std::cout << "complete benchmark" << std::endl;
+//    std::cout << "complete benchmark" << std::endl;
 
 //    pause();
 
