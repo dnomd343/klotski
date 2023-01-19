@@ -15,19 +15,21 @@ class FastCal {
 public:
     typedef std::function<bool(uint64_t)> match_t;
 
+    /// FastCal start case
+    void set_root(const RawCode &code);
+    explicit FastCal(const RawCode &code);
+
     /// backtrack functions
     int step_num(const RawCode &code);
     std::vector<RawCode> backtrack(const RawCode &code);
 
-    // TODO: should we using code as class member
-
     /// BFS search functions
-    void build(const RawCode &code);
-    RawCode solve(const RawCode &code);
-    std::vector<RawCode> furthest(const RawCode &code);
-    std::vector<RawCode> solve_multi(const RawCode &code);
-    RawCode target(const RawCode &code, const match_t &match);
-    std::vector<RawCode> target_multi(const RawCode &code, const match_t &match);
+    void build();
+    RawCode solve();
+    std::vector<RawCode> furthest();
+    std::vector<RawCode> solve_multi();
+    RawCode target(const match_t &match);
+    std::vector<RawCode> target_multi(const match_t &match);
 
     /// static BFS search functions
     static std::vector<RawCode> resolve(const RawCode &start);
@@ -43,6 +45,7 @@ private:
         fast_cal_t *last;
     };
 
+    uint64_t root;
     std::queue<fast_cal_t*> cache;
     std::unordered_map<uint64_t, fast_cal_t> cases;
 

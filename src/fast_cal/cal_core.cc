@@ -37,8 +37,8 @@ void FastCal::new_case(uint64_t code, uint64_t mask) {
 }
 
 /// build total search tree
-void FastCal::build(const RawCode &code) {
-    auto core = init((uint64_t)code);
+void FastCal::build() {
+    auto core = init(root);
     /// start BFS search
     while (!cache.empty()) {
         core.next_cases(cache.front()->code, cache.front()->mask);
@@ -47,8 +47,8 @@ void FastCal::build(const RawCode &code) {
 }
 
 /// found first matched target
-RawCode FastCal::target(const RawCode &code, const match_t &match) {
-    auto core = init((uint64_t)code);
+RawCode FastCal::target(const match_t &match) {
+    auto core = init(root);
     /// start BFS search
     while (!cache.empty()) {
         if (match(cache.front()->code)) {
@@ -60,31 +60,9 @@ RawCode FastCal::target(const RawCode &code, const match_t &match) {
     return FC_NOT_FOUND; // target not found
 }
 
-/// found multi-targets matched in first same layer
-std::vector<RawCode> FastCal::target_multi(const RawCode &code, const match_t &match) {
-    auto core = init((uint64_t)code);
-    auto layer_end = cache.back();
-    std::vector<RawCode> matched; // matched list
-    /// start BFS search
-    while (!cache.empty()) {
-        if (match(cache.front()->code)) { // match target
-            matched.emplace_back(cache.front()->code);
-        }
-        core.next_cases(cache.front()->code, cache.front()->mask);
-        if (cache.front() == layer_end) { // reach layer ending
-            if (!matched.empty()) {
-                return matched; // stop at first matched layer
-            }
-            layer_end = cache.back(); // reset layer ending
-        }
-        cache.pop();
-    }
-    return std::vector<RawCode>{}; // no target found
-}
-
 /// found all of the furthest cases
-std::vector<RawCode> FastCal::furthest(const RawCode &code) {
-    auto core = init((uint64_t)code);
+std::vector<RawCode> FastCal::furthest() {
+    auto core = init(root);
     auto layer_end = cache.back();
     std::vector<RawCode> layer_cases;
     /// start BFS search
@@ -102,5 +80,27 @@ std::vector<RawCode> FastCal::furthest(const RawCode &code) {
         }
         cache.pop();
     }
-    return layer_cases; // release latest layer cases
+    return layer_cases; // release the latest layer cases
+}
+
+/// found multi-targets matched in first same layer
+std::vector<RawCode> FastCal::target_multi(const FastCal::match_t &match) {
+    auto core = init(root);
+    auto layer_end = cache.back();
+    std::vector<RawCode> matched; // matched list
+    /// start BFS search
+    while (!cache.empty()) {
+        if (match(cache.front()->code)) { // match target
+            matched.emplace_back(cache.front()->code);
+        }
+        core.next_cases(cache.front()->code, cache.front()->mask);
+        if (cache.front() == layer_end) { // reach layer ending
+            if (!matched.empty()) {
+                return matched; // stop at first matched layer
+            }
+            layer_end = cache.back(); // reset layer ending
+        }
+        cache.pop();
+    }
+    return std::vector<RawCode>{}; // no target found
 }

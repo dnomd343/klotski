@@ -4,17 +4,25 @@
 #include "fast_cal.h"
 #include "raw_code.h"
 
+FastCal::FastCal(const RawCode &code) {
+    this->root = (uint64_t)code;
+}
+
+void FastCal::set_root(const RawCode &code) {
+    this->root = (uint64_t)code;
+}
+
 /// klotski resolved -> 2x2 block at address 13 (aka 0xD)
 auto resolved = [](uint64_t code) {
     return ((code >> (3 * 0xD)) & 0b111) == B_2x2; // check 2x2 block address
 };
 
-RawCode FastCal::solve(const RawCode &code) {
-    return FastCal::target(code, resolved);
+RawCode FastCal::solve() {
+    return FastCal::target(resolved);
 }
 
-std::vector<RawCode> FastCal::solve_multi(const RawCode &code) {
-    return FastCal::target_multi(code, resolved);
+std::vector<RawCode> FastCal::solve_multi() {
+    return FastCal::target_multi(resolved);
 }
 
 std::vector<RawCode> FastCal::resolve(const RawCode &start) {
@@ -56,17 +64,17 @@ std::vector<RawCode> FastCal::backtrack(const RawCode &code) {
 
 /// static BFS search functions
 std::vector<std::vector<RawCode>> FastCal::to_furthest(const RawCode &start) {
-    auto fc = FastCal();
+    auto fc = FastCal(start);
     std::vector<std::vector<RawCode>> result;
-    for (const auto &furthest : fc.furthest(start)) {
+    for (const auto &furthest : fc.furthest()) {
         result.emplace_back(fc.backtrack(furthest)); // backtrack every furthest cases
     }
     return result;
 }
 
 std::vector<RawCode> FastCal::search(const RawCode &start, const match_t &match) {
-    auto fc = FastCal();
-    auto result = fc.target(start, match);
+    auto fc = FastCal(start);
+    auto result = fc.target(match);
     if (result == FC_NOT_FOUND) {
         return std::vector<RawCode>{}; // target not matched
     }
@@ -74,9 +82,9 @@ std::vector<RawCode> FastCal::search(const RawCode &start, const match_t &match)
 }
 
 std::vector<std::vector<RawCode>> FastCal::search_multi(const RawCode &start, const match_t &match) {
-    auto fc = FastCal();
+    auto fc = FastCal(start);
     std::vector<std::vector<RawCode>> result;
-    for (const auto &target : fc.target_multi(start, match)) {
+    for (const auto &target : fc.target_multi(match)) {
         result.emplace_back(fc.backtrack(target)); // backtrack every target
     }
     return result;
