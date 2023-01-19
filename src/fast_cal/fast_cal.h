@@ -20,7 +20,7 @@ public:
     std::vector<RawCode> backtrack(const RawCode &code);
 
     /// BFS search functions
-    // TODO: build function with void return -> build total tree
+    void build(const RawCode &code);
     RawCode solve(const RawCode &code);
     std::vector<RawCode> furthest(const RawCode &code);
     std::vector<RawCode> solve_multi(const RawCode &code);
