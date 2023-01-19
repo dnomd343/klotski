@@ -31,7 +31,7 @@ int FastCal::step_num(RawCode code) {
     return num;
 }
 
-std::vector<RawCode> FastCal::backtrack(RawCode code) {
+std::vector<RawCode> FastCal::backtrack(const RawCode &code) {
     auto tmp = cases.find((uint64_t)code);
     if (tmp == cases.end()) {
         return std::vector<RawCode>{}; // code not exist
@@ -50,11 +50,24 @@ std::vector<RawCode> FastCal::resolve(RawCode start) {
     return FastCal::search(start, resolved);
 }
 
-std::vector<RawCode> FastCal::search(RawCode start, const FastCal::match_t &match) {
+std::vector<std::vector<RawCode>> FastCal::resolve_multi(RawCode start) {
+    return FastCal::search_multi(start, resolved);
+}
+
+std::vector<RawCode> FastCal::search(RawCode start, const match_t &match) {
     auto fc = FastCal();
     auto result = fc.target(start, match);
     if (result == FC_NOT_FOUND) {
         return std::vector<RawCode>{}; // target not matched
     }
     return fc.backtrack(result); // backtrack target path
+}
+
+std::vector<std::vector<RawCode>> FastCal::search_multi(RawCode start, const match_t &match) {
+    auto fc = FastCal();
+    std::vector<std::vector<RawCode>> result;
+    for (const auto &c : fc.target_multi(start, match)) {
+        result.emplace_back(fc.backtrack(c)); // backtrack every target
+    }
+    return result;
 }

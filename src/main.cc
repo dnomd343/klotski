@@ -45,10 +45,16 @@ int main() {
 //        std::cout << "step number: " << f.step_num(ret) << std::endl;
 //    }
 
-    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
-        std::cout << c << std::endl;
-    }
+//    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
+//        std::cout << c << std::endl;
+//    }
 
+    for (const auto &s : FastCal::resolve_multi(RawCode::from_common_code("1a9bf0c"))) {
+//        for (const auto &c : s) {
+//            std::cout << c << std::endl;
+//        }
+//        std::cout << "--------------------------------------------" << std::endl;
+    }
 
 //    std::cout << f.step_num(ret) << std::endl;
 
