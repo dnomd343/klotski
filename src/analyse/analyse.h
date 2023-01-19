@@ -6,6 +6,7 @@
 #include <functional>
 #include <unordered_map>
 #include "core.h"
+#include "raw_code.h"
 
 const uint32_t ANY_MAP_RESERVE = 65536;
 
@@ -13,8 +14,13 @@ class Analyse {
 public:
     typedef std::function<bool(uint64_t)> match_t;
 
-    void build(uint64_t code);
-    std::vector<uint64_t> build_until(uint64_t code, const match_t &match);
+    /// setting root code
+    void set_root(const RawCode &code);
+    explicit Analyse(const RawCode &code);
+
+    /// BFS search functions
+    void build();
+    std::vector<RawCode> build_until(const match_t &match);
 
 private:
     struct analyse_t {

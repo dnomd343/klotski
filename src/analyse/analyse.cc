@@ -1,6 +1,14 @@
-#include <queue>
 #include "analyse.h"
 
+Analyse::Analyse(const RawCode &code) {
+    this->root = (uint64_t)code;
+}
+
+void Analyse::set_root(const RawCode &code) {
+    this->root = (uint64_t)code;
+}
+
+/// memory initialize and return klotski core
 Core Analyse::init(uint64_t code) {
     /// reset working data
     cases.clear();
@@ -41,22 +49,25 @@ void Analyse::new_case(uint64_t code, uint64_t mask) {
     }
 }
 
-void Analyse::build(uint64_t code) {
-    auto core = init(code);
+/// analyse and build klotski tree
+void Analyse::build() {
+    auto core = init(root);
     while (!cache.empty()) {
         core.next_cases(cache.front()->code, cache.front()->mask);
         cache.pop();
     }
 }
 
-std::vector<uint64_t> Analyse::build_until(uint64_t code, const match_t &match) {
-    auto core = init(code);
+std::vector<RawCode> Analyse::build_until(const match_t &match) {
+    auto core = init(root);
     auto layer_end = cache.back();
-    std::vector<uint64_t> matched; // matched list
+    std::vector<RawCode> matched; // matched list
     /// start BFS search
     while (!cache.empty()) {
         if (match(cache.front()->code)) { // match target
-            matched.emplace_back(cache.front()->code);
+            matched.emplace_back(
+                RawCode::unsafe_create(cache.front()->code) // record matched cases
+            );
         }
         core.next_cases(cache.front()->code, cache.front()->mask);
         if (cache.front() == layer_end) { // reach layer ending
@@ -67,5 +78,5 @@ std::vector<uint64_t> Analyse::build_until(uint64_t code, const match_t &match) 
         }
         cache.pop();
     }
-    return std::vector<uint64_t>{}; // no target found
+    return std::vector<RawCode>{}; // no target found
 }

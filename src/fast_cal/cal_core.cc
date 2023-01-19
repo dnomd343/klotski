@@ -88,7 +88,9 @@ std::vector<RawCode> FastCal::target_multi(const match_t &match) {
     /// start BFS search
     while (!cache.empty()) {
         if (match(cache.front()->code)) { // match target
-            matched.emplace_back(cache.front()->code);
+            matched.emplace_back(
+                RawCode::unsafe_create(cache.front()->code) // record matched cases
+            );
         }
         core.next_cases(cache.front()->code, cache.front()->mask);
         if (cache.front() == layer_end) { // reach layer ending

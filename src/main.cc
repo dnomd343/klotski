@@ -53,8 +53,14 @@ int main() {
 //    }
 
 
-    auto a = Analyse();
-    a.build((uint64_t)RawCode::from_common_code("1a9bf0c"));
+    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
+//    a.build();
+    auto ret = a.build_until([](uint64_t code) {
+        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
+    });
+    for (const auto &r : ret) {
+        std::cout << r << std::endl;
+    }
 
 //    auto ret = a.build_until((uint64_t)RawCode::from_common_code("1a9bf0c"), [](uint64_t code) {
 //        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;

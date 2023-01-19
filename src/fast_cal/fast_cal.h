@@ -17,7 +17,7 @@ class FastCal {
 public:
     typedef std::function<bool(uint64_t)> match_t;
 
-    /// FastCal start case
+    /// setting root code
     void set_root(const RawCode &code);
     explicit FastCal(const RawCode &code);
 
