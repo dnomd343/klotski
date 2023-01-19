@@ -5,6 +5,10 @@ uint32_t ShortCode::unwrap() const {
     return code; // raw uint32_t code
 }
 
+bool ShortCode::valid() const {
+    return ShortCode::check(code);
+}
+
 ShortCode ShortCode::create(uint32_t short_code) {
     return ShortCode(short_code);
 }
@@ -18,6 +22,10 @@ ShortCode::ShortCode(uint32_t short_code) {
 
 bool ShortCode::check(uint32_t short_code) {
     return short_code < SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
+}
+
+bool ShortCode::operator==(const ShortCode &short_code) const {
+    return this->code == short_code.code;
 }
 
 std::ostream& operator<<(std::ostream &out, const ShortCode &self) {

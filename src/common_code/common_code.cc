@@ -6,6 +6,10 @@ uint64_t CommonCode::unwrap() const {
     return code; // raw uint64_t code
 }
 
+bool CommonCode::valid() const {
+    return CommonCode::check(code);
+}
+
 CommonCode CommonCode::create(uint64_t common_code) {
     return CommonCode(common_code); // create from uint64_t
 }
@@ -21,6 +25,10 @@ CommonCode::CommonCode(uint64_t common_code) {
         throw std::invalid_argument("invalid common code");
     }
     code = common_code;
+}
+
+bool CommonCode::operator==(const CommonCode &common_code) const {
+    return this->code == common_code.code;
 }
 
 std::ostream& operator<<(std::ostream &out, const CommonCode &self) {

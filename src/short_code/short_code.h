@@ -13,9 +13,13 @@ class ShortCode {
 public:
     enum Mode {NORMAL, FAST};
 
+    bool valid() const;
     static void speed_up(enum Mode mode);
     static bool check(uint32_t short_code);
+
+    /// Operators of ShortCode
     explicit operator uint32_t() const { return code; }
+    bool operator==(const ShortCode &short_code) const;
     friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
     /// Export functions
