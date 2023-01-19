@@ -15,7 +15,25 @@
 
 int main() {
 
-    BasicRanges::build();
+//    BasicRanges::build();
+
+    std::vector<RawCode> test_cases;
+    {
+        AllCases::build();
+        std::vector<uint64_t> all_cases;
+        for (uint64_t head = 0; head < 16; ++head) {
+            for (const auto &range : AllCases::fetch()[head]) {
+                all_cases.emplace_back(head << 32 | range);
+            }
+        }
+        for (uint32_t i = 0; i < 10000; ++i) {
+            test_cases.emplace_back(
+                    RawCode::from_common_code(all_cases.at(i * 2933))
+            );
+        }
+    }
+    std::cout << "test size -> " << test_cases.size() << std::endl;
+
 
 //    std::cout << "wait 3s" << std::endl;
 //    sleep(3);
@@ -25,55 +43,19 @@ int main() {
 
 //    AllCases::build();
 
-    auto f = FastCal();
-    f.build(RawCode::from_common_code("1a9bf0c"));
-//    auto ret = f.solve(RawCode::from_common_code("1a9bf0c"));
 
-//    auto ret = f.target(RawCode::from_common_code("1a9bf0c"), [](uint64_t code) {
-//        return code == (uint64_t)RawCode::from_common_code(0xDB23B6C00);
-//        return code == 0x0FFB5E7E5AEC741A;
-//    });
+    {
+        auto fc = FastCal();
+        for (uint32_t i = 0; i < test_cases.size(); ++i) {
+            fc.solve(test_cases[i]);
+            if (i % 1000 == 0) {
+                std::cout << (i * 100 / test_cases.size()) << "%" << std::endl;
+            }
+        }
+    }
 
-//    auto ret = f.solve(RawCode::from_common_code("1aaef0c"));
 
-//    if (ret == FC_NOT_FOUND) {
-//        std::cout << "not found" << std::endl;
-//    } else {
-//        for (const auto &r : f.backtrack(ret)) {
-//            std::cout << r << std::endl;
-//        }
-//        std::cout << "step number: " << f.step_num(ret) << std::endl;
-//    }
-
-//    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
-//        std::cout << c << std::endl;
-//    }
-
-//    for (const auto &s : FastCal::to_furthest(RawCode::from_common_code("1a9bf0c"))) {
-//        for (const auto &c : s) {
-//            std::cout << c << std::endl;
-//        }
-//        std::cout << "--------------------------------------------" << std::endl;
-//    }
-
-//    std::cout << f.step_num(ret) << std::endl;
-
-//    auto f = FastCal(RawCode::from_common_code("1a9bf0c").unwrap());
-//    auto ret = f.solve();
-//    std::cout << RawCode(ret) << std::endl;
-//    for (const auto &r : ret) {
-//        std::cout << RawCode(r) << std::endl;
-//    }
-
-//    for (const auto &c : ret) {
-//        std::cout << RawCode(c) << std::endl;
-//    }
-
-//    auto raw_code = CommonCode("1a9bf0c").to_raw_code().unwrap();
 //    auto raw_code = CommonCode("A5D3AF0").to_raw_code().unwrap();
-//    std::cout << fast_cal(raw_code) << std::endl;
-//    auto f = FastCal();
-//    f.fast_cal(raw_code);
 
 //    auto a = Analyse();
 //    a.start_analyse(raw_code);
@@ -101,20 +83,6 @@ int main() {
 //    a.backtrack(raw_codes);
 
 
-//    int sum = 0;
-//    for (auto const &raw_code : all_cases_raw) {
-//        std::cout << RawCode(raw_code).dump_case();
-//        fast_cal(raw_code);
-//        std::cout << fast_cal(raw_code) << std::endl;
-//        std::cout << std::endl;
-//        if (sum % 100000 == 0) {
-//            std::cout << "sum = " << sum << std::endl;
-//        }
-//        ++sum;
-
-//    }
-
-
 //    std::cout << ShortCode("EP4HZ") << std::endl;
 //    std::cout << ShortCode(14323231) << std::endl;
 
@@ -124,11 +92,11 @@ int main() {
 //    std::cout << CommonCode::from_short_code("AXCZN") << std::endl;
 
 
-//    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
+    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 
-//    std::cout << "complete benchmark" << std::endl;
+    std::cout << "complete benchmark" << std::endl;
 
 //    pause();
 
