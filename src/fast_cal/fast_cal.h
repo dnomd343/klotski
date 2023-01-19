@@ -6,27 +6,25 @@
 #include <unordered_map>
 #include "raw_code.h"
 
+const uint32_t FC_MAP_RESERVE = 65536;
+
 /// FastCal not found -> return invalid raw code
 const RawCode FC_NOT_FOUND = RawCode::unsafe_create(0);
 
 class FastCal {
 public:
-    const static auto NOT_FOUND = (uint64_t)0;
-    typedef std::function<bool(uint64_t)> check_t;
-
-//    const static RawCode *test = (RawCode*)nullptr;
+    typedef std::function<bool(uint64_t)> match_t;
 
     /// xxx_multi only search until same layer
 
-    // TODO: shall we use RawCode instead of uint64_t?
-
+    /// BFS search functions
     RawCode solve(RawCode code);
-    RawCode target(RawCode code, const check_t &match);
-
     std::vector<RawCode> furthest(RawCode code);
-
     std::vector<RawCode> solve_multi(RawCode code);
-    std::vector<RawCode> target_multi(RawCode code, const check_t &match);
+    RawCode target(RawCode code, const match_t &match);
+    std::vector<RawCode> target_multi(RawCode code, const match_t &match);
+
+
 
     // TODO: search / search_multi / resolve / resolve_multi
     // TODO: static furthest function

@@ -15,20 +15,20 @@
 
 int main() {
 
-//    BasicRanges::build();
+    BasicRanges::build();
 
 //    std::cout << "wait 3s" << std::endl;
 //    sleep(3);
 
-//    std::cout << "start benchmark" << std::endl;
+    std::cout << "start benchmark" << std::endl;
     auto start_time = clock();
 
 //    AllCases::build();
 
     auto f = FastCal();
 //    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
-//    auto ret = f.solve(RawCode::from_common_code("1a9bf0c"));
-    auto ret = f.solve(RawCode::from_common_code("1aaef0c"));
+    auto ret = f.solve(RawCode::from_common_code("1a9bf0c"));
+//    auto ret = f.solve(RawCode::from_common_code("1aaef0c"));
 
     if (ret == FC_NOT_FOUND) {
         std::cout << "not found" << std::endl;
