@@ -8,7 +8,7 @@
 #include "core.h"
 #include "raw_code.h"
 
-const uint32_t FC_MAP_RESERVE = 65536;
+const uint32_t FC_MAP_RESERVE = 65536 * 8;
 
 /// FastCal not found -> return invalid raw code
 const RawCode FC_NOT_FOUND = RawCode::unsafe_create(0);

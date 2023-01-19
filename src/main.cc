@@ -19,22 +19,22 @@ int main() {
 //    AllCases::build();
 
 
-//    std::vector<RawCode> test_cases;
-//    {
-//        AllCases::build();
-//        std::vector<uint64_t> all_cases;
-//        for (uint64_t head = 0; head < 16; ++head) {
-//            for (const auto &range : AllCases::fetch()[head]) {
-//                all_cases.emplace_back(head << 32 | range);
-//            }
-//        }
-//        for (uint32_t i = 0; i < 1000; ++i) {
-//            test_cases.emplace_back(
-//                RawCode::from_common_code(all_cases.at(i * 29334))
-//            );
-//        }
-//    }
-//    std::cout << "test size -> " << test_cases.size() << std::endl;
+    std::vector<RawCode> test_cases;
+    {
+        AllCases::build();
+        std::vector<uint64_t> all_cases;
+        for (uint64_t head = 0; head < 16; ++head) {
+            for (const auto &range : AllCases::fetch()[head]) {
+                all_cases.emplace_back(head << 32 | range);
+            }
+        }
+        for (uint32_t i = 0; i < 100; ++i) {
+            test_cases.emplace_back(
+                RawCode::from_common_code(all_cases.at(i * 293344))
+            );
+        }
+    }
+    std::cout << "test size -> " << test_cases.size() << std::endl;
 
 
 //    std::cout << "wait 3s" << std::endl;
@@ -44,25 +44,28 @@ int main() {
     auto start_time = clock();
 
 
-//    {
-//        auto fc = FastCal(RawCode::unsafe_create(0));
-//        for (auto code : test_cases) {
-//            fc.set_root(code);
-//            fc.solve();
-//        }
-//    }
+//    auto fc = FastCal(RawCode::from_common_code("1a9bf0c"));
+//    fc.solve();
+
+    {
+        auto fc = FastCal(RawCode::unsafe_create(0));
+        for (auto code : test_cases) {
+            fc.set_root(code);
+            fc.solve();
+        }
+    }
 
 
-    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
+//    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
 //    a.build();
-    auto ret = a.build_until([](uint64_t code) {
-        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
-    });
+//    auto ret = a.build_until([](uint64_t code) {
+//        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
+//    });
 //    for (const auto &r : ret) {
 //        std::cout << r << std::endl;
 //    }
 
-    a.backtrack_demo(0x7F87E0E5BFFF492);
+//    a.backtrack_demo(0x7F87E0E5BFFF492);
 //    a.backtrack_demo(0x1FB1E36F9FFF492);
 
 //    auto start_time = clock();
@@ -108,8 +111,8 @@ int main() {
 
 
 //    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
-//    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 
 //    std::cout << "complete benchmark" << std::endl;
 
