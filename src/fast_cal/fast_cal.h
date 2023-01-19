@@ -15,7 +15,9 @@ class FastCal {
 public:
     typedef std::function<bool(uint64_t)> match_t;
 
-    /// xxx_multi only search until same layer
+    /// backtrack functions
+    int step_num(RawCode code);
+    std::vector<RawCode> backtrack(RawCode code);
 
     /// BFS search functions
     RawCode solve(RawCode code);
@@ -25,15 +27,11 @@ public:
     std::vector<RawCode> target_multi(RawCode code, const match_t &match);
 
 
+    // TODO: static search functions
 
     // TODO: search / search_multi / resolve / resolve_multi
     // TODO: static furthest function
 
-    std::vector<uint64_t> backtrack(uint64_t code);
-
-    uint32_t step_num(uint64_t code);
-
-    // TODO: static search functions
 
 
 private:
