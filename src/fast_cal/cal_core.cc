@@ -44,35 +44,11 @@ void FastCal::build() {
     }
 }
 
-#include <iostream>
-
 /// found first matched target
 RawCode FastCal::target(const match_t &match) {
     auto core = init(root);
-
-//    std::cout << "-----------------------------------" << std::endl;
-//    std::cout << "start count: " << cases.bucket_count() << std::endl;
-
     while (!cache.empty()) {
         if (match(cache.front()->code)) {
-
-//            std::cout << "hashmap size: " << cases.size() << std::endl;
-//            std::cout << "bucket count: " << cases.bucket_count() << std::endl;
-//            std::cout << "load factor: " << cases.load_factor() << std::endl;
-
-//            std::vector<uint32_t> temp;
-//            for (uint32_t i = 0; i < cases.bucket_count(); ++i) {
-//                uint32_t size = cases.bucket_size(i);
-//                if (size >= temp.size()) {
-//                    temp.resize(size + 1);
-//                }
-//                ++temp.at(size);
-//            }
-//            for (uint32_t i = 0; i < temp.size(); ++i) {
-//                std::cout << "size " << i << " -> " << temp[i] << std::endl;
-//            }
-
-
             return RawCode::unsafe_create(cache.front()->code); // match target
         }
         core.next_cases(cache.front()->code, cache.front()->mask);
