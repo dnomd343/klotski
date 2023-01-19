@@ -3,7 +3,9 @@
 #include <queue>
 #include <vector>
 #include <cstdint>
+#include <functional>
 #include <unordered_map>
+#include "core.h"
 #include "raw_code.h"
 
 const uint32_t FC_MAP_RESERVE = 65536;

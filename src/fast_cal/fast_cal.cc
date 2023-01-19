@@ -1,5 +1,4 @@
 #include <algorithm>
-#include "core.h"
 #include "common.h"
 #include "fast_cal.h"
 #include "raw_code.h"

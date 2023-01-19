@@ -1,13 +1,21 @@
 #include <queue>
-#include "core.h"
 #include "analyse.h"
 
-#include <list>
-#include <iostream>
-#include "raw_code.h"
-#include "common.h"
+Core Analyse::init(uint64_t code) {
+    /// reset working data
+    cases.clear();
+    cases.reserve(ANY_MAP_RESERVE); // hashmap pre-reserve
+    std::queue<analyse_t*>{}.swap(cache);
 
-Core Analyse::init() {
+    /// insert root node
+    cache.emplace(&cases.emplace(code, analyse_t {
+        .code = code,
+        .mask = 0,
+        .step = 0,
+        .src = std::list<analyse_t*>{}, // without parent node
+    }).first->second);
+
+    /// import klotski core
     return Core(
         [this](auto &&code, auto &&mask) { // lambda as function pointer
             new_case(std::forward<decltype(code)>(code), std::forward<decltype(mask)>(mask));
@@ -15,81 +23,7 @@ Core Analyse::init() {
     );
 }
 
-
-
-void Analyse::build(uint64_t code) {
-
-    auto core = init();
-
-    cases.clear();
-    cases.reserve(65536);
-
-    std::queue<analyse_t*>{}.swap(cache);
-
-    cache.emplace(&cases.emplace(code, analyse_t {
-        .code = code,
-        .mask = 0,
-        .step = 0,
-        .src = std::list<analyse_t*>{},
-    }).first->second);
-
-    while (!cache.empty()) {
-        core.next_cases(cache.front()->code, cache.front()->mask);
-        cache.pop();
-    }
-
-    std::cout << "size: " << cases.size() << std::endl;
-
-}
-
-std::vector<uint64_t> Analyse::build_until(uint64_t code, const Analyse::match_t &match) {
-
-    auto core = init();
-
-    cases.clear();
-    cases.reserve(65536);
-
-    std::queue<analyse_t*>{}.swap(cache);
-
-    cache.emplace(&cases.emplace(code, analyse_t {
-        .code = code,
-        .mask = 0,
-        .step = 0,
-        .src = std::list<analyse_t*>{},
-    }).first->second);
-
-
-    auto layer_end = cache.back();
-    std::vector<uint64_t> matched; // matched list
-
-
-    while (!cache.empty()) {
-        if (match(cache.front()->code)) { // match target
-            matched.emplace_back(cache.front()->code);
-        }
-
-        core.next_cases(cache.front()->code, cache.front()->mask);
-
-        if (cache.front() == layer_end) { // reach layer ending
-            if (!matched.empty()) {
-
-                std::cout << "size: " << cases.size() << std::endl;
-
-                return matched; // stop at first matched layer
-            }
-            layer_end = cache.back(); // reset layer ending
-        }
-
-        cache.pop();
-    }
-
-    std::cout << "size: " << cases.size() << std::endl;
-
-    return std::vector<uint64_t>{}; // no target found
-
-}
-
-
+/// callback function for new case
 void Analyse::new_case(uint64_t code, uint64_t mask) {
     auto current = cases.find(code);
     if (current != cases.end()) { // new case already exist
@@ -107,3 +41,31 @@ void Analyse::new_case(uint64_t code, uint64_t mask) {
     }
 }
 
+void Analyse::build(uint64_t code) {
+    auto core = init(code);
+    while (!cache.empty()) {
+        core.next_cases(cache.front()->code, cache.front()->mask);
+        cache.pop();
+    }
+}
+
+std::vector<uint64_t> Analyse::build_until(uint64_t code, const match_t &match) {
+    auto core = init(code);
+    auto layer_end = cache.back();
+    std::vector<uint64_t> matched; // matched list
+    /// start BFS search
+    while (!cache.empty()) {
+        if (match(cache.front()->code)) { // match target
+            matched.emplace_back(cache.front()->code);
+        }
+        core.next_cases(cache.front()->code, cache.front()->mask);
+        if (cache.front() == layer_end) { // reach layer ending
+            if (!matched.empty()) {
+                return matched; // stop at first matched layer
+            }
+            layer_end = cache.back(); // reset layer ending
+        }
+        cache.pop();
+    }
+    return std::vector<uint64_t>{}; // no target found
+}

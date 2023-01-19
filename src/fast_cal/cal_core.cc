@@ -1,4 +1,3 @@
-#include "core.h"
 #include "fast_cal.h"
 
 Core FastCal::init(uint64_t code) { // initialize process
@@ -39,7 +38,6 @@ void FastCal::new_case(uint64_t code, uint64_t mask) {
 /// build total search tree
 void FastCal::build() {
     auto core = init(root);
-    /// start BFS search
     while (!cache.empty()) {
         core.next_cases(cache.front()->code, cache.front()->mask);
         cache.pop();
@@ -49,7 +47,6 @@ void FastCal::build() {
 /// found first matched target
 RawCode FastCal::target(const match_t &match) {
     auto core = init(root);
-    /// start BFS search
     while (!cache.empty()) {
         if (match(cache.front()->code)) {
             return RawCode::unsafe_create(cache.front()->code); // match target
@@ -84,7 +81,7 @@ std::vector<RawCode> FastCal::furthest() {
 }
 
 /// found multi-targets matched in first same layer
-std::vector<RawCode> FastCal::target_multi(const FastCal::match_t &match) {
+std::vector<RawCode> FastCal::target_multi(const match_t &match) {
     auto core = init(root);
     auto layer_end = cache.back();
     std::vector<RawCode> matched; // matched list
