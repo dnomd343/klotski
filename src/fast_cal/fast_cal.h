@@ -16,25 +16,23 @@ public:
     typedef std::function<bool(uint64_t)> match_t;
 
     /// backtrack functions
-    int step_num(RawCode code);
+    int step_num(const RawCode &code);
     std::vector<RawCode> backtrack(const RawCode &code);
 
     /// BFS search functions
     // TODO: build function with void return -> build total tree
-    RawCode solve(RawCode code);
-    std::vector<RawCode> furthest(RawCode code);
-    std::vector<RawCode> solve_multi(RawCode code);
-    RawCode target(RawCode code, const match_t &match);
-    std::vector<RawCode> target_multi(RawCode code, const match_t &match);
+    RawCode solve(const RawCode &code);
+    std::vector<RawCode> furthest(const RawCode &code);
+    std::vector<RawCode> solve_multi(const RawCode &code);
+    RawCode target(const RawCode &code, const match_t &match);
+    std::vector<RawCode> target_multi(const RawCode &code, const match_t &match);
 
     /// static BFS search functions
-    static std::vector<RawCode> resolve(RawCode start);
-    static std::vector<std::vector<RawCode>> to_furthest(RawCode start);
-    static std::vector<std::vector<RawCode>> resolve_multi(RawCode start);
-    static std::vector<RawCode> search(RawCode start, const match_t &match);
-    static std::vector<std::vector<RawCode>> search_multi(RawCode start, const match_t &match);
-
-    // TODO: (RawCode code) -> (const RawCode &code)
+    static std::vector<RawCode> resolve(const RawCode &start);
+    static std::vector<std::vector<RawCode>> to_furthest(const RawCode &start);
+    static std::vector<std::vector<RawCode>> resolve_multi(const RawCode &start);
+    static std::vector<RawCode> search(const RawCode &start, const match_t &match);
+    static std::vector<std::vector<RawCode>> search_multi(const RawCode &start, const match_t &match);
 
 private:
     struct fast_cal_t {

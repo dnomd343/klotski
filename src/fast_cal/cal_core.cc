@@ -37,7 +37,7 @@ void FastCal::new_case(uint64_t code, uint64_t mask) {
 }
 
 /// found first matched target
-RawCode FastCal::target(RawCode code, const match_t &match) {
+RawCode FastCal::target(const RawCode &code, const match_t &match) {
     auto core = init((uint64_t)code);
     /// start bfs search
     while (!cache.empty()) {
@@ -51,7 +51,7 @@ RawCode FastCal::target(RawCode code, const match_t &match) {
 }
 
 /// found multi-targets matched in first same layer
-std::vector<RawCode> FastCal::target_multi(RawCode code, const match_t &match) {
+std::vector<RawCode> FastCal::target_multi(const RawCode &code, const match_t &match) {
     auto core = init((uint64_t)code);
     auto layer_end = cache.back();
     std::vector<RawCode> matched; // matched list
@@ -73,7 +73,7 @@ std::vector<RawCode> FastCal::target_multi(RawCode code, const match_t &match) {
 }
 
 /// found all of the furthest cases
-std::vector<RawCode> FastCal::furthest(RawCode code) {
+std::vector<RawCode> FastCal::furthest(const RawCode &code) {
     auto core = init((uint64_t)code);
     auto layer_end = cache.back();
     std::vector<RawCode> layer_cases;

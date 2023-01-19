@@ -26,7 +26,6 @@ int main() {
 //    AllCases::build();
 
 //    auto f = FastCal();
-//    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
 //    auto ret = f.solve(RawCode::from_common_code("1a9bf0c"));
 
 //    auto ret = f.target(RawCode::from_common_code("1a9bf0c"), [](uint64_t code) {
@@ -45,16 +44,16 @@ int main() {
 //        std::cout << "step number: " << f.step_num(ret) << std::endl;
 //    }
 
-//    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
+    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
 //        std::cout << c << std::endl;
-//    }
-
-    for (const auto &s : FastCal::to_furthest(RawCode::from_common_code("1a9bf0c"))) {
-        for (const auto &c : s) {
-            std::cout << c << std::endl;
-        }
-        std::cout << "--------------------------------------------" << std::endl;
     }
+
+//    for (const auto &s : FastCal::to_furthest(RawCode::from_common_code("1a9bf0c"))) {
+//        for (const auto &c : s) {
+//            std::cout << c << std::endl;
+//        }
+//        std::cout << "--------------------------------------------" << std::endl;
+//    }
 
 //    std::cout << f.step_num(ret) << std::endl;
 
