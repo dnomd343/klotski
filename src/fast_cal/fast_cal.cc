@@ -7,13 +7,13 @@
 #include <iostream>
 #include <algorithm>
 
-uint64_t FastCal::solve(uint64_t code) {
+RawCode FastCal::solve(RawCode code) {
     return FastCal::target(code, [](uint64_t code) {
         return ((code >> (3 * 0xD)) & 0b111) == B_2x2; // check 2x2 block address
     });
 }
 
-std::vector<uint64_t> FastCal::solve_multi(uint64_t code) {
+std::vector<RawCode> FastCal::solve_multi(RawCode code) {
     return FastCal::target_multi(code, [](uint64_t code) {
         return ((code >> (3 * 0xD)) & 0b111) == B_2x2; // check 2x2 block address
     });

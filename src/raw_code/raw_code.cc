@@ -6,6 +6,10 @@ uint64_t RawCode::unwrap() const {
     return code; // raw uint64_t code
 }
 
+bool RawCode::valid() const {
+    return RawCode::check(code);
+}
+
 RawCode RawCode::create(uint64_t raw_code) {
     return RawCode(raw_code);
 }
@@ -21,6 +25,10 @@ RawCode::RawCode(uint64_t raw_code) {
         throw std::invalid_argument("invalid raw code");
     }
     code = raw_code;
+}
+
+bool RawCode::operator==(const RawCode &raw_code) const {
+    return this->code == raw_code.code;
 }
 
 std::ostream& operator<<(std::ostream &out, const RawCode &self) {

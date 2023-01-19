@@ -27,9 +27,16 @@ int main() {
 
     auto f = FastCal();
 //    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
-    auto ret = f.solve((uint64_t)RawCode::from_common_code("1a9bf0c"));
+//    auto ret = f.solve(RawCode::from_common_code("1a9bf0c"));
+    auto ret = f.solve(RawCode::from_common_code("1aaef0c"));
 
-    std::cout << f.step_num(ret) << std::endl;
+    if (ret == FC_NOT_FOUND) {
+        std::cout << "not found" << std::endl;
+    } else {
+        std::cout << ret << std::endl;
+    }
+
+//    std::cout << f.step_num(ret) << std::endl;
 
 //    auto f = FastCal(RawCode::from_common_code("1a9bf0c").unwrap());
 //    auto ret = f.solve();

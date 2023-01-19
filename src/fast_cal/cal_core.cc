@@ -39,24 +39,26 @@ void FastCal::new_case(uint64_t code, uint64_t mask) {
 }
 
 /// found first matched target
-uint64_t FastCal::target(uint64_t code, const check_t &match) {
-    auto core = init(code);
-    while (!cache.empty()) { // bfs search
+RawCode FastCal::target(RawCode code, const check_t &match) {
+    auto core = init((uint64_t)code);
+    /// start bfs search
+    while (!cache.empty()) {
         if (match(cache.front()->code)) {
-            return cache.front()->code; // match target
+            return RawCode::unsafe_create(cache.front()->code); // match target
         }
         core.next_cases(cache.front()->code, cache.front()->mask);
         cache.pop();
     }
-    return FastCal::NOT_FOUND; // target not found
+    return FC_NOT_FOUND; // target not found
 }
 
 /// found multi-targets matched in first same layer
-std::vector<uint64_t> FastCal::target_multi(uint64_t code, const check_t &match) {
-    auto core = init(code);
+std::vector<RawCode> FastCal::target_multi(RawCode code, const check_t &match) {
+    auto core = init((uint64_t)code);
     auto layer_end = cache.back();
-    std::vector<uint64_t> matched; // matched list
-    while (!cache.empty()) { // bfs search
+    std::vector<RawCode> matched; // matched list
+    /// start bfs search
+    while (!cache.empty()) {
         if (match(cache.front()->code)) { // match target
             matched.emplace_back(cache.front()->code);
         }
@@ -69,17 +71,20 @@ std::vector<uint64_t> FastCal::target_multi(uint64_t code, const check_t &match)
         }
         cache.pop();
     }
-    return std::vector<uint64_t>{}; // no target found
+    return std::vector<RawCode>{}; // no target found
 }
 
 /// found all of the furthest cases
-std::vector<uint64_t> FastCal::furthest(uint64_t code) {
-    auto core = init(code);
+std::vector<RawCode> FastCal::furthest(RawCode code) {
+    auto core = init((uint64_t)code);
     auto layer_end = cache.back();
-    std::vector<uint64_t> layer_cases;
-    while (!cache.empty()) { // bfs search
+    std::vector<RawCode> layer_cases;
+    /// start bfs search
+    while (!cache.empty()) {
         core.next_cases(cache.front()->code, cache.front()->mask);
-        layer_cases.emplace_back(cache.front()->code); // record layer cases
+        layer_cases.emplace_back(
+            RawCode::unsafe_create(cache.front()->code) // record layer cases
+        );
         if (cache.front() == layer_end) { // reach layer ending
             if (cache.size() == 1) {
                 break; // stop loop at last layer
