@@ -8,6 +8,29 @@ void Analyse::set_root(const RawCode &code) {
     this->root = (uint64_t)code;
 }
 
+std::vector<RawCode> Analyse::layer_export(uint32_t layer_num) {
+    std::vector<RawCode> layer_cases;
+    for (const auto &tmp : cases) { // traverse every cases
+        if (tmp.second.step == layer_num) {
+            layer_cases.emplace_back(RawCode::unsafe_create(tmp.first));
+        }
+    }
+    return layer_cases;
+}
+
+std::vector<std::vector<RawCode>> Analyse::layer_export() {
+    std::vector<std::vector<RawCode>> layer_cases;
+    for (const auto &tmp : cases) { // traverse every cases
+        if (tmp.second.step >= layer_cases.size()) {
+            layer_cases.resize(tmp.second.step + 1);
+        }
+        layer_cases[tmp.second.step].emplace_back(
+            RawCode::unsafe_create(tmp.first) // insert at target layer
+        );
+    }
+    return layer_cases;
+}
+
 /// memory initialize and return klotski core
 Core Analyse::init(uint64_t code) {
     /// reset working data

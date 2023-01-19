@@ -41,7 +41,7 @@ int main() {
 //    sleep(3);
 
 //    std::cout << "start benchmark" << std::endl;
-    auto start_time = clock();
+//    auto start_time = clock();
 
 
 //    {
@@ -54,20 +54,18 @@ int main() {
 
 
     auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
-//    a.build();
-    auto ret = a.build_until([](uint64_t code) {
-        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
-    });
-    for (const auto &r : ret) {
-        std::cout << r << std::endl;
-    }
-
-//    auto ret = a.build_until((uint64_t)RawCode::from_common_code("1a9bf0c"), [](uint64_t code) {
+    a.build();
+//    auto ret = a.build_until([](uint64_t code) {
 //        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
 //    });
 //    for (const auto &r : ret) {
-//        std::cout << RawCode(r) << std::endl;
+//        std::cout << r << std::endl;
 //    }
+
+    auto start_time = clock();
+
+    std::cout << a.layer_export(81).size() << std::endl;
+    std::cout << a.layer_export()[81].size() << std::endl;
 
 //    auto raw_code = CommonCode("A5D3AF0").to_raw_code().unwrap();
 

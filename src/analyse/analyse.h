@@ -22,6 +22,10 @@ public:
     void build();
     std::vector<RawCode> build_until(const match_t &match);
 
+    /// analysed layer export
+    std::vector<std::vector<RawCode>> layer_export();
+    std::vector<RawCode> layer_export(uint32_t layer_num);
+
 private:
     struct analyse_t {
         uint64_t code;
