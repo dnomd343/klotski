@@ -8,6 +8,7 @@
 #include "core.h"
 #include "raw_code.h"
 
+// TODO: try double or 4-times size
 const uint32_t ANY_MAP_RESERVE = 65536;
 
 class Analyse {
@@ -41,6 +42,20 @@ private:
     inline Core init(uint64_t code);
     void new_case(uint64_t code, uint64_t mask);
 
+
+public:
+    struct backtrack_t {
+        uint64_t code;
+        uint32_t layer_num;
+        std::list<backtrack_t*> last;
+        std::list<backtrack_t*> next;
+
+//        bool operator==(const backtrack_t &b) const {
+//            return b.code == code;
+//        }
+    };
+
+    void backtrack_demo(uint64_t code);
 
     /// backtrack definitions
 

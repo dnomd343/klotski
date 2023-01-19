@@ -41,7 +41,7 @@ int main() {
 //    sleep(3);
 
 //    std::cout << "start benchmark" << std::endl;
-//    auto start_time = clock();
+    auto start_time = clock();
 
 
 //    {
@@ -54,18 +54,21 @@ int main() {
 
 
     auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
-    a.build();
-//    auto ret = a.build_until([](uint64_t code) {
-//        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
-//    });
+//    a.build();
+    auto ret = a.build_until([](uint64_t code) {
+        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
+    });
 //    for (const auto &r : ret) {
 //        std::cout << r << std::endl;
 //    }
 
-    auto start_time = clock();
+    a.backtrack_demo(0x7F87E0E5BFFF492);
+//    a.backtrack_demo(0x1FB1E36F9FFF492);
 
-    std::cout << a.layer_export(81).size() << std::endl;
-    std::cout << a.layer_export()[81].size() << std::endl;
+//    auto start_time = clock();
+
+//    std::cout << a.layer_export(81).size() << std::endl;
+//    std::cout << a.layer_export()[81].size() << std::endl;
 
 //    auto raw_code = CommonCode("A5D3AF0").to_raw_code().unwrap();
 
@@ -108,7 +111,7 @@ int main() {
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
     std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 
-    std::cout << "complete benchmark" << std::endl;
+//    std::cout << "complete benchmark" << std::endl;
 
 //    pause();
 
