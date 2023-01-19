@@ -54,6 +54,15 @@ std::vector<std::vector<RawCode>> FastCal::resolve_multi(RawCode start) {
     return FastCal::search_multi(start, resolved);
 }
 
+std::vector<std::vector<RawCode>> FastCal::to_furthest(RawCode start) {
+    auto fc = FastCal();
+    std::vector<std::vector<RawCode>> result;
+    for (const auto &furthest : fc.furthest(start)) {
+        result.emplace_back(fc.backtrack(furthest)); // backtrack every furthest cases
+    }
+    return result;
+}
+
 std::vector<RawCode> FastCal::search(RawCode start, const match_t &match) {
     auto fc = FastCal();
     auto result = fc.target(start, match);
@@ -66,8 +75,8 @@ std::vector<RawCode> FastCal::search(RawCode start, const match_t &match) {
 std::vector<std::vector<RawCode>> FastCal::search_multi(RawCode start, const match_t &match) {
     auto fc = FastCal();
     std::vector<std::vector<RawCode>> result;
-    for (const auto &c : fc.target_multi(start, match)) {
-        result.emplace_back(fc.backtrack(c)); // backtrack every target
+    for (const auto &target : fc.target_multi(start, match)) {
+        result.emplace_back(fc.backtrack(target)); // backtrack every target
     }
     return result;
 }

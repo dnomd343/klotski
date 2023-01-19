@@ -28,14 +28,13 @@ public:
     std::vector<RawCode> target_multi(RawCode code, const match_t &match);
 
     /// static BFS search functions
-    // TODO: (RawCode code) -> (const RawCode &code)
-//    static std::vector<RawCode> get_furthest(RawCode start);
-
     static std::vector<RawCode> resolve(RawCode start);
-    static std::vector<RawCode> search(RawCode start, const match_t &match);
-
+    static std::vector<std::vector<RawCode>> to_furthest(RawCode start);
     static std::vector<std::vector<RawCode>> resolve_multi(RawCode start);
+    static std::vector<RawCode> search(RawCode start, const match_t &match);
     static std::vector<std::vector<RawCode>> search_multi(RawCode start, const match_t &match);
+
+    // TODO: (RawCode code) -> (const RawCode &code)
 
 private:
     struct fast_cal_t {
