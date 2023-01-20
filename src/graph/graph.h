@@ -2,33 +2,33 @@
 
 #include "analyse.h"
 
-class SvgRect {
-public:
-    uint64_t top;
-    uint64_t left;
-    uint64_t width;
-    uint64_t height;
+//class SvgRect {
+//public:
+//    uint64_t top;
+//    uint64_t left;
+//    uint64_t width;
+//    uint64_t height;
+//
+//    // TODO: color options
+//
+//    void to_xml() const;
+//
+//};
 
-    // TODO: color options
-
-    void to_xml() const;
-
-};
-
-class SvgCase {
-public:
-
-    uint64_t code;
-
-    uint64_t top = 0;
-    uint64_t left = 0;
-
-    uint32_t gap = 4;
-    uint32_t width = 12;
-
-    void render() const;
-
-};
+//class SvgCase {
+//public:
+//
+//    uint64_t code;
+//
+//    uint64_t top = 0;
+//    uint64_t left = 0;
+//
+//    uint32_t gap = 4;
+//    uint32_t width = 12;
+//
+//    void render() const;
+//
+//};
 
 class Graph {
 

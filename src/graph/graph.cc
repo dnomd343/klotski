@@ -4,7 +4,31 @@
 #include <list>
 #include <iostream>
 
+#include "svg.h"
+
 void Graph::svg_demo(Analyse::track_data_t track_data) {
+
+
+    auto s = SvgRect();
+
+    s.left = 50;
+    s.top = 80;
+
+    s.width = 100;
+    s.height = 200;
+
+    s.radius = 20;
+
+    printf(R"(<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="%d" height="%d">)", 1000, 1000);
+    printf("\n");
+
+    std::cout << "  " << s.dump() << std::endl;
+
+    printf("</svg>\n");
+
+    return;
+
+
 
 //
 //    for (uint32_t i = 0; i < track_data.size(); ++i) {
@@ -93,13 +117,13 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //            printf(R"(  <rect x="%ld" y="%ld" width="%ld" height="%ld" style="fill:pink;stroke-width:1;stroke:blue"/>)", CASE_X, CASE_Y, CASE_WIDTH, CASE_HEIGHT);
 //            printf("\n");
 
-            SvgCase tmp = SvgCase();
-            tmp.width = BLOCK_LENGTH;
-            tmp.gap = BLOCK_GAP;
-            tmp.left = CASE_X;
-            tmp.top = CASE_Y;
-            tmp.code = layer_data[i][j].code;
-            tmp.render();
+//            SvgCase tmp = SvgCase();
+//            tmp.width = BLOCK_LENGTH;
+//            tmp.gap = BLOCK_GAP;
+//            tmp.left = CASE_X;
+//            tmp.top = CASE_Y;
+//            tmp.code = layer_data[i][j].code;
+//            tmp.render();
 
         }
 
@@ -110,78 +134,78 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 
 }
 
-void SvgRect::to_xml() const {
-    // TODO: return std::string
-    printf(R"(<rect x="%ld" y="%ld" width="%ld" height="%ld" style="fill:pink;stroke-width:1;stroke:blue"/>)", left, top, width, height);
-    printf("\n");
-}
+//void SvgRect::to_xml() const {
+//    // TODO: return std::string
+//    printf(R"(<rect x="%ld" y="%ld" width="%ld" height="%ld" style="fill:pink;stroke-width:1;stroke:blue"/>)", left, top, width, height);
+//    printf("\n");
+//}
 
-void SvgCase::render() const {
-
-    std::string result;
-
-    uint64_t raw_code = code;
-
-//    std::cout << "start rander" << std::endl;
-
-    auto tmp = SvgRect();
-
-    tmp.left = left;
-    tmp.top = top;
-    tmp.width = width * 4 + gap * 5;
-    tmp.height = width * 5 + gap * 6;
-//    std::cout << "main" << std::endl;
-    tmp.to_xml();
-
-    for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
-
-        uint32_t block_x = addr % 4;
-        uint32_t block_y = (addr - block_x) / 4;
-
-        switch (raw_code & 0b111) {
-            case B_1x1:
-
-                tmp.top = width * block_y + gap * (block_y + 1) + top;
-                tmp.left = width * block_x + gap * (block_x + 1) + left;
-                tmp.height = width;
-                tmp.width = width;
-//                std::cout << "1x1" << std::endl;
-                tmp.to_xml();
-
-                break;
-            case B_1x2:
-
-                tmp.top = width * block_y + gap * (block_y + 1) + top;
-                tmp.left = width * block_x + gap * (block_x + 1) + left;
-                tmp.height = width;
-                tmp.width = width * 2 + gap;
-//                std::cout << "1x2" << std::endl;
-                tmp.to_xml();
-
-                break;
-            case B_2x1:
-
-                tmp.top = width * block_y + gap * (block_y + 1) + top;
-                tmp.left = width * block_x + gap * (block_x + 1) + left;
-                tmp.height = width * 2 + gap;
-                tmp.width = width;
-//                std::cout << "2x1" << std::endl;
-                tmp.to_xml();
-
-                break;
-            case B_2x2:
-
-                tmp.top = width * block_y + gap * (block_y + 1) + top;
-                tmp.left = width * block_x + gap * (block_x + 1) + left;
-                tmp.height = width * 2 + gap;
-                tmp.width = width * 2 + gap;
-//                std::cout << "2x2" << std::endl;
-                tmp.to_xml();
-
-                break;
-            default:
-                continue;
-        }
-    }
-
-}
+//void SvgCase::render() const {
+//
+//    std::string result;
+//
+//    uint64_t raw_code = code;
+//
+////    std::cout << "start rander" << std::endl;
+//
+//    auto tmp = SvgRect();
+//
+//    tmp.left = left;
+//    tmp.top = top;
+//    tmp.width = width * 4 + gap * 5;
+//    tmp.height = width * 5 + gap * 6;
+////    std::cout << "main" << std::endl;
+//    tmp.to_xml();
+//
+//    for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
+//
+//        uint32_t block_x = addr % 4;
+//        uint32_t block_y = (addr - block_x) / 4;
+//
+//        switch (raw_code & 0b111) {
+//            case B_1x1:
+//
+//                tmp.top = width * block_y + gap * (block_y + 1) + top;
+//                tmp.left = width * block_x + gap * (block_x + 1) + left;
+//                tmp.height = width;
+//                tmp.width = width;
+////                std::cout << "1x1" << std::endl;
+//                tmp.to_xml();
+//
+//                break;
+//            case B_1x2:
+//
+//                tmp.top = width * block_y + gap * (block_y + 1) + top;
+//                tmp.left = width * block_x + gap * (block_x + 1) + left;
+//                tmp.height = width;
+//                tmp.width = width * 2 + gap;
+////                std::cout << "1x2" << std::endl;
+//                tmp.to_xml();
+//
+//                break;
+//            case B_2x1:
+//
+//                tmp.top = width * block_y + gap * (block_y + 1) + top;
+//                tmp.left = width * block_x + gap * (block_x + 1) + left;
+//                tmp.height = width * 2 + gap;
+//                tmp.width = width;
+////                std::cout << "2x1" << std::endl;
+//                tmp.to_xml();
+//
+//                break;
+//            case B_2x2:
+//
+//                tmp.top = width * block_y + gap * (block_y + 1) + top;
+//                tmp.left = width * block_x + gap * (block_x + 1) + left;
+//                tmp.height = width * 2 + gap;
+//                tmp.width = width * 2 + gap;
+////                std::cout << "2x2" << std::endl;
+//                tmp.to_xml();
+//
+//                break;
+//            default:
+//                continue;
+//        }
+//    }
+//
+//}
