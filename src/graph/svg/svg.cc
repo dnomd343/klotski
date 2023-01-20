@@ -26,3 +26,45 @@ std::string SvgRect::dump() const {
     }
     return xml + "style=\"" + style + "\" />";
 }
+
+
+SvgGraph::~SvgGraph() {
+    for (auto &object : objects) {
+        delete object;
+    }
+}
+
+//void SvgGraph::insert(SvgObject *obj) {
+//    objects.emplace_back(obj);
+//}
+
+#include <iostream>
+
+std::string SvgGraph::dump() const {
+
+    for (auto o : objects) {
+        std::cout << o->dump() << std::endl;
+    }
+
+    return "svg result";
+}
+
+void SvgGraph::insert(const SvgRect &rect) {
+//void SvgGraph::insert(SvgRect rect) {
+
+    auto s = new SvgRect(rect);
+    objects.emplace_back(s);
+}
+
+void SvgGraph::insert(const SvgLine &line) {
+
+    auto l = new SvgLine(line);
+    objects.emplace_back(l);
+
+}
+
+std::string SvgLine::dump() const {
+
+    return "<line />";
+
+}

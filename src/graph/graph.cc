@@ -25,12 +25,28 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
     s.color = "blue";
     s.line_color = "green";
 
-    printf(R"(<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="%d" height="%d">)", 1000, 1000);
-    printf("\n");
+//    printf(R"(<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="%d" height="%d">)", 1000, 1000);
+//    printf("\n");
+//
+//    std::cout << "  " << s.dump() << std::endl;
+//
+//    printf("</svg>\n");
 
-    std::cout << "  " << s.dump() << std::endl;
+    auto l = SvgLine();
+    l.start_x = 100;
+    l.start_y = 200;
 
-    printf("</svg>\n");
+    l.end_x = 300;
+    l.end_y = 400;
+
+    auto sg = SvgGraph();
+//    sg.insert(&s);
+//    sg.insert(&l);
+
+    sg.insert(std::move(s));
+    sg.insert(std::move(l));
+
+    sg.dump();
 
     return;
 
