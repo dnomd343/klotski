@@ -8,6 +8,7 @@
 #include "fast_cal.h"
 #include "analyse.h"
 #include "common.h"
+#include "graph.h"
 
 #include <thread>
 #include <algorithm>
@@ -65,14 +66,11 @@ int main() {
 //        std::cout << r << std::endl;
 //    }
 
-    std::vector<uint64_t> dat = {
+    auto ret = a.backtrack({
         0x7F87E0E5BFFF492, 0x1FB1E36F9FFF492
-    };
-
-//    a.backtrack_demo(0x7F87E0E5BFFF492);
-//    a.backtrack_demo(0x1FB1E36F9FFF492);
-
-    a.backtrack_demo(dat);
+    });
+    auto g = Graph();
+    g.svg_demo(ret);
 
 //    auto start_time = clock();
 

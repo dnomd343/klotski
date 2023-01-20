@@ -45,15 +45,15 @@ private:
 
 /// backtrack definitions
 public:
-    struct backtrack_t {
+    struct track_t {
         uint64_t code;
         uint32_t layer_num;
-        std::list<backtrack_t*> last;
-        std::list<backtrack_t*> next;
+        std::list<track_t*> last;
+        std::list<track_t*> next;
     };
-    typedef std::vector<std::unordered_map<uint64_t, backtrack_t>> backtrack_data_t;
+    typedef std::vector<std::unordered_map<uint64_t, track_t>> track_data_t;
 
     // TODO: try using unordered_set
-    backtrack_data_t backtrack_demo(const std::vector<uint64_t> &codes);
+    track_data_t backtrack(const std::vector<uint64_t> &codes);
 
 };

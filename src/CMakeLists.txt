@@ -13,6 +13,8 @@ include_directories(core)
 include_directories(analyse)
 include_directories(fast_cal)
 
+include_directories(graph)
+
 ################################################
 
 add_subdirectory(utils)
@@ -25,6 +27,8 @@ add_subdirectory(common_code)
 add_subdirectory(core)
 add_subdirectory(analyse)
 add_subdirectory(fast_cal)
+
+add_subdirectory(graph)
 
 ################################################
 
@@ -42,6 +46,8 @@ target_link_libraries(klotski common_code)
 target_link_libraries(klotski core)
 target_link_libraries(klotski analyse)
 target_link_libraries(klotski fast_cal)
+
+target_link_libraries(klotski graph)
 
 target_link_libraries(klotski pthread)
 

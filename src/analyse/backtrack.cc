@@ -1,15 +1,13 @@
 #include <algorithm>
 #include "analyse.h"
 
-#include <iostream>
-
-Analyse::backtrack_data_t Analyse::backtrack_demo(const std::vector<uint64_t> &codes) {
+Analyse::track_data_t Analyse::backtrack(const std::vector<uint64_t> &codes) {
     /// codes pre-check and sort by steps
     std::vector<std::vector<analyse_t*>> todos;
     for (const auto &code : codes) {
         auto c = cases.find(code);
         if (c == cases.end()) { // invalid input
-            return backtrack_data_t{}; // return empty data
+            return track_data_t{}; // return empty data
         }
         if (c->second.step >= todos.size()) {
             todos.resize(c->second.step + 1); // enlarge schedule list
@@ -20,10 +18,10 @@ Analyse::backtrack_data_t Analyse::backtrack_demo(const std::vector<uint64_t> &c
 
     struct cache_t {
         analyse_t *a;
-        backtrack_t *b;
+        track_t *b;
     };
     std::queue<cache_t> track_cache;
-    Analyse::backtrack_data_t track_data(todos.size());
+    track_data_t track_data(todos.size());
     /// start backtrack process
     for (const auto &todo : todos) {
         if (todo.empty()) {
@@ -35,11 +33,11 @@ Analyse::backtrack_data_t Analyse::backtrack_demo(const std::vector<uint64_t> &c
             if (track_data[c->step].find(c->code) == track_data[c->step].end()) {
                 track_cache.emplace(cache_t{
                     .a = c,
-                    .b = &track_data[c->step].emplace(c->code, backtrack_t{
+                    .b = &track_data[c->step].emplace(c->code, track_t{
                         .code = c->code,
                         .layer_num = c->step,
-                        .last = std::list<backtrack_t *>{}, // without parent node
-                        .next = std::list<backtrack_t *>{}, // without sub node
+                        .last = std::list<track_t*>{}, // without parent node
+                        .next = std::list<track_t*>{}, // without sub node
                     }).first->second,
                 });
             }
@@ -55,11 +53,11 @@ Analyse::backtrack_data_t Analyse::backtrack_demo(const std::vector<uint64_t> &c
                     curr.b->last.emplace_back(&t_src->second);
                 } else { // src case not found
                     /// link (curr.b) and (t_src_new->second)
-                    auto t_src_new = track_data[src->step].emplace(src->code, backtrack_t {
+                    auto t_src_new = track_data[src->step].emplace(src->code, track_t {
                         .code = src->code,
                         .layer_num = src->step,
-                        .last = std::list<backtrack_t*>{},
-                        .next = std::list<backtrack_t*>{curr.b}, // link to curr.b
+                        .last = std::list<track_t*>{},
+                        .next = std::list<track_t*>{curr.b}, // link to curr.b
                     }).first;
                     curr.b->last.emplace_back(&t_src_new->second);
                     /// insert into working queue
@@ -72,32 +70,5 @@ Analyse::backtrack_data_t Analyse::backtrack_demo(const std::vector<uint64_t> &c
             track_cache.pop();
         }
     }
-
-
-
-    for (uint32_t i = 0; i < track_data.size(); ++i) {
-
-        const auto &ly = track_data[i];
-
-        std::cout << std::endl;
-        std::cout << "----------------------------------";
-        std::cout << " layer " << i << " ";
-        std::cout << "----------------------------------" << std::endl;
-
-        for (const auto &c : ly) {
-            for (const auto &l : c.second.last) {
-                std::cout << l->code << " ";
-            }
-            std::cout << " <- [" << c.second.code << "] -> ";
-            for (const auto &n : c.second.next) {
-                std::cout << n->code << " ";
-            }
-            std::cout << std::endl;
-        }
-
-    }
-
-
     return track_data;
-
 }
