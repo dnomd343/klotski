@@ -11,6 +11,18 @@
 // TODO: try double or 4-times size
 const uint32_t ANY_MAP_RESERVE = 65536;
 
+#include <iostream>
+
+class Test {
+public:
+    Test() {
+        std::cout << "Test init" << std::endl;
+    }
+    ~Test() {
+        std::cout << "Test destroy" << std::endl;
+    }
+};
+
 class Analyse {
 public:
     typedef std::function<bool(uint64_t)> match_t;
@@ -45,10 +57,14 @@ private:
 
 public:
     struct backtrack_t {
+//        backtrack_t(int i);
+
         uint64_t code;
         uint32_t layer_num;
         std::list<backtrack_t*> last;
         std::list<backtrack_t*> next;
+
+        Test test;
 
 //        bool operator==(const backtrack_t &b) const {
 //            return b.code == code;

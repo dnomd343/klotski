@@ -11,7 +11,7 @@ namespace std {
     template<>
     struct hash<Analyse::backtrack_t> {
         std::size_t operator()(const Analyse::backtrack_t &b) const {
-//            std::cout << "get hash: " << b.code << std::endl;
+            std::cout << "get hash: " << b.code << std::endl;
             return std::hash<uint64_t>()(b.code);
         }
     };
@@ -19,9 +19,14 @@ namespace std {
     template<>
     struct equal_to<Analyse::backtrack_t> {
         bool operator()(const Analyse::backtrack_t &b1, const Analyse::backtrack_t &b2) const {
-//            std::cout << "get eq: " << b1.code << " ? " << b2.code << std::endl;
+            std::cout << "get eq: " << b1.code << " ? " << b2.code << std::endl;
             return b1.code == b2.code;
         }
+
+//        bool operator()(const Analyse::backtrack_t &b, uint64_t c) const {
+//            std::cout << "eq: " << b.code << " ? " << c << std::endl;
+//            return b.code == c;
+//        }
     };
 }
 
@@ -41,6 +46,7 @@ void Analyse::backtrack_demo(uint64_t code) {
             .layer_num = 1,
             .last = std::list<backtrack_t*>{},
             .next = std::list<backtrack_t*>{},
+
         });
     }
 
@@ -52,5 +58,10 @@ void Analyse::backtrack_demo(uint64_t code) {
     for (uint32_t i = 0; i < test.bucket_count(); ++i) {
         std::cout << "bucket " << i << " -> " << test.bucket_size(i) << std::endl;
     }
+
+    uint64_t dat = 4000;
+    auto ret = test.find((backtrack_t&)(dat));
+
+    std::cout << "insert demo ending" << std::endl;
 
 }
