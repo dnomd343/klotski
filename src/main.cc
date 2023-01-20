@@ -65,8 +65,14 @@ int main() {
 //        std::cout << r << std::endl;
 //    }
 
-    a.backtrack_demo(0x7F87E0E5BFFF492);
+    std::vector<uint64_t> dat = {
+        0x7F87E0E5BFFF492, 0x1FB1E36F9FFF492
+    };
+
+//    a.backtrack_demo(0x7F87E0E5BFFF492);
 //    a.backtrack_demo(0x1FB1E36F9FFF492);
+
+    a.backtrack_demo(dat);
 
 //    auto start_time = clock();
 

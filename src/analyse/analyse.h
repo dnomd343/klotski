@@ -51,7 +51,7 @@ public:
         std::list<backtrack_t*> next;
     };
 
-    void backtrack_demo(uint64_t code);
+    void backtrack_demo(const std::vector<uint64_t> &codes);
 
     /// backtrack definitions
 

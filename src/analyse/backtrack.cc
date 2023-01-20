@@ -27,80 +27,73 @@ namespace std {
     };
 }
 
-void Analyse::backtrack_demo(uint64_t code) {
+void Analyse::backtrack_demo(const std::vector<uint64_t> &codes) {
 
     // TODO: confirm code exist
-    std::cout << cases[code].step << std::endl;
+//    std::cout << cases[code].step << std::endl;
 
-    // TODO: only test for now
-//    uint32_t layer_size = cases[code].step + 1; // 81 steps -> 0 ~ 81 -> size = 82
-
-    std::vector<std::unordered_map<uint64_t, backtrack_t>> track_data;
-
-    /// init process -> insert backtrack begin cases
-
-    track_data.resize(82); // TODO: setting as (max steps + 1)
-
-    struct inner_t {
+    struct cache_t {
         analyse_t *a;
         backtrack_t *b;
     };
 
-    std::queue<inner_t> track_cache;
+    std::queue<cache_t> track_cache;
+    std::vector<std::unordered_map<uint64_t, backtrack_t>> track_data;
 
-    auto rt = track_data[81].emplace(code, backtrack_t {
-        .code = code,
-        .layer_num = cases[code].step,
-        .last = std::list<backtrack_t*>{},
-        .next = std::list<backtrack_t*>{},
-    });
+    track_data.resize(82); // TODO: setting as (max steps + 1)
 
-    /// start backtrack
 
-    track_cache.emplace(inner_t {
-        .a = &cases[code],
-        .b = &rt.first->second,
-    });
+    // TODO: for diff layer cases, layer_num from big to small -> if found then skip search
 
-    while (!track_cache.front().a->src.empty()) {
+    for (const auto &code : codes) {
 
+        auto &cc = cases[code];
+
+        /// enlarge track_data
+        if (cc.step >= track_data.size()) {
+            track_data.resize(cc.step + 1);
+        }
+
+        track_cache.emplace(cache_t {
+            .a = &cc,
+            .b = &track_data[cc.step].emplace(code, backtrack_t {
+                .code = code,
+                .layer_num = cc.step,
+                .last = std::list<backtrack_t*>{},
+                .next = std::list<backtrack_t*>{},
+            }).first->second,
+        });
+
+    }
+
+    while (!track_cache.empty()) {
+        /// handle first element and pop it
         auto curr = track_cache.front();
-
-        for (auto src : curr.a->src) {
-
-            auto find_ret = track_data[src->step].find(src->code);
-
-            if (find_ret != track_data[src->step].end()) { // found
-
-                find_ret->second.next.emplace_back(curr.b);
-
-                curr.b->last.emplace_back(&find_ret->second);
-
-            } else { // not found
-
-//                std::cout << "new: " << src->code << std::endl;
-
-                auto ret = track_data[src->step].emplace(src->code, backtrack_t {
+        for (auto src : curr.a->src) { // traverse src cases of current node
+            auto t_src = track_data[src->step].find(src->code);
+            if (t_src != track_data[src->step].end()) { // match src case
+                /// link (curr.b) and (t_src->second)
+                t_src->second.next.emplace_back(curr.b);
+                curr.b->last.emplace_back(&t_src->second);
+            } else { // src case not found
+                /// link (curr.b) and (t_src_new->second)
+                auto t_src_new = track_data[src->step].emplace(src->code, backtrack_t {
                     .code = src->code,
                     .layer_num = src->step,
                     .last = std::list<backtrack_t*>{},
-                    .next = std::list<backtrack_t*>{curr.b},
-                });
-
-                curr.b->last.emplace_back(&ret.first->second);
-
-                track_cache.emplace(inner_t {
+                    .next = std::list<backtrack_t*>{curr.b}, // link to curr.b
+                }).first;
+                curr.b->last.emplace_back(&t_src_new->second);
+                /// insert into working queue
+                track_cache.emplace(cache_t {
                     .a = src,
-                    .b = &ret.first->second,
+                    .b = &t_src_new->second,
                 });
-
             }
-
         }
-
         track_cache.pop();
-
     }
+
 
     for (uint32_t i = 0; i < track_data.size(); ++i) {
 
@@ -112,21 +105,16 @@ void Analyse::backtrack_demo(uint64_t code) {
         std::cout << "----------------------------------" << std::endl;
 
         for (const auto &c : ly) {
-
             for (const auto &l : c.second.last) {
                 std::cout << l->code << " ";
             }
-
             std::cout << " <- [" << c.second.code << "] -> ";
-
             for (const auto &n : c.second.next) {
                 std::cout << n->code << " ";
             }
             std::cout << std::endl;
-
         }
 
-//        std::cout << l.size() << std::endl;
     }
 
 
