@@ -32,9 +32,12 @@ public:
     uint64_t end_x;
     uint64_t end_y;
 
+    // TODO: more options for svg-line
+
     ~SvgLine() override = default;
     std::string dump() const override;
 
+    // TODO: SvgLine(...)
 };
 
 class SvgRect : public SvgObject {
@@ -55,4 +58,5 @@ public:
 
     ~SvgRect() override = default;
     std::string dump() const override;
+    SvgRect(uint64_t t, uint64_t l, uint64_t w, uint64_t h) : top(t), left(l), width(w), height(h) {}
 };
