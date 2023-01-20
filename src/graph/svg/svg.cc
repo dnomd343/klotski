@@ -23,8 +23,8 @@ std::string SvgLine::dump() const {
 std::string SvgRect::dump() const {
     /// basic attributes of svg-rect
     std::string xml = "<rect ";
-    xml += "x=\"" + std::to_string(left) + "\" ";
-    xml += "y=\"" + std::to_string(top) + "\" ";
+    xml += "x=\"" + std::to_string(start.x) + "\" ";
+    xml += "y=\"" + std::to_string(start.y) + "\" ";
     xml += "width=\"" + std::to_string(width) + "\" ";
     xml += "height=\"" + std::to_string(height) + "\" ";
     if (radius != 0) {

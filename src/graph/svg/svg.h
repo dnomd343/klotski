@@ -4,6 +4,12 @@
 #include <cstdint>
 #include <vector>
 
+class Point {
+public:
+    uint64_t x;
+    uint64_t y;
+};
+
 class SvgObject {
 public:
     virtual ~SvgObject() = default;
@@ -42,8 +48,9 @@ public:
 
 class SvgRect : public SvgObject {
 public:
-    uint64_t top;
-    uint64_t left;
+    Point start;
+//    uint64_t top;
+//    uint64_t left;
     uint64_t width;
     uint64_t height;
 
@@ -58,5 +65,5 @@ public:
 
     ~SvgRect() override = default;
     std::string dump() const override;
-    SvgRect(uint64_t t, uint64_t l, uint64_t w, uint64_t h) : top(t), left(l), width(w), height(h) {}
+    SvgRect(Point p, uint64_t w, uint64_t h) : start(p), width(w), height(h) {}
 };

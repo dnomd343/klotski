@@ -31,6 +31,22 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //
 //    }
 
+
+    auto p = Point{100, 200};
+    auto rc = RawCode::unsafe_create(0x0603EDF5CAFFF5E2);
+    auto gc = GraphCase(p, rc, BLOCK_GAP, BLOCK_LENGTH);
+
+    auto skin = CaseSkin();
+
+    auto svg = SvgGraph(2000, 2000);
+
+    gc.render(svg, skin);
+
+    std::cout << svg.dump() << std::endl;
+
+    return;
+
+
     struct inner_t {
         uint64_t code;
         uint32_t layer_num;
@@ -69,16 +85,6 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //    std::cout << "MAIN_WIDTH = " << MAIN_WIDTH << std::endl;
 //    std::cout << "MAIN_HEIGHT = " << MAIN_HEIGHT << std::endl;
 
-    printf(R"(<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="%ld" height="%ld">)", MAIN_WIDTH, MAIN_HEIGHT);
-    printf("\n");
-
-//    SvgCase test = SvgCase();
-//    test.width = BLOCK_LENGTH;
-//    test.gap = BLOCK_GAP;
-//    test.left = 50;
-//    test.top = 100;
-//    test.code = layer_data[0][0].code;
-//    test.render();
 
     for (uint32_t i = 0; i < layer_data.size(); ++i) {
 
@@ -187,3 +193,75 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //    }
 //
 //}
+
+
+void GraphCase::render(SvgGraph &svg, const CaseSkin &skin) const {
+//    std::cout << "render begin" << std::endl;
+
+    auto raw_code = (uint64_t)code;
+
+    uint32_t case_width = block_width * 4 + block_gap * 5;
+    uint32_t case_height = block_width * 5 + block_gap * 6;
+
+    auto skeleton = new SvgRect {start, case_width, case_height};
+    skeleton->color = "pink";
+    svg.insert(skeleton);
+
+    for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
+        uint32_t block_x = addr % 4;
+        uint32_t block_y = (addr - block_x) / 4;
+
+        // TODO: same start point
+
+        switch (raw_code & 0b111) {
+            case B_1x1:
+
+                svg.insert(new SvgRect {
+                    {
+                        start.x + block_x * block_width + (block_x + 1) * block_gap,
+                        start.y + block_y * block_width + (block_y + 1) * block_gap,
+                    },
+                    block_width, block_width,
+                });
+
+                break;
+            case B_1x2:
+
+                svg.insert(new SvgRect {
+                    {
+                        start.x + block_x * block_width + (block_x + 1) * block_gap,
+                        start.y + block_y * block_width + (block_y + 1) * block_gap,
+                    },
+                    block_width * 2 + block_gap, block_width,
+                });
+
+                break;
+            case B_2x1:
+
+                svg.insert(new SvgRect {
+                    {
+                        start.x + block_x * block_width + (block_x + 1) * block_gap,
+                        start.y + block_y * block_width + (block_y + 1) * block_gap,
+                    },
+                    block_width, block_width * 2 + block_gap,
+                });
+
+                break;
+            case B_2x2:
+
+                svg.insert(new SvgRect {
+                    {
+                        start.x + block_x * block_width + (block_x + 1) * block_gap,
+                        start.y + block_y * block_width + (block_y + 1) * block_gap,
+                    },
+                    block_width * 2 + block_gap, block_width * 2 + block_gap,
+                });
+
+                break;
+            default:
+                continue;
+        }
+    }
+
+
+}

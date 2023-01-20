@@ -1,19 +1,19 @@
 #pragma once
 
 #include "analyse.h"
+#include "svg/svg.h"
 
-//class SvgRect {
-//public:
-//    uint64_t top;
-//    uint64_t left;
-//    uint64_t width;
-//    uint64_t height;
-//
-//    // TODO: color options
-//
-//    void to_xml() const;
-//
+#include "raw_code.h"
+
+//struct BlockOpt {
+//    uint32_t gap;
+//    uint32_t width;
 //};
+
+class CaseSkin {
+public:
+    std::string color = "pink";
+};
 
 //class SvgCase {
 //public:
@@ -29,6 +29,22 @@
 //    void render() const;
 //
 //};
+
+class GraphCase {
+public:
+    Point start;
+    RawCode code;
+    uint32_t block_gap;
+    uint32_t block_width;
+
+    GraphCase(Point p, RawCode c, uint32_t gap, uint32_t width) : start(p), code(c) {
+        block_gap = gap;
+        block_width = width;
+    }
+
+    void render(SvgGraph &svg, const CaseSkin &skin) const;
+
+};
 
 class Graph {
 
