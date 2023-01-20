@@ -10,6 +10,20 @@ public:
     virtual std::string dump() const = 0;
 };
 
+class SvgGraph {
+public:
+    uint64_t width;
+    uint64_t height;
+
+    ~SvgGraph();
+    std::string dump() const;
+    void insert(SvgObject *obj);
+    SvgGraph(uint64_t w, uint64_t h) : width(w), height(h) {}
+
+private:
+    std::vector<SvgObject*> objects;
+};
+
 class SvgLine : public SvgObject {
 public:
     uint64_t start_x;
@@ -41,24 +55,4 @@ public:
 
     ~SvgRect() override = default;
     std::string dump() const override;
-};
-
-class SvgGraph {
-public:
-
-    std::vector<SvgObject*> objects;
-
-//    void insert(SvgObject *obj);
-
-    void insert(const SvgRect &rect);
-    void insert(const SvgLine &line);
-
-//    void insert(SvgRect rect);
-//    void insert(SvgLine line);
-
-
-    std::string dump() const;
-
-    ~SvgGraph();
-
 };

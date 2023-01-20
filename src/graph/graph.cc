@@ -9,21 +9,21 @@
 void Graph::svg_demo(Analyse::track_data_t track_data) {
 
 
-    auto s = SvgRect();
+    auto s = new SvgRect();
 
-    s.left = 50;
-    s.top = 80;
+    s->left = 50;
+    s->top = 80;
 
-    s.width = 100;
-    s.height = 200;
+    s->width = 100;
+    s->height = 200;
 
-    s.radius = 20;
+    s->radius = 20;
 
-    s.opacity = 0.8;
-    s.line_opacity = 0.5;
+    s->opacity = 0.8;
+    s->line_opacity = 0.5;
 
-    s.color = "blue";
-    s.line_color = "green";
+    s->color = "blue";
+    s->line_color = "green";
 
 //    printf(R"(<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="%d" height="%d">)", 1000, 1000);
 //    printf("\n");
@@ -32,21 +32,21 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //
 //    printf("</svg>\n");
 
-    auto l = SvgLine();
-    l.start_x = 100;
-    l.start_y = 200;
+    auto l = new SvgLine();
+    l->start_x = 100;
+    l->start_y = 200;
 
-    l.end_x = 300;
-    l.end_y = 400;
+    l->end_x = 300;
+    l->end_y = 400;
 
-    auto sg = SvgGraph();
+    auto sg = SvgGraph(1000, 2000);
 //    sg.insert(&s);
 //    sg.insert(&l);
 
-    sg.insert(std::move(s));
-    sg.insert(std::move(l));
+    sg.insert(s);
+    sg.insert(l);
 
-    sg.dump();
+    std::cout << sg.dump() << std::endl;
 
     return;
 
