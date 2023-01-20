@@ -1,7 +1,8 @@
 #include "svg.h"
 
-#include <iostream>
-
+void SvgGraph::insert(SvgObject *obj) {
+    objects.emplace_back(obj);
+}
 
 SvgGraph::~SvgGraph() {
     for (auto *object : objects) {
@@ -9,11 +10,8 @@ SvgGraph::~SvgGraph() {
     }
 }
 
-void SvgGraph::insert(SvgObject *obj) {
-    objects.emplace_back(obj);
-}
-
 std::string SvgLine::dump() const {
+
     /// basic attributes of svg-line
 
     return "<line />";
@@ -31,7 +29,7 @@ std::string SvgRect::dump() const {
         xml += "rx=\"" + std::to_string(radius) + "\" ";
     }
     /// style attribute of svg-rect
-    std::string style = "stroke-width:" + std::to_string(stroke) + ";";
+    std::string style = "stroke-width:" + std::to_string(stroke).substr(0, 3) + ";";
     if (!color.empty()) {
         style += "fill:" + color + ";";
     }

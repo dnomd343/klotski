@@ -32,20 +32,7 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //    }
 
 
-    auto p = Point{100, 200};
-    auto rc = RawCode::unsafe_create(0x0603EDF5CAFFF5E2);
-    auto gc = GraphCase(p, rc, BLOCK_GAP, BLOCK_LENGTH);
-
     auto skin = CaseSkin();
-
-    auto svg = SvgGraph(2000, 2000);
-
-    gc.render(svg, skin);
-
-    std::cout << svg.dump() << std::endl;
-
-    return;
-
 
     struct inner_t {
         uint64_t code;
@@ -82,88 +69,24 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
     uint64_t MAIN_WIDTH = CASE_WIDTH * max_length_num + CASE_GAP_X * (max_length_num + 1);
     uint64_t MAIN_HEIGHT = CASE_HEIGHT * layer_data.size() + CASE_GAP_Y * (layer_data.size() + 1);
 
-//    std::cout << "MAIN_WIDTH = " << MAIN_WIDTH << std::endl;
-//    std::cout << "MAIN_HEIGHT = " << MAIN_HEIGHT << std::endl;
-
+    auto svg = SvgGraph(MAIN_WIDTH, MAIN_HEIGHT);
 
     for (uint32_t i = 0; i < layer_data.size(); ++i) {
 
         uint64_t CASE_Y = CASE_GAP_Y * (i + 1) + CASE_HEIGHT * i;
 
-//        std::cout << "TOP: " << CASE_Y << std::endl;
-
         uint64_t left_offset = (MAIN_WIDTH - (CASE_GAP_X * (layer_data[i].size() + 1) + CASE_WIDTH * layer_data[i].size())) / 2;
 
         for (uint32_t j = 0; j < layer_data[i].size(); ++j) {
             uint64_t CASE_X = CASE_GAP_X * (j + 1) + CASE_WIDTH * j + left_offset;
-//            printf("(%ld, %ld, %ld, %ld)\n", CASE_Y, CASE_X, CASE_WIDTH, CASE_HEIGHT);
 
-//            printf(R"(  <rect x="%ld" y="%ld" width="%ld" height="%ld" style="fill:pink;stroke-width:1;stroke:blue"/>)", CASE_X, CASE_Y, CASE_WIDTH, CASE_HEIGHT);
-//            printf("\n");
-
-//            SvgCase tmp = SvgCase();
-//            tmp.width = BLOCK_LENGTH;
-//            tmp.gap = BLOCK_GAP;
-//            tmp.left = CASE_X;
-//            tmp.top = CASE_Y;
-//            tmp.code = layer_data[i][j].code;
-//            tmp.render();
+            auto g = GraphCase({CASE_X, CASE_Y}, RawCode::unsafe_create(layer_data[i][j].code), BLOCK_GAP, BLOCK_LENGTH);
+            g.render(svg, skin);
 
         }
 
     }
 
+    std::cout << svg.dump() << std::endl;
 
-}
-
-void GraphCase::render(SvgGraph &svg, const CaseSkin &skin) const {
-    /// precompute size info
-    auto raw_code = (uint64_t)code;
-    uint32_t block_width_2 = block_width * 2 + block_gap;
-    uint32_t case_width = block_width * 4 + block_gap * 5;
-    uint32_t case_height = block_width * 5 + block_gap * 6;
-
-    /// case skeleton render
-    auto skeleton = new SvgRect {start, case_width, case_height};
-    skeleton->color = skin.CASE_BG_COLOR;
-    skeleton->stroke = skin.CASE_BORDER_WIDTH;
-    skeleton->line_color = skin.CASE_BORDER_COLOR;
-    skeleton->radius = uint64_t(skin.CASE_RADIUS * (float)block_width);
-    svg.insert(skeleton);
-
-    /// lambda for insert new block
-    auto new_block = [this, &skin, &svg](SvgRect *block) {
-        block->color = skin.BLOCK_BG_COLOR;
-        block->stroke = skin.BLOCK_BORDER_WIDTH;
-        block->line_color = skin.BLOCK_BORDER_COLOR;
-        block->radius = uint64_t(skin.BLOCK_RADIUS * (float)block_width);
-        svg.insert(block);
-    };
-
-    for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
-        /// calculate block address
-        uint32_t block_x = addr % 4;
-        uint32_t block_y = (addr - block_x) / 4;
-        Point block_start = {
-            start.x + block_x * block_width + (block_x + 1) * block_gap,
-            start.y + block_y * block_width + (block_y + 1) * block_gap,
-        };
-        /// render into svg graph
-        switch (raw_code & 0b111) {
-            case B_1x1:
-                new_block(new SvgRect {block_start, block_width, block_width});
-                break;
-            case B_1x2:
-                new_block(new SvgRect {block_start, block_width_2, block_width});
-                break;
-            case B_2x1:
-                new_block(new SvgRect {block_start, block_width, block_width_2});
-                break;
-            case B_2x2:
-                new_block(new SvgRect {block_start, block_width_2, block_width_2});
-                break;
-            default:
-                continue;
-        }
-    }
 }
