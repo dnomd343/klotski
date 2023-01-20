@@ -32,11 +32,8 @@ private:
 
 class SvgLine : public SvgObject {
 public:
-    uint64_t start_x;
-    uint64_t start_y;
-
-    uint64_t end_x;
-    uint64_t end_y;
+    Point start;
+    Point end;
 
     // TODO: more options for svg-line
 
@@ -49,13 +46,11 @@ public:
 class SvgRect : public SvgObject {
 public:
     Point start;
-//    uint64_t top;
-//    uint64_t left;
     uint64_t width;
     uint64_t height;
 
     uint64_t radius = 0;
-    uint32_t stroke = 1;
+    uint32_t stroke = 0;
 
     std::string color;
     std::string line_color;

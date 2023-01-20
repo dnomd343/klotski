@@ -124,88 +124,28 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //    printf("\n");
 //}
 
-//void SvgCase::render() const {
-//
-//    std::string result;
-//
-//    uint64_t raw_code = code;
-//
-////    std::cout << "start rander" << std::endl;
-//
-//    auto tmp = SvgRect();
-//
-//    tmp.left = left;
-//    tmp.top = top;
-//    tmp.width = width * 4 + gap * 5;
-//    tmp.height = width * 5 + gap * 6;
-////    std::cout << "main" << std::endl;
-//    tmp.to_xml();
-//
-//    for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
-//
-//        uint32_t block_x = addr % 4;
-//        uint32_t block_y = (addr - block_x) / 4;
-//
-//        switch (raw_code & 0b111) {
-//            case B_1x1:
-//
-//                tmp.top = width * block_y + gap * (block_y + 1) + top;
-//                tmp.left = width * block_x + gap * (block_x + 1) + left;
-//                tmp.height = width;
-//                tmp.width = width;
-////                std::cout << "1x1" << std::endl;
-//                tmp.to_xml();
-//
-//                break;
-//            case B_1x2:
-//
-//                tmp.top = width * block_y + gap * (block_y + 1) + top;
-//                tmp.left = width * block_x + gap * (block_x + 1) + left;
-//                tmp.height = width;
-//                tmp.width = width * 2 + gap;
-////                std::cout << "1x2" << std::endl;
-//                tmp.to_xml();
-//
-//                break;
-//            case B_2x1:
-//
-//                tmp.top = width * block_y + gap * (block_y + 1) + top;
-//                tmp.left = width * block_x + gap * (block_x + 1) + left;
-//                tmp.height = width * 2 + gap;
-//                tmp.width = width;
-////                std::cout << "2x1" << std::endl;
-//                tmp.to_xml();
-//
-//                break;
-//            case B_2x2:
-//
-//                tmp.top = width * block_y + gap * (block_y + 1) + top;
-//                tmp.left = width * block_x + gap * (block_x + 1) + left;
-//                tmp.height = width * 2 + gap;
-//                tmp.width = width * 2 + gap;
-////                std::cout << "2x2" << std::endl;
-//                tmp.to_xml();
-//
-//                break;
-//            default:
-//                continue;
-//        }
-//    }
-//
-//}
-
-
 void GraphCase::render(SvgGraph &svg, const CaseSkin &skin) const {
 //    std::cout << "render begin" << std::endl;
 
     auto raw_code = (uint64_t)code;
-
     uint32_t case_width = block_width * 4 + block_gap * 5;
     uint32_t case_height = block_width * 5 + block_gap * 6;
 
     auto skeleton = new SvgRect {start, case_width, case_height};
-    skeleton->color = "pink";
+    skeleton->color = skin.CASE_BG_COLOR;
+    skeleton->stroke = skin.CASE_BORDER_WIDTH;
+    skeleton->line_color = skin.CASE_BORDER_COLOR;
+    skeleton->radius = uint64_t(skin.CASE_RADIUS * (float)block_width);
     svg.insert(skeleton);
+
+    auto apply_skin = [&skin, this](SvgRect *block) {
+        block->color = skin.BLOCK_BG_COLOR;
+        block->stroke = skin.BLOCK_BORDER_WIDTH;
+        block->line_color = skin.BLOCK_BORDER_COLOR;
+        block->radius = uint64_t(skin.BLOCK_RADIUS * (float)block_width);
+    };
+
+    SvgRect *block;
 
     for (int addr = 0; raw_code; ++addr, raw_code >>= 3) {
         uint32_t block_x = addr % 4;
@@ -216,46 +156,54 @@ void GraphCase::render(SvgGraph &svg, const CaseSkin &skin) const {
         switch (raw_code & 0b111) {
             case B_1x1:
 
-                svg.insert(new SvgRect {
+                block = new SvgRect {
                     {
                         start.x + block_x * block_width + (block_x + 1) * block_gap,
                         start.y + block_y * block_width + (block_y + 1) * block_gap,
                     },
                     block_width, block_width,
-                });
+                };
+                apply_skin(block);
+                svg.insert(block);
 
                 break;
             case B_1x2:
 
-                svg.insert(new SvgRect {
+                block = new SvgRect {
                     {
                         start.x + block_x * block_width + (block_x + 1) * block_gap,
                         start.y + block_y * block_width + (block_y + 1) * block_gap,
                     },
                     block_width * 2 + block_gap, block_width,
-                });
+                };
+                apply_skin(block);
+                svg.insert(block);
 
                 break;
             case B_2x1:
 
-                svg.insert(new SvgRect {
+                block = new SvgRect {
                     {
                         start.x + block_x * block_width + (block_x + 1) * block_gap,
                         start.y + block_y * block_width + (block_y + 1) * block_gap,
                     },
                     block_width, block_width * 2 + block_gap,
-                });
+                };
+                apply_skin(block);
+                svg.insert(block);
 
                 break;
             case B_2x2:
 
-                svg.insert(new SvgRect {
+                block = new SvgRect {
                     {
                         start.x + block_x * block_width + (block_x + 1) * block_gap,
                         start.y + block_y * block_width + (block_y + 1) * block_gap,
                     },
                     block_width * 2 + block_gap, block_width * 2 + block_gap,
-                });
+                };
+                apply_skin(block);
+                svg.insert(block);
 
                 break;
             default:

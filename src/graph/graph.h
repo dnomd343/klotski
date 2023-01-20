@@ -12,23 +12,21 @@
 
 class CaseSkin {
 public:
-    std::string color = "pink";
-};
+    /// case options
+    float CASE_RADIUS = 0.2;
+    uint32_t CASE_BORDER_WIDTH = 2;
+    std::string CASE_BG_COLOR = "pink";
+    std::string CASE_BORDER_COLOR = "blue";
 
-//class SvgCase {
-//public:
-//
-//    uint64_t code;
-//
-//    uint64_t top = 0;
-//    uint64_t left = 0;
-//
-//    uint32_t gap = 4;
-//    uint32_t width = 12;
-//
-//    void render() const;
-//
-//};
+    /// block options
+    float BLOCK_RADIUS = 0.3;
+    uint32_t BLOCK_BORDER_WIDTH = 1;
+    std::string BLOCK_BG_COLOR = "green";
+    std::string BLOCK_BORDER_COLOR = "yellow";
+
+    // TODO: opacity options
+
+};
 
 class GraphCase {
 public:
