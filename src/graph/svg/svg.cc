@@ -1,50 +1,28 @@
 #include "svg.h"
 
-#include <cstdio>
-
-#include <iostream>
-
 std::string SvgRect::dump() const {
-
-    /// <rect x="120" width="100" height="100" rx="15" />
-
-//    char *radius_str = nullptr;
-//    if (radius == 0) {
-//        asprintf(&radius_str, " ");
-//    } else {
-//        asprintf(&radius_str, R"( rx="%lu" )", radius);
-//    }
-
-    std::string style;
-
-//    style="fill:blue;stroke:pink;stroke-width:5;fill-opacity:0.1;stroke-opacity:0.9"
-
-    char *xml = nullptr;
-    asprintf(&xml, R"(<rect x="%ld" y="%ld" width="%ld" height="%ld")", left, top, width, height);
-    std::string ret(xml);
-    free(xml);
-
+    /// basic attribute of svg-rect
+    std::string xml = "<rect ";
+    xml += "x=\"" + std::to_string(left) + "\" ";
+    xml += "y=\"" + std::to_string(top) + "\" ";
+    xml += "width=\"" + std::to_string(width) + "\" ";
+    xml += "height=\"" + std::to_string(height) + "\" ";
     if (radius != 0) {
-        char *radius_str = nullptr;
-        asprintf(&radius_str, R"( rx="%lu")", radius);
-
-        ret += radius_str;
-
-        free(radius_str);
+        xml += "rx=\"" + std::to_string(radius) + "\" ";
     }
-
-
-//    std::cout << xml << std::endl;
-
-//    std::string result = xml;
-
-//    free(xml);
-
-//    std::string xml("<rect ");
-//    xml += "x = ";
-//
-//    xml += atoi();
-
-    return ret + " />";
-
+    /// style attribute of svg-rect
+    std::string style = "stroke-width:" + std::to_string(stroke) + ";";
+    if (!color.empty()) {
+        style += "fill:" + color + ";";
+    }
+    if (!line_color.empty()) {
+        style += "stroke:" + line_color + ";";
+    }
+    if (opacity != 0) {
+        style += "fill-opacity:" + std::to_string(opacity).substr(0, 4) + ";";
+    }
+    if (line_opacity != 0) {
+        style += "stroke-opacity:" + std::to_string(line_opacity).substr(0, 4) + ";";
+    }
+    return xml + "style=\"" + style + "\" />";
 }

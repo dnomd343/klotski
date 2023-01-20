@@ -19,6 +19,12 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 
     s.radius = 20;
 
+    s.opacity = 0.8;
+    s.line_opacity = 0.5;
+
+    s.color = "blue";
+    s.line_color = "green";
+
     printf(R"(<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="%d" height="%d">)", 1000, 1000);
     printf("\n");
 
