@@ -8,6 +8,7 @@
 #include "core.h"
 #include "raw_code.h"
 
+// TODO: using prime number
 const uint32_t FC_MAP_RESERVE = 65536 * 8;
 
 /// FastCal not found -> return invalid raw code
