@@ -43,6 +43,7 @@ private:
     void new_case(uint64_t code, uint64_t mask);
 
 
+/// backtrack definitions
 public:
     struct backtrack_t {
         uint64_t code;
@@ -50,20 +51,9 @@ public:
         std::list<backtrack_t*> last;
         std::list<backtrack_t*> next;
     };
+    typedef std::vector<std::unordered_map<uint64_t, backtrack_t>> backtrack_data_t;
 
-    void backtrack_demo(const std::vector<uint64_t> &codes);
-
-    /// backtrack definitions
-
-//    struct backtrack_t {
-//        uint64_t code;
-//        uint32_t layer_num;
-//        uint32_t layer_index;
-//        std::list<backtrack_t*> next;
-//    };
-
-    // TODO: backtrack for multi-codes
-//    void backtrack(uint64_t code);
-//    void backtrack(const std::vector<uint64_t> &raw_code_list);
+    // TODO: try using unordered_set
+    backtrack_data_t backtrack_demo(const std::vector<uint64_t> &codes);
 
 };
