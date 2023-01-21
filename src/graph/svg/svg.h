@@ -11,20 +11,23 @@ public:
     uint64_t y;
 };
 
-/// basic class of SVG element
+/// SVG basic element
 class SvgObject {
 public:
     virtual ~SvgObject() = default;
     virtual std::string dump() const = 0;
 };
 
+// TODO: SVG text element
+
 /// SVG line element
 class SvgLine : public SvgObject {
 public:
-    Point start;
-    Point end;
-
-    // TODO: more options for svg-line
+    Point start, end;
+    std::string color;
+    float width = 1.0;
+    float opacity = 0;
+    std::string dasharray;
 
     ~SvgLine() override = default;
     std::string dump() const override;

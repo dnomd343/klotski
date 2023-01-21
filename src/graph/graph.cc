@@ -8,6 +8,17 @@
 
 std::string Graph::svg_demo(Analyse::track_data_t track_data) {
 
+    auto s = SvgGraph(1000, 1200);
+
+    auto *sl = new SvgLine({100, 200}, {500, 800});
+    sl->color = std::string("blue");
+    sl->dasharray = "10,5";
+    sl->opacity = 0.5;
+    s.insert(sl);
+
+    std::cout << s.dump() << std::endl;
+    return "";
+
 //    for (uint32_t i = 0; i < track_data.size(); ++i) {
 //
 //        const auto &ly = track_data[i];
