@@ -32,6 +32,8 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 
     auto skin = CaseSkin();
 
+    // TODO: remove layer_index
+    // TODO: try remove layer_num
     struct graph_t {
         uint64_t code;
         uint32_t layer_num;
@@ -64,24 +66,28 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //        std::cout << std::endl;
 //        std::cout << "layer " << i << " -> " << graph_layer[i].size() << std::endl;
 
-        for (const auto *c : graph_layer[i]) {
+        for (const auto *curr : graph_layer[i]) {
 //            std::cout << "code = " << c->code << std::endl;
 
-            for (const auto src : track_data[i][c->code].last) {
+            for (const auto *src : track_data[i][curr->code].last) {
 //                std::cout << "  src -> " << src->code << std::endl;
 
-                auto ret = graph_data.emplace(src->code, graph_t {
-                    .code = src->code,
-                    .layer_num = i - 1,
-                    .layer_index = static_cast<uint32_t>(graph_layer[i - 1].size()),
-                    .next = std::list<uint32_t>{static_cast<uint32_t>(graph_layer[i - 1].size())},
-                });
+                auto find_ret = graph_data.find(src->code);
 
-                if (ret.second) { // insert success
-                    graph_layer[i - 1].emplace_back(&ret.first->second);
+                if (find_ret != graph_data.end()) { // already exist
+
+                    find_ret->second.next.emplace_back(curr->layer_index);
+
                 } else {
-                    graph_data[src->code].next.emplace_back(graph_data[c->code].layer_index);
+                    graph_layer[i - 1].emplace_back(&graph_data.emplace(src->code, graph_t {
+                        .code = src->code,
+                        .layer_num = i - 1,
+                        .layer_index = static_cast<uint32_t>(graph_layer[i - 1].size()),
+                        .next = std::list<uint32_t>{curr->layer_index},
+                    }).first->second);
+
                 }
+
             }
         }
     }

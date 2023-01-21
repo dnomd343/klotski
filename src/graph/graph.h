@@ -49,7 +49,7 @@ public:
     uint64_t CASE_WIDTH = BLOCK_LENGTH * 4 + BLOCK_GAP * 5;
     uint64_t CASE_HEIGHT = BLOCK_LENGTH * 5 + BLOCK_GAP * 6;
 
-    uint64_t LINE_OFFSET = 3;
+    uint64_t LINE_OFFSET = 2;
 
     void svg_demo(Analyse::track_data_t track_data);
 

@@ -20,7 +20,7 @@ std::string SvgLine::dump() const {
     xml += "x2=\"" + std::to_string(end.x) + "\" ";
     xml += "y2=\"" + std::to_string(end.y) + "\" ";
 
-    std::string style = "stroke:blue;stroke-width:1;";
+    std::string style = "stroke:#636379;stroke-width:1;";
 
     //    <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2"/>
 
