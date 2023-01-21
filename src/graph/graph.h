@@ -51,6 +51,6 @@ public:
 
     uint64_t LINE_OFFSET = 2;
 
-    void svg_demo(Analyse::track_data_t track_data);
+    std::string svg_demo(Analyse::track_data_t track_data);
 
 };

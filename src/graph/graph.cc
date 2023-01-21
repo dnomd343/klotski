@@ -6,7 +6,7 @@
 
 #include "svg.h"
 
-void Graph::svg_demo(Analyse::track_data_t track_data) {
+std::string Graph::svg_demo(Analyse::track_data_t track_data) {
 
 //    for (uint32_t i = 0; i < track_data.size(); ++i) {
 //
@@ -154,6 +154,6 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
         }
     }
 
-    std::cout << svg.dump() << std::endl;
+    return svg.dump();
 
 }
