@@ -30,14 +30,15 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //
 //    }
 
+
     auto skin = CaseSkin();
 
     // TODO: remove layer_index
     // TODO: try remove layer_num
     struct graph_t {
         uint64_t code;
-        uint32_t layer_num;
-        uint32_t layer_index;
+//        uint32_t layer_num;
+//        uint32_t layer_index;
         std::list<uint32_t> next;
     };
 
@@ -52,8 +53,8 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 
                 graph_layer[i].emplace_back(&graph_data.emplace(c.second.code, graph_t {
                     .code = c.second.code,
-                    .layer_num = i,
-                    .layer_index = static_cast<uint32_t>(graph_layer[i].size()),
+//                    .layer_num = i,
+//                    .layer_index = static_cast<uint32_t>(graph_layer[i].size()),
                     .next = std::list<uint32_t>{},
                 }).first->second);
 
@@ -61,13 +62,16 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
         }
     }
 
-    for (uint32_t i = 81; i > 0; --i) {
+    for (uint32_t i = graph_layer.size() - 1; i > 0; --i) {
 
 //        std::cout << std::endl;
 //        std::cout << "layer " << i << " -> " << graph_layer[i].size() << std::endl;
 
-        for (const auto *curr : graph_layer[i]) {
+//        for (const auto *curr : graph_layer[i]) {
+        for (uint32_t layer_index = 0; layer_index < graph_layer[i].size(); ++layer_index) {
 //            std::cout << "code = " << c->code << std::endl;
+
+            const auto *curr = graph_layer[i][layer_index];
 
             for (const auto *src : track_data[i][curr->code].last) {
 //                std::cout << "  src -> " << src->code << std::endl;
@@ -76,14 +80,16 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 
                 if (find_ret != graph_data.end()) { // already exist
 
-                    find_ret->second.next.emplace_back(curr->layer_index);
+//                    find_ret->second.next.emplace_back(curr->layer_index);
+                    find_ret->second.next.emplace_back(layer_index);
 
                 } else {
                     graph_layer[i - 1].emplace_back(&graph_data.emplace(src->code, graph_t {
                         .code = src->code,
-                        .layer_num = i - 1,
-                        .layer_index = static_cast<uint32_t>(graph_layer[i - 1].size()),
-                        .next = std::list<uint32_t>{curr->layer_index},
+//                        .layer_num = i - 1,
+//                        .layer_index = static_cast<uint32_t>(graph_layer[i - 1].size()),
+//                            .next = std::list<uint32_t>{curr->layer_index},
+                        .next = std::list<uint32_t>{layer_index},
                     }).first->second);
 
                 }

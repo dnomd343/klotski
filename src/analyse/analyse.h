@@ -54,6 +54,6 @@ public:
     typedef std::vector<std::unordered_map<uint64_t, track_t>> track_data_t;
 
     // TODO: using RawCode instead of uint64_t
-    track_data_t backtrack(const std::vector<uint64_t> &codes);
+    track_data_t backtrack(const std::vector<RawCode> &codes);
 
 };

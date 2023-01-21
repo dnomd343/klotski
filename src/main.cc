@@ -57,20 +57,30 @@ int main() {
 //    }
 
 
-    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
-    a.build();
-//    auto ret = a.build_until([](uint64_t code) {
-//        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
-//    });
+//    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
+//    auto a = Analyse(RawCode::from_common_code("4fea134"));
+//    auto a = Analyse(RawCode::from_common_code("A5D3AF"));
+    auto a = Analyse(RawCode::from_common_code("1FA6F80"));
+//    a.build();
+    auto ret = a.build_until([](uint64_t code) {
+        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
+    });
+
+//    std::cout << "analyse complete" << std::endl;
 //    for (const auto &r : ret) {
 //        std::cout << r << std::endl;
 //    }
 
-    auto ret = a.backtrack({
-        0x7F87E0E5BFFF492, 0x1FB1E36F9FFF492
-    });
+//    auto ret = a.backtrack({
+//        0x7F87E0E5BFFF492, 0x1FB1E36F9FFF492, RawCode::from_common_code("2CEA8DC").unwrap()
+//    });
+
+    auto svg_ret = a.backtrack(ret);
+
+//    std::cout << "backtrack complete" << std::endl;
+
     auto g = Graph();
-    g.svg_demo(ret);
+    g.svg_demo(svg_ret);
 
 //    auto start_time = clock();
 

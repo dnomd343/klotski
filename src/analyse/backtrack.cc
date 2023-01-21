@@ -1,11 +1,11 @@
 #include <algorithm>
 #include "analyse.h"
 
-Analyse::track_data_t Analyse::backtrack(const std::vector<uint64_t> &codes) {
+Analyse::track_data_t Analyse::backtrack(const std::vector<RawCode> &codes) {
     /// codes pre-check and sort by steps
     std::vector<std::vector<analyse_t*>> todos;
     for (const auto &code : codes) {
-        auto c = cases.find(code);
+        auto c = cases.find((uint64_t)code);
         if (c == cases.end()) { // invalid input
             return track_data_t{}; // return empty data
         }
