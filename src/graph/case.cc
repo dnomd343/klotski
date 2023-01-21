@@ -3,7 +3,7 @@
 
 void GraphCase::render(SvgGraph &svg, const CaseSkin &skin) const {
     /// precompute size info
-    auto raw_code = (uint64_t)code;
+    auto raw_code = code;
     uint32_t block_width_2 = block_width * 2 + block_gap;
     uint32_t case_width = block_width * 4 + block_gap * 5;
     uint32_t case_height = block_width * 5 + block_gap * 6;

@@ -14,7 +14,20 @@ std::string SvgLine::dump() const {
 
     /// basic attributes of svg-line
 
-    return "<line />";
+    std::string xml = "<line ";
+    xml += "x1=\"" + std::to_string(start.x) + "\" ";
+    xml += "y1=\"" + std::to_string(start.y) + "\" ";
+    xml += "x2=\"" + std::to_string(end.x) + "\" ";
+    xml += "y2=\"" + std::to_string(end.y) + "\" ";
+
+    std::string style = "stroke:blue;stroke-width:1;";
+
+    //    <line x1="0" y1="0" x2="200" y2="200" style="stroke:rgb(255,0,0);stroke-width:2"/>
+
+
+    // TODO: svg-line css style
+
+    return xml + "style=\"" + style + "\" />";
 
 }
 

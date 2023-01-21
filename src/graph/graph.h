@@ -25,12 +25,12 @@ public:
 class GraphCase {
 public:
     Point start;
-    RawCode code;
+    uint64_t code;
     uint32_t block_gap;
     uint32_t block_width;
 
     void render(SvgGraph &svg, const CaseSkin &skin) const;
-    GraphCase(Point p, RawCode c, uint32_t gap, uint32_t width) : start(p), code(c) {
+    GraphCase(Point p, uint64_t c, uint32_t gap, uint32_t width) : start(p), code(c) {
         block_gap = gap;
         block_width = width;
     }
@@ -48,6 +48,8 @@ public:
 
     uint64_t CASE_WIDTH = BLOCK_LENGTH * 4 + BLOCK_GAP * 5;
     uint64_t CASE_HEIGHT = BLOCK_LENGTH * 5 + BLOCK_GAP * 6;
+
+    uint64_t LINE_OFFSET = 3;
 
     void svg_demo(Analyse::track_data_t track_data);
 

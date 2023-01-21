@@ -28,8 +28,7 @@ public:
 
     ~SvgLine() override = default;
     std::string dump() const override;
-
-    // TODO: SvgLine(...)
+    SvgLine(Point s, Point e) : start(s), end(e) {}
 };
 
 /// SVG rectangle element
