@@ -8,7 +8,6 @@
 
 void Graph::svg_demo(Analyse::track_data_t track_data) {
 
-//
 //    for (uint32_t i = 0; i < track_data.size(); ++i) {
 //
 //        const auto &ly = track_data[i];
@@ -31,56 +30,83 @@ void Graph::svg_demo(Analyse::track_data_t track_data) {
 //
 //    }
 
-
     auto skin = CaseSkin();
 
-    struct inner_t {
+    struct graph_t {
         uint64_t code;
         uint32_t layer_num;
         uint32_t layer_index;
         std::list<uint32_t> next;
     };
 
-    std::vector<std::vector<inner_t>> layer_data(track_data.size());
+    std::unordered_map<uint64_t, graph_t> graph_data;
+    std::vector<std::vector<graph_t*>> graph_layer(track_data.size());
 
     for (uint32_t i = 0; i < track_data.size(); ++i) {
-
         for (const auto &c : track_data[i]) {
-            layer_data[i].emplace_back(inner_t {
-                .code = c.second.code,
-                .layer_num = c.second.layer_num,
-                .layer_index = (uint32_t)layer_data[i].size(),
-                .next = std::list<uint32_t>{},
-            });
-        }
+            if (c.second.next.empty()) { // without next cases
 
-    }
+//                std::cout << "layer = " << i << " | code = " << c.second.code << std::endl;
 
+                graph_layer[i].emplace_back(&graph_data.emplace(c.second.code, graph_t {
+                    .code = c.second.code,
+                    .layer_num = i,
+                    .layer_index = static_cast<uint32_t>(graph_layer[i].size()),
+                    .next = std::list<uint32_t>{},
+                }).first->second);
 
-    uint32_t max_length_num = 0;
-    for (const auto &ld : layer_data) {
-        if (ld.size() > max_length_num) {
-            max_length_num = ld.size();
+            }
         }
     }
-//    std::cout << "max length -> " << max_length_num << std::endl;
+
+    for (uint32_t i = 81; i > 0; --i) {
+
+//        std::cout << std::endl;
+//        std::cout << "layer " << i << " -> " << graph_layer[i].size() << std::endl;
+
+        for (const auto *c : graph_layer[i]) {
+//            std::cout << "code = " << c->code << std::endl;
+
+            for (const auto src : track_data[i][c->code].last) {
+//                std::cout << "  src -> " << src->code << std::endl;
+
+                auto ret = graph_data.emplace(src->code, graph_t {
+                    .code = src->code,
+                    .layer_num = i - 1,
+                    .layer_index = static_cast<uint32_t>(graph_layer[i - 1].size()),
+                    .next = std::list<uint32_t>{static_cast<uint32_t>(graph_layer[i - 1].size())},
+                });
+
+                if (ret.second) { // insert success
+                    graph_layer[i - 1].emplace_back(&ret.first->second);
+                }
+            }
+        }
+    }
+
+    uint32_t max_width = 0;
+    uint32_t max_height = graph_layer.size();
+    for (const auto &layer : graph_layer) {
+        max_width = (layer.size() > max_width) ? layer.size() : max_width;
+    }
+//    std::cout << "max width -> " << max_width << std::endl;
 
 
-    uint64_t MAIN_WIDTH = CASE_WIDTH * max_length_num + CASE_GAP_X * (max_length_num + 1);
-    uint64_t MAIN_HEIGHT = CASE_HEIGHT * layer_data.size() + CASE_GAP_Y * (layer_data.size() + 1);
+    uint64_t graph_width = CASE_WIDTH * max_width + CASE_GAP_X * (max_width + 1);
+    uint64_t graph_height = CASE_HEIGHT * max_height + CASE_GAP_Y * (max_height + 1);
 
-    auto svg = SvgGraph(MAIN_WIDTH, MAIN_HEIGHT);
+    auto svg = SvgGraph(graph_width, graph_height);
 
-    for (uint32_t i = 0; i < layer_data.size(); ++i) {
+    for (uint32_t i = 0; i < graph_layer.size(); ++i) {
 
-        uint64_t CASE_Y = CASE_GAP_Y * (i + 1) + CASE_HEIGHT * i;
+        uint64_t case_top = CASE_GAP_Y * (i + 1) + CASE_HEIGHT * i;
 
-        uint64_t left_offset = (MAIN_WIDTH - (CASE_GAP_X * (layer_data[i].size() + 1) + CASE_WIDTH * layer_data[i].size())) / 2;
+        uint64_t offset = (graph_width - (CASE_GAP_X * (graph_layer[i].size() + 1) + CASE_WIDTH * graph_layer[i].size())) / 2;
 
-        for (uint32_t j = 0; j < layer_data[i].size(); ++j) {
-            uint64_t CASE_X = CASE_GAP_X * (j + 1) + CASE_WIDTH * j + left_offset;
+        for (uint32_t j = 0; j < graph_layer[i].size(); ++j) {
+            uint64_t case_left = offset + CASE_GAP_X * (j + 1) + CASE_WIDTH * j;
 
-            auto g = GraphCase({CASE_X, CASE_Y}, RawCode::unsafe_create(layer_data[i][j].code), BLOCK_GAP, BLOCK_LENGTH);
+            auto g = GraphCase({case_left, case_top}, RawCode::unsafe_create(graph_layer[i][j]->code), BLOCK_GAP, BLOCK_LENGTH);
             g.render(svg, skin);
 
         }
