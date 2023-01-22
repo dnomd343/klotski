@@ -1,6 +1,12 @@
 #include "core.h"
 #include "common.h"
 
+/// block move direction
+#define UP    (-4 * 3)
+#define LEFT  (-1 * 3)
+#define DOWN  (+4 * 3)
+#define RIGHT (+1 * 3)
+
 /// block direction limit
 #define ALLOW_UP    (filter != -UP)
 #define ALLOW_DOWN  (filter != -DOWN)

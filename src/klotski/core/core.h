@@ -4,11 +4,6 @@
 #include <utility>
 #include <functional>
 
-#define UP    (-4 * 3)
-#define LEFT  (-1 * 3)
-#define DOWN  (+4 * 3)
-#define RIGHT (+1 * 3)
-
 class Core {
 public:
     /// Release with code and mask

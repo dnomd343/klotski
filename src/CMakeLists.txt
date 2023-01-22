@@ -8,6 +8,10 @@ include_directories(klotski/raw_code)
 include_directories(klotski/short_code)
 include_directories(klotski/common_code)
 
+include_directories(klotski/core)
+include_directories(klotski/analyse)
+include_directories(klotski/fast_cal)
+
 add_subdirectory(klotski)
 
 add_executable(klotski_bin main.cc)
