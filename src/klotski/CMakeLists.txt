@@ -18,7 +18,9 @@ add_subdirectory(fast_cal)
 
 ################################################
 
-add_library(klotski klotski_ffi.cc)
+#add_library(klotski klotski_ffi.cc)
+#add_library(klotski STATIC klotski_ffi.cc)
+add_library(klotski SHARED klotski_ffi.cc)
 
 target_link_libraries(klotski utils)
 target_link_libraries(klotski all_cases)
