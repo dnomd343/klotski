@@ -1,16 +1,18 @@
 #include <iostream>
-#include "core.h"
-#include "all_cases.h"
-#include "basic_ranges.h"
-#include "common_code.h"
-#include "short_code.h"
-#include "raw_code.h"
-#include "fast_cal.h"
-#include "analyse.h"
-#include "common.h"
-#include "graph.h"
+//#include "core.h"
 
-#include "benchmark.h"
+#include "all_cases.h"
+
+#include "raw_code.h"
+#include "short_code.h"
+#include "common_code.h"
+
+//#include "fast_cal.h"
+//#include "analyse.h"
+#include "common.h"
+//#include "graph.h"
+
+//#include "benchmark.h"
 
 #include <thread>
 #include <algorithm>
@@ -20,19 +22,42 @@
 //int main(int argc, char *argv[]) {
 int main() {
 
+    std::cout << "start test" << std::endl;
+
+//    std::cout << (uint32_t)Common::check_range(1, Common::range_reverse(0xA9BF0C00)) << std::endl;
+
+//    AllCases::build();
+//    for (const auto &a : AllCases::fetch()) {
+//        std::cout << a.size() << std::endl;
+//    }
+
+    std::cout << RawCode::from_common_code("1a9bf0c") << std::endl;
+    std::cout << RawCode::create(0x0603EDF5CAFFF5E2) << std::endl;
+
+    std::cout << CommonCode::create(0x1A9BF0C00) << std::endl;
+    std::cout << CommonCode::from_string("1a9bf0c") << std::endl;
+    std::cout << CommonCode::from_short_code(4091296) << std::endl;
+    std::cout << CommonCode::from_raw_code(0x0603EDF5CAFFF5E2) << std::endl;
+
+    std::cout << ShortCode::create(4091296) << std::endl;
+    std::cout << ShortCode::from_string("4WVE1") << std::endl;
+    std::cout << ShortCode::from_common_code(0x1A9BF0C00) << std::endl;
+
+    std::cout << "end test" << std::endl;
+
 //    BasicRanges::build();
 
 //    Benchmark::basic_ranges(std::cout);
 //    std::cout << std::endl;
-    Benchmark::all_cases(std::cout);
+//    Benchmark::all_cases(std::cout);
 
-    std::cout << std::endl;
-    Benchmark::basic_ranges(std::cout);
+//    std::cout << std::endl;
+//    Benchmark::basic_ranges(std::cout);
 
     return 0;
 
 
-    BasicRanges::build();
+//    BasicRanges::build();
 //    AllCases::build();
 
 
@@ -73,9 +98,9 @@ int main() {
 //    }
 
 
-    auto start_time = clock();
+//    auto start_time = clock();
 
-    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
+//    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
 //    auto a = Analyse(RawCode::from_common_code("4fea134"));
 //    auto a = Analyse(RawCode::from_common_code("A5D3AF"));
 
@@ -84,23 +109,23 @@ int main() {
 //    auto ret = a.build_until([](uint64_t code) {
 //        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
 //    });
-    auto ret = a.build_resolve();
+//    auto ret = a.build_resolve();
 //    for (const auto &r : ret) {
 //        std::cout << r << std::endl;
 //    }
 //    std::cout << ret.size() << std::endl;
 
 
-    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 
 
-    start_time = clock();
-    auto svg_ret = a.backtrack(ret);
-    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    start_time = clock();
+//    auto svg_ret = a.backtrack(ret);
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 
 
-    auto g = Graph();
-    auto svg_data = g.svg_demo(svg_ret);
+//    auto g = Graph();
+//    auto svg_data = g.svg_demo(svg_ret);
 
 //    std::cout << svg_data << std::endl;
 
@@ -141,7 +166,7 @@ int main() {
 
 //    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
 //    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
 
 //    std::cout << "complete benchmark" << std::endl;
 

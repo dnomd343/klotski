@@ -1,60 +1,14 @@
 cmake_minimum_required(VERSION 3.0)
 
-################################################
+include_directories(klotski)
+include_directories(klotski/utils)
+include_directories(klotski/all_cases)
 
-include_directories(utils)
-include_directories(all_cases)
+include_directories(klotski/raw_code)
+include_directories(klotski/short_code)
+include_directories(klotski/common_code)
 
-include_directories(raw_code)
-include_directories(short_code)
-include_directories(common_code)
+add_subdirectory(klotski)
 
-include_directories(core)
-include_directories(analyse)
-include_directories(fast_cal)
-
-include_directories(graph)
-
-include_directories(benchmark)
-
-################################################
-
-add_subdirectory(utils)
-add_subdirectory(all_cases)
-
-add_subdirectory(raw_code)
-add_subdirectory(short_code)
-add_subdirectory(common_code)
-
-add_subdirectory(core)
-add_subdirectory(analyse)
-add_subdirectory(fast_cal)
-
-add_subdirectory(graph)
-
-add_subdirectory(benchmark)
-
-################################################
-
-add_executable(klotski main.cc)
-
-################################################
-
-target_link_libraries(klotski utils)
-target_link_libraries(klotski all_cases)
-
-target_link_libraries(klotski raw_code)
-target_link_libraries(klotski short_code)
-target_link_libraries(klotski common_code)
-
-target_link_libraries(klotski core)
-target_link_libraries(klotski analyse)
-target_link_libraries(klotski fast_cal)
-
-target_link_libraries(klotski graph)
-
-target_link_libraries(klotski benchmark)
-
-target_link_libraries(klotski pthread)
-
-################################################
+add_executable(klotski_bin main.cc)
+target_link_libraries(klotski_bin klotski)
