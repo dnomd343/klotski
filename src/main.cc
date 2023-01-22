@@ -10,6 +10,8 @@
 #include "common.h"
 #include "graph.h"
 
+#include "benchmark.h"
+
 #include <thread>
 #include <algorithm>
 #include <unistd.h>
@@ -17,6 +19,13 @@
 
 //int main(int argc, char *argv[]) {
 int main() {
+
+//    BasicRanges::build();
+
+    Benchmark::basic_ranges(std::cout);
+
+    return 0;
+
 
     BasicRanges::build();
 //    AllCases::build();

@@ -15,6 +15,8 @@ include_directories(fast_cal)
 
 include_directories(graph)
 
+include_directories(benchmark)
+
 ################################################
 
 add_subdirectory(utils)
@@ -29,6 +31,8 @@ add_subdirectory(analyse)
 add_subdirectory(fast_cal)
 
 add_subdirectory(graph)
+
+add_subdirectory(benchmark)
 
 ################################################
 
@@ -48,6 +52,8 @@ target_link_libraries(klotski analyse)
 target_link_libraries(klotski fast_cal)
 
 target_link_libraries(klotski graph)
+
+target_link_libraries(klotski benchmark)
 
 target_link_libraries(klotski pthread)
 
