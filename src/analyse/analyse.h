@@ -21,9 +21,12 @@ public:
 
     /// BFS search functions
     void build();
+    std::vector<RawCode> build_resolve();
+    // TODO: build_furthest
     std::vector<RawCode> build_until(const match_t &match);
 
     /// analysed layer export
+    // TODO: ending point search
     std::vector<std::vector<RawCode>> layer_export();
     std::vector<RawCode> layer_export(uint32_t layer_num);
 
@@ -46,14 +49,18 @@ private:
 /// backtrack definitions
 public:
     struct track_t {
+        // TODO: try using RawCode
         uint64_t code;
         uint32_t layer_num;
         std::list<track_t*> last;
         std::list<track_t*> next;
     };
+    // TODO: try using RawCode
     typedef std::vector<std::unordered_map<uint64_t, track_t>> track_data_t;
 
     // TODO: using RawCode instead of uint64_t
     track_data_t backtrack(const std::vector<RawCode> &codes);
+
+    // TODO: RawCode enable `hash` and `equal_to` trait in namespace std
 
 };

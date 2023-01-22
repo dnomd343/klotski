@@ -1,4 +1,5 @@
 #include "analyse.h"
+#include "common.h"
 
 Analyse::Analyse(const RawCode &code) {
     this->root = (uint64_t)code;
@@ -29,6 +30,12 @@ std::vector<std::vector<RawCode>> Analyse::layer_export() {
         );
     }
     return layer_cases;
+}
+
+std::vector<RawCode> Analyse::build_resolve() {
+    return build_until([](uint64_t code) {
+        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
+    });
 }
 
 /// memory initialize and return klotski core
