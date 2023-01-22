@@ -1,6 +1,14 @@
 #include "common.h"
 #include "all_cases.h"
 
+const uint32_t ALL_CASES_SIZE[16] = {
+    2942906, 2260392, 2942906, 0,
+    2322050, 1876945, 2322050, 0,
+    2322050, 1876945, 2322050, 0,
+    2942906, 2260392, 2942906, 0,
+};
+
+/// static variable initialize
 std::mutex AllCases::building;
 bool AllCases::available = false;
 std::vector<uint32_t> AllCases::data[];
@@ -43,7 +51,7 @@ void AllCases::build_data() { // find all cases
         }
         /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
         data[head].reserve(ALL_CASES_SIZE[head]); // memory pre-allocated
-        /// head(4-bits) + basic ranges(32-bits) ==check==> release valid cases
+        /// head(4-bits) + basic ranges(32-bits) --check--> valid cases
         for (uint32_t index = 0; index < basic_ranges.size(); ++index) {
             auto broken_offset = Common::check_range(head, basic_ranges[index]);
             if (broken_offset) { // case invalid

@@ -1,1 +1,1 @@
-add_library(benchmark benchmark.cc)
+add_library(benchmark chore.cc benchmark.cc)

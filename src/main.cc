@@ -22,6 +22,11 @@ int main() {
 
 //    BasicRanges::build();
 
+//    Benchmark::basic_ranges(std::cout);
+//    std::cout << std::endl;
+    Benchmark::all_cases(std::cout);
+
+    std::cout << std::endl;
     Benchmark::basic_ranges(std::cout);
 
     return 0;

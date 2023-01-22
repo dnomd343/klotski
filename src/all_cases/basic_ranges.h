@@ -4,8 +4,6 @@
 #include <vector>
 #include <cstdint>
 
-const uint32_t BASIC_RANGES_SIZE = 7311921;
-
 class BasicRanges {
 public:
     enum Status {

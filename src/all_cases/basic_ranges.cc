@@ -3,6 +3,9 @@
 #include "common.h"
 #include "basic_ranges.h"
 
+const uint32_t BASIC_RANGES_SIZE = 7311921;
+
+/// static variable initialize
 std::mutex BasicRanges::building;
 bool BasicRanges::available = false;
 std::vector<uint32_t> BasicRanges::data;
@@ -63,8 +66,8 @@ void BasicRanges::generate(generate_t info) { // generate specific basic ranges
     constexpr auto MASK_10 = (uint32_t)0b10 << 30;
     constexpr auto MASK_11 = (uint32_t)0b11 << 30;
 
-    /// n4       n3       n2       n1
-    /// 00000000 00000000 00000000 00000000 (32-bits)
+    /// nx:  n4       n3       n2       n1
+    ///      00000000 00000000 00000000 00000000 (32-bits)
     struct build_t {
         uint32_t nx; // (n4, n3, n2, n1)
         uint32_t prefix;
@@ -78,7 +81,7 @@ void BasicRanges::generate(generate_t info) { // generate specific basic ranges
         .offset = 0,
     });
 
-    while (!cache.empty()) { // queue without elements -> work complete
+    while (!cache.empty()) { // queue without element -> work complete
         auto current = cache.front();
         if (!current.nx) { // both n1, n2, n3, n4 -> 0
             BasicRanges::data.emplace_back(current.prefix); // release prefix as basic range

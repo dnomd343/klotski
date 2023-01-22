@@ -5,13 +5,6 @@
 #include <cstdint>
 #include "basic_ranges.h"
 
-const uint32_t ALL_CASES_SIZE[16] = {
-    2942906, 2260392, 2942906, 0,
-    2322050, 1876945, 2322050, 0,
-    2322050, 1876945, 2322050, 0,
-    2942906, 2260392, 2942906, 0,
-};
-
 class AllCases : public BasicRanges {
 public:
     static void build();
