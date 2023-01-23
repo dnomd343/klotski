@@ -13,3 +13,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 add_compile_options(-fPIC)
 
 add_subdirectory(src)
+
+################################################
+
+enable_testing()
+add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
+include_directories(third_party/googletest/googletest/include)
+add_subdirectory(test)
+
+################################################
