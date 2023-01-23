@@ -1,19 +1,19 @@
 #include <iostream>
 
-#include "common.h"
-#include "all_cases.h"
-
-#include "raw_code.h"
-#include "short_code.h"
-#include "common_code.h"
-
-#include "core.h"
-#include "analyse.h"
-#include "fast_cal.h"
+//#include "utils/common.h"
+//#include "all_cases/all_cases.h"
+//
+//#include "raw_code/raw_code.h"
+//#include "short_code/short_code.h"
+//#include "common_code/common_code.h"
+//
+//#include "core/core.h"
+//#include "analyse/analyse.h"
+//#include "fast_cal/fast_cal.h"
 
 //#include "graph.h"
 
-//#include "benchmark.h"
+#include "benchmark.h"
 
 //#include <unistd.h>
 
@@ -21,39 +21,40 @@ int main() {
 
     std::cout << "start test" << std::endl;
 
-    std::cout << (uint32_t)Common::check_range(1, Common::range_reverse(0xA9BF0C00)) << std::endl;
+//    std::cout << (uint32_t)Common::check_range(1, Common::range_reverse(0xA9BF0C00)) << std::endl;
+//
+//    AllCases::build();
+//    for (const auto &a : AllCases::fetch()) {
+//        std::cout << a.size() << std::endl;
+//    }
+//
+//    std::cout << RawCode::from_common_code("1a9bf0c") << std::endl;
+//    std::cout << RawCode::create(0x0603EDF5CAFFF5E2) << std::endl;
+//
+//    std::cout << CommonCode::create(0x1A9BF0C00) << std::endl;
+//    std::cout << CommonCode::from_string("1a9bf0c") << std::endl;
+//    std::cout << CommonCode::from_short_code(4091296) << std::endl;
+//    std::cout << CommonCode::from_raw_code(0x0603EDF5CAFFF5E2) << std::endl;
+//
+//    std::cout << ShortCode::create(4091296) << std::endl;
+//    std::cout << ShortCode::from_string("4WVE1") << std::endl;
+//    std::cout << ShortCode::from_common_code(0x1A9BF0C00) << std::endl;
+//
+//    auto core = Core([](uint64_t code, uint64_t mask) {
+//        printf("new case -> code = %015lX | mask = %015lX\n", code, mask);
+//    });
+//    core.next_cases(RawCode::from_common_code("1a9bf0c").unwrap(), 0);
+//
+//    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
+//        std::cout << c << std::endl;
+//    }
+//
+//    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
+//    for (const auto &s : a.build_resolve()) {
+//        std::cout << s << std::endl;
+//    }
 
-    AllCases::build();
-    for (const auto &a : AllCases::fetch()) {
-        std::cout << a.size() << std::endl;
-    }
-
-    std::cout << RawCode::from_common_code("1a9bf0c") << std::endl;
-    std::cout << RawCode::create(0x0603EDF5CAFFF5E2) << std::endl;
-
-    std::cout << CommonCode::create(0x1A9BF0C00) << std::endl;
-    std::cout << CommonCode::from_string("1a9bf0c") << std::endl;
-    std::cout << CommonCode::from_short_code(4091296) << std::endl;
-    std::cout << CommonCode::from_raw_code(0x0603EDF5CAFFF5E2) << std::endl;
-
-    std::cout << ShortCode::create(4091296) << std::endl;
-    std::cout << ShortCode::from_string("4WVE1") << std::endl;
-    std::cout << ShortCode::from_common_code(0x1A9BF0C00) << std::endl;
-
-    auto core = Core([](uint64_t code, uint64_t mask) {
-        printf("new case -> code = %015lX | mask = %015lX\n", code, mask);
-    });
-    core.next_cases(RawCode::from_common_code("1a9bf0c").unwrap(), 0);
-
-    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
-        std::cout << c << std::endl;
-    }
-
-    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
-    for (const auto &s : a.build_resolve()) {
-        std::cout << s << std::endl;
-    }
-
+    Benchmark::basic_ranges(std::cout);
 
     std::cout << "end test" << std::endl;
 
