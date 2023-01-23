@@ -9,4 +9,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
+# TODO: only in libklotski.so
+add_compile_options(-fPIC)
+
 add_subdirectory(src)
