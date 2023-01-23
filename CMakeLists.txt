@@ -16,9 +16,8 @@ add_subdirectory(src)
 
 ################################################
 
-enable_testing()
-add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
 include_directories(third_party/googletest/googletest/include)
+add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
 add_subdirectory(test)
 
 ################################################
