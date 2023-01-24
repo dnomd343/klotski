@@ -3,14 +3,27 @@
 #include "all_cases.h"
 #include "gtest/gtest.h"
 
+/// basic ranges constants
 const uint32_t BASIC_RANGES_SIZE = 7311921;
 const char BASIC_RANGES_MD5[] = "6f385dc171e201089ff96bb010b47212";
 
+/// all cases constants
+const uint32_t ALL_CASES_SIZE[16] = {
+    2942906, 2260392, 2942906, 0,
+    2322050, 1876945, 2322050, 0,
+    2322050, 1876945, 2322050, 0,
+    2942906, 2260392, 2942906, 0,
+};
+const uint32_t ALL_CASES_SIZE_SUM = 29334498;
+const char ALL_CASES_MD5[] = "3888e9fab8d3cbb50908b12b147cfb23";
+
+/// basic ranges size check
 TEST(AllCases, basic_ranges_size) {
     auto &basic_ranges = BasicRanges::fetch();
     EXPECT_EQ(basic_ranges.size(), BASIC_RANGES_SIZE);
 }
 
+/// basic ranges data verify
 TEST(AllCases, basic_ranges_data) {
     auto *basic_ranges_data = new char[BASIC_RANGES_SIZE * 9];
     auto *current = basic_ranges_data;
@@ -20,4 +33,26 @@ TEST(AllCases, basic_ranges_data) {
     }
     auto basic_ranges_md5 = md5(basic_ranges_data, BASIC_RANGES_SIZE * 9);
     EXPECT_STREQ(basic_ranges_md5.c_str(), BASIC_RANGES_MD5);
+}
+
+/// all cases size check
+TEST(AllCases, all_cases_size) {
+    auto &all_cases = AllCases::fetch();
+    for (uint32_t head = 0; head < 16; ++head) {
+        EXPECT_EQ(all_cases[head].size(), ALL_CASES_SIZE[head]);
+    }
+}
+
+/// all cases data verify
+TEST(AllCases, all_cases_data) {
+    auto *all_cases_data = new char[ALL_CASES_SIZE_SUM * 10];
+    auto *current = all_cases_data;
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : AllCases::fetch()[head]) {
+            sprintf(current, "%09lX\n", head << 32 | range);
+            current += 10;
+        }
+    }
+    auto all_cases_md5 = md5(all_cases_data, ALL_CASES_SIZE_SUM * 10);
+    EXPECT_STREQ(all_cases_md5.c_str(), ALL_CASES_MD5);
 }
