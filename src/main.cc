@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "ffi/klotski.h"
+
 //#include "utils/common.h"
 //#include "all_cases/all_cases.h"
 //
@@ -13,13 +15,13 @@
 
 //#include "graph.h"
 
-#include "benchmark.h"
+//#include "benchmark.h"
 
 //#include <unistd.h>
 
 int main() {
 
-    std::cout << "start test" << std::endl;
+//    std::cout << "start test" << std::endl;
 
 //    std::cout << (uint32_t)Common::check_range(1, Common::range_reverse(0xA9BF0C00)) << std::endl;
 //
@@ -54,9 +56,15 @@ int main() {
 //        std::cout << s << std::endl;
 //    }
 
-    Benchmark::basic_ranges(std::cout);
+//    Benchmark::basic_ranges(std::cout);
 
-    std::cout << "end test" << std::endl;
+    auto start = clock();
+
+    _tmain();
+
+    std::cerr << (clock() - start) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+
+//    std::cout << "end test" << std::endl;
 
 //    BasicRanges::build();
 
