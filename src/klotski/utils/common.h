@@ -1,5 +1,16 @@
 #pragma once
 
+/// Klotski is an intellectual game, which fill a `5x4` chessboard with movable pieces
+/// (or called blocks), and a valid layout obeys the following three requirements:
+///
+///   1. There are four types of blocks, namely `2x2` `2x1` `1x2` `1x1`.
+///
+///   2. There should be at least two free slots (or called space).
+///
+///   3. `2x2` block must have and only one, `2x1` `1x2` `1x1` are not required in number.
+///
+/// After statistics, there are a total of 29334498 cases that meet the above requirements.
+
 #include <cstdint>
 
 /// 0b101 and 0b110 reserved
@@ -39,6 +50,10 @@
 #define F_1x1_D (uint64_t)0x7000 // 111 000 000 000 000
 #define F_2x1_R (uint64_t)0x38038 // 111 000 000 000 111 000
 #define F_1x2_D (uint64_t)0x3F000 // 111 111 000 000 000 000
+
+/// `range_reverse` flip a 32bit data every two bits
+///   00 01 10 11 ...  =>  ... 11 10 01 00
+///   (high 8-bits)           (low 8-bits)
 
 class Common {
 public:
