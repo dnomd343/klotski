@@ -1,10 +1,20 @@
-#include <iostream>
+/// WARN: c-style lib should not using `iostream`
+///       using `printf` for screen output in test process
+
+#include <cstdio>
+#include <cstdint>
+
 #include "klotski.h"
 
-#include "core.h"
+#include "common.h"
+//#include "core.h"
 
 void tmain() {
-    std::cout << "tmain start" << std::endl;
+    printf("tmain start\n");
+
+    uint64_t common_code = 0x1A9BC0C00;
+
+    Common::range_reverse(common_code);
 
 //    uint64_t raw_code = 0x0603EDF5CAFFF5E2;
 
@@ -16,4 +26,5 @@ void tmain() {
 //        core.next_cases(raw_code, 0);
 //    }
 
+    printf("tmain exit\n");
 }

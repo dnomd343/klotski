@@ -32,22 +32,22 @@ add_subdirectory(fast_cal)
 
 ################################################################
 
-add_library(klotski-core OBJECT ffi/codec.cc ffi/tmain.cc)
-
-target_link_libraries(klotski-core utils)
-target_link_libraries(klotski-core all_cases)
-
-target_link_libraries(klotski-core raw_code)
-target_link_libraries(klotski-core short_code)
-target_link_libraries(klotski-core common_code)
-
-target_link_libraries(klotski-core core)
-target_link_libraries(klotski-core analyse)
-target_link_libraries(klotski-core fast_cal)
+add_library(klotski-ffi OBJECT ffi/codec.cc ffi/tmain.cc)
 
 ################################################################
 
-#add_library(klotski SHARED $<TARGET_OBJECTS:klotski-core>)
-add_library(klotski STATIC $<TARGET_OBJECTS:klotski-core>)
+add_library(klotski SHARED $<TARGET_OBJECTS:klotski-ffi>)
+#add_library(klotski STATIC $<TARGET_OBJECTS:klotski-core>)
+
+target_link_libraries(klotski PRIVATE utils)
+target_link_libraries(klotski PRIVATE all_cases)
+
+target_link_libraries(klotski PRIVATE raw_code)
+target_link_libraries(klotski PRIVATE short_code)
+target_link_libraries(klotski PRIVATE common_code)
+
+target_link_libraries(klotski PRIVATE core)
+target_link_libraries(klotski PRIVATE analyse)
+target_link_libraries(klotski PRIVATE fast_cal)
 
 ################################################################

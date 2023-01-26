@@ -2,9 +2,10 @@
 #include "klotski.h"
 
 int main() {
-//    printf("interface test\n");
+    printf("cli boot\n");
 
     tmain();
 
+    printf("cli exit\n");
     return 0;
 }
