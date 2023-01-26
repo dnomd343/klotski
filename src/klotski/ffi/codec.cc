@@ -1,5 +1,4 @@
 #include "klotski.h"
-
 #include "short_code.h"
 
 void short_code_speed_up() {

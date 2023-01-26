@@ -1,5 +1,7 @@
 #include "benchmark.h"
 
+// TODO: remove std::cout output -> only return benchmark status
+
 /// colorful string
 std::string Benchmark::color_red(const std::string &str) {
     return std::string("\033[31m") + str + "\033[0m";

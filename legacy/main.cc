@@ -1,70 +1,197 @@
-#include <cstdio>
+#include <iostream>
 
-/*
+#include "ffi/klotski.h"
 
-  uint64_t -> 0000 + [xxx] * 20
+//#include "utils/common.h"
+//#include "all_cases/all_cases.h"
+//
+//#include "raw_code/raw_code.h"
+//#include "short_code/short_code.h"
+//#include "common_code/common_code.h"
+//
+//#include "core/core.h"
+//#include "analyse/analyse.h"
+//#include "fast_cal/fast_cal.h"
 
-  2x2  2x1  1x2  1x1
-  # #   #   # #  #
-  # #   #
+//#include "graph.h"
 
-  00 01 02 03
-  04 05 06 07
-  08 09 10 11
-  12 13 14 15
-  16 17 18 19
+//#include "benchmark.h"
 
-  x1 (%4) => 0 1 2 3
-  x3 (%4) => 0 3 2 1
-
-*/
-
-/*
-======================================================
-
- 1x1 -> 011 000 000 000 -> 0000 0000 0011 -> 0x3
-
- 1x2 -> 001 111 000 000 -> 0000 0011 1001 -> 0x39
-
- 2x1 -> 010 000 000 000 -> 0000 0000 0010 -> 0x7002
-        111 000 000 000 -> 0000 0000 0111
-
- 2x2 -> 100 111 000 000 -> 0000 0011 1100 -> 0x3F03C
-        111 111 000 000 -> 0000 0011 1111
-
-======================================================
-
- 1x1 -> 111 000 000 000 -> 0000 0000 0111 -> 0x7
-
- 1x2 -> 111 111 000 000 -> 0000 0011 1111 -> 0x3F
-
- 2x1 -> 111 000 000 000 -> 0000 0000 0111 -> 0x7007
-        111 000 000 000 -> 0000 0000 0111
-
- 2x2 -> 111 111 000 000 -> 0000 0011 1111 -> 0x3F03F
-        111 111 000 000 -> 0000 0011 1111
-
-======================================================
-*/
+//#include <unistd.h>
 
 int main() {
-    printf("Klotski engine\n");
 
-    // 0x4FEA13400
-    //  # # # @  |  011 011 011 010 => 0100 1101 1011 -> 4DB
-    //  * * & @  |  100 111 010 111 => 1110 1011 1100 -> EBC
-    //  * * & $  |  111 111 111 010 => 0101 1111 1111 -> 5FF
-    //  . + + $  |  000 001 111 111 => 1111 1100 1000 -> FC8
-    //  . # ~ ~  |  000 011 001 111 => 1110 0101 1000 -> E58
-    // 0x0E58FC85FFEBC4DB
+//    std::cout << "start test" << std::endl;
 
-    // 0x1A9BF0C00
-    //  @ * * @  |  010 100 111 010 => 0101 1110 0010 -> 5E2
-    //  @ * * @  |  111 111 111 111 => 1111 1111 1111 -> FFF
-    //  $ ~ ~ $  |  010 001 111 010 => 0101 1100 1010 -> 5CA
-    //  $ # # $  |  111 011 011 111 => 1110 1101 1111 -> EDF
-    //  # . . #  |  011 000 000 011 => 0110 0000 0011 -> 603
-    // 0x0603EDF5CAFFF5E2
+//    std::cout << (uint32_t)Common::check_range(1, Common::range_reverse(0xA9BF0C00)) << std::endl;
+//
+//    AllCases::build();
+//    for (const auto &a : AllCases::fetch()) {
+//        std::cout << a.size() << std::endl;
+//    }
+//
+//    std::cout << RawCode::from_common_code("1a9bf0c") << std::endl;
+//    std::cout << RawCode::create(0x0603EDF5CAFFF5E2) << std::endl;
+//
+//    std::cout << CommonCode::create(0x1A9BF0C00) << std::endl;
+//    std::cout << CommonCode::from_string("1a9bf0c") << std::endl;
+//    std::cout << CommonCode::from_short_code(4091296) << std::endl;
+//    std::cout << CommonCode::from_raw_code(0x0603EDF5CAFFF5E2) << std::endl;
+//
+//    std::cout << ShortCode::create(4091296) << std::endl;
+//    std::cout << ShortCode::from_string("4WVE1") << std::endl;
+//    std::cout << ShortCode::from_common_code(0x1A9BF0C00) << std::endl;
+//
+//    auto core = Core([](uint64_t code, uint64_t mask) {
+//        printf("new case -> code = %015lX | mask = %015lX\n", code, mask);
+//    });
+//    core.next_cases(RawCode::from_common_code("1a9bf0c").unwrap(), 0);
+//
+//    for (const auto &c : FastCal::resolve(RawCode::from_common_code("1a9bf0c"))) {
+//        std::cout << c << std::endl;
+//    }
+//
+//    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
+//    for (const auto &s : a.build_resolve()) {
+//        std::cout << s << std::endl;
+//    }
+
+//    Benchmark::basic_ranges(std::cout);
+
+    auto start = clock();
+
+    _tmain();
+
+    std::cerr << (clock() - start) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+
+//    std::cout << "end test" << std::endl;
+
+//    BasicRanges::build();
+
+//    Benchmark::basic_ranges(std::cout);
+//    std::cout << std::endl;
+//    Benchmark::all_cases(std::cout);
+
+//    std::cout << std::endl;
+//    Benchmark::basic_ranges(std::cout);
+
+    return 0;
+
+
+//    BasicRanges::build();
+//    AllCases::build();
+
+
+//    std::vector<RawCode> test_cases;
+//    {
+//        AllCases::build();
+//        std::vector<uint64_t> all_cases;
+//        for (uint64_t head = 0; head < 16; ++head) {
+//            for (const auto &range : AllCases::fetch()[head]) {
+//                all_cases.emplace_back(head << 32 | range);
+//            }
+//        }
+//        for (uint32_t i = 0; i < 100; ++i) {
+//            test_cases.emplace_back(
+//                RawCode::from_common_code(all_cases.at(i * 293344))
+//            );
+//        }
+//    }
+//    std::cout << "test size -> " << test_cases.size() << std::endl;
+
+
+//    std::cout << "wait 3s" << std::endl;
+//    sleep(3);
+
+//    std::cout << "start benchmark" << std::endl;
+//    auto start_time = clock();
+
+
+//    auto fc = FastCal(RawCode::from_common_code("1a9bf0c"));
+//    fc.solve();
+
+//    {
+//        auto fc = FastCal(RawCode::unsafe_create(0));
+//        for (auto code : test_cases) {
+//            fc.set_root(code);
+//            fc.solve();
+//        }
+//    }
+
+
+//    auto start_time = clock();
+
+//    auto a = Analyse(RawCode::from_common_code("1a9bf0c"));
+//    auto a = Analyse(RawCode::from_common_code("4fea134"));
+//    auto a = Analyse(RawCode::from_common_code("A5D3AF"));
+
+
+//    a.build();
+//    auto ret = a.build_until([](uint64_t code) {
+//        return ((code >> (3 * 0xD)) & 0b111) == B_2x2;
+//    });
+//    auto ret = a.build_resolve();
+//    for (const auto &r : ret) {
+//        std::cout << r << std::endl;
+//    }
+//    std::cout << ret.size() << std::endl;
+
+
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+
+
+//    start_time = clock();
+//    auto svg_ret = a.backtrack(ret);
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+
+
+//    auto g = Graph();
+//    auto svg_data = g.svg_demo(svg_ret);
+
+//    std::cout << svg_data << std::endl;
+
+
+//    std::cout << a.layer_export(81).size() << std::endl;
+//    std::cout << a.layer_export()[81].size() << std::endl;
+
+
+//    std::vector<uint64_t> raw_codes = {
+//        CommonCode(0xDAAF4CC00).to_raw_code().unwrap(),
+//        CommonCode(0xDAA7F3000).to_raw_code().unwrap(),
+//    };
+//    a.backtrack(raw_codes);
+
+//    std::vector<uint64_t> raw_codes = {
+//        CommonCode("DE77D80").to_raw_code().unwrap(),
+//        CommonCode("DF6DD80").to_raw_code().unwrap(),
+//        CommonCode("DF69730").to_raw_code().unwrap(),
+//        CommonCode("DE76D30").to_raw_code().unwrap(),
+//        CommonCode("D5AF730").to_raw_code().unwrap(),
+//        CommonCode("D5B43BC").to_raw_code().unwrap(),
+//    };
+//    std::vector<uint64_t> raw_codes = {
+//        CommonCode("EF697C0").to_raw_code().unwrap(),
+//    };
+    // TODO: FATAL ERROR -> don't using mask in Analyse
+//    a.backtrack(raw_codes);
+
+
+//    std::cout << ShortCode("EP4HZ") << std::endl;
+//    std::cout << ShortCode(14323231) << std::endl;
+
+//    std::cout << RawCode::from_common_code("4fea134") << std::endl;
+//    std::cout << CommonCode::from_raw_code(0xE58FC85FFEBC4DB) << std::endl;
+//    std::cout << ShortCode::from_common_code("4fea134") << std::endl;
+//    std::cout << CommonCode::from_short_code("AXCZN") << std::endl;
+
+
+//    std::cerr << (clock() - start_time) / CLOCKS_PER_SEC << "s" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+//    std::cerr << (clock() - start_time) * 1000000 / CLOCKS_PER_SEC << "us" << std::endl;
+
+//    std::cout << "complete benchmark" << std::endl;
+
+//    pause();
 
     return 0;
 }

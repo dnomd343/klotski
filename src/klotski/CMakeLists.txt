@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 
-################################################
+project(klotski-core LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 14)
+
+################################################################
 
 include_directories(utils)
 include_directories(all_cases)
@@ -13,7 +17,7 @@ include_directories(core)
 include_directories(analyse)
 include_directories(fast_cal)
 
-################################################
+################################################################
 
 add_subdirectory(utils)
 add_subdirectory(all_cases)
@@ -26,22 +30,24 @@ add_subdirectory(core)
 add_subdirectory(analyse)
 add_subdirectory(fast_cal)
 
-################################################
+################################################################
 
-#add_library(klotski STATIC klotski_ffi.cc)
-add_library(klotski SHARED ffi/klotski_ffi.cc ffi/tmain.cc)
+add_library(klotski-core OBJECT ffi/codec.cc ffi/tmain.cc)
 
-################################################
+target_link_libraries(klotski-core utils)
+target_link_libraries(klotski-core all_cases)
 
-target_link_libraries(klotski utils)
-target_link_libraries(klotski all_cases)
+target_link_libraries(klotski-core raw_code)
+target_link_libraries(klotski-core short_code)
+target_link_libraries(klotski-core common_code)
 
-target_link_libraries(klotski raw_code)
-target_link_libraries(klotski short_code)
-target_link_libraries(klotski common_code)
+target_link_libraries(klotski-core core)
+target_link_libraries(klotski-core analyse)
+target_link_libraries(klotski-core fast_cal)
 
-target_link_libraries(klotski core)
-target_link_libraries(klotski analyse)
-target_link_libraries(klotski fast_cal)
+################################################################
 
-################################################
+#add_library(klotski SHARED $<TARGET_OBJECTS:klotski-core>)
+add_library(klotski STATIC $<TARGET_OBJECTS:klotski-core>)
+
+################################################################
