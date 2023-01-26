@@ -9,6 +9,10 @@
 ///
 ///   3. `2x2` block must have and only one, `2x1` `1x2` `1x1` are not required in number.
 ///
+///  NOTE:  2x2   2x1   1x2   1x1
+///         # #    #    # #    #
+///         # #    #
+///
 /// After statistics, there are a total of 29334498 cases that meet the above requirements.
 
 #include <cstdint>
