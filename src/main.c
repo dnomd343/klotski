@@ -11,23 +11,24 @@ int main() {
 
     uint64_t raw_code;
     uint32_t short_code;
-    uint64_t common_code = 0x1A9BF0C00;
+//    uint64_t common_code = 0x1A9BF0C00;
+    uint64_t common_code = 0x4FEA13400;
 
-//    short_code_enable_fast();
-//
-//    if (!common_code_to_raw_code(common_code, &raw_code)) {
-//        printf("error\n");
-//    } else {
-//        printf("raw code -> %015lX\n", raw_code);
-//    }
-//
-//    if (!common_code_to_short_code(common_code, &short_code)) {
-//        printf("error\n");
-//    } else {
-//        printf("short code -> %d\n", short_code);
-//    }
+    short_code_enable_fast();
 
-    char common_code_str[10];
+    if (!common_code_to_raw_code(common_code, &raw_code)) {
+        printf("error\n");
+    } else {
+        printf("raw code -> %015lX\n", raw_code);
+    }
+
+    if (!common_code_to_short_code(common_code, &short_code)) {
+        printf("error\n");
+    } else {
+        printf("short code -> %d\n", short_code);
+    }
+
+    char common_code_str[common_code_string_size];
     if (!common_code_to_string(common_code, common_code_str)) {
         printf("error\n");
     } else {
@@ -42,6 +43,18 @@ int main() {
         printf("error\n");
     } else {
         printf("common code -> %09lX\n", common_code);
+    }
+
+    char short_code_str[short_code_string_size];
+    if (!short_code_to_string(short_code, short_code_str)) {
+        printf("error\n");
+    } else {
+        printf("string -> %s\n", short_code_str);
+    }
+    if (!short_code_from_string(short_code_str, &short_code)) {
+        printf("error\n");
+    } else {
+        printf("short code -> %d\n", short_code);
     }
 
 //    printf("cli exit\n");

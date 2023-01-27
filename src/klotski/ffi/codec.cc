@@ -106,6 +106,30 @@ bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+const uint32_t short_code_string_size = 6;
+
+bool short_code_to_string(uint32_t short_code, char short_code_str[]) {
+    if (!ShortCode::check(short_code)) {
+        return false;
+    }
+    std::string str = ShortCode::unsafe_create(short_code).to_string();
+    strcpy(short_code_str, str.c_str());
+    return true;
+}
+
+bool short_code_from_string(const char short_code_str[], uint32_t *short_code) {
+    try {
+        *short_code = ShortCode::from_string(short_code_str).unwrap();
+    } catch (...) {
+        return false;
+    }
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+const uint32_t common_code_string_size = 10;
+
 bool common_code_to_string(uint64_t common_code, char common_code_str[]) {
     if (!CommonCode::check(common_code)) {
         return false;
