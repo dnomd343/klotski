@@ -40,8 +40,8 @@ namespace klotski {
         static bool check(uint32_t short_code);
 
         /// Operators of ShortCode
-        constexpr operator uint32_t() const { return code; }
         bool operator==(const ShortCode &short_code) const;
+        constexpr explicit operator uint32_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
         /// Export functions

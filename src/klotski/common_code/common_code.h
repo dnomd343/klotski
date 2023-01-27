@@ -68,8 +68,8 @@ namespace klotski {
         static bool check(uint64_t common_code);
 
         /// Operators of CommonCode
-        constexpr operator uint64_t() const { return code; }
         bool operator==(const CommonCode &common_code) const;
+        constexpr explicit operator uint64_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const CommonCode &self);
 
         /// Export functions
