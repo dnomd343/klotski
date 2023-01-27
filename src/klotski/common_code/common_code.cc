@@ -2,6 +2,8 @@
 #include "common.h"
 #include "common_code.h"
 
+using namespace klotski;
+
 uint64_t CommonCode::unwrap() const {
     return code; // raw uint64_t code
 }

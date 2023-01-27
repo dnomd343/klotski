@@ -3,7 +3,7 @@
 #include "common.h"
 #include "basic_ranges.h"
 
-const uint32_t BASIC_RANGES_SIZE = 7311921;
+using namespace klotski;
 
 /// static variable initialize
 std::mutex BasicRanges::building;

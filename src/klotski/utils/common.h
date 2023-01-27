@@ -59,8 +59,10 @@
 ///   00 01 10 11 ...  =>  ... 11 10 01 00
 ///   (high 8-bits)           (low 8-bits)
 
-class Common {
-public:
-    static uint32_t range_reverse(uint32_t bin);
-    static uint8_t check_range(uint32_t head, uint32_t range);
-};
+namespace klotski {
+    class Common {
+    public:
+        static uint32_t range_reverse(uint32_t bin);
+        static uint8_t check_range(uint32_t head, uint32_t range);
+    };
+}

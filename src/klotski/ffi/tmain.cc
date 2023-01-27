@@ -14,7 +14,7 @@ void tmain() {
 
     uint64_t common_code = 0x1A9BC0C00;
 
-    Common::range_reverse(common_code);
+    klotski::Common::range_reverse(common_code);
 
 //    uint64_t raw_code = 0x0603EDF5CAFFF5E2;
 

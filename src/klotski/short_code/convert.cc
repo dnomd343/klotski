@@ -6,6 +6,8 @@
 #include "basic_ranges_offset.h"
 #include "range_prefix_offset.h"
 
+using namespace klotski;
+
 /// ShortCode to CommonCode
 CommonCode ShortCode::to_common_code() const { // convert to common code
     if (ShortCode::mode() == ShortCode::NORMAL) {

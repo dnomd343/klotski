@@ -1,6 +1,8 @@
 #include "all_cases.h"
 #include "short_code.h"
 
+using namespace klotski;
+
 uint32_t ShortCode::unwrap() const {
     return code; // raw uint32_t code
 }

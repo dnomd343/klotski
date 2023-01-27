@@ -2,6 +2,8 @@
 #include "common.h"
 #include "raw_code.h"
 
+using namespace klotski;
+
 /// RawCode to CommonCode
 CommonCode RawCode::to_common_code() const {
     if (!RawCode::check(code)) {

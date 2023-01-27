@@ -1,12 +1,7 @@
 #include "common.h"
 #include "all_cases.h"
 
-const uint32_t ALL_CASES_SIZE[16] = {
-    2942906, 2260392, 2942906, 0,
-    2322050, 1876945, 2322050, 0,
-    2322050, 1876945, 2322050, 0,
-    2942906, 2260392, 2942906, 0,
-};
+using namespace klotski;
 
 /// static variable initialize
 std::mutex AllCases::building;
