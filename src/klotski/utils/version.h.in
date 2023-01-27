@@ -1,0 +1,5 @@
+#pragma once
+
+#define VERSION_MAJOR @klotski-core_VERSION_MAJOR@
+#define VERSION_MINOR @klotski-core_VERSION_MINOR@
+#define VERSION_PATCH @klotski-core_VERSION_PATCH@

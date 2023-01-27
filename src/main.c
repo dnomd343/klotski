@@ -57,6 +57,8 @@ int main() {
         printf("short code -> %d\n", short_code);
     }
 
+    printf("version -> %d.%d.%d\n", get_version_major(), get_version_minor(), get_version_patch());
+
 //    printf("cli exit\n");
     return 0;
 }

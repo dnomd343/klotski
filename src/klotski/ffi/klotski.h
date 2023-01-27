@@ -17,6 +17,23 @@ extern "C" {
 }
 #endif
 
+/// --------------------------------- klotski version info ----------------------------------
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+//    extern char* get_author();
+//    extern char* get_project_url();
+//    extern char* get_compile_time();
+
+    /// version -> major.minor.patch
+    extern int get_version_major();
+    extern int get_version_minor();
+    extern int get_version_patch();
+#ifdef __cplusplus
+}
+#endif
+
 /// -------------------------------- klotski codec interface --------------------------------
 
 #ifdef __cplusplus

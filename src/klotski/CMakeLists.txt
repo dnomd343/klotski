@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(klotski-core LANGUAGES CXX)
+project(klotski-core VERSION 0.0.1 LANGUAGES CXX)
+
+configure_file(utils/version.h.in ${PROJECT_SOURCE_DIR}/utils/version.h)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -36,10 +38,16 @@ add_subdirectory(benchmark)
 
 ################################################################
 
-add_library(klotski-ffi OBJECT ffi/codec.cc ffi/tmain.cc)
+set(FFI_SRC codec.cc tmain.cc version.cc)
+list(TRANSFORM FFI_SRC PREPEND "ffi/")
+add_library(klotski-ffi OBJECT ${FFI_SRC})
 
-add_library(klotski SHARED $<TARGET_OBJECTS:klotski-ffi>)
-#add_library(klotski STATIC $<TARGET_OBJECTS:klotski-core>)
+option(SHARED_LIB "build static library" ON)
+if (SHARED_LIB)
+    add_library(klotski SHARED $<TARGET_OBJECTS:klotski-ffi>)
+else()
+    add_library(klotski STATIC $<TARGET_OBJECTS:klotski-ffi>)
+endif()
 
 ################################################################
 
