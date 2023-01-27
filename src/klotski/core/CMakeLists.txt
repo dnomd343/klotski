@@ -1,3 +1,3 @@
 cmake_minimum_required(VERSION 3.0)
 
-add_library(core STATIC core.cc)
+add_library(core OBJECT core.cc)

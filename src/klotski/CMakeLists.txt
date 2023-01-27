@@ -2,7 +2,10 @@ cmake_minimum_required(VERSION 3.0)
 
 project(klotski-core VERSION 0.0.1 LANGUAGES CXX)
 
-configure_file(utils/version.h.in ${PROJECT_SOURCE_DIR}/utils/version.h)
+configure_file(
+    utils/version.h.in
+    ${PROJECT_SOURCE_DIR}/utils/version.h
+)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -42,26 +45,28 @@ set(FFI_SRC codec.cc tmain.cc version.cc)
 list(TRANSFORM FFI_SRC PREPEND "ffi/")
 add_library(klotski-ffi OBJECT ${FFI_SRC})
 
-option(SHARED_LIB "build static library" ON)
-if (SHARED_LIB)
-    add_library(klotski SHARED $<TARGET_OBJECTS:klotski-ffi>)
-else()
-    add_library(klotski STATIC $<TARGET_OBJECTS:klotski-ffi>)
-endif()
+set(OBJS $<TARGET_OBJECTS:klotski-ffi>)
+
+list(APPEND OBJS $<TARGET_OBJECTS:utils>)
+list(APPEND OBJS $<TARGET_OBJECTS:all_cases>)
+
+list(APPEND OBJS $<TARGET_OBJECTS:raw_code>)
+list(APPEND OBJS $<TARGET_OBJECTS:short_code>)
+list(APPEND OBJS $<TARGET_OBJECTS:common_code>)
+
+list(APPEND OBJS $<TARGET_OBJECTS:core>)
+list(APPEND OBJS $<TARGET_OBJECTS:analyse>)
+list(APPEND OBJS $<TARGET_OBJECTS:fast_cal>)
+
+list(APPEND OBJS $<TARGET_OBJECTS:benchmark>)
 
 ################################################################
 
-target_link_libraries(klotski PRIVATE utils)
-target_link_libraries(klotski PRIVATE all_cases)
-
-target_link_libraries(klotski PRIVATE raw_code)
-target_link_libraries(klotski PRIVATE short_code)
-target_link_libraries(klotski PRIVATE common_code)
-
-target_link_libraries(klotski PRIVATE core)
-target_link_libraries(klotski PRIVATE analyse)
-target_link_libraries(klotski PRIVATE fast_cal)
-
-target_link_libraries(klotski PRIVATE benchmark)
+option(STATIC_LIB "build static library" ON)
+if (STATIC_LIB)
+    add_library(klotski STATIC ${OBJS})
+else()
+    add_library(klotski SHARED ${OBJS})
+endif()
 
 ################################################################

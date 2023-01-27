@@ -7,4 +7,4 @@ include_directories(klotski/ffi)
 add_subdirectory(klotski)
 
 add_executable(cli main.c)
-target_link_libraries(cli PUBLIC klotski)
+target_link_libraries(cli PRIVATE klotski)
