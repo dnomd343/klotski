@@ -21,12 +21,24 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-    extern bool raw_code_check(uint64_t code);
-    extern bool short_code_check(uint32_t code);
-    extern bool common_code_check(uint64_t code);
+    extern void short_code_enable();
+    extern void short_code_enable_fast();
+    extern bool is_short_code_available();
+    extern bool is_short_code_available_fast();
 
-    extern void short_code_speed_up();
-    extern void short_code_speed_up_fast();
+    extern bool raw_code_check(uint64_t raw_code);
+    extern bool short_code_check(uint32_t short_code);
+    extern bool common_code_check(uint64_t common_code);
+
+    // TODO: string code convert
+
+    extern bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code);
+    extern bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code);
+    extern bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code);
+    extern bool common_code_to_raw_code(uint64_t common_code, uint64_t *raw_code);
+    extern bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code);
+    extern bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code);
+
 #ifdef __cplusplus
 }
 #endif
