@@ -5,7 +5,7 @@
 #include <cstdint>
 
 namespace klotski {
-    /// basic ranges count
+    /// basic ranges count -> memory pre-allocated
     const uint32_t BASIC_RANGES_SIZE = 7311921;
 
     class BasicRanges {

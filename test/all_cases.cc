@@ -3,17 +3,19 @@
 #include "all_cases.h"
 #include "gtest/gtest.h"
 
+using namespace klotski;
+
 /// basic ranges constants
-const uint32_t BASIC_RANGES_SIZE = 7311921;
+//const uint32_t BASIC_RANGES_SIZE = 7311921;
 const char BASIC_RANGES_MD5[] = "6f385dc171e201089ff96bb010b47212";
 
 /// all cases constants
-const uint32_t ALL_CASES_SIZE[16] = {
-    2942906, 2260392, 2942906, 0,
-    2322050, 1876945, 2322050, 0,
-    2322050, 1876945, 2322050, 0,
-    2942906, 2260392, 2942906, 0,
-};
+//const uint32_t ALL_CASES_SIZE[16] = {
+//    2942906, 2260392, 2942906, 0,
+//    2322050, 1876945, 2322050, 0,
+//    2322050, 1876945, 2322050, 0,
+//    2942906, 2260392, 2942906, 0,
+//};
 const uint32_t ALL_CASES_SIZE_SUM = 29334498;
 const char ALL_CASES_MD5[] = "3888e9fab8d3cbb50908b12b147cfb23";
 
