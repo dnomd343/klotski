@@ -1,5 +1,9 @@
 #include "common_code.h"
 
+using klotski::RawCode;
+using klotski::ShortCode;
+using klotski::CommonCode;
+
 /// CommonCode to RawCode
 RawCode CommonCode::to_raw_code() const {
     return RawCode(*this); // convert to raw code

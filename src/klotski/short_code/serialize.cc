@@ -2,6 +2,8 @@
 #include "short_code.h"
 #include "serialize_chars.h"
 
+using klotski::ShortCode;
+
 ShortCode ShortCode::from_string(const std::string &short_code) {
     return ShortCode(short_code); // convert from string
 }

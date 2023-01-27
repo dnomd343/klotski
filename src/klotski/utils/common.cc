@@ -1,6 +1,6 @@
 #include "common.h"
 
-using namespace klotski;
+using klotski::Common;
 
 uint32_t Common::range_reverse(uint32_t bin) { // reverse binary every 2-bits
     bin = ((bin << 16) & 0xFFFF0000) | ((bin >> 16) & 0x0000FFFF);

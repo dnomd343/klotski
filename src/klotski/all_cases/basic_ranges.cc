@@ -3,7 +3,7 @@
 #include "common.h"
 #include "basic_ranges.h"
 
-using namespace klotski;
+using klotski::BasicRanges;
 
 /// static variable initialize
 std::mutex BasicRanges::building;

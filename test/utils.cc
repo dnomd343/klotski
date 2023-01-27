@@ -2,7 +2,7 @@
 #include "common.h"
 #include "gtest/gtest.h"
 
-using namespace klotski;
+using klotski::Common;
 
 TEST(Utils, range_reverse) {
     EXPECT_EQ(Common::range_reverse((uint32_t)0x00000003), (uint32_t)0xC0000000);

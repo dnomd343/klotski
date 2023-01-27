@@ -1,5 +1,7 @@
 #include "common_code.h"
 
+using klotski::CommonCode;
+
 inline uint8_t binary_count(uint32_t bin) { // get number of non-zero bits
     bin -= (bin >> 1) & 0x55555555;
     bin = (bin & 0x33333333) + ((bin >> 2) & 0x33333333);

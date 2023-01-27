@@ -2,7 +2,8 @@
 #include "common.h"
 #include "raw_code.h"
 
-using namespace klotski;
+using klotski::RawCode;
+using klotski::CommonCode;
 
 /// RawCode to CommonCode
 CommonCode RawCode::to_common_code() const {

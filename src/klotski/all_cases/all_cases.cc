@@ -1,7 +1,7 @@
 #include "common.h"
 #include "all_cases.h"
 
-using namespace klotski;
+using klotski::AllCases;
 
 /// static variable initialize
 std::mutex AllCases::building;

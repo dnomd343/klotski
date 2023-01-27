@@ -1,7 +1,7 @@
 #include "all_cases.h"
 #include "short_code.h"
 
-using namespace klotski;
+using klotski::ShortCode;
 
 uint32_t ShortCode::unwrap() const {
     return code; // raw uint32_t code
@@ -30,9 +30,11 @@ bool ShortCode::operator==(const ShortCode &short_code) const {
     return this->code == short_code.code;
 }
 
-std::ostream& operator<<(std::ostream &out, const ShortCode &self) {
-    out << self.to_string() << "(" << self.code << ")"; // short code info
-    return out;
+namespace klotski {
+    std::ostream &operator<<(std::ostream &out, const ShortCode &self) {
+        out << self.to_string() << "(" << self.code << ")"; // short code info
+        return out;
+    }
 }
 
 bool ShortCode::fast_mode_available = false;

@@ -11,6 +11,9 @@
 // TODO: try double or 4-times size
 const uint32_t ANY_MAP_RESERVE = 65536;
 
+// TODO: Analyse enter klotski namespace later
+using namespace klotski;
+
 class Analyse {
 public:
     typedef std::function<bool(uint64_t)> match_t;

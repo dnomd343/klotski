@@ -8,6 +8,9 @@
 #include "core.h"
 #include "raw_code.h"
 
+// TODO: FastCal enter klotski namespace later
+using namespace klotski;
+
 // TODO: using prime number
 const uint32_t FC_MAP_RESERVE = 65536 * 8;
 

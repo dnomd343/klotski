@@ -2,7 +2,7 @@
 #include "common.h"
 #include "common_code.h"
 
-using namespace klotski;
+using klotski::CommonCode;
 
 uint64_t CommonCode::unwrap() const {
     return code; // raw uint64_t code
@@ -33,11 +33,13 @@ bool CommonCode::operator==(const CommonCode &common_code) const {
     return this->code == common_code.code;
 }
 
-std::ostream& operator<<(std::ostream &out, const CommonCode &self) {
-    char str[10];
-    sprintf(str, "%09lX", self.code);
-    out << str;
-    return out;
+namespace klotski {
+    std::ostream &operator<<(std::ostream &out, const CommonCode &self) {
+        char str[10];
+        sprintf(str, "%09lX", self.code);
+        out << str;
+        return out;
+    }
 }
 
 bool CommonCode::check(uint64_t common_code) { // whether common code is valid

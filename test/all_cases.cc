@@ -3,7 +3,10 @@
 #include "all_cases.h"
 #include "gtest/gtest.h"
 
-using namespace klotski;
+using klotski::AllCases;
+using klotski::BasicRanges;
+using klotski::ALL_CASES_SIZE;
+using klotski::BASIC_RANGES_SIZE;
 
 /// basic ranges constants
 const char BASIC_RANGES_MD5[] = "6f385dc171e201089ff96bb010b47212";

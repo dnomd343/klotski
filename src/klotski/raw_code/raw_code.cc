@@ -2,6 +2,8 @@
 #include "common.h"
 #include "raw_code.h"
 
+using klotski::RawCode;
+
 uint64_t RawCode::unwrap() const {
     return code; // raw uint64_t code
 }
@@ -31,19 +33,21 @@ bool RawCode::operator==(const RawCode &raw_code) const {
     return this->code == raw_code.code;
 }
 
-std::ostream& operator<<(std::ostream &out, const RawCode &self) {
-    char code[16];
-    char dump_map[] = {
-    /// 0x0  1x2  2x1  1x1  2x2  b101 b110 fill
-        '.', '~', '|', '*', '@', '?', '?', '+'
-    };
-    sprintf(code, "%015lX", self.code); // code length -> 15
-    out << code << '\n';
-    for (int addr = 0; addr < 60; addr += 3) {
-        out << dump_map[(self.code >> addr) & 0b111];
-        out << " " << &"\n"[(addr & 0b11) != 0b01];
+namespace klotski {
+    std::ostream &operator<<(std::ostream &out, const RawCode &self) {
+        char code[16];
+        char dump_map[] = {
+                /// 0x0  1x2  2x1  1x1  2x2  b101 b110 fill
+                '.', '~', '|', '*', '@', '?', '?', '+'
+        };
+        sprintf(code, "%015lX", self.code); // code length -> 15
+        out << code << '\n';
+        for (int addr = 0; addr < 60; addr += 3) {
+            out << dump_map[(self.code >> addr) & 0b111];
+            out << " " << &"\n"[(addr & 0b11) != 0b01];
+        }
+        return out;
     }
-    return out;
 }
 
 bool RawCode::check(uint64_t raw_code) { // check whether raw code is valid
