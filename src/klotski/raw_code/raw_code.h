@@ -45,17 +45,17 @@ namespace klotski {
 
     class RawCode {
     public:
-        bool valid() const;
+        inline bool valid() const;
         static bool check(uint64_t raw_code);
 
         /// Operators of RawCode
         bool operator==(const RawCode &raw_code) const;
-        explicit operator uint64_t() const { return code; }
+        constexpr operator uint64_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const RawCode &self);
 
         /// Export functions
-        uint64_t unwrap() const;
         CommonCode to_common_code() const;
+        constexpr uint64_t unwrap() const { return code; }
 
         /// RawCode constructors
         explicit RawCode(uint64_t raw_code);

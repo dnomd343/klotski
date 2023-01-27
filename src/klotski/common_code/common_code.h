@@ -13,19 +13,19 @@ namespace klotski {
 
     class CommonCode {
     public:
-        bool valid() const;
+        inline bool valid() const;
         static bool check(uint64_t common_code);
 
         /// Operators of CommonCode
-        explicit operator uint64_t() const { return code; }
+        constexpr operator uint64_t() const { return code; }
         bool operator==(const CommonCode &common_code) const;
         friend std::ostream& operator<<(std::ostream &out, const CommonCode &self);
 
         /// Export functions
-        uint64_t unwrap() const;
         RawCode to_raw_code() const;
         ShortCode to_short_code() const;
         std::string to_string(bool shorten = false) const;
+        constexpr uint64_t unwrap() const { return code; }
 
         /// CommonCode constructors
         explicit CommonCode(uint64_t common_code);

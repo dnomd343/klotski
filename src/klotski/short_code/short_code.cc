@@ -1,41 +1,61 @@
 #include "all_cases.h"
 #include "short_code.h"
 
-using klotski::ShortCode;
+namespace std {
+    template<>
+    struct hash<klotski::ShortCode> {
+        std::size_t operator()(const klotski::ShortCode &c) const {
+            return std::hash<uint64_t>()(c.unwrap());
+        }
+    };
 
-uint32_t ShortCode::unwrap() const {
-    return code; // raw uint32_t code
-}
-
-bool ShortCode::valid() const {
-    return ShortCode::check(code);
-}
-
-ShortCode ShortCode::create(uint32_t short_code) {
-    return ShortCode(short_code);
-}
-
-ShortCode::ShortCode(uint32_t short_code) {
-    if (!ShortCode::check(short_code)) { // check input short code
-        throw std::invalid_argument("invalid short code");
-    }
-    code = short_code;
-}
-
-bool ShortCode::check(uint32_t short_code) {
-    return short_code < SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
-}
-
-bool ShortCode::operator==(const ShortCode &short_code) const {
-    return this->code == short_code.code;
+    template<>
+    struct equal_to<klotski::ShortCode> {
+        bool operator()(const klotski::ShortCode &c1, const klotski::ShortCode &c2) const {
+            return c1.unwrap() == c2.unwrap();
+        }
+    };
 }
 
 namespace klotski {
+    bool ShortCode::operator==(const ShortCode &short_code) const {
+        return this->code == short_code.code;
+    }
+
     std::ostream &operator<<(std::ostream &out, const ShortCode &self) {
         out << self.to_string() << "(" << self.code << ")"; // short code info
         return out;
     }
 }
+
+namespace klotski {
+    bool ShortCode::valid() const {
+        return ShortCode::check(code);
+    }
+
+    ShortCode ShortCode::create(uint32_t short_code) {
+        return ShortCode(short_code);
+    }
+
+    ShortCode ShortCode::unsafe_create(uint32_t short_code) { // create without check
+        auto tmp = ShortCode(); // init directly
+        tmp.code = short_code;
+        return tmp;
+    }
+
+    ShortCode::ShortCode(uint32_t short_code) {
+        if (!ShortCode::check(short_code)) { // check input short code
+            throw std::invalid_argument("invalid short code");
+        }
+        code = short_code;
+    }
+}
+
+bool klotski::ShortCode::check(uint32_t short_code) {
+    return short_code < SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
+}
+
+using klotski::ShortCode;
 
 bool ShortCode::fast_mode_available = false;
 bool ShortCode::normal_mode_available = false;

@@ -13,19 +13,19 @@ namespace klotski {
     public:
         enum Mode {NORMAL, FAST};
 
-        bool valid() const;
+        inline bool valid() const;
         static void speed_up(enum Mode mode);
         static bool check(uint32_t short_code);
 
         /// Operators of ShortCode
-        explicit operator uint32_t() const { return code; }
+        constexpr operator uint32_t() const { return code; }
         bool operator==(const ShortCode &short_code) const;
         friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
         /// Export functions
-        uint32_t unwrap() const;
         std::string to_string() const;
         CommonCode to_common_code() const;
+        constexpr uint32_t unwrap() const { return code; }
 
         /// ShortCode constructors
         explicit ShortCode(uint32_t short_code);
@@ -38,6 +38,7 @@ namespace klotski {
 
         /// Rust-style initialization
         static ShortCode create(uint32_t short_code);
+        static ShortCode unsafe_create(uint32_t short_code);
         static ShortCode from_string(const std::string &short_code);
 
         static ShortCode from_common_code(uint64_t common_code);
@@ -50,6 +51,7 @@ namespace klotski {
         static bool normal_mode_available;
         static const uint32_t SHORT_CODE_LIMIT = 29334498;
 
+        ShortCode() = default; // unsafe initialize
         static enum Mode mode();
         static uint64_t fast_decode(uint32_t short_code);
         static uint32_t fast_encode(uint64_t common_code);

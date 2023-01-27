@@ -2,39 +2,28 @@
 #include "common.h"
 #include "common_code.h"
 
-using klotski::CommonCode;
+namespace std {
+    template<>
+    struct hash<klotski::CommonCode> {
+        std::size_t operator()(const klotski::CommonCode &c) const {
+            return std::hash<uint64_t>()(c.unwrap());
+        }
+    };
 
-uint64_t CommonCode::unwrap() const {
-    return code; // raw uint64_t code
-}
-
-bool CommonCode::valid() const {
-    return CommonCode::check(code);
-}
-
-CommonCode CommonCode::create(uint64_t common_code) {
-    return CommonCode(common_code); // create from uint64_t
-}
-
-CommonCode CommonCode::unsafe_create(uint64_t common_code) { // create without check
-    auto common = CommonCode(); // init directly
-    common.code = common_code;
-    return common;
-}
-
-CommonCode::CommonCode(uint64_t common_code) {
-    if (!CommonCode::check(common_code)) { // check input common code
-        throw std::invalid_argument("invalid common code");
-    }
-    code = common_code;
-}
-
-bool CommonCode::operator==(const CommonCode &common_code) const {
-    return this->code == common_code.code;
+    template<>
+    struct equal_to<klotski::CommonCode> {
+        bool operator()(const klotski::CommonCode &c1, const klotski::CommonCode &c2) const {
+            return c1.unwrap() == c2.unwrap();
+        }
+    };
 }
 
 namespace klotski {
-    std::ostream &operator<<(std::ostream &out, const CommonCode &self) {
+    bool CommonCode::operator==(const CommonCode &common_code) const {
+        return this->code == common_code.code;
+    }
+
+    std::ostream& operator<<(std::ostream &out, const CommonCode &self) {
         char str[10];
         sprintf(str, "%09lX", self.code);
         out << str;
@@ -42,7 +31,30 @@ namespace klotski {
     }
 }
 
-bool CommonCode::check(uint64_t common_code) { // whether common code is valid
+namespace klotski {
+    bool CommonCode::valid() const {
+        return CommonCode::check(code);
+    }
+
+    CommonCode CommonCode::create(uint64_t common_code) {
+        return CommonCode(common_code); // create from uint64_t
+    }
+
+    CommonCode CommonCode::unsafe_create(uint64_t common_code) { // create without check
+        auto tmp = CommonCode(); // init directly
+        tmp.code = common_code;
+        return tmp;
+    }
+
+    CommonCode::CommonCode(uint64_t common_code) {
+        if (!CommonCode::check(common_code)) { // check input common code
+            throw std::invalid_argument("invalid common code");
+        }
+        code = common_code;
+    }
+}
+
+bool klotski::CommonCode::check(uint64_t common_code) { // whether common code is valid
     ///   M_1x1     M_1x2     M_2x1     M_2x2
     ///  1 0 0 0   1 1 0 0   1 0 0 0   1 1 0 0
     ///  0 0 0 0   0 0 0 0   1 0 0 0   1 1 0 0

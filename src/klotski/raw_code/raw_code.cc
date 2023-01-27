@@ -2,43 +2,32 @@
 #include "common.h"
 #include "raw_code.h"
 
-using klotski::RawCode;
+namespace std {
+    template<>
+    struct hash<klotski::RawCode> {
+        std::size_t operator()(const klotski::RawCode &c) const {
+            return std::hash<uint64_t>()(c.unwrap());
+        }
+    };
 
-uint64_t RawCode::unwrap() const {
-    return code; // raw uint64_t code
-}
-
-bool RawCode::valid() const {
-    return RawCode::check(code);
-}
-
-RawCode RawCode::create(uint64_t raw_code) {
-    return RawCode(raw_code);
-}
-
-RawCode RawCode::unsafe_create(uint64_t raw_code) { // create without check
-    auto raw = RawCode(); // init directly
-    raw.code = raw_code;
-    return raw;
-}
-
-RawCode::RawCode(uint64_t raw_code) {
-    if (!RawCode::check(raw_code)) { // check input raw code
-        throw std::invalid_argument("invalid raw code");
-    }
-    code = raw_code;
-}
-
-bool RawCode::operator==(const RawCode &raw_code) const {
-    return this->code == raw_code.code;
+    template<>
+    struct equal_to<klotski::RawCode> {
+        bool operator()(const klotski::RawCode &c1, const klotski::RawCode &c2) const {
+            return c1.unwrap() == c2.unwrap();
+        }
+    };
 }
 
 namespace klotski {
-    std::ostream &operator<<(std::ostream &out, const RawCode &self) {
+    bool RawCode::operator==(const RawCode &raw_code) const {
+        return this->code == raw_code.code;
+    }
+
+    std::ostream& operator<<(std::ostream &out, const RawCode &self) {
         char code[16];
         char dump_map[] = {
-                /// 0x0  1x2  2x1  1x1  2x2  b101 b110 fill
-                '.', '~', '|', '*', '@', '?', '?', '+'
+            /// 0x0  1x2  2x1  1x1  2x2  b101 b110 fill
+            '.', '~', '|', '*', '@', '?', '?', '+'
         };
         sprintf(code, "%015lX", self.code); // code length -> 15
         out << code << '\n';
@@ -50,7 +39,30 @@ namespace klotski {
     }
 }
 
-bool RawCode::check(uint64_t raw_code) { // check whether raw code is valid
+namespace klotski {
+    bool RawCode::valid() const {
+        return RawCode::check(code);
+    }
+
+    RawCode RawCode::create(uint64_t raw_code) {
+        return RawCode(raw_code);
+    }
+
+    RawCode RawCode::unsafe_create(uint64_t raw_code) { // create without check
+        auto tmp = RawCode(); // init directly
+        tmp.code = raw_code;
+        return tmp;
+    }
+
+    RawCode::RawCode(uint64_t raw_code) {
+        if (!RawCode::check(raw_code)) { // check input raw code
+            throw std::invalid_argument("invalid raw code");
+        }
+        code = raw_code;
+    }
+}
+
+bool klotski::RawCode::check(uint64_t raw_code) { // check whether raw code is valid
     ///     MASK_1x2          MASK_2x1         MASK_2x2
     ///  000 100 000 000   000 000 000 000  000 100 000 000
     ///  000 000 000 000   100 000 000 000  100 100 000 000
