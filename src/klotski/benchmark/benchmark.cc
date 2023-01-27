@@ -1,36 +1,23 @@
 #include "benchmark.h"
 #include "all_cases.h"
 
-const char line[] = "------------------------";
+using namespace klotski;
 
-void Benchmark::basic_ranges(std::ostream &out) {
-    out << line << std::endl;
-    out << "Basic Ranges Benchmark" << std::endl;
+float Benchmark::basic_ranges(Benchmark::TIME format) {
     if (BasicRanges::status() != BasicRanges::NO_INIT) {
-        out << "already built -> " << color_red("skip") << std::endl;
-        out << line << std::endl;
-        return;
+        return -1; // data already built -> skip
     }
-    /// start benchmark process
     auto start = clock();
     BasicRanges::build();
-    out << "time -> " << time_ms(start) << std::endl;
-    out << line << std::endl;
+    return time_format(start, format);
 }
 
-void Benchmark::all_cases(std::ostream &out) {
-    out << line << std::endl;
-    out << "All Cases Benchmark" << std::endl;
+float Benchmark::all_cases(Benchmark::TIME format) {
     if (AllCases::status() != AllCases::NO_INIT) {
-        out << "already built -> " << color_red("skip") << std::endl;
-        out << line << std::endl;
-        return;
+        return -1; // data already built -> skip
     }
-    /// preparing benchmark data
-    BasicRanges::build();
-    /// start benchmark process
+    BasicRanges::build(); // preparing benchmark data
     auto start = clock();
     AllCases::build();
-    out << "time -> " << time_ms(start) << std::endl;
-    out << line << std::endl;
+    return time_format(start, format);
 }

@@ -1,30 +1,24 @@
-/// WARN: c-style lib should not using `iostream`
-///       using `printf` for screen output in test process
-
 #include <cstdio>
 #include <cstdint>
 
+#include <iostream>
+
 #include "klotski.h"
+//#include "core.h"
 
 #include "common.h"
-//#include "core.h"
+#include "benchmark.h"
+
+using namespace klotski;
 
 void tmain() {
     printf("tmain start\n");
 
-    uint64_t common_code = 0x1A9BC0C00;
+//    uint64_t common_code = 0x1A9BC0C00;
+//    klotski::Common::range_reverse(common_code);
 
-    klotski::Common::range_reverse(common_code);
-
-//    uint64_t raw_code = 0x0603EDF5CAFFF5E2;
-
-//    auto core = Core([](uint64_t code, uint64_t mask) {
-//        return;
-//    });
-
-//    for (uint32_t i = 0; i < 1000000; ++i) {
-//        core.next_cases(raw_code, 0);
-//    }
+    std::cout << Benchmark::basic_ranges(Benchmark::MS) << std::endl;
+    std::cout << Benchmark::all_cases(Benchmark::MS) << std::endl;
 
     printf("tmain exit\n");
 }

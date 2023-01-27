@@ -17,6 +17,8 @@ include_directories(core)
 include_directories(analyse)
 include_directories(fast_cal)
 
+include_directories(benchmark)
+
 ################################################################
 
 add_subdirectory(utils)
@@ -30,14 +32,16 @@ add_subdirectory(core)
 add_subdirectory(analyse)
 add_subdirectory(fast_cal)
 
+add_subdirectory(benchmark)
+
 ################################################################
 
 add_library(klotski-ffi OBJECT ffi/codec.cc ffi/tmain.cc)
 
-################################################################
-
 add_library(klotski SHARED $<TARGET_OBJECTS:klotski-ffi>)
 #add_library(klotski STATIC $<TARGET_OBJECTS:klotski-core>)
+
+################################################################
 
 target_link_libraries(klotski PRIVATE utils)
 target_link_libraries(klotski PRIVATE all_cases)
@@ -49,5 +53,7 @@ target_link_libraries(klotski PRIVATE common_code)
 target_link_libraries(klotski PRIVATE core)
 target_link_libraries(klotski PRIVATE analyse)
 target_link_libraries(klotski PRIVATE fast_cal)
+
+target_link_libraries(klotski PRIVATE benchmark)
 
 ################################################################

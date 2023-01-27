@@ -2,19 +2,20 @@
 
 #include <ostream>
 
-class Benchmark {
-public:
-    static void all_cases(std::ostream &out);
-    static void basic_ranges(std::ostream &out);
+namespace klotski {
+    class Benchmark {
+    public:
+        enum TIME {
+            S, MS, US, NS
+        };
+        static float all_cases(enum TIME format);
+        static float basic_ranges(enum TIME format);
 
-private:
-    static std::string time_s(clock_t start);
-    static std::string time_ms(clock_t start);
-    static std::string time_us(clock_t start);
-    static std::string time_ns(clock_t start);
-
-    static std::string color_red(const std::string &str);
-    static std::string color_blue(const std::string &str);
-    static std::string color_green(const std::string &str);
-    static std::string color_yellow(const std::string &str);
-};
+    private:
+//        static std::string time_s(clock_t start);
+//        static std::string time_ms(clock_t start);
+//        static std::string time_us(clock_t start);
+//        static std::string time_ns(clock_t start);
+        static float time_format(clock_t start, enum TIME format);
+    };
+}
