@@ -30,14 +30,19 @@ extern "C" {
     extern bool short_code_check(uint32_t short_code);
     extern bool common_code_check(uint64_t common_code);
 
-    // TODO: string code convert
-
     extern bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code);
     extern bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code);
     extern bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code);
     extern bool common_code_to_raw_code(uint64_t common_code, uint64_t *raw_code);
     extern bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code);
     extern bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code);
+
+    // TODO: short code string convert
+
+    /// output char[] buffer at least 10-bytes
+    extern bool common_code_to_string(uint64_t common_code, char common_code_str[]);
+    extern bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]);
+    extern bool common_code_from_string(const char common_code_str[], uint64_t *common_code);
 
 #ifdef __cplusplus
 }

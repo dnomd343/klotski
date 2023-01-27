@@ -1,3 +1,4 @@
+#include <cstring>
 #include "klotski.h"
 #include "all_cases.h"
 #include "short_code.h"
@@ -100,6 +101,35 @@ bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code) {
     *short_code = ShortCode::from_common_code(
         CommonCode::unsafe_create(common_code)
     ).unwrap();
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool common_code_to_string(uint64_t common_code, char common_code_str[]) {
+    if (!CommonCode::check(common_code)) {
+        return false;
+    }
+    std::string str = CommonCode::unsafe_create(common_code).to_string(false);
+    strcpy(common_code_str, str.c_str());
+    return true;
+}
+
+bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]) {
+    if (!CommonCode::check(common_code)) {
+        return false;
+    }
+    std::string str = CommonCode::unsafe_create(common_code).to_string(true);
+    strcpy(common_code_str, str.c_str());
+    return true;
+}
+
+bool common_code_from_string(const char common_code_str[], uint64_t *common_code) {
+    try {
+        *common_code = CommonCode::from_string(common_code_str).unwrap();
+    } catch (...) {
+        return false;
+    }
     return true;
 }
 
