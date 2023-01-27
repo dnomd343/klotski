@@ -7,12 +7,12 @@ using klotski::AllCases;
 using klotski::BasicRanges;
 using klotski::ALL_CASES_SIZE;
 using klotski::BASIC_RANGES_SIZE;
+using klotski::ALL_CASES_SIZE_SUM;
 
 /// basic ranges constants
 const char BASIC_RANGES_MD5[] = "6f385dc171e201089ff96bb010b47212";
 
 /// all cases constants
-const uint32_t ALL_CASES_SIZE_SUM = 29334498;
 const char ALL_CASES_MD5[] = "3888e9fab8d3cbb50908b12b147cfb23";
 
 /// basic ranges size check

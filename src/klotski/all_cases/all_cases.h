@@ -27,6 +27,7 @@
 #include <mutex>
 #include <vector>
 #include <cstdint>
+#include <numeric>
 #include "basic_ranges.h"
 
 namespace klotski {
@@ -37,6 +38,9 @@ namespace klotski {
         2322050, 1876945, 2322050, 0,
         2942906, 2260392, 2942906, 0,
     };
+    const uint32_t ALL_CASES_SIZE_SUM = std::accumulate( // aka 29334498
+        ALL_CASES_SIZE, ALL_CASES_SIZE + 16, (uint32_t)0
+    );
 
     class AllCases : public BasicRanges {
     public:

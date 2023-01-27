@@ -9,10 +9,14 @@
 #include "common.h"
 #include "benchmark.h"
 
+#include "all_cases.h"
+
 using namespace klotski;
 
 void tmain() {
     printf("tmain start\n");
+
+    std::cout << ALL_CASES_SIZE_SUM << std::endl;
 
 //    uint64_t common_code = 0x1A9BC0C00;
 //    klotski::Common::range_reverse(common_code);
