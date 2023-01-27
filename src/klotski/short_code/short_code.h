@@ -1,5 +1,27 @@
 #pragma once
 
+/// ShortCode is a high-compression encoding scheme based on CommonCode. Since there
+/// are a total of 29334498 valid klotski layouts, arrange their CommonCodes from
+/// small to large (36-bits positive integers), and use the index as the ShortCode.
+
+/// Therefore, the valid value of ShortCode is [0, 29334498), stored in `uint32_t`.
+/// The goal of high compression ratio is to facilitate verbal sharing, so it is
+/// necessary to represent it in a suitable string. Similar to Bitcoin's base58,
+/// in ShortCode, 4 confusing characters `0` `O` `I` `l` are removed from 10 numbers
+/// and 26 characters, forming a private base32 scheme.
+
+/// Coincidentally, log(32, 29334498) is approximately equal to `4.96`, so using
+/// 5-bits base32 can make good use of space, so any valid klotski layout can be
+/// represented by a 5-bits length code. As in CommonCode, the characters here are
+/// case insensitive, but uppercase is still recommended.
+
+///   Eg1: 0x1A9BF0C00 ->  4091296 -> "4WVE1"
+///   Eg2: 0x4FEA13400 -> 10399732 -> "AXCZN"
+
+/// Compared with CommonCode, although ShortCode saves space, it completely loses
+/// readability. The former can directly get the layout without the help of a computer,
+/// while the latter is almost impossible to complete by the human brain.
+
 #include <string>
 #include <cstdint>
 #include <ostream>
