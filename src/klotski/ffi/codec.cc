@@ -106,7 +106,7 @@ bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const uint32_t short_code_string_size = 6;
+const uint32_t SHORT_CODE_STR_SIZE = 6;
 
 bool short_code_to_string(uint32_t short_code, char short_code_str[]) {
     if (!ShortCode::check(short_code)) {
@@ -128,7 +128,7 @@ bool short_code_from_string(const char short_code_str[], uint32_t *short_code) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-const uint32_t common_code_string_size = 10;
+const uint32_t COMMON_CODE_STR_SIZE = 10;
 
 bool common_code_to_string(uint64_t common_code, char common_code_str[]) {
     if (!CommonCode::check(common_code)) {

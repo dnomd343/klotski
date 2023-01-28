@@ -3,8 +3,9 @@
 
 using klotski::AllCases;
 using klotski::BasicRanges;
-using klotski::BASIC_RANGES_SIZE;
-using klotski::ALL_CASES_SIZE_SUM;
+
+const uint32_t ALL_CASES_SIZE = klotski::ALL_CASES_SIZE_SUM;
+const uint32_t BASIC_RANGES_SIZE = klotski::BASIC_RANGES_SIZE;
 
 void all_cases_build() {
     AllCases::build();
@@ -20,4 +21,18 @@ bool is_all_cases_available() {
 
 bool is_basic_ranges_available() {
     return BasicRanges::status() == BasicRanges::AVAILABLE;
+}
+
+void export_all_cases(uint64_t *buffer) {
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : AllCases::fetch()[head]) {
+            *(buffer++) = head << 32 | range;
+        }
+    }
+}
+
+void export_basic_ranges(uint32_t *buffer) {
+    for (const auto &range : BasicRanges::fetch()) {
+        *(buffer++) = range;
+    }
 }

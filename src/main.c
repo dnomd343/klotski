@@ -29,7 +29,7 @@ int main() {
         printf("short code -> %d\n", short_code);
     }
 
-    char common_code_str[common_code_string_size];
+    char common_code_str[COMMON_CODE_STR_SIZE];
     if (!common_code_to_string(common_code, common_code_str)) {
         printf("error\n");
     } else {
@@ -46,7 +46,7 @@ int main() {
         printf("common code -> %09lX\n", common_code);
     }
 
-    char short_code_str[short_code_string_size];
+    char short_code_str[SHORT_CODE_STR_SIZE];
     if (!short_code_to_string(short_code, short_code_str)) {
         printf("error\n");
     } else {

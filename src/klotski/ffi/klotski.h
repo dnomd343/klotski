@@ -17,7 +17,7 @@ extern "C" {
 }
 #endif
 
-/// --------------------------------- klotski version info ----------------------------------
+/// -------------------------------- klotski metadata info ----------------------------------
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,10 +48,10 @@ extern "C" {
     extern bool is_all_cases_available();
     extern bool is_basic_ranges_available();
 
-    extern const uint32_t all_cases_size;
+    extern const uint32_t ALL_CASES_SIZE;
     extern void export_all_cases(uint64_t *buffer);
 
-    extern const uint32_t basic_ranges_size;
+    extern const uint32_t BASIC_RANGES_SIZE;
     extern void export_basic_ranges(uint32_t *buffer);
 #ifdef __cplusplus
 }
@@ -80,12 +80,12 @@ extern "C" {
     extern bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code);
 
     /// output char[] buffer at least 6-bytes
-    extern const uint32_t short_code_string_size;
+    extern const uint32_t SHORT_CODE_STR_SIZE;
     extern bool short_code_to_string(uint32_t short_code, char short_code_str[]);
     extern bool short_code_from_string(const char short_code_str[], uint32_t *short_code);
 
     /// output char[] buffer at least 10-bytes
-    extern const uint32_t common_code_string_size;
+    extern const uint32_t COMMON_CODE_STR_SIZE;
     extern bool common_code_to_string(uint64_t common_code, char common_code_str[]);
     extern bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]);
     extern bool common_code_from_string(const char common_code_str[], uint64_t *common_code);
