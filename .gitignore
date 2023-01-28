@@ -2,5 +2,7 @@
 /.idea/
 /cmake-build-debug/
 /cmake-build-release/
+
+/src/cli/target/
 /src/rust_ffi/target/
 /src/klotski/utils/version.h
