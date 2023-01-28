@@ -38,6 +38,25 @@ extern "C" {
 }
 #endif
 
+/// ------------------------------- klotski all cases export --------------------------------
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    extern void all_cases_build();
+    extern void basic_ranges_build();
+    extern bool is_all_cases_available();
+    extern bool is_basic_ranges_available();
+
+    extern const uint32_t all_cases_size;
+    extern void export_all_cases(uint64_t *buffer);
+
+    extern const uint32_t basic_ranges_size;
+    extern void export_basic_ranges(uint32_t *buffer);
+#ifdef __cplusplus
+}
+#endif
+
 /// -------------------------------- klotski codec interface --------------------------------
 
 #ifdef __cplusplus
@@ -70,7 +89,6 @@ extern "C" {
     extern bool common_code_to_string(uint64_t common_code, char common_code_str[]);
     extern bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]);
     extern bool common_code_from_string(const char common_code_str[], uint64_t *common_code);
-
 #ifdef __cplusplus
 }
 #endif
