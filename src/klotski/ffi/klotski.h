@@ -22,14 +22,18 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-//    extern char* get_author();
-//    extern char* get_project_url();
-//    extern char* get_compile_time();
-
     /// version -> major.minor.patch
     extern int get_version_major();
     extern int get_version_minor();
     extern int get_version_patch();
+
+    extern const char* get_author();
+    extern const char* get_version();
+    extern const char* get_commit_id();
+    extern const char* get_build_time();
+    extern const char* get_project_url();
+    extern const char* get_system_info();
+    extern const char* get_compiler_info();
 #ifdef __cplusplus
 }
 #endif
