@@ -2,6 +2,6 @@
 
 import ctypes
 
-lib = ctypes.CDLL('../cmake-build-release/src/klotski_core/libklotski.so')
+lib = ctypes.CDLL('../bin/libklotski.so')
 
 lib.tmain()

@@ -22,7 +22,7 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-    /// version -> major.minor.patch
+    // version -> major.minor.patch
     extern int get_version_major();
     extern int get_version_minor();
     extern int get_version_patch();
@@ -62,7 +62,7 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-    /// short code warm up api
+    // short code index warm up
     extern void short_code_enable();
     extern void short_code_enable_fast();
     extern bool is_short_code_available();
@@ -72,6 +72,7 @@ extern "C" {
     extern bool short_code_check(uint32_t short_code);
     extern bool common_code_check(uint64_t common_code);
 
+    // TODO: allow unsafe convert
     extern bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code);
     extern bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code);
     extern bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code);
@@ -79,12 +80,10 @@ extern "C" {
     extern bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code);
     extern bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code);
 
-    /// output char[] buffer at least 6-bytes
     extern const uint32_t SHORT_CODE_STR_SIZE;
     extern bool short_code_to_string(uint32_t short_code, char short_code_str[]);
     extern bool short_code_from_string(const char short_code_str[], uint32_t *short_code);
 
-    /// output char[] buffer at least 10-bytes
     extern const uint32_t COMMON_CODE_STR_SIZE;
     extern bool common_code_to_string(uint64_t common_code, char common_code_str[]);
     extern bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]);

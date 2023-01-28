@@ -12,6 +12,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
+file(
+    COPY ${PROJECT_SOURCE_DIR}/src/klotski_core/klotski.h
+    DESTINATION ${PROJECT_SOURCE_DIR}/bin
+    FOLLOW_SYMLINK_CHAIN
+)
+
 # TODO: only in libklotski.so
 add_compile_options(-fPIC)
 
