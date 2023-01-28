@@ -6,12 +6,13 @@ enable_testing()
 
 ################################################################
 
+unset(CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 include_directories(../third_party/md5)
 add_library(md5 STATIC ../third_party/md5/md5.cpp)
 
 ################################################################
 
-include_directories(../src/klotski/utils)
+include_directories(../src/klotski_core/utils)
 add_executable(test_utils utils.cc)
 target_link_libraries(test_utils PUBLIC gtest gtest_main)
 target_link_libraries(test_utils PUBLIC klotski)
@@ -19,7 +20,7 @@ add_test(NAME utils COMMAND test_utils)
 
 ################################################################
 
-include_directories(../src/klotski/all_cases)
+include_directories(../src/klotski_core/all_cases)
 add_executable(test_all_cases all_cases.cc)
 target_link_libraries(test_all_cases PUBLIC gtest gtest_main)
 target_link_libraries(test_all_cases PUBLIC klotski md5)

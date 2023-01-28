@@ -1,9 +1,9 @@
 #pragma once
 
-#define VERSION_MAJOR (@klotski-core_VERSION_MAJOR@)
-#define VERSION_MINOR (@klotski-core_VERSION_MINOR@)
-#define VERSION_PATCH (@klotski-core_VERSION_PATCH@)
-#define VERSION_STR   "v@klotski-core_VERSION_MAJOR@.@klotski-core_VERSION_MINOR@.@klotski-core_VERSION_PATCH@"
+#define VERSION_MAJOR (@VERSION_MAJOR@)
+#define VERSION_MINOR (@VERSION_MINOR@)
+#define VERSION_PATCH (@VERSION_PATCH@)
+#define VERSION_STR   "v@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@"
 
 #define AUTHOR          "dnomd343"
 #define SYSTEM          "@SYSTEM_INFO@"

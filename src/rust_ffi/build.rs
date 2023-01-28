@@ -3,11 +3,11 @@ extern crate bindgen;
 use std::env;
 use std::path::PathBuf;
 
-const RELEASE_DIR: &str = "../../cmake-build-release/src/klotski";
+const LIB_CORE_DIR: &str = "../../bin";
 
 fn main() {
     // basic compile options
-    println!("cargo:rustc-link-search={}", RELEASE_DIR);
+    println!("cargo:rustc-link-search={}", LIB_CORE_DIR);
     println!("cargo:rustc-link-lib=static=klotski");
     println!("cargo:rerun-if-changed=wrapper.h");
     println!("cargo:rustc-link-lib=stdc++");

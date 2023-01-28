@@ -23,6 +23,10 @@ git_commit_id(GIT_COMMIT_ID)
 
 string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
 
+set(VERSION_MAJOR ${klotski-core_VERSION_MAJOR})
+set(VERSION_MINOR ${klotski-core_VERSION_MINOR})
+set(VERSION_PATCH ${klotski-core_VERSION_PATCH})
+
 set(SYSTEM_INFO "${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_PROCESSOR}")
 
 set(COMPILER_INFO "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
@@ -63,6 +67,7 @@ add_subdirectory(benchmark)
 
 ################################################################################
 
+include_directories(.)
 set(FFI_SRC codec.cc all_cases.cc tmain.cc metadata.cc)
 list(TRANSFORM FFI_SRC PREPEND "ffi/")
 add_library(klotski-ffi OBJECT ${FFI_SRC})
@@ -84,11 +89,11 @@ list(APPEND OBJS $<TARGET_OBJECTS:benchmark>)
 
 ################################################################################
 
-option(STATIC_LIB "build static library" ON)
-if (STATIC_LIB)
-    add_library(klotski STATIC ${OBJS})
-else()
+option(BUILD_DYN "build shared klotski core library" OFF)
+if (BUILD_DYN)
     add_library(klotski SHARED ${OBJS})
+else()
+    add_library(klotski STATIC ${OBJS})
 endif()
 
 ################################################################################

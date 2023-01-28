@@ -5,4 +5,4 @@
 
 /src/cli/target/
 /src/rust_ffi/target/
-/src/klotski/utils/version.h
+/src/klotski_core/utils/version.h

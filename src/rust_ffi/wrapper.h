@@ -1,3 +1,3 @@
 #pragma once
 
-#include "../klotski/ffi/klotski.h"
+#include "../klotski_core/klotski.h"
