@@ -1,15 +1,37 @@
 cmake_minimum_required(VERSION 3.0)
 
+set(CMAKE_CXX_STANDARD 14)
+
 project(klotski-core VERSION 0.0.1 LANGUAGES CXX)
+
+################################################################################
+
+macro(git_commit_id _hash)
+    find_package(Git QUIET)
+    if (GIT_FOUND)
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%H
+                OUTPUT_VARIABLE ${_hash}
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET
+        )
+    endif()
+endmacro()
+
+set(GIT_COMMIT_ID "")
+git_commit_id(GIT_COMMIT_ID)
+
+string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
+
+set(SYSTEM_INFO "${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_PROCESSOR}")
+
+set(COMPILER_INFO "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 
 configure_file(
     utils/version.h.in
     ${PROJECT_SOURCE_DIR}/utils/version.h
 )
-
-set(CMAKE_CXX_STANDARD 14)
-
-################################################################
+################################################################################
 
 include_directories(utils)
 include_directories(all_cases)
@@ -24,7 +46,7 @@ include_directories(fast_cal)
 
 include_directories(benchmark)
 
-################################################################
+################################################################################
 
 add_subdirectory(utils)
 add_subdirectory(all_cases)
@@ -39,7 +61,7 @@ add_subdirectory(fast_cal)
 
 add_subdirectory(benchmark)
 
-################################################################
+################################################################################
 
 set(FFI_SRC codec.cc tmain.cc version.cc)
 list(TRANSFORM FFI_SRC PREPEND "ffi/")
@@ -60,7 +82,7 @@ list(APPEND OBJS $<TARGET_OBJECTS:fast_cal>)
 
 list(APPEND OBJS $<TARGET_OBJECTS:benchmark>)
 
-################################################################
+################################################################################
 
 option(STATIC_LIB "build static library" ON)
 if (STATIC_LIB)
@@ -69,4 +91,4 @@ else()
     add_library(klotski SHARED ${OBJS})
 endif()
 
-################################################################
+################################################################################

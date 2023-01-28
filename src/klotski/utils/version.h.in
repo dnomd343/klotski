@@ -1,5 +1,13 @@
 #pragma once
 
-#define VERSION_MAJOR @klotski-core_VERSION_MAJOR@
-#define VERSION_MINOR @klotski-core_VERSION_MINOR@
-#define VERSION_PATCH @klotski-core_VERSION_PATCH@
+#define VERSION_MAJOR (@klotski-core_VERSION_MAJOR@)
+#define VERSION_MINOR (@klotski-core_VERSION_MINOR@)
+#define VERSION_PATCH (@klotski-core_VERSION_PATCH@)
+#define VERSION_STR   "v@klotski-core_VERSION_MAJOR@.@klotski-core_VERSION_MINOR@.@klotski-core_VERSION_PATCH@"
+
+#define AUTHOR          "dnomd343"
+#define SYSTEM          "@SYSTEM_INFO@"
+#define COMPILER        "@COMPILER_INFO@"
+#define BUILD_TIME      "@BUILD_TIME@"
+#define PROJECT_URL     "https://github.com/dnomd343/klotski.git"
+#define GIT_COMMIT_ID   "@GIT_COMMIT_ID@"
