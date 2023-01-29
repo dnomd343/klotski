@@ -92,7 +92,8 @@ target("klotski-ffi")
     -- TODO: get compiler name and version
     set_configvar("COMPILER", "XMake")
 
-    set_configdir("$(projectdir)/utils")
+    -- TODO: fix wrong header generate path
+    set_configdir("$(scriptdir)/utils")
     add_configfiles("utils/metadata.h.in", {
         filename = "metadata.h", pattern = "@(.-)@"
     })
@@ -108,32 +109,10 @@ target("klotski")
     add_deps("core", "fast_cal", "analyse")
     add_deps("benchmark")
     set_policy("build.merge_archive", true)
-
     after_build(function (target)
-        import("core.project.config")
-
---         local target_file = target:targetfile()
-
         os.cp(target:targetfile(), "$(projectdir)/bin/")
         os.cp("$(scriptdir)/klotski.h", "$(projectdir)/bin/")
-
     end)
-
---     before_build(function(target)
---         print("23333 -> $(scriptdir)")
---         os.cp("$(scriptdir)/xxx.h", "$(buildir)/inc")
-
---         set_targetdir("$(scriptdir)/../../bin/")
-
---     end)
-
---     print("23333 -> $(scriptdir)")
-
---     set_targetdir("$(scriptdir)/../../bin/")
-
---     after_build(function (target)
---         os.cp("$(projectdir)/klotski.h", "$(projectdir)/../../bin/")
---     end)
 target_end()
 
 ----------------------------------------------------------------
