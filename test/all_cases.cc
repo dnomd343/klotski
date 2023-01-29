@@ -1,3 +1,4 @@
+#include <thread>
 #include <cstdint>
 #include "md5.h"
 #include "all_cases.h"
@@ -9,11 +10,27 @@ using klotski::ALL_CASES_SIZE;
 using klotski::BASIC_RANGES_SIZE;
 using klotski::ALL_CASES_SIZE_SUM;
 
+const int TEST_THREAD_NUM = 8;
+
 /// basic ranges constants
 const char BASIC_RANGES_MD5[] = "6f385dc171e201089ff96bb010b47212";
 
 /// all cases constants
 const char ALL_CASES_MD5[] = "3888e9fab8d3cbb50908b12b147cfb23";
+
+/// basic ranges mutex check
+TEST(AllCases, basic_ranges_mutex) {
+    std::thread threads[TEST_THREAD_NUM];
+    EXPECT_EQ(BasicRanges::status(), BasicRanges::NO_INIT);
+    for (auto &t : threads) {
+        t = std::thread(BasicRanges::build);
+    }
+    EXPECT_EQ(BasicRanges::status(), BasicRanges::BUILDING);
+    for (auto &t : threads) {
+        t.join();
+    }
+    EXPECT_EQ(BasicRanges::status(), BasicRanges::AVAILABLE);
+}
 
 /// basic ranges size check
 TEST(AllCases, basic_ranges_size) {
@@ -31,6 +48,20 @@ TEST(AllCases, basic_ranges_data) {
     }
     auto basic_ranges_md5 = md5(basic_ranges_data, BASIC_RANGES_SIZE * 9);
     EXPECT_STREQ(basic_ranges_md5.c_str(), BASIC_RANGES_MD5);
+}
+
+/// basic ranges mutex check
+TEST(AllCases, all_cases_mutex) {
+    std::thread threads[TEST_THREAD_NUM];
+    EXPECT_EQ(AllCases::status(), AllCases::NO_INIT);
+    for (auto &t : threads) {
+        t = std::thread(AllCases::build);
+    }
+    EXPECT_EQ(AllCases::status(), AllCases::BUILDING);
+    for (auto &t : threads) {
+        t.join();
+    }
+    EXPECT_EQ(AllCases::status(), AllCases::AVAILABLE);
 }
 
 /// all cases size check

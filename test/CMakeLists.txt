@@ -14,16 +14,26 @@ add_library(md5 STATIC ../third_party/md5/md5.cpp)
 
 ################################################################
 
-include_directories(../src/klotski_core/utils)
-add_executable(test_utils utils.cc)
-target_link_libraries(test_utils PUBLIC ${TEST_DEPS})
-add_test(NAME utils COMMAND test_utils)
+#include_directories(../src/klotski_core/utils)
+#add_executable(test_utils utils.cc)
+#target_link_libraries(test_utils PUBLIC ${TEST_DEPS})
+#add_test(NAME utils COMMAND test_utils)
 
 ################################################################
 
+#include_directories(../src/klotski_core/all_cases)
+#add_executable(test_all_cases all_cases.cc)
+#target_link_libraries(test_all_cases PUBLIC ${TEST_DEPS} md5)
+#add_test(NAME all_cases COMMAND test_all_cases)
+
+################################################################
+
+include_directories(../src/klotski_core/utils)
 include_directories(../src/klotski_core/all_cases)
-add_executable(test_all_cases all_cases.cc)
-target_link_libraries(test_all_cases PUBLIC ${TEST_DEPS} md5)
-add_test(NAME all_cases COMMAND test_all_cases)
+
+add_executable(test_basic utils.cc all_cases.cc common_code.cc)
+target_link_libraries(test_basic PUBLIC ${TEST_DEPS} md5)
+
+add_test(NAME basic COMMAND test_basic)
 
 ################################################################
