@@ -28,8 +28,10 @@ TEST(RawCode, code_verify) {
 }
 
 TEST(RawCode, operators) {
-    EXPECT_EQ(RawCode(TEST_CODE), RawCode(TEST_CODE)); // operator `==`
+    std::cout.setstate(std::ios::failbit); // hide std::cout content
     std::cout << "TEST OUTPUT" << std::endl << RawCode(TEST_CODE); // ostream test
+    std::cout.clear();
+    EXPECT_EQ(RawCode(TEST_CODE), RawCode(TEST_CODE)); // operator `==`
     EXPECT_EQ((uint64_t)RawCode(TEST_CODE), TEST_CODE); // convert as uint64_t
 }
 

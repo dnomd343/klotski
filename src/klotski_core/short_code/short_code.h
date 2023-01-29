@@ -35,7 +35,7 @@ namespace klotski {
     public:
         enum Mode {NORMAL, FAST};
 
-        inline bool valid() const;
+        bool valid() const;
         static void speed_up(enum Mode mode);
         static bool check(uint32_t short_code);
 
