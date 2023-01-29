@@ -3,16 +3,16 @@
 using klotski::CommonCode;
 
 inline uint8_t binary_count(uint32_t bin) { // get number of non-zero bits
-    bin -= (bin >> 1) & 0x55555555;
-    bin = (bin & 0x33333333) + ((bin >> 2) & 0x33333333);
-    bin = ((bin >> 4) + bin) & 0x0F0F0F0F;
+    bin -= (bin >> 1) & 0x55'55'55'55;
+    bin = (bin & 0x33'33'33'33) + ((bin >> 2) & 0x33'33'33'33);
+    bin = ((bin >> 4) + bin) & 0x0F'0F'0F'0F;
     bin += bin >> 8;
     bin += bin >> 16;
-    return bin & 0b111111;
+    return bin & 0b11'11'11;
 }
 
 /// NOTE: input should not be zero
-inline uint32_t last_zero_num(uint32_t bin) { // get last zero number
+inline uint8_t last_zero_num(uint32_t bin) { // get last zero number
     bin ^= (bin - 1);
     return binary_count(bin >> 1);
 }
@@ -25,8 +25,9 @@ std::string CommonCode::to_string(bool shorten) const { // convert uint64_t code
     char result[10]; // max length 9-bits
     sprintf(result, "%09lX", code);
     if (shorten) { // remove `0` after common code
-        if (code == 0x000000000) {
-            return "0"; // special case -> only one `0`
+        if ((uint32_t)code == 0x00'00'00'00) { // low 32-bits are zero
+            result[1] = '\0'; // only keep first character
+            return result;
         }
         result[9 - last_zero_num(code) / 4] = '\0'; // truncate string
     }

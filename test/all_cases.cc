@@ -10,8 +10,6 @@ using klotski::ALL_CASES_SIZE;
 using klotski::BASIC_RANGES_SIZE;
 using klotski::ALL_CASES_SIZE_SUM;
 
-const static int TEST_THREAD_NUM = 8;
-
 /// basic ranges constants
 const char BASIC_RANGES_MD5[] = "6f385dc171e201089ff96bb010b47212";
 
@@ -20,7 +18,7 @@ const char ALL_CASES_MD5[] = "3888e9fab8d3cbb50908b12b147cfb23";
 
 /// basic ranges mutex check
 TEST(AllCases, basic_ranges_mutex) {
-    std::thread threads[TEST_THREAD_NUM];
+    std::thread threads[4];
     EXPECT_EQ(BasicRanges::status(), BasicRanges::NO_INIT);
     for (auto &t : threads) {
         t = std::thread(BasicRanges::build);
@@ -52,7 +50,7 @@ TEST(AllCases, basic_ranges_data) {
 
 /// basic ranges mutex check
 TEST(AllCases, all_cases_mutex) {
-    std::thread threads[TEST_THREAD_NUM];
+    std::thread threads[4];
     EXPECT_EQ(AllCases::status(), AllCases::NO_INIT);
     for (auto &t : threads) {
         t = std::thread(AllCases::build);
