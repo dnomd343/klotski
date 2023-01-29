@@ -6,6 +6,30 @@ project(klotski-core VERSION 0.1.2 LANGUAGES CXX)
 
 ################################################################################
 
+macro(git_tag _tag)
+    find_package(Git QUIET)
+    if (GIT_FOUND)
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} describe --tags
+                OUTPUT_VARIABLE ${_tag}
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET
+        )
+    endif()
+endmacro()
+
+macro(git_branch _branch)
+    find_package(Git QUIET)
+    if (GIT_FOUND)
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} symbolic-ref --short -q HEAD
+                OUTPUT_VARIABLE ${_branch}
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                ERROR_QUIET
+        )
+    endif()
+endmacro()
+
 macro(git_commit_id _hash)
     find_package(Git QUIET)
     if (GIT_FOUND)
@@ -18,7 +42,14 @@ macro(git_commit_id _hash)
     endif()
 endmacro()
 
+################################################################################
+
+set(GIT_BRANCH "")
+set(GIT_TAG_LONG "")
 set(GIT_COMMIT_LONG "")
+
+git_tag(GIT_TAG_LONG)
+git_branch(GIT_BRANCH)
 git_commit_id(GIT_COMMIT_LONG)
 
 set(PLAT "${CMAKE_SYSTEM_NAME}")
@@ -28,7 +59,7 @@ set(VERSION_MAJOR ${klotski-core_VERSION_MAJOR})
 set(VERSION_MINOR ${klotski-core_VERSION_MINOR})
 set(VERSION_ALTER ${klotski-core_VERSION_PATCH})
 
-string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
+string(TIMESTAMP VERSION_BUILD "%Y-%m-%d %H:%M:%S")
 
 set(COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 

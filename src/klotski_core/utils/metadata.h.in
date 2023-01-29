@@ -8,6 +8,9 @@
 #define AUTHOR          "dnomd343"
 #define SYSTEM          "@PLAT@ @ARCH@"
 #define COMPILER        "@COMPILER@"
-#define BUILD_TIME      "@BUILD_TIME@"
-#define PROJECT_URL     "https://github.com/dnomd343/klotski.git"
+#define BUILD_TIME      "@VERSION_BUILD@"
+
+#define GIT_BRANCH      "@GIT_BRANCH@"
+#define GIT_TAG_ID      "@GIT_TAG_LONG@"
+#define GIT_PROJECT     "https://github.com/dnomd343/klotski.git"
 #define GIT_COMMIT_ID   "@GIT_COMMIT_LONG@"

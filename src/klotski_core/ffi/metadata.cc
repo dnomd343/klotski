@@ -17,6 +17,10 @@ const char* get_author() {
     return AUTHOR;
 }
 
+const char* get_git_tag() {
+    return GIT_TAG_ID;
+}
+
 const char* get_version() {
     return VERSION_STR;
 }
@@ -29,8 +33,12 @@ const char* get_build_time() {
     return BUILD_TIME;
 }
 
+const char* get_git_branch() {
+    return GIT_BRANCH;
+}
+
 const char* get_project_url() {
-    return PROJECT_URL;
+    return GIT_PROJECT;
 }
 
 const char* get_system_info() {

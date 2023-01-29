@@ -28,9 +28,11 @@ extern "C" {
     extern int get_version_patch();
 
     extern const char* get_author();
+    extern const char* get_git_tag();
     extern const char* get_version();
     extern const char* get_commit_id();
     extern const char* get_build_time();
+    extern const char* get_git_branch();
     extern const char* get_project_url();
     extern const char* get_system_info();
     extern const char* get_compiler_info();
