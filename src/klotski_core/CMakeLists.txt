@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_CXX_STANDARD 14)
 
-project(klotski-core VERSION 0.0.1 LANGUAGES CXX)
+project(klotski-core VERSION 0.1.2 LANGUAGES CXX)
 
 ################################################################################
 
@@ -32,9 +32,10 @@ set(SYSTEM_INFO "${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_PROCESSOR}")
 set(COMPILER_INFO "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 
 configure_file(
-    utils/version.h.in
-    ${PROJECT_SOURCE_DIR}/utils/version.h
+    ${PROJECT_SOURCE_DIR}/utils/metadata.h.in
+    ${PROJECT_SOURCE_DIR}/utils/metadata.h
 )
+
 ################################################################################
 
 include_directories(utils)

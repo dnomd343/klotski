@@ -1,0 +1,15 @@
+#pragma once
+
+/// XMake metadata template
+
+#define VERSION_MAJOR (${VERSION_MAJOR})
+#define VERSION_MINOR (${VERSION_MINOR})
+#define VERSION_PATCH (${VERSION_ALTER})
+#define VERSION_STR   "${VERSION}"
+
+#define AUTHOR          "dnomd343"
+#define SYSTEM          "${PLAT} ${ARCH}"
+#define COMPILER        "${COMPILER_INFO}"
+#define BUILD_TIME      "${BUILD_TIME}"
+#define PROJECT_URL     "https://github.com/dnomd343/klotski.git"
+#define GIT_COMMIT_ID   "${GIT_COMMIT_LONG}"

@@ -1,5 +1,5 @@
 #include "klotski.h"
-#include "version.h"
+#include "metadata.h"
 
 int get_version_major() {
     return VERSION_MAJOR;
