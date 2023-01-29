@@ -45,7 +45,7 @@ namespace klotski {
 
     class RawCode {
     public:
-        inline bool valid() const;
+        bool valid() const;
         static bool check(uint64_t raw_code);
 
         /// Operators of RawCode

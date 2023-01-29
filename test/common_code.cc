@@ -5,10 +5,9 @@
 #include "gtest/gtest.h"
 
 using klotski::RawCode;
+using klotski::AllCases;
 using klotski::ShortCode;
 using klotski::CommonCode;
-
-using klotski::AllCases;
 
 const static uint64_t TEST_CODE = 0x1A9BF0C00;
 const static std::string TEST_CODE_STR = "1A9BF0C00";
@@ -65,18 +64,10 @@ TEST(CommonCode, code_string) {
     }
 }
 
-TEST(CommonCode, constructors) {
-    EXPECT_EQ(CommonCode(TEST_CODE).unwrap(), TEST_CODE);
-    EXPECT_EQ(CommonCode(TEST_CODE_STR).unwrap(), TEST_CODE);
-    EXPECT_EQ(CommonCode(RawCode::from_common_code(TEST_CODE)).unwrap(), TEST_CODE);
-    EXPECT_EQ(CommonCode(ShortCode::from_common_code(TEST_CODE)).unwrap(), TEST_CODE);
-}
-
 TEST(CommonCode, operators) {
     EXPECT_EQ(CommonCode(TEST_CODE), CommonCode(TEST_CODE)); // operator `==`
     std::cout << "TEST OUTPUT -> " << CommonCode(TEST_CODE) << std::endl; // ostream test
     EXPECT_EQ((uint64_t)CommonCode(TEST_CODE), TEST_CODE); // convert as uint64_t
-    EXPECT_EQ(CommonCode(TEST_CODE).unwrap(), TEST_CODE);
 }
 
 TEST(CommonCode, code_convert) {
@@ -84,6 +75,14 @@ TEST(CommonCode, code_convert) {
     EXPECT_EQ(CommonCode(CommonCode(TEST_CODE).to_string()), CommonCode(TEST_CODE));
     EXPECT_EQ(CommonCode(TEST_CODE).to_raw_code(), RawCode::from_common_code(TEST_CODE));
     EXPECT_EQ(CommonCode(TEST_CODE).to_short_code(), ShortCode::from_common_code(TEST_CODE));
+    EXPECT_EQ(CommonCode(TEST_CODE).unwrap(), TEST_CODE);
+}
+
+TEST(CommonCode, constructors) {
+    EXPECT_EQ(CommonCode(TEST_CODE).unwrap(), TEST_CODE);
+    EXPECT_EQ(CommonCode(TEST_CODE_STR).unwrap(), TEST_CODE);
+    EXPECT_EQ(CommonCode(RawCode::from_common_code(TEST_CODE)).unwrap(), TEST_CODE);
+    EXPECT_EQ(CommonCode(ShortCode::from_common_code(TEST_CODE)).unwrap(), TEST_CODE);
 }
 
 TEST(CommonCode, initializate) {

@@ -21,13 +21,13 @@ include_directories(../src/klotski_core/raw_code)
 include_directories(../src/klotski_core/short_code)
 include_directories(../src/klotski_core/common_code)
 
-add_executable(test_basic utils.cc all_cases.cc common_code.cc)
+add_executable(test_basic utils.cc all_cases.cc raw_code.cc common_code.cc)
 target_link_libraries(test_basic PUBLIC ${TEST_DEPS} md5)
 add_test(NAME basic COMMAND test_basic)
 
 # TODO: combine into basic after develop complete
-add_executable(test_common_code common_code.cc)
-target_link_libraries(test_common_code ${TEST_DEPS})
-add_test(NAME common_code COMMAND test_common_code)
+add_executable(test_raw_code raw_code.cc)
+target_link_libraries(test_raw_code ${TEST_DEPS})
+add_test(NAME raw_code COMMAND test_raw_code)
 
 ################################################################
