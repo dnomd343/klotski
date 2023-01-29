@@ -64,7 +64,7 @@ namespace klotski {
 
     class CommonCode {
     public:
-        inline bool valid() const;
+        bool valid() const;
         static bool check(uint64_t common_code);
 
         /// Operators of CommonCode

@@ -10,7 +10,7 @@ using klotski::ALL_CASES_SIZE;
 using klotski::BASIC_RANGES_SIZE;
 using klotski::ALL_CASES_SIZE_SUM;
 
-const int TEST_THREAD_NUM = 8;
+const static int TEST_THREAD_NUM = 8;
 
 /// basic ranges constants
 const char BASIC_RANGES_MD5[] = "6f385dc171e201089ff96bb010b47212";
