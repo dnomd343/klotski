@@ -18,18 +18,19 @@ macro(git_commit_id _hash)
     endif()
 endmacro()
 
-set(GIT_COMMIT_ID "")
-git_commit_id(GIT_COMMIT_ID)
+set(GIT_COMMIT_LONG "")
+git_commit_id(GIT_COMMIT_LONG)
 
-string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
+set(PLAT "${CMAKE_SYSTEM_NAME}")
+set(ARCH "${CMAKE_SYSTEM_PROCESSOR}")
 
 set(VERSION_MAJOR ${klotski-core_VERSION_MAJOR})
 set(VERSION_MINOR ${klotski-core_VERSION_MINOR})
-set(VERSION_PATCH ${klotski-core_VERSION_PATCH})
+set(VERSION_ALTER ${klotski-core_VERSION_PATCH})
 
-set(SYSTEM_INFO "${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_PROCESSOR}")
+string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
 
-set(COMPILER_INFO "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+set(COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 
 configure_file(
     ${PROJECT_SOURCE_DIR}/utils/metadata.h.in

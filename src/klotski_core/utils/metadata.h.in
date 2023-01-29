@@ -1,15 +1,13 @@
 #pragma once
 
-/// CMake metadata template
-
 #define VERSION_MAJOR (@VERSION_MAJOR@)
 #define VERSION_MINOR (@VERSION_MINOR@)
-#define VERSION_PATCH (@VERSION_PATCH@)
-#define VERSION_STR   "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_PATCH@"
+#define VERSION_PATCH (@VERSION_ALTER@)
+#define VERSION_STR   "v@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_ALTER@"
 
 #define AUTHOR          "dnomd343"
-#define SYSTEM          "@SYSTEM_INFO@"
-#define COMPILER        "@COMPILER_INFO@"
+#define SYSTEM          "@PLAT@ @ARCH@"
+#define COMPILER        "@COMPILER@"
 #define BUILD_TIME      "@BUILD_TIME@"
 #define PROJECT_URL     "https://github.com/dnomd343/klotski.git"
-#define GIT_COMMIT_ID   "@GIT_COMMIT_ID@"
+#define GIT_COMMIT_ID   "@GIT_COMMIT_LONG@"
