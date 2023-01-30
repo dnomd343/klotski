@@ -74,13 +74,20 @@ extern "C" {
     extern bool short_code_check(uint32_t short_code);
     extern bool common_code_check(uint64_t common_code);
 
-    // TODO: allow unsafe convert
     extern bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code);
     extern bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code);
     extern bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code);
     extern bool common_code_to_raw_code(uint64_t common_code, uint64_t *raw_code);
     extern bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code);
     extern bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code);
+
+    // TODO: allow unsafe convert
+    extern uint32_t raw_code_to_short_code_unsafe(uint64_t raw_code);
+    extern uint64_t short_code_to_raw_code_unsafe(uint32_t short_code);
+    extern uint64_t raw_code_to_common_code_unsafe(uint64_t raw_code);
+    extern uint64_t common_code_to_raw_code_unsafe(uint64_t common_code);
+    extern uint64_t short_code_to_common_code_unsafe(uint32_t short_code);
+    extern uint32_t common_code_to_short_code_unsafe(uint64_t common_code);
 
     extern const uint32_t SHORT_CODE_STR_SIZE;
     extern bool short_code_to_string(uint32_t short_code, char short_code_str[]);

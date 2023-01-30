@@ -8,10 +8,6 @@ using klotski::RawCodeException;
 
 /// RawCode to CommonCode
 CommonCode RawCode::to_common_code() const {
-    if (!RawCode::check(code)) {
-        throw RawCodeException("raw code invalid");
-    }
-    /// pass raw code checker -> common code must valid
     return CommonCode::unsafe_create(RawCode::compact(code));
 }
 
