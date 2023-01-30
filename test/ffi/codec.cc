@@ -74,3 +74,39 @@ TEST(FFI, codec_string) {
     EXPECT_EQ(common_code_from_string(common_code_buffer, &common_code), true);
     EXPECT_EQ(common_code, TEST_COMMON_CODE_OK);
 }
+
+TEST(FFI, codec_convert) {
+    uint64_t raw_code;
+    uint32_t short_code;
+    uint64_t common_code;
+
+    /// raw code -> short code
+    EXPECT_EQ(raw_code_to_short_code(TEST_RAW_CODE_ERR, &short_code), false);
+    EXPECT_EQ(raw_code_to_short_code(TEST_RAW_CODE_OK, &short_code), true);
+    EXPECT_EQ(TEST_SHORT_CODE_OK, short_code);
+
+    /// short code -> raw code
+    EXPECT_EQ(short_code_to_raw_code(TEST_SHORT_CODE_ERR, &raw_code), false);
+    EXPECT_EQ(short_code_to_raw_code(TEST_SHORT_CODE_OK, &raw_code), true);
+    EXPECT_EQ(TEST_RAW_CODE_OK, raw_code);
+
+    /// raw code -> common code
+    EXPECT_EQ(raw_code_to_common_code(TEST_RAW_CODE_ERR, &common_code), false);
+    EXPECT_EQ(raw_code_to_common_code(TEST_RAW_CODE_OK, &common_code), true);
+    EXPECT_EQ(TEST_COMMON_CODE_OK, common_code);
+
+    /// common code -> raw code
+    EXPECT_EQ(common_code_to_raw_code(TEST_COMMON_CODE_ERR, &raw_code), false);
+    EXPECT_EQ(common_code_to_raw_code(TEST_COMMON_CODE_OK, &raw_code), true);
+    EXPECT_EQ(TEST_RAW_CODE_OK, raw_code);
+
+    /// short code -> common code
+    EXPECT_EQ(short_code_to_common_code(TEST_SHORT_CODE_ERR, &common_code), false);
+    EXPECT_EQ(short_code_to_common_code(TEST_SHORT_CODE_OK, &common_code), true);
+    EXPECT_EQ(TEST_COMMON_CODE_OK, common_code);
+
+    /// common code -> short code
+    EXPECT_EQ(common_code_to_short_code(TEST_COMMON_CODE_ERR, &short_code), false);
+    EXPECT_EQ(common_code_to_short_code(TEST_COMMON_CODE_OK, &short_code), true);
+    EXPECT_EQ(TEST_SHORT_CODE_OK, short_code);
+}
