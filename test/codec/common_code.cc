@@ -9,8 +9,9 @@ using klotski::AllCases;
 using klotski::ShortCode;
 using klotski::CommonCode;
 
-const static uint64_t TEST_CODE = 0x1A9BF0C00;
+const static uint64_t TEST_CODE = 0x1'A9BF'0C00;
 const static std::string TEST_CODE_STR = "1A9BF0C00";
+const static uint64_t TEST_ERR_CODE = 0x1'2190'2300;
 
 // TODO: test some invalid cases
 

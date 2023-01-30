@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "common.h"
 #include "raw_code.h"
 
@@ -56,7 +55,7 @@ namespace klotski {
 
     RawCode::RawCode(uint64_t raw_code) {
         if (!RawCode::check(raw_code)) { // check input raw code
-            throw std::invalid_argument("invalid raw code");
+            throw klotski::RawCodeException("raw code invalid");
         }
         code = raw_code;
     }

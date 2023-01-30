@@ -4,11 +4,12 @@
 
 using klotski::RawCode;
 using klotski::CommonCode;
+using klotski::RawCodeException;
 
 /// RawCode to CommonCode
 CommonCode RawCode::to_common_code() const {
     if (!RawCode::check(code)) {
-        throw std::runtime_error("invalid raw code");
+        throw RawCodeException("raw code invalid");
     }
     /// pass raw code checker -> common code must valid
     return CommonCode::unsafe_create(RawCode::compact(code));

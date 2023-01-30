@@ -9,10 +9,29 @@ using klotski::ShortCode;
 using klotski::CommonCode;
 using klotski::BasicRanges;
 
-const static uint64_t TEST_CODE = 4091296;
+const static uint32_t TEST_CODE = 4091296;
 const static std::string TEST_CODE_STR = "4WVE1";
 
-// TODO: test some invalid cases
+inline void SHOULD_PANIC(const std::function<void(void)> &func) {
+    bool panic_flag = false;
+    try {
+        func();
+    } catch (klotski::ShortCodeException&) {
+        panic_flag = true;
+    }
+    EXPECT_EQ(panic_flag, true);
+}
+
+TEST(ShortCode, invalid) {
+    EXPECT_NE(ShortCode::check(29670987), true);
+
+    std::cout << ShortCode::from_string("R50EH") << std::endl;
+
+    SHOULD_PANIC([](){ ShortCode::from_string("R50EH"); }); // with invalid `0`
+//    SHOULD_PANIC([](){ ShortCode::from_string("123456"); }); // length != 5
+//    SHOULD_PANIC([](){ ShortCode::from_string("Z9EFV"); }); // out of short code range
+
+}
 
 TEST(ShortCode, speed_up) {
     std::thread threads[4];

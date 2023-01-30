@@ -8,6 +8,7 @@ using klotski::AllCases;
 using klotski::CommonCode;
 
 const static uint64_t TEST_CODE = 0x0603'EDF5'CAFF'F5E2;
+const static uint64_t TEST_ERR_CODE = 0x0A34'182B'3810'2D21;
 
 // TODO: test some invalid cases
 

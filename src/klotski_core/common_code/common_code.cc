@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "common.h"
 #include "common_code.h"
 
@@ -48,7 +47,7 @@ namespace klotski {
 
     CommonCode::CommonCode(uint64_t common_code) {
         if (!CommonCode::check(common_code)) { // check input common code
-            throw std::invalid_argument("invalid common code");
+            throw klotski::CommonCodeException("common code invalid");
         }
         code = common_code;
     }

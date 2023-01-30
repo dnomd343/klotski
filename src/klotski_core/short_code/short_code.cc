@@ -45,7 +45,7 @@ namespace klotski {
 
     ShortCode::ShortCode(uint32_t short_code) {
         if (!ShortCode::check(short_code)) { // check input short code
-            throw std::invalid_argument("invalid short code");
+            throw klotski::ShortCodeException("short code invalid");
         }
         code = short_code;
     }

@@ -1,6 +1,7 @@
 #include "common_code.h"
 
 using klotski::CommonCode;
+using klotski::CommonCodeException;
 
 inline uint8_t binary_count(uint32_t bin) { // get number of non-zero bits
     bin -= (bin >> 1) & 0x55'55'55'55;
@@ -37,7 +38,7 @@ std::string CommonCode::to_string(bool shorten) const { // convert uint64_t code
 CommonCode::CommonCode(const std::string &common_code) { // convert from 1 ~ 9 bits string
     /// check string length
     if (common_code.length() > 9 || common_code.empty()) { // check string length
-        throw std::invalid_argument("common code format error");
+        throw CommonCodeException("common code should length 1 ~ 9");
     }
     /// check every characters
     uint64_t result = 0;
@@ -50,13 +51,13 @@ CommonCode::CommonCode(const std::string &common_code) { // convert from 1 ~ 9 b
         } else if (bit >= 'a' && bit <= 'z') { // a ~ z
             result |= (bit - 87);
         } else {
-            throw std::invalid_argument("common code format error"); // unknown characters
+            throw CommonCodeException("common code with invalid character"); // unknown character
         }
     }
     result <<= (9 - common_code.length()) * 4; // low-bits fill with zero
     /// check whether common code is valid
     if (!CommonCode::check(result)) { // check converted common code
-        throw std::invalid_argument("invalid common code");
+        throw CommonCodeException("common code invalid");
     }
     code = result;
 }

@@ -1,8 +1,8 @@
-#include <stdexcept>
 #include "short_code.h"
 #include "serialize_chars.h"
 
 using klotski::ShortCode;
+using klotski::ShortCodeException;
 
 ShortCode ShortCode::from_string(const std::string &short_code) {
     return ShortCode(short_code); // convert from string
@@ -21,7 +21,7 @@ std::string ShortCode::to_string() const { // encode as 5-bits string
 
 ShortCode::ShortCode(const std::string &short_code) { // 5-bits string decode
     if (short_code.length() != 5) { // check string length
-        throw std::invalid_argument("short code format error");
+        throw ShortCodeException("short code should length 5");
     }
     uint64_t result = 0;
     for (auto bit : short_code) {
@@ -32,12 +32,12 @@ ShortCode::ShortCode(const std::string &short_code) { // 5-bits string decode
         if (bit >= '1' && bit <= 'Z') { // valid characters
             result += (bit = SHORT_CODE_TABLE_REV[bit - 49]); // table convert
             if (bit == -1) {
-                throw std::invalid_argument("short code format error"); // unknown characters
+                throw ShortCodeException("short code with invalid character"); // unknown character
             }
         }
     }
     if (!ShortCode::check(result)) { // check converted short code
-        throw std::invalid_argument("invalid short code");
+        throw ShortCodeException("short code invalid");
     }
     code = result; // apply convert result
 }

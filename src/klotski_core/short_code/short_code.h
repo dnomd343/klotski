@@ -25,11 +25,19 @@
 #include <string>
 #include <cstdint>
 #include <ostream>
+#include <stdexcept>
+#include <utility>
 #include "common_code.h"
 
 namespace klotski {
-    /// import for convert interface
-    class CommonCode;
+    class CommonCode; // import for convert interface
+
+    class ShortCodeException : public std::runtime_error {
+    public:
+        ShortCodeException() : std::runtime_error("invalid short code") {}
+        explicit ShortCodeException(const std::string &msg) : std::runtime_error(msg) {}
+        ~ShortCodeException() noexcept override = default;
+    };
 
     class ShortCode {
     public:

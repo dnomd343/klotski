@@ -38,9 +38,9 @@
 ///   Eg1:
 ///     % # # %    2x2 -> head = 1
 ///     % # # %    2x1 2x1 2x1 1x2 2x1 1x1 1x1 1x1 space space 1x1 ... ... ... ... ...
-///     @ $ $ @     10  10  10  01  10  11  11  11  00    00    11  00  00  00  00  00
-///     @ & * @       1010    1001    1011    1111      0000      1100    0000    0000
-///     *     &          A       9       B       F         0         C       0       0
+///     @ $ $ @     10  10  10  01  10  11  11  11    00    00  11  00  00  00  00  00
+///     @ & * @       1010    1001    1011    1111        0000    1100    0000    0000
+///     *     &          A       9       B       F           0       C       0       0
 ///                CommonCode = 0x1A9BF0C00 -> "1A9BF0C"
 
 ///   Eg2:
@@ -54,13 +54,21 @@
 #include <string>
 #include <cstdint>
 #include <ostream>
+#include <stdexcept>
 #include "raw_code.h"
 #include "short_code.h"
 
 namespace klotski {
-    /// import for convert interface
+    // import for convert interface
     class RawCode;
     class ShortCode;
+
+    class CommonCodeException : public std::runtime_error {
+    public:
+        CommonCodeException() : std::runtime_error("invalid common code") {}
+        explicit CommonCodeException(const std::string &msg) : std::runtime_error(msg) {}
+        ~CommonCodeException() noexcept override = default;
+    };
 
     class CommonCode {
     public:

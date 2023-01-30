@@ -37,11 +37,18 @@
 #include <string>
 #include <cstdint>
 #include <ostream>
+#include <stdexcept>
 #include "common_code.h"
 
 namespace klotski {
-    /// import for convert interface
-    class CommonCode;
+    class CommonCode; // import for convert interface
+
+    class RawCodeException : public std::runtime_error {
+    public:
+        RawCodeException() : std::runtime_error("invalid raw code") {}
+        explicit RawCodeException(const std::string &msg) : std::runtime_error(msg) {}
+        ~RawCodeException() noexcept override = default;
+    };
 
     class RawCode {
     public:
