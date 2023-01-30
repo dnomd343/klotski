@@ -40,7 +40,7 @@ add_test(NAME codec COMMAND test_codec)
 include_directories(../src/klotski_core)
 include_directories(../src/klotski_core/utils)
 
-set(TEST_FFI_SRC metadata.cc)
+set(TEST_FFI_SRC metadata.cc all_cases.cc)
 list(TRANSFORM TEST_FFI_SRC PREPEND "ffi/")
 add_executable(test_ffi ${TEST_FFI_SRC})
 target_link_libraries(test_ffi ${TEST_DEPS})
