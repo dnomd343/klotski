@@ -6,6 +6,13 @@ project(klotski-core VERSION 0.1.2 LANGUAGES CXX)
 
 ################################################################################
 
+option(BUILD_DYN "build shared klotski core library" OFF)
+if (BUILD_DYN)
+    add_compile_options(-fPIC)
+endif()
+
+################################################################################
+
 macro(git_tag _tag)
     find_package(Git QUIET)
     if (GIT_FOUND)
@@ -122,7 +129,6 @@ list(APPEND OBJS $<TARGET_OBJECTS:benchmark>)
 
 ################################################################################
 
-option(BUILD_DYN "build shared klotski core library" OFF)
 if (BUILD_DYN)
     add_library(klotski SHARED ${OBJS})
 else()
