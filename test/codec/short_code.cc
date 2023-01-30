@@ -50,6 +50,7 @@ TEST(ShortCode, speed_up) {
     for (auto &t : threads) {
         t = std::thread(ShortCode::speed_up, ShortCode::FAST);
     }
+    usleep(1000); // wait 1ms -> avoid mutex unlocked
     EXPECT_EQ(AllCases::status(), AllCases::BUILDING);
     for (auto &t : threads) {
         t.join();
