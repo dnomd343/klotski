@@ -51,13 +51,23 @@ endmacro()
 
 ################################################################################
 
-set(GIT_BRANCH "")
 set(GIT_TAG_LONG "")
-set(GIT_COMMIT_LONG "")
-
 git_tag(GIT_TAG_LONG)
+if(GIT_TAG_LONG STREQUAL "")  # without git tag
+    set(GIT_TAG_LONG "unknown")
+endif()
+
+set(GIT_BRANCH "")
 git_branch(GIT_BRANCH)
+if(GIT_BRANCH STREQUAL "")  # without git branch
+    set(GIT_BRANCH "unknown")
+endif()
+
+set(GIT_COMMIT_LONG "")
 git_commit_id(GIT_COMMIT_LONG)
+if(GIT_COMMIT_LONG STREQUAL "")  # without git commit
+    set(GIT_COMMIT_LONG "unknown")
+endif()
 
 set(PLAT "${CMAKE_SYSTEM_NAME}")
 set(ARCH "${CMAKE_SYSTEM_PROCESSOR}")
