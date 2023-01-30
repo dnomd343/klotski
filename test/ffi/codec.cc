@@ -110,3 +110,17 @@ TEST(FFI, codec_convert) {
     EXPECT_EQ(common_code_to_short_code(TEST_COMMON_CODE_OK, &short_code), true);
     EXPECT_EQ(TEST_SHORT_CODE_OK, short_code);
 }
+
+TEST(FFI, codec_convert_unsafe) {
+    /// raw code <---> short code
+    EXPECT_EQ(raw_code_to_short_code_unsafe(TEST_RAW_CODE_OK), TEST_SHORT_CODE_OK);
+    EXPECT_EQ(short_code_to_raw_code_unsafe(TEST_SHORT_CODE_OK), TEST_RAW_CODE_OK);
+
+    /// raw code <---> common code
+    EXPECT_EQ(raw_code_to_common_code_unsafe(TEST_RAW_CODE_OK), TEST_COMMON_CODE_OK);
+    EXPECT_EQ(common_code_to_raw_code_unsafe(TEST_COMMON_CODE_OK), TEST_RAW_CODE_OK);
+
+    /// short code <---> common code
+    EXPECT_EQ(short_code_to_common_code_unsafe(TEST_SHORT_CODE_OK), TEST_COMMON_CODE_OK);
+    EXPECT_EQ(common_code_to_short_code_unsafe(TEST_COMMON_CODE_OK), TEST_SHORT_CODE_OK);
+}
