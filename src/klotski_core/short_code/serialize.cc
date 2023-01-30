@@ -29,11 +29,12 @@ ShortCode::ShortCode(const std::string &short_code) { // 5-bits string decode
         if (bit >= 'a' && bit <= 'z') {
             bit -= 32; // convert to uppercase
         }
-        if (bit >= '1' && bit <= 'Z') { // valid characters
-            result += (bit = SHORT_CODE_TABLE_REV[bit - 49]); // table convert
-            if (bit == -1) {
-                throw ShortCodeException("short code with invalid character"); // unknown character
-            }
+        if (bit < '1' || bit > 'Z') { // invalid characters
+            throw ShortCodeException("short code with invalid character");
+        }
+        result += (bit = SHORT_CODE_TABLE_REV[bit - 49]); // table convert
+        if (bit == -1) { // invalid character
+            throw ShortCodeException("short code with invalid character");
         }
     }
     if (!ShortCode::check(result)) { // check converted short code

@@ -8,9 +8,11 @@ using klotski::AllCases;
 using klotski::CommonCode;
 
 const static uint64_t TEST_CODE = 0x0603'EDF5'CAFF'F5E2;
-const static uint64_t TEST_ERR_CODE = 0x0A34'182B'3810'2D21;
 
-// TODO: test some invalid cases
+TEST(RawCode, invalid) {
+    EXPECT_NE(RawCode::check(0x0A34'182B'3810'2D21), true); // invalid code
+    EXPECT_NE(RawCode::check(0x8603'EDF5'CAFF'F5E2), true); // high 4-bits not zero
+}
 
 TEST(RawCode, code_verify) {
     std::thread threads[16];

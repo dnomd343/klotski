@@ -23,14 +23,11 @@ inline void SHOULD_PANIC(const std::function<void(void)> &func) {
 }
 
 TEST(ShortCode, invalid) {
-    EXPECT_NE(ShortCode::check(29670987), true);
-
-    std::cout << ShortCode::from_string("R50EH") << std::endl;
-
+    EXPECT_NE(ShortCode::check(-1), true); // out of short code range
+    EXPECT_NE(ShortCode::check(29670987), true); // out of short code range
     SHOULD_PANIC([](){ ShortCode::from_string("R50EH"); }); // with invalid `0`
-//    SHOULD_PANIC([](){ ShortCode::from_string("123456"); }); // length != 5
-//    SHOULD_PANIC([](){ ShortCode::from_string("Z9EFV"); }); // out of short code range
-
+    SHOULD_PANIC([](){ ShortCode::from_string("123456"); }); // length != 5
+    SHOULD_PANIC([](){ ShortCode::from_string("Z9EFV"); }); // out of short code range
 }
 
 TEST(ShortCode, speed_up) {
@@ -41,6 +38,7 @@ TEST(ShortCode, speed_up) {
     for (auto &t : threads) {
         t = std::thread(ShortCode::speed_up, ShortCode::NORMAL);
     }
+    usleep(1000); // wait 1ms -> avoid mutex unlocked
     EXPECT_EQ(BasicRanges::status(), BasicRanges::BUILDING);
     for (auto &t : threads) {
         t.join();

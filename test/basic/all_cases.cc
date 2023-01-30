@@ -23,6 +23,7 @@ TEST(AllCases, basic_ranges_mutex) {
     for (auto &t : threads) {
         t = std::thread(BasicRanges::build);
     }
+    usleep(1000); // wait 1ms -> avoid mutex unlocked
     EXPECT_EQ(BasicRanges::status(), BasicRanges::BUILDING);
     for (auto &t : threads) {
         t.join();
@@ -55,6 +56,7 @@ TEST(AllCases, all_cases_mutex) {
     for (auto &t : threads) {
         t = std::thread(AllCases::build);
     }
+    usleep(1000); // wait 1ms -> avoid mutex unlocked
     EXPECT_EQ(AllCases::status(), AllCases::BUILDING);
     for (auto &t : threads) {
         t.join();

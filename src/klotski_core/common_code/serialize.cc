@@ -46,9 +46,9 @@ CommonCode::CommonCode(const std::string &common_code) { // convert from 1 ~ 9 b
         result <<= 4;
         if (bit >= '0' && bit <= '9') { // 0 ~ 9
             result |= (bit - 48);
-        } else if (bit >= 'A' && bit <= 'Z') { // A ~ Z
+        } else if (bit >= 'A' && bit <= 'F') { // A ~ F
             result |= (bit - 55);
-        } else if (bit >= 'a' && bit <= 'z') { // a ~ z
+        } else if (bit >= 'a' && bit <= 'f') { // a ~ f
             result |= (bit - 87);
         } else {
             throw CommonCodeException("common code with invalid character"); // unknown character

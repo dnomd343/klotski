@@ -11,9 +11,26 @@ using klotski::CommonCode;
 
 const static uint64_t TEST_CODE = 0x1'A9BF'0C00;
 const static std::string TEST_CODE_STR = "1A9BF0C00";
-const static uint64_t TEST_ERR_CODE = 0x1'2190'2300;
 
-// TODO: test some invalid cases
+inline void SHOULD_PANIC(const std::function<void(void)> &func) {
+    bool panic_flag = false;
+    try {
+        func();
+    } catch (klotski::CommonCodeException&) {
+        panic_flag = true;
+    }
+    EXPECT_EQ(panic_flag, true);
+}
+
+TEST(CommonCode, invalid) {
+    EXPECT_NE(CommonCode::check(0x3'A9'BF'0C'00), true); // invalid 2x2 block
+    EXPECT_NE(CommonCode::check(0x1'D9'BF'0C'00), true); // invalid block range
+    EXPECT_NE(CommonCode::check(0x1'A9'BF'FC'00), true); // less than 2 space
+    EXPECT_NE(CommonCode::check(0x1'A0'BF'0C'01), true); // low bits not fill zero
+
+    SHOULD_PANIC([](){ CommonCode::from_string("0123456789"); }); // length > 9
+    SHOULD_PANIC([](){ CommonCode::from_string("123J432A9"); }); // with invalid `J`
+}
 
 TEST(CommonCode, code_verify) {
     std::thread threads[16];
