@@ -1,15 +1,15 @@
 #include "klotski.h"
 #include "metadata.h"
 
-int get_version_major() {
+uint32_t get_version_major() {
     return VERSION_MAJOR;
 }
 
-int get_version_minor() {
+uint32_t get_version_minor() {
     return VERSION_MINOR;
 }
 
-int get_version_patch() {
+uint32_t get_version_patch() {
     return VERSION_PATCH;
 }
 

@@ -22,11 +22,6 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-    // version -> major.minor.patch
-    extern int get_version_major();
-    extern int get_version_minor();
-    extern int get_version_patch();
-
     extern const char* get_author();
     extern const char* get_git_tag();
     extern const char* get_version();
@@ -36,6 +31,11 @@ extern "C" {
     extern const char* get_project_url();
     extern const char* get_system_info();
     extern const char* get_compiler_info();
+
+    // version -> major.minor.patch
+    extern uint32_t get_version_major();
+    extern uint32_t get_version_minor();
+    extern uint32_t get_version_patch();
 #ifdef __cplusplus
 }
 #endif
