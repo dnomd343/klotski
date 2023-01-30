@@ -9,6 +9,8 @@ using klotski::CommonCode;
 
 const static uint64_t TEST_CODE = 0x0603'EDF5'CAFF'F5E2;
 
+// TODO: test some invalid cases
+
 TEST(RawCode, code_verify) {
     std::thread threads[16];
     auto test = [](uint64_t head) {

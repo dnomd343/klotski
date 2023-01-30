@@ -12,6 +12,8 @@ using klotski::BasicRanges;
 const static uint64_t TEST_CODE = 4091296;
 const static std::string TEST_CODE_STR = "4WVE1";
 
+// TODO: test some invalid cases
+
 TEST(ShortCode, speed_up) {
     std::thread threads[4];
 

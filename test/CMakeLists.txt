@@ -20,10 +20,6 @@ include_directories(../src/klotski_core/all_cases)
 set(TEST_BASIC_SRC utils.cc all_cases.cc)
 list(TRANSFORM TEST_BASIC_SRC PREPEND "basic/")
 add_executable(test_basic ${TEST_BASIC_SRC})
-#add_executable(test_basic
-#    basic/utils.cc
-#    basic/all_cases.cc
-#)
 target_link_libraries(test_basic PUBLIC ${TEST_DEPS} md5)
 add_test(NAME basic COMMAND test_basic)
 
@@ -36,12 +32,18 @@ include_directories(../src/klotski_core/common_code)
 set(TEST_CODEC_SRC short_code.cc raw_code.cc common_code.cc)
 list(TRANSFORM TEST_CODEC_SRC PREPEND "codec/")
 add_executable(test_codec ${TEST_CODEC_SRC})
-#add_executable(test_codec
-#    codec/short_code.cc
-#    codec/common_code.cc
-#    codec/raw_code.cc
-#)
 target_link_libraries(test_codec ${TEST_DEPS})
 add_test(NAME codec COMMAND test_codec)
+
+################################################################################
+
+include_directories(../src/klotski_core)
+include_directories(../src/klotski_core/utils)
+
+set(TEST_FFI_SRC metadata.cc)
+list(TRANSFORM TEST_FFI_SRC PREPEND "ffi/")
+add_executable(test_ffi ${TEST_FFI_SRC})
+target_link_libraries(test_ffi ${TEST_DEPS})
+add_test(NAME ffi COMMAND test_ffi)
 
 ################################################################################

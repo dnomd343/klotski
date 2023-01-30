@@ -12,6 +12,8 @@ using klotski::CommonCode;
 const static uint64_t TEST_CODE = 0x1A9BF0C00;
 const static std::string TEST_CODE_STR = "1A9BF0C00";
 
+// TODO: test some invalid cases
+
 TEST(CommonCode, code_verify) {
     std::thread threads[16];
     auto test = [](uint64_t head) {
