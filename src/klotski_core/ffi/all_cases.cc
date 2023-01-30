@@ -1,3 +1,4 @@
+#include <cstring>
 #include "klotski.h"
 #include "all_cases.h"
 
@@ -32,7 +33,6 @@ void export_all_cases(uint64_t *buffer) {
 }
 
 void export_basic_ranges(uint32_t *buffer) {
-    for (const auto &range : BasicRanges::fetch()) {
-        *(buffer++) = range;
-    }
+    auto basic_ranges_ptr = &*BasicRanges::fetch().begin();
+    memcpy(buffer, basic_ranges_ptr, BASIC_RANGES_SIZE * 4); // 32-bits -> 4-bytes
 }
