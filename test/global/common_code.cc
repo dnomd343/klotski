@@ -1,7 +1,9 @@
+#include "all_cases.h"
 #include "gtest/gtest.h"
 #include "common_code.h"
 #include "global_utils.h"
 
+using klotski::AllCases;
 using klotski::CommonCode;
 
 std::vector<uint64_t> common_code_search(uint64_t start, uint64_t end) {
@@ -14,16 +16,31 @@ std::vector<uint64_t> common_code_search(uint64_t start, uint64_t end) {
     return ret;
 }
 
-
 TEST(GLOBAL, common_code) {
-
-//    auto ranges = range_split(0, 100, 30);
-//    auto ranges = range_split(0, 91, 30);
-//    auto ranges = range_split(0, 89, 30);
-    auto ranges = range_split(0, 90, 30);
-
-    for (const auto &r : ranges) {
-        printf("[%lu, %lu)\n", r.first, r.second);
+    /// create common code check tasks
+    auto pool = TinyPool(thread_num());
+    std::vector<std::future<std::vector<uint64_t>>> futures;
+    for (const auto &range : range_split(0, 0x10'0000'0000, 0x10'0000)) {
+        futures.emplace_back(
+            pool.submit(common_code_search, range.first, range.second)
+        );
     }
 
+    /// run common code search
+    pool.boot();
+    std::vector<uint64_t> result;
+    for (auto &f : futures) {
+        auto ret = f.get();
+        result.insert(result.end(), ret.begin(), ret.end());
+    }
+    pool.join();
+
+    /// verify check result
+    std::vector<uint64_t> all_cases;
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : AllCases::fetch()[head]) {
+            all_cases.emplace_back(head << 32 | range);
+        }
+    }
+    EXPECT_EQ(result, all_cases);
 }

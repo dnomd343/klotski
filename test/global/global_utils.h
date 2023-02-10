@@ -1,7 +1,14 @@
+#pragma once
+
 #include <future>
 #include <vector>
 #include <functional>
 #include "tiny_pool.h"
+
+uint32_t thread_num();
+
+typedef std::vector<std::pair<uint64_t, uint64_t>> range_split_t;
+range_split_t range_split(uint64_t start, uint64_t end, uint64_t size);
 
 class TinyPool { // OOP for tiny_thread_pool
     pool_t *pool;
@@ -19,9 +26,18 @@ public:
     explicit TinyPool(uint32_t size) { pool = tiny_pool_create(size); }
 
     template <typename Func, typename ...Args>
-    auto submit(Func &&func, Args &&...args) -> std::future<decltype(func(args...))>;
+    auto submit(Func &&func, Args &&...args) -> std::future<decltype(func(args...))> {
+        std::function<decltype(func(args...))()> wrap_func = std::bind(
+            std::forward<Func>(func), std::forward<Args>(args)...
+        );
+        auto func_ptr = std::make_shared<
+            std::packaged_task<decltype(func(args...))()>
+        >(wrap_func);
+        tiny_pool_submit(pool, TinyPool::wrap_c_func, (void*)(
+            new std::function<void()> (
+                [func_ptr]() { (*func_ptr)(); }
+            )
+        ));
+        return func_ptr->get_future();
+    }
 };
-
-typedef std::vector<std::pair<uint64_t, uint64_t>> range_split_t;
-
-range_split_t range_split(uint64_t start, uint64_t end, uint64_t size);
