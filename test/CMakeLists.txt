@@ -15,8 +15,8 @@ add_library(md5 STATIC ../third_party/md5/md5.cpp)
 ################################################################################
 
 unset(CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-include_directories(../third_party/tiny_thread_pool/src)
-add_library(tiny_pool STATIC ../third_party/tiny_thread_pool/src/tiny_pool.c)
+include_directories(../third_party/tiny_thread_pool)
+add_library(tiny_pool STATIC ../third_party/tiny_thread_pool/tiny_pool.c)
 
 ################################################################################
 
@@ -55,15 +55,13 @@ add_test(NAME ffi COMMAND test_ffi)
 ################################################################################
 
 include_directories(../src/klotski_core)
+add_library(test_global_utils STATIC global/global_utils.cc)
+set(TEST_GLOBAL_DEPS ${TEST_DEPS} test_global_utils tiny_pool)
 
-add_library(test_global_utils STATIC global/utils.cc)
+include_directories(../src/klotski_core/common_code)
 
 add_executable(test_global_common_code global/common_code.cc)
-
-target_link_libraries(test_global_common_code test_global_utils tiny_pool)
-
-target_link_libraries(test_global_common_code ${TEST_DEPS})
-
+target_link_libraries(test_global_common_code ${TEST_GLOBAL_DEPS})
 add_test(NAME global_common_code COMMAND test_global_common_code)
 
 ################################################################################
