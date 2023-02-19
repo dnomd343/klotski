@@ -24,6 +24,7 @@ public:
     void kill() { tiny_pool_kill(pool); }
     void detach() { tiny_pool_detach(pool); }
     explicit TinyPool(uint32_t size) { pool = tiny_pool_create(size); }
+    // TODO: thread pool destroy
 
     template <typename Func, typename ...Args>
     auto submit(Func &&func, Args &&...args) -> std::future<decltype(func(args...))> { // submit new task
