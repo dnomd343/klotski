@@ -59,9 +59,13 @@ add_library(test_global_utils STATIC global/global_utils.cc)
 set(TEST_GLOBAL_DEPS ${TEST_DEPS} test_global_utils tiny_pool)
 
 include_directories(../src/klotski_core/common_code)
-
 add_executable(test_global_common_code global/common_code.cc)
 target_link_libraries(test_global_common_code ${TEST_GLOBAL_DEPS})
 add_test(NAME global_common_code COMMAND test_global_common_code)
+
+include_directories(../src/klotski_core/short_code)
+add_executable(test_global_short_code global/short_code.cc)
+target_link_libraries(test_global_short_code ${TEST_GLOBAL_DEPS})
+add_test(NAME global_short_code COMMAND test_global_short_code)
 
 ################################################################################
