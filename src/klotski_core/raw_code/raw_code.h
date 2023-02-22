@@ -91,20 +91,20 @@ namespace klotski {
         static RawCode from_common_code(const std::string &common_code);
 
         /// Mirror functions
-//        bool is_vertical_mirror() const;
-//        bool is_horizontal_mirror() const;
-//
-//        RawCode to_vertical_mirror() const;
-//        RawCode to_horizontal_mirror() const;
-//
-//        static bool is_vertical_mirror(RawCode &&raw_code);
-//        static bool is_horizontal_mirror(RawCode &&raw_code);
-//        static bool is_vertical_mirror(const RawCode &raw_code);
-//        static bool is_horizontal_mirror(const RawCode &raw_code);
-//
-//        static RawCode to_vertical_mirror(RawCode &&raw_code);
-//        static RawCode to_horizontal_mirror(RawCode &&raw_code);
-//        static RawCode to_vertical_mirror(const RawCode &raw_code);
-//        static RawCode to_horizontal_mirror(const RawCode &raw_code);
+        bool is_vertical_mirror() const;
+        bool is_horizontal_mirror() const;
+
+        RawCode to_vertical_mirror() const;
+        RawCode to_horizontal_mirror() const;
+
+        static bool is_vertical_mirror(RawCode &&raw_code);
+        static bool is_horizontal_mirror(RawCode &&raw_code);
+        static bool is_vertical_mirror(const RawCode &raw_code);
+        static bool is_horizontal_mirror(const RawCode &raw_code);
+
+        static RawCode to_vertical_mirror(RawCode &&raw_code);
+        static RawCode to_horizontal_mirror(RawCode &&raw_code);
+        static RawCode to_vertical_mirror(const RawCode &raw_code);
+        static RawCode to_horizontal_mirror(const RawCode &raw_code);
     };
 }
