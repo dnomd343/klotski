@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "common.h"
 #include "raw_code.h"
 
@@ -12,20 +11,32 @@ CommonCode RawCode::to_common_code() const {
 }
 
 /// CommonCode to RawCode
-RawCode RawCode::from_common_code(const CommonCode &common_code) {
-    return RawCode(common_code); // load from common code
-}
-
-RawCode RawCode::from_common_code(uint64_t common_code) {
-    return RawCode(CommonCode(common_code)); // load from common code
-}
-
-RawCode RawCode::from_common_code(const std::string &common_code) {
-    return RawCode(CommonCode(common_code)); // load from common code
+RawCode::RawCode(CommonCode &&common_code) {
+    code = RawCode::extract(common_code.unwrap());
 }
 
 RawCode::RawCode(const CommonCode &common_code) {
-    code = RawCode::extract(common_code.unwrap()); // load from common code
+    code = RawCode::extract(common_code.unwrap());
+}
+
+RawCode RawCode::from_common_code(uint64_t common_code) {
+    return RawCode(CommonCode(common_code));
+}
+
+RawCode RawCode::from_common_code(CommonCode &&common_code) {
+    return RawCode(std::forward<CommonCode>(common_code));
+}
+
+RawCode RawCode::from_common_code(std::string &&common_code) {
+    return RawCode(std::forward<CommonCode>(CommonCode(common_code)));
+}
+
+RawCode RawCode::from_common_code(const CommonCode &common_code) {
+    return RawCode(common_code);
+}
+
+RawCode RawCode::from_common_code(const std::string &common_code) {
+    return RawCode(CommonCode(common_code));
 }
 
 /// NOTE: ensure that input raw code is valid!

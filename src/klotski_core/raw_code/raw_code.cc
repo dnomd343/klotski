@@ -1,6 +1,8 @@
 #include "common.h"
 #include "raw_code.h"
 
+using klotski::RawCode;
+
 namespace std {
     template<>
     struct hash<klotski::RawCode> {
@@ -18,6 +20,10 @@ namespace std {
 }
 
 namespace klotski {
+    bool RawCode::operator==(uint64_t raw_code) const {
+        return this->code == raw_code;
+    }
+
     bool RawCode::operator==(const RawCode &raw_code) const {
         return this->code == raw_code.code;
     }
@@ -61,7 +67,7 @@ namespace klotski {
     }
 }
 
-bool klotski::RawCode::check(uint64_t raw_code) { // check whether raw code is valid
+bool RawCode::check(uint64_t raw_code) { // check whether raw code is valid
     ///     MASK_1x2          MASK_2x1         MASK_2x2
     ///  000 100 000 000   000 000 000 000  000 100 000 000
     ///  000 000 000 000   100 000 000 000  100 100 000 000

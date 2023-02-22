@@ -54,11 +54,19 @@ namespace klotski {
     };
 
     class RawCode {
+        uint64_t code;
+        RawCode() = default; // unsafe initialize
+
+        static uint64_t compact(uint64_t raw_code); // raw code -> common code
+        static uint64_t extract(uint64_t common_code); // common code -> raw code
+
     public:
+        /// RawCode validity check
         bool valid() const;
         static bool check(uint64_t raw_code);
 
         /// Operators of RawCode
+        bool operator==(uint64_t raw_code) const;
         bool operator==(const RawCode &raw_code) const;
         constexpr explicit operator uint64_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const RawCode &self);
@@ -69,23 +77,34 @@ namespace klotski {
 
         /// RawCode constructors
         explicit RawCode(uint64_t raw_code);
+        explicit RawCode(CommonCode &&common_code);
         explicit RawCode(const CommonCode &common_code);
 
-        /// Rust-style initialization
+        /// Static initialization
         static RawCode create(uint64_t raw_code);
         static RawCode unsafe_create(uint64_t raw_code);
 
         static RawCode from_common_code(uint64_t common_code);
+        static RawCode from_common_code(CommonCode &&common_code);
+        static RawCode from_common_code(std::string &&common_code);
         static RawCode from_common_code(const CommonCode &common_code);
         static RawCode from_common_code(const std::string &common_code);
 
-        // TODO: mirror functions
-
-    private:
-        uint64_t code;
-        RawCode() = default; // unsafe initialize
-
-        static uint64_t compact(uint64_t raw_code);
-        static uint64_t extract(uint64_t common_code);
+        /// Mirror functions
+//        bool is_vertical_mirror() const;
+//        bool is_horizontal_mirror() const;
+//
+//        RawCode to_vertical_mirror() const;
+//        RawCode to_horizontal_mirror() const;
+//
+//        static bool is_vertical_mirror(RawCode &&raw_code);
+//        static bool is_horizontal_mirror(RawCode &&raw_code);
+//        static bool is_vertical_mirror(const RawCode &raw_code);
+//        static bool is_horizontal_mirror(const RawCode &raw_code);
+//
+//        static RawCode to_vertical_mirror(RawCode &&raw_code);
+//        static RawCode to_horizontal_mirror(RawCode &&raw_code);
+//        static RawCode to_vertical_mirror(const RawCode &raw_code);
+//        static RawCode to_horizontal_mirror(const RawCode &raw_code);
     };
 }
