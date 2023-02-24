@@ -22,7 +22,7 @@ inline void SHOULD_PANIC(const std::function<void(void)> &func) {
     EXPECT_EQ(panic_flag, true);
 }
 
-TEST(ShortCode, invalid) {
+TEST(ShortCode, validity) {
     EXPECT_NE(ShortCode::check(-1), true); // out of short code range
     EXPECT_NE(ShortCode::check(29670987), true); // out of short code range
     SHOULD_PANIC([](){ ShortCode::from_string("R50EH"); }); // with invalid `0`
@@ -58,7 +58,7 @@ TEST(ShortCode, speed_up) {
     EXPECT_EQ(AllCases::status(), AllCases::AVAILABLE);
 }
 
-TEST(ShortCode, code_verify) {
+TEST(ShortCode, code_verify) { // test all layout
     std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
@@ -68,15 +68,16 @@ TEST(ShortCode, code_verify) {
             EXPECT_EQ(tmp.valid(), true);
         }
     };
-    for (uint64_t head = 0; head < 16; ++head) {
-        threads[head] = std::thread(test, head); // ensure that short code fast mode enabled
+    for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
+        /// NOTE: ensure that short code fast mode enabled
+        threads[head] = std::thread(test, head);
     }
     for (auto &t : threads) {
         t.join();
     }
 }
 
-TEST(ShortCode, code_string) {
+TEST(ShortCode, code_string) { // test all string code
     std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
@@ -96,8 +97,8 @@ TEST(ShortCode, code_string) {
             EXPECT_EQ(ShortCode::from_string(code_str), short_code); // test lower cases
         }
     };
-    for (uint64_t head = 0; head < 16; ++head) {
-        threads[head] = std::thread(test, head); // ensure that short code fast mode enabled
+    for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
+        threads[head] = std::thread(test, head);
     }
     for (auto &t : threads) {
         t.join();
@@ -108,6 +109,7 @@ TEST(ShortCode, operators) {
     std::cout.setstate(std::ios::failbit); // hide std::cout content
     std::cout << "TEST OUTPUT -> " << ShortCode(TEST_CODE) << std::endl; // ostream test
     std::cout.clear();
+    EXPECT_EQ(ShortCode(TEST_CODE), TEST_CODE); // operator `==`
     EXPECT_EQ(ShortCode(TEST_CODE), ShortCode(TEST_CODE)); // operator `==`
     EXPECT_EQ((uint32_t)ShortCode(TEST_CODE), TEST_CODE); // convert as uint64_t
 }
@@ -121,17 +123,32 @@ TEST(ShortCode, code_convert) {
 
 TEST(ShortCode, constructors) {
     EXPECT_EQ(ShortCode(TEST_CODE).unwrap(), TEST_CODE);
-    EXPECT_EQ(ShortCode(TEST_CODE_STR).unwrap(), TEST_CODE);
-    EXPECT_EQ(ShortCode(CommonCode::from_short_code(TEST_CODE)).unwrap(), TEST_CODE);
+
+    EXPECT_EQ(ShortCode(TEST_CODE_STR).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(ShortCode(std::string(TEST_CODE_STR)).unwrap(), TEST_CODE); // r-value
+
+    auto common_code = CommonCode::from_short_code(TEST_CODE);
+    EXPECT_EQ(ShortCode(common_code).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(ShortCode(CommonCode::from_short_code(TEST_CODE)).unwrap(), TEST_CODE); // r-value
 }
 
 TEST(ShortCode, initializate) {
     EXPECT_EQ(ShortCode::create(TEST_CODE).unwrap(), TEST_CODE);
-    EXPECT_EQ(ShortCode::from_string(TEST_CODE_STR).unwrap(), TEST_CODE);
     EXPECT_EQ(ShortCode::unsafe_create(TEST_CODE).unwrap(), TEST_CODE);
 
+    EXPECT_EQ(ShortCode::from_string(TEST_CODE_STR).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(ShortCode::from_string(std::string(TEST_CODE_STR)).unwrap(), TEST_CODE); // r-value
+
     auto common_code = CommonCode::from_short_code(TEST_CODE);
-    EXPECT_EQ(ShortCode::from_common_code(common_code).unwrap(), TEST_CODE);
+    auto common_code_string = common_code.to_string(false);
+
     EXPECT_EQ(ShortCode::from_common_code(common_code.unwrap()).unwrap(), TEST_CODE);
-    EXPECT_EQ(ShortCode::from_common_code(common_code.to_string()).unwrap(), TEST_CODE);
+
+    EXPECT_EQ(ShortCode::from_common_code(common_code).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(ShortCode::from_common_code(
+        CommonCode::from_short_code(TEST_CODE) // r-value
+    ).unwrap(), TEST_CODE);
+
+    EXPECT_EQ(ShortCode::from_common_code(common_code_string).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(ShortCode::from_common_code(common_code.to_string()).unwrap(), TEST_CODE); // r-value
 }

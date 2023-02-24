@@ -22,7 +22,7 @@ inline void SHOULD_PANIC(const std::function<void(void)> &func) {
     EXPECT_EQ(panic_flag, true);
 }
 
-TEST(CommonCode, invalid) {
+TEST(CommonCode, validity) {
     EXPECT_NE(CommonCode::check(0x3'A9'BF'0C'00), true); // invalid 2x2 block
     EXPECT_NE(CommonCode::check(0x1'D9'BF'0C'00), true); // invalid block range
     EXPECT_NE(CommonCode::check(0x1'A9'BF'FC'00), true); // less than 2 space
@@ -32,7 +32,7 @@ TEST(CommonCode, invalid) {
     SHOULD_PANIC([](){ CommonCode::from_string("123J432A9"); }); // with invalid `J`
 }
 
-TEST(CommonCode, code_verify) {
+TEST(CommonCode, code_verify) { // test all layout
     std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
@@ -42,7 +42,7 @@ TEST(CommonCode, code_verify) {
             EXPECT_EQ(tmp.valid(), true);
         }
     };
-    for (uint64_t head = 0; head < 16; ++head) {
+    for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
         threads[head] = std::thread(test, head);
     }
     for (auto &t : threads) {
@@ -50,7 +50,7 @@ TEST(CommonCode, code_verify) {
     }
 }
 
-TEST(CommonCode, code_string) {
+TEST(CommonCode, code_string) { // test all string code
     std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
@@ -76,7 +76,7 @@ TEST(CommonCode, code_string) {
             EXPECT_EQ(CommonCode::from_string(code_str), common_code); // test lower cases
         }
     };
-    for (uint64_t head = 0; head < 16; ++head) {
+    for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
         threads[head] = std::thread(test, head);
     }
     for (auto &t : threads) {
@@ -88,13 +88,15 @@ TEST(CommonCode, operators) {
     std::cout.setstate(std::ios::failbit); // hide std::cout content
     std::cout << "TEST OUTPUT -> " << CommonCode(TEST_CODE) << std::endl; // ostream test
     std::cout.clear();
+    EXPECT_EQ(CommonCode(TEST_CODE), TEST_CODE); // operator `==`
     EXPECT_EQ(CommonCode(TEST_CODE), CommonCode(TEST_CODE)); // operator `==`
     EXPECT_EQ((uint64_t)CommonCode(TEST_CODE), TEST_CODE); // convert as uint64_t
 }
 
 TEST(CommonCode, code_convert) {
     EXPECT_STREQ(CommonCode(TEST_CODE).to_string().c_str(), TEST_CODE_STR.c_str());
-    EXPECT_EQ(CommonCode(CommonCode(TEST_CODE).to_string()), CommonCode(TEST_CODE));
+    EXPECT_EQ(CommonCode(CommonCode(TEST_CODE).to_string(true)), CommonCode(TEST_CODE));
+    EXPECT_EQ(CommonCode(CommonCode(TEST_CODE).to_string(false)), CommonCode(TEST_CODE));
     EXPECT_EQ(CommonCode(TEST_CODE).to_raw_code(), RawCode::from_common_code(TEST_CODE));
     EXPECT_EQ(CommonCode(TEST_CODE).to_short_code(), ShortCode::from_common_code(TEST_CODE));
     EXPECT_EQ(CommonCode(TEST_CODE).unwrap(), TEST_CODE);
@@ -102,22 +104,45 @@ TEST(CommonCode, code_convert) {
 
 TEST(CommonCode, constructors) {
     EXPECT_EQ(CommonCode(TEST_CODE).unwrap(), TEST_CODE);
-    EXPECT_EQ(CommonCode(TEST_CODE_STR).unwrap(), TEST_CODE);
-    EXPECT_EQ(CommonCode(RawCode::from_common_code(TEST_CODE)).unwrap(), TEST_CODE);
-    EXPECT_EQ(CommonCode(ShortCode::from_common_code(TEST_CODE)).unwrap(), TEST_CODE);
+
+    EXPECT_EQ(CommonCode(TEST_CODE_STR).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(CommonCode(std::string(TEST_CODE_STR)).unwrap(), TEST_CODE); // r-value
+
+    auto raw_code = RawCode::from_common_code(TEST_CODE);
+    EXPECT_EQ(CommonCode(raw_code).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(CommonCode(RawCode::from_common_code(TEST_CODE)).unwrap(), TEST_CODE); // r-value
+
+    auto short_code = ShortCode::from_common_code(TEST_CODE);
+    EXPECT_EQ(CommonCode(short_code).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(CommonCode(ShortCode::from_common_code(TEST_CODE)).unwrap(), TEST_CODE); // r-value
 }
 
 TEST(CommonCode, initializate) {
     EXPECT_EQ(CommonCode::create(TEST_CODE).unwrap(), TEST_CODE);
-    EXPECT_EQ(CommonCode::from_string(TEST_CODE_STR).unwrap(), TEST_CODE);
     EXPECT_EQ(CommonCode::unsafe_create(TEST_CODE).unwrap(), TEST_CODE);
 
+    EXPECT_EQ(CommonCode::from_string(TEST_CODE_STR).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(CommonCode::from_string(std::string(TEST_CODE_STR)).unwrap(), TEST_CODE); // r-value
+
     auto raw_code = RawCode::from_common_code(TEST_CODE);
-    EXPECT_EQ(CommonCode::from_raw_code(raw_code).unwrap(), TEST_CODE);
+
     EXPECT_EQ(CommonCode::from_raw_code(raw_code.unwrap()).unwrap(), TEST_CODE);
 
+    EXPECT_EQ(CommonCode::from_raw_code(raw_code).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(CommonCode::from_raw_code(
+        RawCode::from_common_code(TEST_CODE) // r-value
+    ).unwrap(), TEST_CODE);
+
     auto short_code = ShortCode::from_common_code(TEST_CODE);
-    EXPECT_EQ(CommonCode::from_short_code(short_code).unwrap(), TEST_CODE);
+    auto short_code_string = short_code.to_string();
+
     EXPECT_EQ(CommonCode::from_short_code(short_code.unwrap()).unwrap(), TEST_CODE);
-    EXPECT_EQ(CommonCode::from_short_code(short_code.to_string()).unwrap(), TEST_CODE);
+
+    EXPECT_EQ(CommonCode::from_short_code(short_code).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(CommonCode::from_short_code(
+        ShortCode::from_common_code(TEST_CODE) // r-value
+    ).unwrap(), TEST_CODE);
+
+    EXPECT_EQ(CommonCode::from_short_code(short_code_string).unwrap(), TEST_CODE); // l-value
+    EXPECT_EQ(CommonCode::from_short_code(short_code.to_string()).unwrap(), TEST_CODE); // r-value
 }

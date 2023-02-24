@@ -1,6 +1,5 @@
 #include <algorithm>
 #include "common.h"
-#include "all_cases.h"
 #include "short_code.h"
 #include "all_cases_offset.h"
 #include "basic_ranges_offset.h"
@@ -45,7 +44,9 @@ ShortCode ShortCode::from_common_code(CommonCode &&common_code) {
 }
 
 ShortCode ShortCode::from_common_code(std::string &&common_code) {
-    return ShortCode(std::forward<std::string>(common_code));
+    return ShortCode(std::forward<CommonCode>(
+        CommonCode(std::forward<std::string>(common_code))
+    ));
 }
 
 ShortCode ShortCode::from_common_code(const CommonCode &common_code) {
