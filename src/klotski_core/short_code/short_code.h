@@ -76,14 +76,14 @@ namespace klotski {
         uint32_t code;
         ShortCode() = default; // unsafe initialize
 
-        static inline Mode mode();
+        static Mode mode();
         static bool fast_mode_available;
         static bool normal_mode_available;
 
-        static uint64_t fast_decode(uint32_t short_code); // short code -> common code
-        static uint32_t fast_encode(uint64_t common_code); // common code -> short code
-        static uint64_t tiny_decode(uint32_t short_code); // short code -> common code
-        static uint32_t tiny_encode(uint64_t common_code); // common code -> short code
+        static inline uint64_t fast_decode(uint32_t short_code); // short code -> common code
+        static inline uint32_t fast_encode(uint64_t common_code); // common code -> short code
+        static inline uint64_t tiny_decode(uint32_t short_code); // short code -> common code
+        static inline uint32_t tiny_encode(uint64_t common_code); // common code -> short code
 
         static inline std::string string_encode(uint32_t short_code); // short code -> string
         static inline uint32_t string_decode(const std::string &short_code); // string -> short code

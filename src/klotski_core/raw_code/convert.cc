@@ -30,7 +30,9 @@ RawCode RawCode::from_common_code(CommonCode &&common_code) {
 }
 
 RawCode RawCode::from_common_code(std::string &&common_code) {
-    return RawCode(std::forward<CommonCode>(CommonCode(common_code)));
+    return RawCode(std::forward<CommonCode>(
+        CommonCode(std::forward<std::string>(common_code))
+    ));
 }
 
 RawCode RawCode::from_common_code(const CommonCode &common_code) {

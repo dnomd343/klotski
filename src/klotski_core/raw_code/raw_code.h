@@ -57,11 +57,14 @@ namespace klotski {
         uint64_t code;
         RawCode() = default; // unsafe initialize
 
-        static uint64_t compact(uint64_t raw_code); // raw code -> common code
-        static uint64_t extract(uint64_t common_code); // common code -> raw code
+        static inline uint64_t compact(uint64_t raw_code); // raw code -> common code
+        static inline uint64_t extract(uint64_t common_code); // common code -> raw code
 
-        static uint64_t vertical_mirror(uint64_t raw_code); // to vertical mirror
-        static uint64_t horizontal_mirror(uint64_t raw_code); // to horizontal mirror
+        static inline uint64_t vertical_mirror(uint64_t raw_code); // to vertical mirror
+        static inline uint64_t horizontal_mirror(uint64_t raw_code); // to horizontal mirror
+
+        static inline bool vertical_mirror_check(uint64_t raw_code); // check vertical mirror
+        static inline bool horizontal_mirror_check(uint64_t raw_code); // check horizontal mirror
 
     public:
         /// RawCode validity check

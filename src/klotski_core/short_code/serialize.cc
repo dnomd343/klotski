@@ -21,7 +21,7 @@ ShortCode::ShortCode(const std::string &short_code) {
 }
 
 ShortCode ShortCode::from_string(std::string &&short_code) {
-    return ShortCode(short_code);
+    return ShortCode(std::forward<std::string>(short_code));
 }
 
 ShortCode ShortCode::from_string(const std::string &short_code) {

@@ -1,5 +1,4 @@
 #include <thread>
-#include <cstdint>
 #include "md5.h"
 #include "all_cases.h"
 #include "gtest/gtest.h"

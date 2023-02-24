@@ -31,7 +31,7 @@
 #include "basic_ranges.h"
 
 namespace klotski {
-    /// all cases count -> memory pre-allocated
+    /// all cases count
     const uint32_t ALL_CASES_SIZE[16] = {
         2942906, 2260392, 2942906, 0,
         2322050, 1876945, 2322050, 0,

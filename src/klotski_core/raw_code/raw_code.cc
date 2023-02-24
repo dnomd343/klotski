@@ -68,19 +68,19 @@ namespace klotski {
 }
 
 bool RawCode::check(uint64_t raw_code) { // check whether raw code is valid
-    ///     MASK_1x2          MASK_2x1         MASK_2x2
-    ///  000 100 000 000   000 000 000 000  000 100 000 000
-    ///  000 000 000 000   100 000 000 000  100 100 000 000
-    ///  ...               ...              ...
-    constexpr uint64_t MASK_1x1 = ~B_1x1 & 0b111; /// 0b100
+    ///     MASK_1x1      |     MASK_1x2      |     MASK_2x1      |     MASK_2x2
+    ///  100 000 000 000  |  000 100 000 000  |  000 000 000 000  |  000 100 000 000
+    ///  000 000 000 000  |  000 000 000 000  |  100 000 000 000  |  100 100 000 000
+    ///  ...              |  ...              |  ...              |  ...
+    ///
+    constexpr uint64_t MASK_1x1 = ~B_1x1 & 0b111;
     constexpr uint64_t MASK_1x2 = MASK_1x1 << 3;
     constexpr uint64_t MASK_2x1 = MASK_1x1 << 12;
     constexpr uint64_t MASK_2x2 = MASK_1x1 << 3 | MASK_1x1 << 12 | MASK_1x1 << 15;
-
-    /// high 4-bits check
     if (raw_code >> 60) {
         return false; // high 4-bits must be zero
     }
+
     /// check each block
     int head_num = 0, space_num = 0; // statistics for space and 2x2 number
     for (int addr = 0; addr < 20; ++addr, raw_code >>= 3) {
