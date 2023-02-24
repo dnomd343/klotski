@@ -1,4 +1,7 @@
+#include <thread>
 #include "global_utils.h"
+
+const static uint32_t DEFAULT_THREAD_NUM = 1;
 
 range_split_t range_split(uint64_t start, uint64_t end, uint64_t size) {
     uint64_t rear = end - (end - start) % size; // (rear - start) % size == 0
@@ -13,8 +16,6 @@ range_split_t range_split(uint64_t start, uint64_t end, uint64_t size) {
 }
 
 uint32_t thread_num() {
-
-    // TODO: use CPU core number
-
-    return 16;
+    auto num = std::thread::hardware_concurrency(); // CPU core number
+    return (num == 0) ? DEFAULT_THREAD_NUM : num; // fetch failed -> use default number
 }
