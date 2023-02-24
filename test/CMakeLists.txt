@@ -68,4 +68,9 @@ add_executable(test_global_short_code global/short_code.cc)
 target_link_libraries(test_global_short_code ${TEST_GLOBAL_DEPS})
 add_test(NAME global_short_code COMMAND test_global_short_code)
 
+include_directories(../src/klotski_core/raw_code)
+add_executable(test_global_raw_code global/raw_code.cc)
+target_link_libraries(test_global_raw_code ${TEST_GLOBAL_DEPS})
+add_test(NAME global_raw_code COMMAND test_global_raw_code)
+
 ################################################################################

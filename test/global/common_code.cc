@@ -1,6 +1,6 @@
 #include "all_cases.h"
-#include "gtest/gtest.h"
 #include "common_code.h"
+#include "gtest/gtest.h"
 #include "global_utils.h"
 
 using klotski::AllCases;
