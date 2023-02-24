@@ -5,18 +5,20 @@ using klotski::RawCode;
 using klotski::CommonCode;
 using klotski::RawCodeException;
 
-/// RawCode to CommonCode
+/// -------------------------- RawCode to CommonCode --------------------------
+
 CommonCode RawCode::to_common_code() const {
     return CommonCode::unsafe_create(RawCode::compact(code));
 }
 
-/// CommonCode to RawCode
+/// -------------------------- CommonCode to RawCode --------------------------
+
 RawCode::RawCode(CommonCode &&common_code) {
-    code = RawCode::extract(common_code.unwrap());
+    code = RawCode::extract(common_code.unwrap()); // convert from common code
 }
 
 RawCode::RawCode(const CommonCode &common_code) {
-    code = RawCode::extract(common_code.unwrap());
+    code = RawCode::extract(common_code.unwrap()); // convert from common code
 }
 
 RawCode RawCode::from_common_code(uint64_t common_code) {
@@ -38,6 +40,8 @@ RawCode RawCode::from_common_code(const CommonCode &common_code) {
 RawCode RawCode::from_common_code(const std::string &common_code) {
     return RawCode(CommonCode(common_code));
 }
+
+/// ----------------------------- Basic Functions -----------------------------
 
 /// NOTE: ensure that input raw code is valid!
 uint64_t RawCode::compact(uint64_t raw_code) { // raw code --> common code

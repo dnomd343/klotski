@@ -4,19 +4,14 @@
 using klotski::ShortCode;
 using klotski::ShortCodeException;
 
-/// ShortCode to String
+/// --------------------------- ShortCode to String ---------------------------
+
 std::string ShortCode::to_string() const { // encode as 5-bits string
-    uint32_t short_code = code;
-    char result[6]; // short code length 5
-    result[5] = '\0'; // string ending flag
-    for (int n = 0; n < 5; ++n) {
-        result[4 - n] = SHORT_CODE_TABLE[short_code & 0b11111]; // aka _ % 32
-        short_code >>= 5; // aka _ / 32
-    }
-    return result;
+    return string_encode(code);
 }
 
-/// String to ShortCode
+/// --------------------------- String to ShortCode ---------------------------
+
 ShortCode::ShortCode(std::string &&short_code) {
     code = string_decode(short_code);
 }
@@ -31,6 +26,18 @@ ShortCode ShortCode::from_string(std::string &&short_code) {
 
 ShortCode ShortCode::from_string(const std::string &short_code) {
     return ShortCode(short_code);
+}
+
+/// ----------------------------- Basic Functions -----------------------------
+
+std::string klotski::ShortCode::string_encode(uint32_t short_code) { // encode as 5-bits string
+    char result[6]; // short code length 5
+    result[5] = '\0'; // string ending flag
+    for (int n = 0; n < 5; ++n) {
+        result[4 - n] = SHORT_CODE_TABLE[short_code & 0b11111]; // aka _ % 32
+        short_code >>= 5; // aka _ / 32
+    }
+    return result;
 }
 
 uint32_t ShortCode::string_decode(const std::string &short_code) { // 5-bits string decode

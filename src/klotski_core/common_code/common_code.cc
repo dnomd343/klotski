@@ -1,6 +1,8 @@
 #include "common.h"
 #include "common_code.h"
 
+using klotski::CommonCode;
+
 namespace std {
     template<>
     struct hash<klotski::CommonCode> {
@@ -18,6 +20,10 @@ namespace std {
 }
 
 namespace klotski {
+    bool CommonCode::operator==(uint64_t common_code) const {
+        return this->code == common_code;
+    }
+
     bool CommonCode::operator==(const CommonCode &common_code) const {
         return this->code == common_code.code;
     }
@@ -53,7 +59,7 @@ namespace klotski {
     }
 }
 
-bool klotski::CommonCode::check(uint64_t common_code) { // whether common code is valid
+bool CommonCode::check(uint64_t common_code) { // whether common code is valid
     ///   M_1x1     M_1x2     M_2x1     M_2x2
     ///  1 0 0 0   1 1 0 0   1 0 0 0   1 1 0 0
     ///  0 0 0 0   0 0 0 0   1 0 0 0   1 1 0 0

@@ -1,6 +1,11 @@
 #include "all_cases.h"
 #include "short_code.h"
 
+using klotski::ShortCode;
+
+bool ShortCode::fast_mode_available = false;
+bool ShortCode::normal_mode_available = false;
+
 namespace std {
     template<>
     struct hash<klotski::ShortCode> {
@@ -54,11 +59,6 @@ namespace klotski {
         code = short_code;
     }
 }
-
-using klotski::ShortCode;
-
-bool ShortCode::fast_mode_available = false;
-bool ShortCode::normal_mode_available = false;
 
 bool ShortCode::check(uint32_t short_code) {
     return short_code < klotski::SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)

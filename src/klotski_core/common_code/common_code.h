@@ -59,8 +59,7 @@
 #include "short_code.h"
 
 namespace klotski {
-    // import for convert interface
-    class RawCode;
+    class RawCode; // import for convert interface
     class ShortCode;
 
     class CommonCodeException : public std::runtime_error {
@@ -71,11 +70,19 @@ namespace klotski {
     };
 
     class CommonCode {
+        uint64_t code;
+        CommonCode() = default; // unsafe initialize
+
+        static inline uint64_t string_decode(const std::string &common_code);
+        static inline std::string string_encode(uint64_t common_code, bool shorten);
+
     public:
+        /// CommonCode validity check
         bool valid() const;
         static bool check(uint64_t common_code);
 
         /// Operators of CommonCode
+        bool operator==(uint64_t common_code) const;
         bool operator==(const CommonCode &common_code) const;
         constexpr explicit operator uint64_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const CommonCode &self);
@@ -88,24 +95,28 @@ namespace klotski {
 
         /// CommonCode constructors
         explicit CommonCode(uint64_t common_code);
+        explicit CommonCode(RawCode &&raw_code);
+        explicit CommonCode(ShortCode &&short_code);
+        explicit CommonCode(std::string &&common_code);
         explicit CommonCode(const RawCode &raw_code);
         explicit CommonCode(const ShortCode &short_code);
         explicit CommonCode(const std::string &common_code);
 
-        /// Rust-style initialization
+        /// Static initialization
         static CommonCode create(uint64_t common_code);
         static CommonCode unsafe_create(uint64_t common_code);
+
+        static CommonCode from_string(std::string &&common_code);
         static CommonCode from_string(const std::string &common_code);
 
         static CommonCode from_raw_code(uint64_t raw_code);
+        static CommonCode from_raw_code(RawCode &&raw_code);
         static CommonCode from_raw_code(const RawCode &raw_code);
 
         static CommonCode from_short_code(uint32_t short_code);
+        static CommonCode from_short_code(ShortCode &&short_code);
+        static CommonCode from_short_code(std::string &&short_code);
         static CommonCode from_short_code(const ShortCode &short_code);
         static CommonCode from_short_code(const std::string &short_code);
-
-    private:
-        uint64_t code;
-        CommonCode() = default; // unsafe initialize
     };
 }

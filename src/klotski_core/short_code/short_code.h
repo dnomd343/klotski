@@ -85,7 +85,8 @@ namespace klotski {
         static uint64_t tiny_decode(uint32_t short_code); // short code -> common code
         static uint32_t tiny_encode(uint64_t common_code); // common code -> short code
 
-        static uint32_t string_decode(const std::string &short_code); // string -> short code
+        static inline std::string string_encode(uint32_t short_code); // short code -> string
+        static inline uint32_t string_decode(const std::string &short_code); // string -> short code
 
     public:
         /// ShortCode validity check

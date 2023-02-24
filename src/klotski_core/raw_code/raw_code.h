@@ -60,6 +60,9 @@ namespace klotski {
         static uint64_t compact(uint64_t raw_code); // raw code -> common code
         static uint64_t extract(uint64_t common_code); // common code -> raw code
 
+        static uint64_t vertical_mirror(uint64_t raw_code); // to vertical mirror
+        static uint64_t horizontal_mirror(uint64_t raw_code); // to horizontal mirror
+
     public:
         /// RawCode validity check
         bool valid() const;
