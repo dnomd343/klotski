@@ -18,6 +18,10 @@ namespace std {
 }
 
 namespace klotski {
+    bool ShortCode::operator==(uint32_t short_code) const {
+        return this->code == short_code;
+    }
+
     bool ShortCode::operator==(const ShortCode &short_code) const {
         return this->code == short_code.code;
     }
@@ -51,14 +55,14 @@ namespace klotski {
     }
 }
 
-bool klotski::ShortCode::check(uint32_t short_code) {
-    return short_code < SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
-}
-
 using klotski::ShortCode;
 
 bool ShortCode::fast_mode_available = false;
 bool ShortCode::normal_mode_available = false;
+
+bool ShortCode::check(uint32_t short_code) {
+    return short_code < klotski::SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
+}
 
 ShortCode::Mode ShortCode::mode() { // ensure speed up enabled and return current mode
     if (fast_mode_available) {

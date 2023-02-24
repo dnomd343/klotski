@@ -53,10 +53,13 @@
 #include <ostream>
 #include <stdexcept>
 #include <utility>
+#include "all_cases.h"
 #include "common_code.h"
 
 namespace klotski {
     class CommonCode; // import for convert interface
+
+    const uint32_t SHORT_CODE_LIMIT = klotski::ALL_CASES_SIZE_SUM;
 
     class ShortCodeException : public std::runtime_error {
     public:
@@ -73,15 +76,16 @@ namespace klotski {
         uint32_t code;
         ShortCode() = default; // unsafe initialize
 
-        static Mode mode();
+        static inline Mode mode();
         static bool fast_mode_available;
         static bool normal_mode_available;
+
         static uint64_t fast_decode(uint32_t short_code); // short code -> common code
         static uint32_t fast_encode(uint64_t common_code); // common code -> short code
         static uint64_t tiny_decode(uint32_t short_code); // short code -> common code
         static uint32_t tiny_encode(uint64_t common_code); // common code -> short code
 
-        static const uint32_t SHORT_CODE_LIMIT = 29334498;
+        static uint32_t string_decode(const std::string &short_code); // string -> short code
 
     public:
         /// ShortCode validity check
@@ -108,12 +112,6 @@ namespace klotski {
         explicit ShortCode(CommonCode &&common_code);
         explicit ShortCode(const std::string &short_code);
         explicit ShortCode(const CommonCode &common_code);
-
-        ShortCode(uint32_t short_code, Mode mode) : ShortCode(short_code) { speed_up(mode); }
-        ShortCode(const std::string &short_code, Mode mode) : ShortCode(short_code) { speed_up(mode); }
-        ShortCode(const CommonCode &common_code, Mode mode) : ShortCode(common_code) { speed_up(mode); }
-        ShortCode(std::string &&short_code, Mode mode) : ShortCode(std::forward<std::string>(short_code)) { speed_up(mode); }
-        ShortCode(CommonCode &&common_code, Mode mode) : ShortCode(std::forward<CommonCode>(common_code)) { speed_up(mode); }
 
         /// Static initialization
         static ShortCode create(uint32_t short_code);

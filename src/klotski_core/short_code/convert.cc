@@ -10,7 +10,7 @@ using klotski::ShortCode;
 using klotski::CommonCode;
 
 /// ShortCode to CommonCode
-CommonCode ShortCode::to_common_code() const { // convert to common code
+CommonCode ShortCode::to_common_code() const {
     if (ShortCode::mode() == ShortCode::NORMAL) {
         return CommonCode::unsafe_create(tiny_decode(code)); // normal mode
     }
@@ -18,8 +18,32 @@ CommonCode ShortCode::to_common_code() const { // convert to common code
 }
 
 /// CommonCode to ShortCode
+ShortCode::ShortCode(CommonCode &&common_code) {
+    if (ShortCode::mode() == ShortCode::NORMAL) {
+        code = tiny_encode(common_code.unwrap()); // normal mode
+    } else {
+        code = fast_encode(common_code.unwrap()); // fast mode
+    }
+}
+
+ShortCode::ShortCode(const CommonCode &common_code) {
+    if (ShortCode::mode() == ShortCode::NORMAL) {
+        code = tiny_encode(common_code.unwrap()); // normal mode
+    } else {
+        code = fast_encode(common_code.unwrap()); // fast mode
+    }
+}
+
 ShortCode ShortCode::from_common_code(uint64_t common_code) {
     return ShortCode(CommonCode(common_code));
+}
+
+ShortCode ShortCode::from_common_code(CommonCode &&common_code) {
+    return ShortCode(std::forward<CommonCode>(common_code));
+}
+
+ShortCode ShortCode::from_common_code(std::string &&common_code) {
+    return ShortCode(std::forward<std::string>(common_code));
 }
 
 ShortCode ShortCode::from_common_code(const CommonCode &common_code) {
@@ -28,14 +52,6 @@ ShortCode ShortCode::from_common_code(const CommonCode &common_code) {
 
 ShortCode ShortCode::from_common_code(const std::string &common_code) {
     return ShortCode(CommonCode(common_code));
-}
-
-ShortCode::ShortCode(const CommonCode &common_code) { // convert from common code
-    if (ShortCode::mode() == ShortCode::NORMAL) {
-        code = tiny_encode(common_code.unwrap()); // normal mode
-    } else {
-        code = fast_encode(common_code.unwrap()); // fast mode
-    }
 }
 
 /// NOTE: ensure that input common code is valid!

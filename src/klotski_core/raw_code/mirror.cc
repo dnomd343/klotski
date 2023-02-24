@@ -2,37 +2,17 @@
 
 using klotski::RawCode;
 
-/// Static mirror functions
-bool RawCode::is_vertical_mirror(RawCode &&raw_code) {
-    return raw_code.is_vertical_mirror();
+/// Mirror convert functions
+RawCode RawCode::to_vertical_mirror() const {
+
+    // TODO: vertical mirror convert
+
 }
 
-bool RawCode::is_horizontal_mirror(RawCode &&raw_code) {
-    return raw_code.is_horizontal_mirror();
-}
+RawCode RawCode::to_horizontal_mirror() const {
 
-bool RawCode::is_vertical_mirror(const RawCode &raw_code) {
-    return raw_code.is_vertical_mirror();
-}
+    // TODO: horizontal mirror convert
 
-bool RawCode::is_horizontal_mirror(const RawCode &raw_code) {
-    return raw_code.is_horizontal_mirror();
-}
-
-RawCode RawCode::to_vertical_mirror(RawCode &&raw_code) {
-    return raw_code.to_vertical_mirror();
-}
-
-RawCode RawCode::to_horizontal_mirror(RawCode &&raw_code) {
-    return raw_code.to_horizontal_mirror();
-}
-
-RawCode RawCode::to_vertical_mirror(const RawCode &raw_code) {
-    return raw_code.to_vertical_mirror();
-}
-
-RawCode RawCode::to_horizontal_mirror(const RawCode &raw_code) {
-    return raw_code.to_horizontal_mirror();
 }
 
 /// Mirror check functions
@@ -48,15 +28,26 @@ bool RawCode::is_horizontal_mirror() const {
 
 }
 
-/// Mirror convert functions
-RawCode RawCode::to_vertical_mirror() const {
+bool RawCode::is_vertical_mirror(RawCode &&raw_code) const {
 
-    // TODO: vertical mirror convert
+    // TODO: vertical mirror check
 
 }
 
-RawCode RawCode::to_horizontal_mirror() const {
+bool RawCode::is_vertical_mirror(const RawCode &raw_code) const {
 
-    // TODO: horizontal mirror convert
+    // TODO: vertical mirror check
+
+}
+
+bool RawCode::is_horizontal_mirror(RawCode &&raw_code) const {
+
+    // TODO: horizontal mirror check
+
+}
+
+bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const {
+
+    // TODO: horizontal mirror check
 
 }

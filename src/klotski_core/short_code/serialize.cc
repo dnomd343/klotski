@@ -4,10 +4,7 @@
 using klotski::ShortCode;
 using klotski::ShortCodeException;
 
-ShortCode ShortCode::from_string(const std::string &short_code) {
-    return ShortCode(short_code); // convert from string
-}
-
+/// ShortCode to String
 std::string ShortCode::to_string() const { // encode as 5-bits string
     uint32_t short_code = code;
     char result[6]; // short code length 5
@@ -19,7 +16,24 @@ std::string ShortCode::to_string() const { // encode as 5-bits string
     return result;
 }
 
-ShortCode::ShortCode(const std::string &short_code) { // 5-bits string decode
+/// String to ShortCode
+ShortCode::ShortCode(std::string &&short_code) {
+    code = string_decode(short_code);
+}
+
+ShortCode::ShortCode(const std::string &short_code) {
+    code = string_decode(short_code);
+}
+
+ShortCode ShortCode::from_string(std::string &&short_code) {
+    return ShortCode(short_code);
+}
+
+ShortCode ShortCode::from_string(const std::string &short_code) {
+    return ShortCode(short_code);
+}
+
+uint32_t ShortCode::string_decode(const std::string &short_code) { // 5-bits string decode
     if (short_code.length() != 5) { // check string length
         throw ShortCodeException("short code should length 5");
     }
@@ -40,5 +54,5 @@ ShortCode::ShortCode(const std::string &short_code) { // 5-bits string decode
     if (!ShortCode::check(result)) { // check converted short code
         throw ShortCodeException("short code invalid");
     }
-    code = result; // apply convert result
+    return result; // apply convert result
 }
