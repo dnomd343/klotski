@@ -12,7 +12,7 @@ using klotski::CommonCode;
 const static uint64_t TEST_CODE = 0x1'A9BF'0C00;
 const static std::string TEST_CODE_STR = "1A9BF0C00";
 
-inline void SHOULD_PANIC(const std::function<void(void)> &func) {
+static inline void SHOULD_PANIC(const std::function<void()> &func) {
     bool panic_flag = false;
     try {
         func();

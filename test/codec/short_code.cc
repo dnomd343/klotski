@@ -12,7 +12,7 @@ using klotski::BasicRanges;
 const static uint32_t TEST_CODE = 4091296;
 const static std::string TEST_CODE_STR = "4WVE1";
 
-inline void SHOULD_PANIC(const std::function<void(void)> &func) {
+static inline void SHOULD_PANIC(const std::function<void()> &func) {
     bool panic_flag = false;
     try {
         func();
