@@ -6,7 +6,7 @@
 
 /// Therefore, the valid value of ShortCode is [0, 29334498), stored in `uint32_t`.
 /// The goal of high compression ratio is to facilitate verbal sharing, so it is
-/// necessary to represent it in a suitable string. Similar to Bitcoin's base58,
+/// necessary to represent it in a suitable string. Similar to Bitcoin's `base58`,
 /// in ShortCode, 4 confusing characters `0` `O` `I` `l` are removed from 10 numbers
 /// and 26 characters, forming a private base32 scheme.
 
@@ -15,8 +15,34 @@
 /// represented by a 5-bits length code. As in CommonCode, the characters here are
 /// case insensitive, but uppercase is still recommended.
 
-///   Eg1: 0x1A9BF0C00 ->  4091296 -> "4WVE1"
-///   Eg2: 0x4FEA13400 -> 10399732 -> "AXCZN"
+///   ShortCode Convert Table
+///   -------------------------------------------------
+///   |  00 |  01 |  02 |  03 |  04 |  05 |  06 |  07 |
+///   | `1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` |
+///   -------------------------------------------------
+///   |  08 |  09 |  10 |  11 |  12 |  13 |  14 |  15 |
+///   | `9` | `A` | `B` | `C` | `D` | `E` | `F` | `G` |
+///   -------------------------------------------------
+///   |  16 |  17 |  18 |  19 |  20 |  21 |  22 |  23 |
+///   | `H` | `J` | `K` | `M` | `N` | `P` | `Q` | `R` |
+///   -------------------------------------------------
+///   |  24 |  25 |  26 |  27 |  28 |  29 |  30 |  31 |
+///   | `S` | `T` | `U` | `V` | `W` | `X` | `Y` | `Z` |
+///   -------------------------------------------------
+
+///   Eg1:
+///     0x1A9BF0C00 -> index 4091296
+///     4091296 = 3 * (32 ^ 4) + 28 * (32 ^ 3) + 27 * (32 ^ 2) + 13 * (32 ^ 1) + 0 * (32 ^ 0)
+///       => (3), (28), (27), (13), (0)
+///       => `4`, `W`, `V`, `E`, `1`
+///       => "4WVE1"
+
+///   Eg2:
+///     0x4FEA13400 -> index 10399732
+///     10399732 = 9 * (32 ^ 4) + 29 * (32 ^ 3) + 11 * (32 ^ 2) + 31 * (32 ^ 1) + 20 * (32 ^ 0)
+///       => (9), (29), (11), (31), (20)
+///       => `A`, `X`, `C`, `Z`, `N`
+///       => "AXCZN"
 
 /// Compared with CommonCode, although ShortCode saves space, it completely loses
 /// readability. The former can directly get the layout without the help of a computer,
@@ -43,11 +69,30 @@ namespace klotski {
     public:
         enum Mode {NORMAL, FAST};
 
+    private:
+        uint32_t code;
+        ShortCode() = default; // unsafe initialize
+
+        static Mode mode();
+        static bool fast_mode_available;
+        static bool normal_mode_available;
+        static uint64_t fast_decode(uint32_t short_code); // short code -> common code
+        static uint32_t fast_encode(uint64_t common_code); // common code -> short code
+        static uint64_t tiny_decode(uint32_t short_code); // short code -> common code
+        static uint32_t tiny_encode(uint64_t common_code); // common code -> short code
+
+        static const uint32_t SHORT_CODE_LIMIT = 29334498;
+
+    public:
+        /// ShortCode validity check
         bool valid() const;
-        static void speed_up(enum Mode mode);
         static bool check(uint32_t short_code);
 
+        /// ShortCode convert mode
+        static void speed_up(Mode mode);
+
         /// Operators of ShortCode
+        bool operator==(uint32_t short_code) const;
         bool operator==(const ShortCode &short_code) const;
         constexpr explicit operator uint32_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
@@ -59,33 +104,28 @@ namespace klotski {
 
         /// ShortCode constructors
         explicit ShortCode(uint32_t short_code);
+        explicit ShortCode(std::string &&short_code);
+        explicit ShortCode(CommonCode &&common_code);
         explicit ShortCode(const std::string &short_code);
         explicit ShortCode(const CommonCode &common_code);
 
-        ShortCode(uint32_t short_code, enum Mode mode) : ShortCode(short_code) { speed_up(mode); }
-        ShortCode(const std::string &short_code, enum Mode mode) : ShortCode(short_code) { speed_up(mode); }
-        ShortCode(const CommonCode &common_code, enum Mode mode) : ShortCode(common_code) { speed_up(mode); }
+        ShortCode(uint32_t short_code, Mode mode) : ShortCode(short_code) { speed_up(mode); }
+        ShortCode(const std::string &short_code, Mode mode) : ShortCode(short_code) { speed_up(mode); }
+        ShortCode(const CommonCode &common_code, Mode mode) : ShortCode(common_code) { speed_up(mode); }
+        ShortCode(std::string &&short_code, Mode mode) : ShortCode(std::forward<std::string>(short_code)) { speed_up(mode); }
+        ShortCode(CommonCode &&common_code, Mode mode) : ShortCode(std::forward<CommonCode>(common_code)) { speed_up(mode); }
 
-        /// Rust-style initialization
+        /// Static initialization
         static ShortCode create(uint32_t short_code);
         static ShortCode unsafe_create(uint32_t short_code);
+
+        static ShortCode from_string(std::string &&short_code);
         static ShortCode from_string(const std::string &short_code);
 
         static ShortCode from_common_code(uint64_t common_code);
+        static ShortCode from_common_code(CommonCode &&common_code);
+        static ShortCode from_common_code(std::string &&common_code);
         static ShortCode from_common_code(const CommonCode &common_code);
         static ShortCode from_common_code(const std::string &common_code);
-
-    private:
-        uint32_t code;
-        static bool fast_mode_available;
-        static bool normal_mode_available;
-        static const uint32_t SHORT_CODE_LIMIT = 29334498;
-
-        ShortCode() = default; // unsafe initialize
-        static enum Mode mode();
-        static uint64_t fast_decode(uint32_t short_code);
-        static uint32_t fast_encode(uint64_t common_code);
-        static uint64_t tiny_decode(uint32_t short_code);
-        static uint32_t tiny_encode(uint64_t common_code);
     };
 }
