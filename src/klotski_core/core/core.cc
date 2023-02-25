@@ -46,7 +46,7 @@
 #define NEXT_CODE_2x1 ((code & ~(F_2x1 << addr)) | (C_2x1 << next_addr))
 #define NEXT_CODE_2x2 ((code & ~(F_2x2 << addr)) | (C_2x2 << next_addr))
 
-////////////////////////////////////////
+///////////////////////////////////////////////
 
 #define RELEASE(NEXT_CODE, FILTER) \
 cache_insert(cache_t { \
@@ -56,7 +56,7 @@ cache_insert(cache_t { \
     .addr = next_addr \
 });
 
-////////////////////////////////////////
+///////////////////////////////////////////////
 
 #define BFS_INIT \
 int next_addr; \
@@ -70,9 +70,11 @@ int filter = cache[current++].filter;
 
 #define BFS_STOP (current == cache_size)
 
-////////////////////////////////////////
+///////////////////////////////////////////////
 
-inline void Core::cache_insert(Core::cache_t next_case) { // try to insert into cache
+using klotski::Core;
+
+inline void Core::cache_insert(cache_t next_case) { // try to insert into cache
     auto *cache_ptr = cache;
     for (; cache_ptr < cache + cache_size; ++cache_ptr) {
         if (cache_ptr->code == next_case.code) {

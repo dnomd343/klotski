@@ -26,34 +26,52 @@
 /// 16. By performing such a search on each block in the layout, we can get all the next-step
 /// layouts, which have a minimum of 0 and a maximum of 68.
 
+/// For a single block, search for the situation after it has moved one grid, `addr` is its current
+/// position information, which is (0 ~ 19) * 3. When moving up and down, judge the value of `addr`
+/// to confirm whether it is out of bounds; when moving left and right, get its remainder to `4`
+/// to judge whether it will be out of bounds. After confirming that it will not cross the boundary,
+/// it is necessary to judge whether it will collide with other blocks after moving, that is, the
+/// target position needs to be empty, which is represented as `000` in the RawCode, and the template
+/// will be used to perform bit operations here to confirm whether it is feasible.
+
+/// Finally, in order to improve efficiency, the `filter` option is added. For the direction of the
+/// last movement, it will be ignored in the next search, so as to optimize BFS. After confirming
+/// that it can be moved, the moved layout can be directly obtained by means of bit operations, and
+/// a mask will be obtained at the same time, which marks the moved block as `111`, which will speed
+/// up subsequent calculations. The generated layout will be inserted into the cache, and after the
+/// BFS search for each block is completed, the core will use the callback function to output these
+/// results.
+
 #include <cstdint>
 #include <utility>
 #include <functional>
 
-class Core {
-public:
-    /// Release with code and mask
-    typedef std::function<void(uint64_t, uint64_t)> release_t;
+namespace klotski {
+    class Core {
+    public:
+        /// Release with code and mask
+        typedef std::function<void(uint64_t, uint64_t)> release_t;
 
-    /// Core interface
-    void next_cases(uint64_t code, uint64_t mask);
-    explicit Core(release_t release_func) : release(std::move(release_func)) {}
+        /// Core interface
+        void next_cases(uint64_t code, uint64_t mask);
+        explicit Core(release_t release_func) : release(std::move(release_func)) {}
 
-private:
-    struct cache_t {
-        uint64_t code;
-        uint64_t mask; /// 000 or 111
-        int filter; /// UP | DOWN | LEFT | RIGHT
-        int addr; /// (0 ~ 19) * 3
+    private:
+        struct cache_t {
+            uint64_t code;
+            uint64_t mask; /// (000) or (111)
+            int filter; /// UP | DOWN | LEFT | RIGHT
+            int addr; /// (0 ~ 19) * 3
+        };
+
+        int cache_size = 1;
+        cache_t cache[16]{};
+        release_t release; // release function
+
+        void move_1x1(uint64_t code, int addr);
+        void move_1x2(uint64_t code, int addr);
+        void move_2x1(uint64_t code, int addr);
+        void move_2x2(uint64_t code, int addr);
+        inline void cache_insert(cache_t next_case);
     };
-
-    int cache_size = 1;
-    cache_t cache[16]{};
-    release_t release; // release function
-
-    void move_1x1(uint64_t code, int addr);
-    void move_1x2(uint64_t code, int addr);
-    void move_2x1(uint64_t code, int addr);
-    void move_2x2(uint64_t code, int addr);
-    inline void cache_insert(Core::cache_t next_case);
-};
+}

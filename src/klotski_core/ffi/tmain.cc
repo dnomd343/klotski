@@ -11,8 +11,6 @@
 #include "all_cases.h"
 #include "common_code.h"
 
-using namespace klotski;
-
 void tmain() {
     printf("tmain start\n");
 
@@ -30,7 +28,7 @@ void tmain() {
 
     std::vector<uint64_t> next;
 
-    auto core = Core([&next](uint64_t code, uint64_t) {
+    auto core = klotski::Core([&next](uint64_t code, uint64_t) {
         next.emplace_back(code);
     });
 
@@ -44,9 +42,9 @@ void tmain() {
 
     for (uint64_t head = 0; head < 16; ++head) {
 
-        for (const auto &range : AllCases::fetch()[head]) {
+        for (const auto &range : klotski::AllCases::fetch()[head]) {
 
-            uint64_t raw_code = RawCode::from_common_code(head << 32 | range).unwrap();
+            uint64_t raw_code = klotski::RawCode::from_common_code(head << 32 | range).unwrap();
 
             all_cases.emplace_back(raw_code);
 
