@@ -66,9 +66,15 @@ void tmain() {
 
     std::cout << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 
-    std::sort(next_size.begin(), next_size.end());
-    std::cout << next_size[0] << std::endl;
-    std::cout << next_size[next_size.size() - 1] << std::endl;
+//    std::sort(next_size.begin(), next_size.end());
+//    std::cout << next_size[0] << std::endl;
+//    std::cout << next_size[next_size.size() - 1] << std::endl;
+
+    for (uint32_t i = 0; i < 69; ++i) {
+
+        std::cout << i << ": " << std::count(next_size.begin(), next_size.end(), i) << std::endl;
+
+    }
 
     printf("tmain exit\n");
 }
