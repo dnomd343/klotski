@@ -1,3 +1,4 @@
-pub mod ffi;
+mod ffi;
+mod tests;
 
 use super::core::Core;

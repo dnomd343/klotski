@@ -151,7 +151,6 @@ TEST(FFI, codec_mirror) {
     bool result;
     uint64_t raw_code;
 
-    /// test of safe version
     EXPECT_EQ(is_vertical_mirror(TEST_RAW_CODE_ERR, &result), false);
     EXPECT_EQ(is_horizontal_mirror(TEST_RAW_CODE_ERR, &result), false);
     EXPECT_EQ(to_vertical_mirror(TEST_RAW_CODE_ERR, &raw_code), false);
@@ -174,8 +173,9 @@ TEST(FFI, codec_mirror) {
     EXPECT_EQ(raw_code, TEST_MIRROR_H2);
     EXPECT_EQ(to_horizontal_mirror(TEST_MIRROR_H2, &raw_code), true);
     EXPECT_EQ(raw_code, TEST_MIRROR_H1);
+}
 
-    /// test of unsafe version
+TEST(FFI, codec_mirror_unsafe) {
     EXPECT_EQ(is_vertical_mirror_unsafe(TEST_MIRROR_V), true);
     EXPECT_EQ(is_vertical_mirror_unsafe(TEST_MIRROR_V1), false);
     EXPECT_EQ(is_vertical_mirror_unsafe(TEST_MIRROR_V2), false);

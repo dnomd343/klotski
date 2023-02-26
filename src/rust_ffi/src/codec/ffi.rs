@@ -1,43 +1,50 @@
-use std::ffi::{c_char, CString};
 use super::Core;
+use std::ffi::{c_char, CString};
 
-fn short_code_enable() {
+#[allow(dead_code)]
+pub fn short_code_enable() {
     unsafe {
         Core::short_code_enable()
     }
 }
 
-fn short_code_enable_fast() {
+#[allow(dead_code)]
+pub fn short_code_enable_fast() {
     unsafe {
         Core::short_code_enable_fast()
     }
 }
 
-fn is_short_code_available() -> bool {
+#[allow(dead_code)]
+pub fn is_short_code_available() -> bool {
     unsafe {
         Core::is_short_code_available()
     }
 }
 
-fn is_short_code_available_fast() -> bool {
+#[allow(dead_code)]
+pub fn is_short_code_available_fast() -> bool {
     unsafe {
         Core::is_short_code_available_fast()
     }
 }
 
-fn raw_code_check(raw_code: u64) -> bool {
+#[allow(dead_code)]
+pub fn raw_code_check(raw_code: u64) -> bool {
     unsafe {
         Core::raw_code_check(raw_code)
     }
 }
 
-fn short_code_check(short_code: u32) -> bool {
+#[allow(dead_code)]
+pub fn short_code_check(short_code: u32) -> bool {
     unsafe {
         Core::short_code_check(short_code)
     }
 }
 
-fn common_code_check(common_code: u64) -> bool {
+#[allow(dead_code)]
+pub fn common_code_check(common_code: u64) -> bool {
     unsafe {
         Core::common_code_check(common_code)
     }

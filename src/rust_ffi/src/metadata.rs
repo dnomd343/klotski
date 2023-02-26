@@ -1,4 +1,4 @@
-use super::core::Core;
+use crate::core::Core;
 use Core::CStringDump;
 
 #[derive(Debug)]
@@ -34,4 +34,23 @@ pub fn load_metadata() -> Metadata {
             version_patch: Core::get_version_patch(),
         }
     }
+}
+
+#[test]
+fn tests() {
+    let metadata = load_metadata();
+
+    assert_ne!(metadata.author, "");
+    assert_ne!(metadata.system, "");
+    assert_ne!(metadata.git_tag, "");
+    assert_ne!(metadata.version, "");
+    assert_ne!(metadata.compiler, "");
+    assert_ne!(metadata.commit_id, "");
+    assert_ne!(metadata.build_time, "");
+    assert_ne!(metadata.git_branch, "");
+    assert_ne!(metadata.project_url, "");
+
+    assert!(metadata.version_patch < 65536);
+    assert!(metadata.version_minor < 65536);
+    assert!(metadata.version_patch < 65536);
 }
