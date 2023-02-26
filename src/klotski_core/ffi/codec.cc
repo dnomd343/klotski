@@ -12,15 +12,15 @@ using klotski::BasicRanges;
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void short_code_enable() noexcept {
+void short_code_enable() {
     ShortCode::speed_up(ShortCode::NORMAL);
 }
 
-void short_code_enable_fast() noexcept {
+void short_code_enable_fast() {
     ShortCode::speed_up(ShortCode::FAST);
 }
 
-bool is_short_code_available() noexcept {
+bool is_short_code_available() {
     if (BasicRanges::status() != BasicRanges::AVAILABLE) {
         return false;
     }
@@ -28,7 +28,7 @@ bool is_short_code_available() noexcept {
     return true;
 }
 
-bool is_short_code_available_fast() noexcept {
+bool is_short_code_available_fast() {
     if (AllCases::status() != AllCases::AVAILABLE) {
         return false;
     }
@@ -38,21 +38,21 @@ bool is_short_code_available_fast() noexcept {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool raw_code_check(uint64_t raw_code) noexcept {
+bool raw_code_check(uint64_t raw_code) {
     return RawCode::check(raw_code);
 }
 
-bool short_code_check(uint32_t short_code) noexcept {
+bool short_code_check(uint32_t short_code) {
     return ShortCode::check(short_code);
 }
 
-bool common_code_check(uint64_t common_code) noexcept {
+bool common_code_check(uint64_t common_code) {
     return CommonCode::check(common_code);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code) noexcept {
+bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code) {
     if (!RawCode::check(raw_code)) {
         return false;
     }
@@ -62,7 +62,7 @@ bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code) noexcept {
     return true;
 }
 
-bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code) noexcept {
+bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code) {
     if (!ShortCode::check(short_code)) {
         return false;
     }
@@ -72,7 +72,7 @@ bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code) noexcept {
     return true;
 }
 
-bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code) noexcept {
+bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code) {
     if (!RawCode::check(raw_code)) {
         return false;
     }
@@ -82,7 +82,7 @@ bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code) noexcept 
     return true;
 }
 
-bool common_code_to_raw_code(uint64_t common_code, uint64_t *raw_code) noexcept {
+bool common_code_to_raw_code(uint64_t common_code, uint64_t *raw_code) {
     if (!CommonCode::check(common_code)) {
         return false;
     }
@@ -92,7 +92,7 @@ bool common_code_to_raw_code(uint64_t common_code, uint64_t *raw_code) noexcept 
     return true;
 }
 
-bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code) noexcept {
+bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code) {
     if (!ShortCode::check(short_code)) {
         return false;
     }
@@ -102,7 +102,7 @@ bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code) noexc
     return true;
 }
 
-bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code) noexcept {
+bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code) {
     if (!CommonCode::check(common_code)) {
         return false;
     }
@@ -114,35 +114,35 @@ bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code) noexc
 
 ///////////////////////////////////////////////////////////////////////////////
 
-uint32_t raw_code_to_short_code_unsafe(uint64_t raw_code) noexcept {
+uint32_t raw_code_to_short_code_unsafe(uint64_t raw_code) {
     return RawCode::unsafe_create(raw_code)
         .to_common_code().to_short_code().unwrap();
 }
 
-uint64_t short_code_to_raw_code_unsafe(uint32_t short_code) noexcept {
+uint64_t short_code_to_raw_code_unsafe(uint32_t short_code) {
     return ShortCode::unsafe_create(short_code)
         .to_common_code().to_raw_code().unwrap();
 }
 
-uint64_t raw_code_to_common_code_unsafe(uint64_t raw_code) noexcept {
+uint64_t raw_code_to_common_code_unsafe(uint64_t raw_code) {
     return RawCode::unsafe_create(raw_code).to_common_code().unwrap();
 }
 
-uint64_t common_code_to_raw_code_unsafe(uint64_t common_code) noexcept {
+uint64_t common_code_to_raw_code_unsafe(uint64_t common_code) {
     return CommonCode::unsafe_create(common_code).to_raw_code().unwrap();
 }
 
-uint64_t short_code_to_common_code_unsafe(uint32_t short_code) noexcept {
+uint64_t short_code_to_common_code_unsafe(uint32_t short_code) {
     return ShortCode::unsafe_create(short_code).to_common_code().unwrap();
 }
 
-uint32_t common_code_to_short_code_unsafe(uint64_t common_code) noexcept {
+uint32_t common_code_to_short_code_unsafe(uint64_t common_code) {
     return CommonCode::unsafe_create(common_code).to_short_code().unwrap();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool is_vertical_mirror(uint64_t raw_code, bool *result) noexcept {
+bool is_vertical_mirror(uint64_t raw_code, bool *result) {
     if (!RawCode::check(raw_code)) {
         return false;
     }
@@ -150,7 +150,7 @@ bool is_vertical_mirror(uint64_t raw_code, bool *result) noexcept {
     return true;
 }
 
-bool is_horizontal_mirror(uint64_t raw_code, bool *result) noexcept {
+bool is_horizontal_mirror(uint64_t raw_code, bool *result) {
     if (!RawCode::check(raw_code)) {
         return false;
     }
@@ -158,7 +158,7 @@ bool is_horizontal_mirror(uint64_t raw_code, bool *result) noexcept {
     return true;
 }
 
-bool to_vertical_mirror(uint64_t raw_code, uint64_t *result) noexcept {
+bool to_vertical_mirror(uint64_t raw_code, uint64_t *result) {
     if (!RawCode::check(raw_code)) {
         return false;
     }
@@ -166,7 +166,7 @@ bool to_vertical_mirror(uint64_t raw_code, uint64_t *result) noexcept {
     return true;
 }
 
-bool to_horizontal_mirror(uint64_t raw_code, uint64_t *result) noexcept {
+bool to_horizontal_mirror(uint64_t raw_code, uint64_t *result) {
     if (!RawCode::check(raw_code)) {
         return false;
     }
@@ -176,19 +176,19 @@ bool to_horizontal_mirror(uint64_t raw_code, uint64_t *result) noexcept {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool is_vertical_mirror_unsafe(uint64_t raw_code) noexcept {
+bool is_vertical_mirror_unsafe(uint64_t raw_code) {
     return RawCode::unsafe_create(raw_code).is_vertical_mirror();
 }
 
-bool is_horizontal_mirror_unsafe(uint64_t raw_code) noexcept {
+bool is_horizontal_mirror_unsafe(uint64_t raw_code) {
     return RawCode::unsafe_create(raw_code).is_horizontal_mirror();
 }
 
-uint64_t to_vertical_mirror_unsafe(uint64_t raw_code) noexcept {
+uint64_t to_vertical_mirror_unsafe(uint64_t raw_code) {
     return RawCode::unsafe_create(raw_code).to_vertical_mirror().unwrap();
 }
 
-uint64_t to_horizontal_mirror_unsafe(uint64_t raw_code) noexcept {
+uint64_t to_horizontal_mirror_unsafe(uint64_t raw_code) {
     return RawCode::unsafe_create(raw_code).to_horizontal_mirror().unwrap();
 }
 
@@ -196,7 +196,7 @@ uint64_t to_horizontal_mirror_unsafe(uint64_t raw_code) noexcept {
 
 const uint32_t SHORT_CODE_STR_SIZE = 6;
 
-bool short_code_to_string(uint32_t short_code, char short_code_str[]) noexcept {
+bool short_code_to_string(uint32_t short_code, char short_code_str[]) {
     if (!ShortCode::check(short_code)) {
         return false;
     }
@@ -205,7 +205,7 @@ bool short_code_to_string(uint32_t short_code, char short_code_str[]) noexcept {
     return true;
 }
 
-bool short_code_from_string(const char short_code_str[], uint32_t *short_code) noexcept {
+bool short_code_from_string(const char short_code_str[], uint32_t *short_code) {
     try {
         *short_code = ShortCode::from_string(short_code_str).unwrap();
     } catch (...) {
@@ -218,7 +218,7 @@ bool short_code_from_string(const char short_code_str[], uint32_t *short_code) n
 
 const uint32_t COMMON_CODE_STR_SIZE = 10;
 
-bool common_code_to_string(uint64_t common_code, char common_code_str[]) noexcept {
+bool common_code_to_string(uint64_t common_code, char common_code_str[]) {
     if (!CommonCode::check(common_code)) {
         return false;
     }
@@ -227,7 +227,7 @@ bool common_code_to_string(uint64_t common_code, char common_code_str[]) noexcep
     return true;
 }
 
-bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]) noexcept {
+bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]) {
     if (!CommonCode::check(common_code)) {
         return false;
     }
@@ -236,7 +236,7 @@ bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[])
     return true;
 }
 
-bool common_code_from_string(const char common_code_str[], uint64_t *common_code) noexcept {
+bool common_code_from_string(const char common_code_str[], uint64_t *common_code) {
     try {
         *common_code = CommonCode::from_string(common_code_str).unwrap();
     } catch (...) {

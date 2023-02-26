@@ -1,4 +1,4 @@
-/// Klotski c-style API convert by bindgen.
+/// Klotski c-style ABI convert by bindgen.
 /// Core module expose these interfaces for abstraction.
 
 pub mod Core {
