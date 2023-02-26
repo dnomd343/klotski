@@ -28,6 +28,10 @@ namespace klotski {
         return this->code == raw_code.code;
     }
 
+    bool RawCode::operator!=(const RawCode &raw_code) const {
+        return this->code != raw_code.code;
+    }
+
     std::ostream& operator<<(std::ostream &out, const RawCode &self) {
         char code[16];
         char dump_map[] = {

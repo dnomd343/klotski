@@ -74,6 +74,7 @@ namespace klotski {
         /// Operators of RawCode
         bool operator==(uint64_t raw_code) const;
         bool operator==(const RawCode &raw_code) const;
+        bool operator!=(const RawCode &raw_code) const;
         constexpr explicit operator uint64_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const RawCode &self);
 

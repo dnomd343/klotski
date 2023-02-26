@@ -101,6 +101,6 @@ bool RawCode::vertical_mirror_check(uint64_t raw_code) {
 
 bool RawCode::horizontal_mirror_check(uint64_t raw_code) {
     horizontal_fill(raw_code);
-    return ((raw_code ^ (raw_code >> 9)) & MASK_MIRROR_A)
-        && ((raw_code ^ (raw_code >> 3)) & MASK_MIRROR_B);
+    return ((MASK_MIRROR_A & ((raw_code >> 9) ^ raw_code)) == 0)
+        && ((MASK_MIRROR_B & ((raw_code >> 3) ^ raw_code)) == 0);
 }
