@@ -36,9 +36,15 @@ TEST(RawCode, operators) {
     std::cout.setstate(std::ios::failbit); // hide std::cout content
     std::cout << "TEST OUTPUT" << std::endl << RawCode(TEST_CODE); // ostream test
     std::cout.clear();
-    EXPECT_EQ(RawCode(TEST_CODE), TEST_CODE); // operator `==`
-    EXPECT_EQ(RawCode(TEST_CODE), RawCode(TEST_CODE)); // operator `==`
     EXPECT_EQ((uint64_t)RawCode(TEST_CODE), TEST_CODE); // convert as uint64_t
+
+    EXPECT_EQ(TEST_CODE, RawCode(TEST_CODE)); // uint64_t == RawCode
+    EXPECT_EQ(RawCode(TEST_CODE), TEST_CODE); // RawCode == uint64_t
+    EXPECT_EQ(RawCode(TEST_CODE), RawCode(TEST_CODE)); // RawCode == RawCode
+
+    EXPECT_NE(TEST_CODE + 1, RawCode(TEST_CODE)); // uint64_t != RawCode
+    EXPECT_NE(RawCode(TEST_CODE), TEST_CODE + 1); // RawCode != uint64_t
+    EXPECT_NE(RawCode(TEST_CODE), RawCode::unsafe_create(TEST_CODE + 1)); // RawCode != RawCode
 }
 
 TEST(RawCode, code_convert) {

@@ -88,9 +88,15 @@ TEST(CommonCode, operators) {
     std::cout.setstate(std::ios::failbit); // hide std::cout content
     std::cout << "TEST OUTPUT -> " << CommonCode(TEST_CODE) << std::endl; // ostream test
     std::cout.clear();
-    EXPECT_EQ(CommonCode(TEST_CODE), TEST_CODE); // operator `==`
-    EXPECT_EQ(CommonCode(TEST_CODE), CommonCode(TEST_CODE)); // operator `==`
     EXPECT_EQ((uint64_t)CommonCode(TEST_CODE), TEST_CODE); // convert as uint64_t
+
+    EXPECT_EQ(TEST_CODE, CommonCode(TEST_CODE)); // uint64_t == CommonCode
+    EXPECT_EQ(CommonCode(TEST_CODE), TEST_CODE); // CommonCode == uint64_t
+    EXPECT_EQ(CommonCode(TEST_CODE), CommonCode(TEST_CODE)); // CommonCode == CommonCode
+
+    EXPECT_NE(TEST_CODE + 1, CommonCode(TEST_CODE)); // uint64_t != CommonCode
+    EXPECT_NE(CommonCode(TEST_CODE), TEST_CODE + 1); // CommonCode != uint64_t
+    EXPECT_NE(CommonCode(TEST_CODE), CommonCode::unsafe_create(TEST_CODE + 1)); // CommonCode != CommonCode
 }
 
 TEST(CommonCode, code_convert) {

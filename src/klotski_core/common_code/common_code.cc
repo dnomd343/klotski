@@ -20,12 +20,12 @@ namespace std {
 }
 
 namespace klotski {
-    bool CommonCode::operator==(uint64_t common_code) const {
-        return this->code == common_code;
-    }
-
     bool CommonCode::operator==(const CommonCode &common_code) const {
         return this->code == common_code.code;
+    }
+
+    bool CommonCode::operator!=(const CommonCode &common_code) const {
+        return this->code != common_code.code;
     }
 
     std::ostream& operator<<(std::ostream &out, const CommonCode &self) {

@@ -109,9 +109,15 @@ TEST(ShortCode, operators) {
     std::cout.setstate(std::ios::failbit); // hide std::cout content
     std::cout << "TEST OUTPUT -> " << ShortCode(TEST_CODE) << std::endl; // ostream test
     std::cout.clear();
-    EXPECT_EQ(ShortCode(TEST_CODE), TEST_CODE); // operator `==`
-    EXPECT_EQ(ShortCode(TEST_CODE), ShortCode(TEST_CODE)); // operator `==`
     EXPECT_EQ((uint32_t)ShortCode(TEST_CODE), TEST_CODE); // convert as uint64_t
+
+    EXPECT_EQ(TEST_CODE, ShortCode(TEST_CODE)); // uint32_t == ShortCode
+    EXPECT_EQ(ShortCode(TEST_CODE), TEST_CODE); // ShortCode == uint32_t
+    EXPECT_EQ(ShortCode(TEST_CODE), ShortCode(TEST_CODE)); // ShortCode == ShortCode
+
+    EXPECT_NE(TEST_CODE + 1, ShortCode(TEST_CODE)); // uint32_t != ShortCode
+    EXPECT_NE(ShortCode(TEST_CODE), TEST_CODE + 1); // ShortCode != uint32_t
+    EXPECT_NE(ShortCode(TEST_CODE), ShortCode::unsafe_create(TEST_CODE + 1)); // ShortCode != ShortCode
 }
 
 TEST(ShortCode, code_convert) {

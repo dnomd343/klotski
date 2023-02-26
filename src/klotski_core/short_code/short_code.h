@@ -97,8 +97,8 @@ namespace klotski {
         static void speed_up(Mode mode);
 
         /// Operators of ShortCode
-        bool operator==(uint32_t short_code) const;
         bool operator==(const ShortCode &short_code) const;
+        bool operator!=(const ShortCode &short_code) const;
         constexpr explicit operator uint32_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
@@ -127,4 +127,9 @@ namespace klotski {
         static ShortCode from_common_code(const CommonCode &common_code);
         static ShortCode from_common_code(const std::string &common_code);
     };
+
+    inline bool operator==(uint32_t s1, const ShortCode &s2) { return s1 == s2.unwrap(); }
+    inline bool operator!=(uint32_t s1, const ShortCode &s2) { return s1 != s2.unwrap(); }
+    inline bool operator==(const ShortCode &s1, uint32_t s2) { return s1.unwrap() == s2; }
+    inline bool operator!=(const ShortCode &s1, uint32_t s2) { return s1.unwrap() != s2; }
 }

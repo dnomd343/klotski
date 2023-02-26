@@ -82,8 +82,8 @@ namespace klotski {
         static bool check(uint64_t common_code);
 
         /// Operators of CommonCode
-        bool operator==(uint64_t common_code) const;
         bool operator==(const CommonCode &common_code) const;
+        bool operator!=(const CommonCode &common_code) const;
         constexpr explicit operator uint64_t() const { return code; }
         friend std::ostream& operator<<(std::ostream &out, const CommonCode &self);
 
@@ -119,4 +119,9 @@ namespace klotski {
         static CommonCode from_short_code(const ShortCode &short_code);
         static CommonCode from_short_code(const std::string &short_code);
     };
+
+    inline bool operator==(uint64_t c1, const CommonCode &c2) { return c1 == c2.unwrap(); }
+    inline bool operator!=(uint64_t c1, const CommonCode &c2) { return c1 != c2.unwrap(); }
+    inline bool operator==(const CommonCode &c1, uint64_t c2) { return c1.unwrap() == c2; }
+    inline bool operator!=(const CommonCode &c1, uint64_t c2) { return c1.unwrap() != c2; }
 }

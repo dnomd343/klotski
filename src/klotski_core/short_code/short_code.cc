@@ -23,15 +23,15 @@ namespace std {
 }
 
 namespace klotski {
-    bool ShortCode::operator==(uint32_t short_code) const {
-        return this->code == short_code;
-    }
-
     bool ShortCode::operator==(const ShortCode &short_code) const {
         return this->code == short_code.code;
     }
 
-    std::ostream &operator<<(std::ostream &out, const ShortCode &self) {
+    bool ShortCode::operator!=(const ShortCode &short_code) const {
+        return this->code != short_code.code;
+    }
+
+    std::ostream& operator<<(std::ostream &out, const ShortCode &self) {
         out << self.to_string() << "(" << self.code << ")"; // short code info
         return out;
     }

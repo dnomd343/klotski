@@ -72,7 +72,6 @@ namespace klotski {
         static bool check(uint64_t raw_code);
 
         /// Operators of RawCode
-        bool operator==(uint64_t raw_code) const;
         bool operator==(const RawCode &raw_code) const;
         bool operator!=(const RawCode &raw_code) const;
         constexpr explicit operator uint64_t() const { return code; }
@@ -109,4 +108,9 @@ namespace klotski {
         bool is_horizontal_mirror(RawCode &&raw_code) const; // whether horizontally symmetric to another
         bool is_horizontal_mirror(const RawCode &raw_code) const;
     };
+
+    inline bool operator==(uint64_t r1, const RawCode &r2) { return r1 == r2.unwrap(); }
+    inline bool operator!=(uint64_t r1, const RawCode &r2) { return r1 != r2.unwrap(); }
+    inline bool operator==(const RawCode &r1, uint64_t r2) { return r1.unwrap() == r2; }
+    inline bool operator!=(const RawCode &r1, uint64_t r2) { return r1.unwrap() != r2; }
 }

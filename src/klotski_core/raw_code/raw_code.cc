@@ -20,10 +20,6 @@ namespace std {
 }
 
 namespace klotski {
-    bool RawCode::operator==(uint64_t raw_code) const {
-        return this->code == raw_code;
-    }
-
     bool RawCode::operator==(const RawCode &raw_code) const {
         return this->code == raw_code.code;
     }
