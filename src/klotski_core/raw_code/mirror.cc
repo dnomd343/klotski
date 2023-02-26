@@ -52,7 +52,28 @@ bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const {
 constexpr uint64_t MASK_MIRROR_A = 0x0'007'007'007'007'007;
 constexpr uint64_t MASK_MIRROR_B = 0x0'038'038'038'038'038;
 
-void horizontal_fill(uint64_t &raw_code) {
+void vertical_fill(uint64_t &raw_code) {
+    uint64_t mask = 0;
+    for (int addr = 0; addr < 60; addr += 3) {
+        switch ((raw_code >> addr) & 0b111) {
+            case B_2x1:
+            case B_2x2:
+                mask |= (uint64_t)0b111 << (addr + 12); // generate fill mask
+        }
+    }
+    for (int addr = 0; addr < 60; addr += 3) {
+        switch ((raw_code | mask) >> addr & 0b111) {
+            case B_2x1:
+                raw_code &= ~(uint64_t(~B_2x1 & 0b111) << (addr + 12)); // fill vertical mirror
+                break;
+            case B_2x2:
+                raw_code &= ~(uint64_t(~B_2x2 & 0b111) << (addr + 12)); // fill vertical mirror
+                break;
+        }
+    }
+}
+
+inline void horizontal_fill(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
         switch ((raw_code >> addr) & 0b111) {
             case B_1x2:
@@ -67,7 +88,7 @@ void horizontal_fill(uint64_t &raw_code) {
     }
 }
 
-void horizontal_clear(uint64_t &raw_code) {
+inline void horizontal_clear(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
         switch ((raw_code >> addr) & 0b111) {
             case B_1x2:
@@ -95,6 +116,10 @@ uint64_t RawCode::horizontal_mirror(uint64_t raw_code) {
 bool RawCode::vertical_mirror_check(uint64_t raw_code) {
 
     // TODO: whether self vertical mirror
+
+    vertical_fill(raw_code);
+
+    std::cout << RawCode::unsafe_create(raw_code) << std::endl;
 
     return false;
 }
