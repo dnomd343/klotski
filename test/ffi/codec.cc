@@ -11,7 +11,10 @@ using klotski::ShortCode;
 using klotski::BasicRanges;
 
 const static uint32_t TEST_SHORT_CODE_OK = 4091296;
+const static char TEST_SHORT_CODE_STR_OK[] = "4WVE1";
 const static uint64_t TEST_COMMON_CODE_OK = 0x1'A9BF'0C00;
+const static char TEST_COMMON_CODE_STR_OK[] = "1A9BF0C00";
+const static char TEST_COMMON_CODE_STR_SHR_OK[] = "1A9BF0C";
 const static uint64_t TEST_RAW_CODE_OK = 0x0603'EDF5'CAFF'F5E2;
 
 const static uint32_t TEST_SHORT_CODE_ERR = 29670987;
@@ -65,7 +68,11 @@ TEST(FFI, codec_string) {
     EXPECT_EQ(short_code_from_string(TEST_SHORT_CODE_STR_ERR, &short_code), false);
 
     EXPECT_EQ(short_code_to_string(TEST_SHORT_CODE_OK, short_code_buffer), true);
-    EXPECT_EQ(short_code_from_string(short_code_buffer, &short_code), true);
+    EXPECT_STREQ(short_code_buffer, TEST_SHORT_CODE_STR_OK);
+    short_code_to_string_unsafe(TEST_SHORT_CODE_OK, short_code_buffer);
+    EXPECT_STREQ(short_code_buffer, TEST_SHORT_CODE_STR_OK);
+
+    EXPECT_EQ(short_code_from_string(TEST_SHORT_CODE_STR_OK, &short_code), true);
     EXPECT_EQ(short_code, TEST_SHORT_CODE_OK);
 
     /// common code string verify
@@ -75,11 +82,18 @@ TEST(FFI, codec_string) {
     EXPECT_EQ(common_code_from_string(TEST_COMMON_CODE_STR_ERR, &common_code), false);
 
     EXPECT_EQ(common_code_to_string(TEST_COMMON_CODE_OK, common_code_buffer), true);
-    EXPECT_EQ(common_code_from_string(common_code_buffer, &common_code), true);
-    EXPECT_EQ(common_code, TEST_COMMON_CODE_OK);
+    EXPECT_STREQ(common_code_buffer, TEST_COMMON_CODE_STR_OK);
+    common_code_to_string_unsafe(TEST_COMMON_CODE_OK, common_code_buffer);
+    EXPECT_STREQ(common_code_buffer, TEST_COMMON_CODE_STR_OK);
 
     EXPECT_EQ(common_code_to_string_shorten(TEST_COMMON_CODE_OK, common_code_buffer), true);
-    EXPECT_EQ(common_code_from_string(common_code_buffer, &common_code), true);
+    EXPECT_STREQ(common_code_buffer, TEST_COMMON_CODE_STR_SHR_OK);
+    common_code_to_string_shorten_unsafe(TEST_COMMON_CODE_OK, common_code_buffer);
+    EXPECT_STREQ(common_code_buffer, TEST_COMMON_CODE_STR_SHR_OK);
+
+    EXPECT_EQ(common_code_from_string(TEST_COMMON_CODE_STR_OK, &common_code), true);
+    EXPECT_EQ(common_code, TEST_COMMON_CODE_OK);
+    EXPECT_EQ(common_code_from_string(TEST_COMMON_CODE_STR_SHR_OK, &common_code), true);
     EXPECT_EQ(common_code, TEST_COMMON_CODE_OK);
 }
 

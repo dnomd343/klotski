@@ -100,11 +100,14 @@ extern "C" {
 
     extern const uint32_t SHORT_CODE_STR_SIZE;
     EXTERN_FUNC bool short_code_to_string(uint32_t short_code, char short_code_str[]);
+    EXTERN_FUNC void short_code_to_string_unsafe(uint32_t short_code, char short_code_str[]);
     EXTERN_FUNC bool short_code_from_string(const char short_code_str[], uint32_t *short_code);
 
     extern const uint32_t COMMON_CODE_STR_SIZE;
     EXTERN_FUNC bool common_code_to_string(uint64_t common_code, char common_code_str[]);
+    EXTERN_FUNC void common_code_to_string_unsafe(uint64_t common_code, char common_code_str[]);
     EXTERN_FUNC bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]);
+    EXTERN_FUNC void common_code_to_string_shorten_unsafe(uint64_t common_code, char common_code_str[]);
     EXTERN_FUNC bool common_code_from_string(const char common_code_str[], uint64_t *common_code);
 #ifdef __cplusplus
 }

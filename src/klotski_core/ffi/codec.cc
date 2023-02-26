@@ -205,6 +205,11 @@ bool short_code_to_string(uint32_t short_code, char short_code_str[]) {
     return true;
 }
 
+void short_code_to_string_unsafe(uint32_t short_code, char short_code_str[]) {
+    std::string str = ShortCode::unsafe_create(short_code).to_string();
+    strcpy(short_code_str, str.c_str());
+}
+
 bool short_code_from_string(const char short_code_str[], uint32_t *short_code) {
     try {
         *short_code = ShortCode::from_string(short_code_str).unwrap();
@@ -227,6 +232,11 @@ bool common_code_to_string(uint64_t common_code, char common_code_str[]) {
     return true;
 }
 
+void common_code_to_string_unsafe(uint64_t common_code, char common_code_str[]) {
+    std::string str = CommonCode::unsafe_create(common_code).to_string(false);
+    strcpy(common_code_str, str.c_str());
+}
+
 bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]) {
     if (!CommonCode::check(common_code)) {
         return false;
@@ -234,6 +244,11 @@ bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[])
     std::string str = CommonCode::unsafe_create(common_code).to_string(true);
     strcpy(common_code_str, str.c_str());
     return true;
+}
+
+void common_code_to_string_shorten_unsafe(uint64_t common_code, char common_code_str[]) {
+    std::string str = CommonCode::unsafe_create(common_code).to_string(true);
+    strcpy(common_code_str, str.c_str());
 }
 
 bool common_code_from_string(const char common_code_str[], uint64_t *common_code) {
