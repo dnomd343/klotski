@@ -7,6 +7,8 @@
 #include <stdbool.h>
 #endif
 
+#define EXTERN_FUNC extern
+
 /// klotski test interface
 #ifdef __cplusplus
 extern "C" {
@@ -64,38 +66,47 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-    // short code index warm up
-    extern void short_code_enable();
-    extern void short_code_enable_fast();
-    extern bool is_short_code_available();
-    extern bool is_short_code_available_fast();
+    EXTERN_FUNC void short_code_enable();
+    EXTERN_FUNC void short_code_enable_fast();
+    EXTERN_FUNC bool is_short_code_available();
+    EXTERN_FUNC bool is_short_code_available_fast();
 
-    extern bool raw_code_check(uint64_t raw_code);
-    extern bool short_code_check(uint32_t short_code);
-    extern bool common_code_check(uint64_t common_code);
+    EXTERN_FUNC bool raw_code_check(uint64_t raw_code);
+    EXTERN_FUNC bool short_code_check(uint32_t short_code);
+    EXTERN_FUNC bool common_code_check(uint64_t common_code);
 
-    extern bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code);
-    extern bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code);
-    extern bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code);
-    extern bool common_code_to_raw_code(uint64_t common_code, uint64_t *raw_code);
-    extern bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code);
-    extern bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code);
+    EXTERN_FUNC bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code);
+    EXTERN_FUNC bool short_code_to_raw_code(uint32_t short_code, uint64_t *raw_code);
+    EXTERN_FUNC bool raw_code_to_common_code(uint64_t raw_code, uint64_t *common_code);
+    EXTERN_FUNC bool common_code_to_raw_code(uint64_t common_code, uint64_t *raw_code);
+    EXTERN_FUNC bool short_code_to_common_code(uint32_t short_code, uint64_t *common_code);
+    EXTERN_FUNC bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code);
 
-    extern uint32_t raw_code_to_short_code_unsafe(uint64_t raw_code);
-    extern uint64_t short_code_to_raw_code_unsafe(uint32_t short_code);
-    extern uint64_t raw_code_to_common_code_unsafe(uint64_t raw_code);
-    extern uint64_t common_code_to_raw_code_unsafe(uint64_t common_code);
-    extern uint64_t short_code_to_common_code_unsafe(uint32_t short_code);
-    extern uint32_t common_code_to_short_code_unsafe(uint64_t common_code);
+    EXTERN_FUNC uint32_t raw_code_to_short_code_unsafe(uint64_t raw_code);
+    EXTERN_FUNC uint64_t short_code_to_raw_code_unsafe(uint32_t short_code);
+    EXTERN_FUNC uint64_t raw_code_to_common_code_unsafe(uint64_t raw_code);
+    EXTERN_FUNC uint64_t common_code_to_raw_code_unsafe(uint64_t common_code);
+    EXTERN_FUNC uint64_t short_code_to_common_code_unsafe(uint32_t short_code);
+    EXTERN_FUNC uint32_t common_code_to_short_code_unsafe(uint64_t common_code);
+
+    EXTERN_FUNC bool is_vertical_mirror(uint64_t raw_code, bool *result);
+    EXTERN_FUNC bool is_horizontal_mirror(uint64_t raw_code, bool *result);
+    EXTERN_FUNC bool to_vertical_mirror(uint64_t raw_code, uint64_t *result);
+    EXTERN_FUNC bool to_horizontal_mirror(uint64_t raw_code, uint64_t *result);
+
+    EXTERN_FUNC bool is_vertical_mirror_unsafe(uint64_t raw_code);
+    EXTERN_FUNC bool is_horizontal_mirror_unsafe(uint64_t raw_code);
+    EXTERN_FUNC uint64_t to_vertical_mirror_unsafe(uint64_t raw_code);
+    EXTERN_FUNC uint64_t to_horizontal_mirror_unsafe(uint64_t raw_code);
 
     extern const uint32_t SHORT_CODE_STR_SIZE;
-    extern bool short_code_to_string(uint32_t short_code, char short_code_str[]);
-    extern bool short_code_from_string(const char short_code_str[], uint32_t *short_code);
+    EXTERN_FUNC bool short_code_to_string(uint32_t short_code, char short_code_str[]);
+    EXTERN_FUNC bool short_code_from_string(const char short_code_str[], uint32_t *short_code);
 
     extern const uint32_t COMMON_CODE_STR_SIZE;
-    extern bool common_code_to_string(uint64_t common_code, char common_code_str[]);
-    extern bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]);
-    extern bool common_code_from_string(const char common_code_str[], uint64_t *common_code);
+    EXTERN_FUNC bool common_code_to_string(uint64_t common_code, char common_code_str[]);
+    EXTERN_FUNC bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]);
+    EXTERN_FUNC bool common_code_from_string(const char common_code_str[], uint64_t *common_code);
 #ifdef __cplusplus
 }
 #endif

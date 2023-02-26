@@ -5,37 +5,37 @@ using klotski::RawCode;
 
 /// ----------------------------- Mirror Convert ------------------------------
 
-RawCode RawCode::to_vertical_mirror() const {
+RawCode RawCode::to_vertical_mirror() const noexcept {
     return RawCode::unsafe_create(vertical_mirror(code));
 }
 
-RawCode RawCode::to_horizontal_mirror() const {
+RawCode RawCode::to_horizontal_mirror() const noexcept {
     return RawCode::unsafe_create(horizontal_mirror(code));
 }
 
 /// ------------------------------ Mirror Check -------------------------------
 
-bool RawCode::is_vertical_mirror() const {
+bool RawCode::is_vertical_mirror() const noexcept {
     return vertical_mirror_check(code);
 }
 
-bool RawCode::is_horizontal_mirror() const {
+bool RawCode::is_horizontal_mirror() const noexcept {
     return horizontal_mirror_check(code);
 }
 
-bool RawCode::is_vertical_mirror(RawCode &&raw_code) const {
+bool RawCode::is_vertical_mirror(RawCode &&raw_code) const noexcept {
     return raw_code.unwrap() == vertical_mirror(code);
 }
 
-bool RawCode::is_horizontal_mirror(RawCode &&raw_code) const {
+bool RawCode::is_horizontal_mirror(RawCode &&raw_code) const noexcept {
     return raw_code.unwrap() == horizontal_mirror(code);
 }
 
-bool RawCode::is_vertical_mirror(const RawCode &raw_code) const {
+bool RawCode::is_vertical_mirror(const RawCode &raw_code) const noexcept {
     return raw_code.unwrap() == vertical_mirror(code);
 }
 
-bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const {
+bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const noexcept {
     return raw_code.unwrap() == horizontal_mirror(code);
 }
 
@@ -118,7 +118,7 @@ inline void horizontal_clear(uint64_t &raw_code) {
     }
 }
 
-uint64_t RawCode::vertical_mirror(uint64_t raw_code) {
+uint64_t RawCode::vertical_mirror(uint64_t raw_code) noexcept {
     vertical_fill(raw_code);
     raw_code = (raw_code & MASK_MIRROR_V3)
         | ((raw_code >> 48) & MASK_MIRROR_V1) | ((raw_code >> 24) & MASK_MIRROR_V2)
@@ -127,7 +127,7 @@ uint64_t RawCode::vertical_mirror(uint64_t raw_code) {
     return raw_code;
 }
 
-uint64_t RawCode::horizontal_mirror(uint64_t raw_code) {
+uint64_t RawCode::horizontal_mirror(uint64_t raw_code) noexcept {
     horizontal_fill(raw_code);
     raw_code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
         | ((raw_code & MASK_MIRROR_H2) << 3) | ((raw_code & MASK_MIRROR_H1) << 9); // flip raw code
@@ -135,13 +135,13 @@ uint64_t RawCode::horizontal_mirror(uint64_t raw_code) {
     return raw_code;
 }
 
-bool RawCode::vertical_mirror_check(uint64_t raw_code) {
+bool RawCode::vertical_mirror_check(uint64_t raw_code) noexcept {
     vertical_fill(raw_code);
     return !(MASK_MIRROR_V1 & ((raw_code >> 48) ^ raw_code))
         && !(MASK_MIRROR_V2 & ((raw_code >> 24) ^ raw_code));
 }
 
-bool RawCode::horizontal_mirror_check(uint64_t raw_code) {
+bool RawCode::horizontal_mirror_check(uint64_t raw_code) noexcept {
     horizontal_fill(raw_code);
     return !(MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
         && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));

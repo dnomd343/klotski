@@ -10,7 +10,7 @@ using klotski::CommonCode;
 using klotski::AllCases;
 using klotski::BasicRanges;
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 void short_code_enable() {
     ShortCode::speed_up(ShortCode::NORMAL);
@@ -21,14 +21,22 @@ void short_code_enable_fast() {
 }
 
 bool is_short_code_available() {
-    return BasicRanges::status() == BasicRanges::AVAILABLE;
+    if (BasicRanges::status() != BasicRanges::AVAILABLE) {
+        return false;
+    }
+    ShortCode::speed_up(ShortCode::NORMAL);
+    return true;
 }
 
 bool is_short_code_available_fast() {
-    return AllCases::status() == AllCases::AVAILABLE;
+    if (AllCases::status() != AllCases::AVAILABLE) {
+        return false;
+    }
+    ShortCode::speed_up(ShortCode::FAST);
+    return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 bool raw_code_check(uint64_t raw_code) {
     return RawCode::check(raw_code);
@@ -42,7 +50,7 @@ bool common_code_check(uint64_t common_code) {
     return CommonCode::check(common_code);
 }
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 bool raw_code_to_short_code(uint64_t raw_code, uint32_t *short_code) {
     if (!RawCode::check(raw_code)) {
@@ -104,7 +112,7 @@ bool common_code_to_short_code(uint64_t common_code, uint32_t *short_code) {
     return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 uint32_t raw_code_to_short_code_unsafe(uint64_t raw_code) {
     return RawCode::unsafe_create(raw_code)
@@ -132,7 +140,59 @@ uint32_t common_code_to_short_code_unsafe(uint64_t common_code) {
     return CommonCode::unsafe_create(common_code).to_short_code().unwrap();
 }
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+bool is_vertical_mirror(uint64_t raw_code, bool *result) {
+    if (!RawCode::check(raw_code)) {
+        return false;
+    }
+    *result = RawCode::unsafe_create(raw_code).is_vertical_mirror();
+    return true;
+}
+
+bool is_horizontal_mirror(uint64_t raw_code, bool *result) {
+    if (!RawCode::check(raw_code)) {
+        return false;
+    }
+    *result = RawCode::unsafe_create(raw_code).is_horizontal_mirror();
+    return true;
+}
+
+bool to_vertical_mirror(uint64_t raw_code, uint64_t *result) {
+    if (!RawCode::check(raw_code)) {
+        return false;
+    }
+    *result = RawCode::unsafe_create(raw_code).to_vertical_mirror().unwrap();
+    return true;
+}
+
+bool to_horizontal_mirror(uint64_t raw_code, uint64_t *result) {
+    if (!RawCode::check(raw_code)) {
+        return false;
+    }
+    *result = RawCode::unsafe_create(raw_code).to_horizontal_mirror().unwrap();
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+bool is_vertical_mirror_unsafe(uint64_t raw_code) {
+    return RawCode::unsafe_create(raw_code).is_vertical_mirror();
+}
+
+bool is_horizontal_mirror_unsafe(uint64_t raw_code) {
+    return RawCode::unsafe_create(raw_code).is_horizontal_mirror();
+}
+
+uint64_t to_vertical_mirror_unsafe(uint64_t raw_code) {
+    return RawCode::unsafe_create(raw_code).to_vertical_mirror().unwrap();
+}
+
+uint64_t to_horizontal_mirror_unsafe(uint64_t raw_code) {
+    return RawCode::unsafe_create(raw_code).to_horizontal_mirror().unwrap();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 
 const uint32_t SHORT_CODE_STR_SIZE = 6;
 
@@ -154,7 +214,7 @@ bool short_code_from_string(const char short_code_str[], uint32_t *short_code) {
     return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 const uint32_t COMMON_CODE_STR_SIZE = 10;
 
@@ -185,4 +245,4 @@ bool common_code_from_string(const char common_code_str[], uint64_t *common_code
     return true;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////

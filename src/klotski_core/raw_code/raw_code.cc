@@ -20,11 +20,11 @@ namespace std {
 }
 
 namespace klotski {
-    bool RawCode::operator==(const RawCode &raw_code) const {
+    bool RawCode::operator==(const RawCode &raw_code) const noexcept {
         return this->code == raw_code.code;
     }
 
-    bool RawCode::operator!=(const RawCode &raw_code) const {
+    bool RawCode::operator!=(const RawCode &raw_code) const noexcept {
         return this->code != raw_code.code;
     }
 
@@ -45,7 +45,7 @@ namespace klotski {
 }
 
 namespace klotski {
-    bool RawCode::valid() const {
+    bool RawCode::valid() const noexcept {
         return RawCode::check(code);
     }
 
@@ -53,7 +53,7 @@ namespace klotski {
         return RawCode(raw_code);
     }
 
-    RawCode RawCode::unsafe_create(uint64_t raw_code) { // create without check
+    RawCode RawCode::unsafe_create(uint64_t raw_code) noexcept { // create without check
         auto tmp = RawCode(); // init directly
         tmp.code = raw_code;
         return tmp;
@@ -67,7 +67,7 @@ namespace klotski {
     }
 }
 
-bool RawCode::check(uint64_t raw_code) { // check whether raw code is valid
+bool RawCode::check(uint64_t raw_code) noexcept { // check whether raw code is valid
     ///     MASK_1x1      |     MASK_1x2      |     MASK_2x1      |     MASK_2x2
     ///  100 000 000 000  |  000 100 000 000  |  000 000 000 000  |  000 100 000 000
     ///  000 000 000 000  |  000 000 000 000  |  100 000 000 000  |  100 100 000 000

@@ -7,17 +7,17 @@ using klotski::RawCodeException;
 
 /// -------------------------- RawCode to CommonCode --------------------------
 
-CommonCode RawCode::to_common_code() const {
+CommonCode RawCode::to_common_code() const noexcept {
     return CommonCode::unsafe_create(RawCode::compact(code));
 }
 
 /// -------------------------- CommonCode to RawCode --------------------------
 
-RawCode::RawCode(CommonCode &&common_code) {
+RawCode::RawCode(CommonCode &&common_code) noexcept {
     code = RawCode::extract(common_code.unwrap()); // convert from common code
 }
 
-RawCode::RawCode(const CommonCode &common_code) {
+RawCode::RawCode(const CommonCode &common_code) noexcept {
     code = RawCode::extract(common_code.unwrap()); // convert from common code
 }
 
@@ -25,7 +25,7 @@ RawCode RawCode::from_common_code(uint64_t common_code) {
     return RawCode(CommonCode(common_code));
 }
 
-RawCode RawCode::from_common_code(CommonCode &&common_code) {
+RawCode RawCode::from_common_code(CommonCode &&common_code) noexcept {
     return RawCode(std::forward<CommonCode>(common_code));
 }
 
@@ -35,7 +35,7 @@ RawCode RawCode::from_common_code(std::string &&common_code) {
     ));
 }
 
-RawCode RawCode::from_common_code(const CommonCode &common_code) {
+RawCode RawCode::from_common_code(const CommonCode &common_code) noexcept {
     return RawCode(common_code);
 }
 
@@ -46,7 +46,7 @@ RawCode RawCode::from_common_code(const std::string &common_code) {
 /// ----------------------------- Basic Functions -----------------------------
 
 /// NOTE: ensure that input raw code is valid!
-uint64_t RawCode::compact(uint64_t raw_code) { // raw code --> common code
+uint64_t RawCode::compact(uint64_t raw_code) noexcept { // raw code --> common code
     int unfilled = 16;
     uint64_t head = 0; // 2x2 block address
     uint32_t range = 0;
@@ -75,7 +75,7 @@ uint64_t RawCode::compact(uint64_t raw_code) { // raw code --> common code
 }
 
 /// NOTE: ensure that input common code is valid!
-uint64_t RawCode::extract(uint64_t common_code) { // common code --> raw code
+uint64_t RawCode::extract(uint64_t common_code) noexcept { // common code --> raw code
     auto code = C_2x2 << (common_code >> 32) * 3; // flag for 2x2 block
     auto range = Common::range_reverse((uint32_t)common_code); // reversed range
 
