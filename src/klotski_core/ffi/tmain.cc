@@ -14,6 +14,11 @@
 void tmain() {
     printf("tmain start\n");
 
+//    klotski::RawCode::from_common_code(0x1A9BF0C00).is_horizontal_mirror();
+    klotski::RawCode::from_common_code(0x1A9BF0C00).to_horizontal_mirror();
+
+    return;
+
 //    printf("%d\n", ALL_CASES_SIZE_SUM);
 //    std::cout << ALL_CASES_SIZE_SUM << std::endl;
 

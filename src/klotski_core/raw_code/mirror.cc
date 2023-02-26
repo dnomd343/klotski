@@ -1,4 +1,5 @@
 #include "raw_code.h"
+#include "common.h"
 
 using klotski::RawCode;
 
@@ -40,6 +41,37 @@ bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const {
 
 /// ----------------------------- Basic Functions -----------------------------
 
+#include <iostream>
+
+void horizontal_fill(uint64_t &raw_code) {
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
+        switch ((raw_code >> addr) & 0b111) {
+            case B_1x2:
+                raw_code &= ~(uint64_t(~B_1x2 & 0b111) << (addr + 3)); // fill horizontal mirror
+                addr += 3; // skip next address
+                break;
+            case B_2x2:
+                raw_code &= ~(uint64_t(~B_2x2 & 0b111) << (addr + 3)); // fill horizontal mirror
+                addr += 3; // skip next address
+                break;
+        }
+    }
+}
+
+void horizontal_clear(uint64_t &raw_code) {
+
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
+
+        switch ((raw_code >> addr) & 0b111) {
+            case B_1x2:
+            case B_2x2:
+                raw_code |= (uint64_t)0b111 << (addr + 3);
+        }
+
+    }
+
+}
+
 uint64_t RawCode::vertical_mirror(uint64_t raw_code) {
 
     // TODO: vertical mirror convert
@@ -51,7 +83,17 @@ uint64_t RawCode::horizontal_mirror(uint64_t raw_code) {
 
     // TODO: horizontal mirror convert
 
-    return 0;
+    // fill -> mirror -> unfill
+
+    horizontal_fill(raw_code);
+
+    // flip raw code
+
+    horizontal_clear(raw_code);
+
+    std::cout << RawCode::unsafe_create(raw_code) << std::endl;
+
+    return raw_code;
 }
 
 bool RawCode::vertical_mirror_check(uint64_t raw_code) {
@@ -61,9 +103,19 @@ bool RawCode::vertical_mirror_check(uint64_t raw_code) {
     return false;
 }
 
+
+
+
 bool RawCode::horizontal_mirror_check(uint64_t raw_code) {
+    ///      MASK_A              MASK_B
+    ///  111 000 000 000  |  000 111 000 000
+    ///  111 000 000 000  |  000 111 000 000
+    ///  111 000 000 000  |  000 111 000 000
+    ///  111 000 000 000  |  000 111 000 000
+    ///  111 000 000 000  |  000 111 000 000
+    constexpr uint64_t MASK_A = 0x0'007'007'007'007'007;
+    constexpr uint64_t MASK_B = 0x0'038'038'038'038'038;
 
-    // TODO: whether self horizontal mirror
-
-    return false;
+    horizontal_fill(raw_code);
+    return ((raw_code >> 9 ^ raw_code) & MASK_A) && ((raw_code >> 3 ^ raw_code) & MASK_B);
 }
