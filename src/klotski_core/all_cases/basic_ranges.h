@@ -42,7 +42,7 @@ namespace klotski {
             AVAILABLE,
         };
         static void build();
-        static enum Status status();
+        static Status status();
         static const std::vector<uint32_t> &fetch();
 
     private:

@@ -20,11 +20,11 @@ namespace std {
 }
 
 namespace klotski {
-    bool CommonCode::operator==(const CommonCode &common_code) const {
+    bool CommonCode::operator==(const CommonCode &common_code) const noexcept {
         return this->code == common_code.code;
     }
 
-    bool CommonCode::operator!=(const CommonCode &common_code) const {
+    bool CommonCode::operator!=(const CommonCode &common_code) const noexcept {
         return this->code != common_code.code;
     }
 
@@ -37,7 +37,7 @@ namespace klotski {
 }
 
 namespace klotski {
-    bool CommonCode::valid() const {
+    bool CommonCode::valid() const noexcept {
         return CommonCode::check(code);
     }
 
@@ -45,7 +45,7 @@ namespace klotski {
         return CommonCode(common_code); // create from uint64_t
     }
 
-    CommonCode CommonCode::unsafe_create(uint64_t common_code) { // create without check
+    CommonCode CommonCode::unsafe_create(uint64_t common_code) noexcept { // create without check
         auto tmp = CommonCode(); // init directly
         tmp.code = common_code;
         return tmp;
@@ -59,7 +59,7 @@ namespace klotski {
     }
 }
 
-bool CommonCode::check(uint64_t common_code) { // whether common code is valid
+bool CommonCode::check(uint64_t common_code) noexcept { // whether common code is valid
     ///   M_1x1     M_1x2     M_2x1     M_2x2
     ///  1 0 0 0   1 1 0 0   1 0 0 0   1 1 0 0
     ///  0 0 0 0   0 0 0 0   1 0 0 0   1 1 0 0

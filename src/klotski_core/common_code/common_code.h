@@ -74,54 +74,54 @@ namespace klotski {
         CommonCode() = default; // unsafe initialize
 
         static inline uint64_t string_decode(const std::string &common_code);
-        static inline std::string string_encode(uint64_t common_code, bool shorten);
+        static inline std::string string_encode(uint64_t common_code, bool shorten) noexcept;
 
     public:
         /// CommonCode validity check
-        bool valid() const;
-        static bool check(uint64_t common_code);
+        bool valid() const noexcept;
+        static bool check(uint64_t common_code) noexcept;
 
         /// Operators of CommonCode
-        bool operator==(const CommonCode &common_code) const;
-        bool operator!=(const CommonCode &common_code) const;
-        constexpr explicit operator uint64_t() const { return code; }
+        bool operator==(const CommonCode &common_code) const noexcept;
+        bool operator!=(const CommonCode &common_code) const noexcept;
+        constexpr explicit operator uint64_t() const noexcept { return code; }
         friend std::ostream& operator<<(std::ostream &out, const CommonCode &self);
 
         /// Export functions
-        RawCode to_raw_code() const;
-        ShortCode to_short_code() const;
+        RawCode to_raw_code() const noexcept;
+        ShortCode to_short_code() const noexcept;
         std::string to_string(bool shorten = false) const;
-        constexpr uint64_t unwrap() const { return code; }
+        constexpr uint64_t unwrap() const noexcept { return code; }
 
         /// CommonCode constructors
         explicit CommonCode(uint64_t common_code);
-        explicit CommonCode(RawCode &&raw_code);
-        explicit CommonCode(ShortCode &&short_code);
+        explicit CommonCode(RawCode &&raw_code) noexcept;
+        explicit CommonCode(ShortCode &&short_code) noexcept;
         explicit CommonCode(std::string &&common_code);
-        explicit CommonCode(const RawCode &raw_code);
-        explicit CommonCode(const ShortCode &short_code);
+        explicit CommonCode(const RawCode &raw_code) noexcept;
+        explicit CommonCode(const ShortCode &short_code) noexcept;
         explicit CommonCode(const std::string &common_code);
 
         /// Static initialization
         static CommonCode create(uint64_t common_code);
-        static CommonCode unsafe_create(uint64_t common_code);
+        static CommonCode unsafe_create(uint64_t common_code) noexcept;
 
         static CommonCode from_string(std::string &&common_code);
         static CommonCode from_string(const std::string &common_code);
 
         static CommonCode from_raw_code(uint64_t raw_code);
-        static CommonCode from_raw_code(RawCode &&raw_code);
-        static CommonCode from_raw_code(const RawCode &raw_code);
+        static CommonCode from_raw_code(RawCode &&raw_code) noexcept;
+        static CommonCode from_raw_code(const RawCode &raw_code) noexcept;
 
         static CommonCode from_short_code(uint32_t short_code);
-        static CommonCode from_short_code(ShortCode &&short_code);
+        static CommonCode from_short_code(ShortCode &&short_code) noexcept;
         static CommonCode from_short_code(std::string &&short_code);
-        static CommonCode from_short_code(const ShortCode &short_code);
+        static CommonCode from_short_code(const ShortCode &short_code) noexcept;
         static CommonCode from_short_code(const std::string &short_code);
     };
 
-    inline bool operator==(uint64_t c1, const CommonCode &c2) { return c1 == c2.unwrap(); }
-    inline bool operator!=(uint64_t c1, const CommonCode &c2) { return c1 != c2.unwrap(); }
-    inline bool operator==(const CommonCode &c1, uint64_t c2) { return c1.unwrap() == c2; }
-    inline bool operator!=(const CommonCode &c1, uint64_t c2) { return c1.unwrap() != c2; }
+    inline bool operator==(uint64_t c1, const CommonCode &c2) noexcept { return c1 == c2.unwrap(); }
+    inline bool operator!=(uint64_t c1, const CommonCode &c2) noexcept { return c1 != c2.unwrap(); }
+    inline bool operator==(const CommonCode &c1, uint64_t c2) noexcept { return c1.unwrap() == c2; }
+    inline bool operator!=(const CommonCode &c1, uint64_t c2) noexcept { return c1.unwrap() != c2; }
 }

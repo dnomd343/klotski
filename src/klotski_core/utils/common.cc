@@ -2,7 +2,7 @@
 
 using klotski::Common;
 
-uint32_t Common::range_reverse(uint32_t bin) { // reverse binary every 2-bits
+uint32_t Common::range_reverse(uint32_t bin) noexcept { // reverse binary every 2-bits
     bin = ((bin << 16) & 0xFFFF0000) | ((bin >> 16) & 0x0000FFFF);
     bin = ((bin << 8) & 0xFF00FF00) | ((bin >> 8) & 0x00FF00FF);
     bin = ((bin << 4) & 0xF0F0F0F0) | ((bin >> 4) & 0x0F0F0F0F);
@@ -10,7 +10,7 @@ uint32_t Common::range_reverse(uint32_t bin) { // reverse binary every 2-bits
 }
 
 /// WARN: don't check unknown data -> may cause infinite loop
-uint8_t Common::check_range(uint32_t head, uint32_t range) { // check generated range
+uint8_t Common::check_range(uint32_t head, uint32_t range) noexcept { // check generated range
     ///   M_1x1     M_1x2     M_2x1     M_2x2
     ///  1 0 0 0   1 1 0 0   1 0 0 0   1 1 0 0
     ///  0 0 0 0   0 0 0 0   1 0 0 0   1 1 0 0

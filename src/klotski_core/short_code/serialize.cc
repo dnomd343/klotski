@@ -6,7 +6,7 @@ using klotski::ShortCodeException;
 
 /// --------------------------- ShortCode to String ---------------------------
 
-std::string ShortCode::to_string() const { // encode as 5-bits string
+std::string ShortCode::to_string() const noexcept { // encode as 5-bits string
     return string_encode(code);
 }
 
@@ -30,7 +30,7 @@ ShortCode ShortCode::from_string(const std::string &short_code) {
 
 /// ----------------------------- Basic Functions -----------------------------
 
-std::string klotski::ShortCode::string_encode(uint32_t short_code) { // encode as 5-bits string
+std::string ShortCode::string_encode(uint32_t short_code) noexcept { // encode as 5-bits string
     char result[6]; // short code length 5
     result[5] = '\0'; // string ending flag
     for (int n = 0; n < 5; ++n) {

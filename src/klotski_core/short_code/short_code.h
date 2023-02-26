@@ -80,56 +80,56 @@ namespace klotski {
         static bool fast_mode_available;
         static bool normal_mode_available;
 
-        static inline uint64_t fast_decode(uint32_t short_code); // short code -> common code
-        static inline uint32_t fast_encode(uint64_t common_code); // common code -> short code
-        static inline uint64_t tiny_decode(uint32_t short_code); // short code -> common code
-        static inline uint32_t tiny_encode(uint64_t common_code); // common code -> short code
+        static inline uint64_t fast_decode(uint32_t short_code) noexcept; // short code -> common code
+        static inline uint32_t fast_encode(uint64_t common_code) noexcept; // common code -> short code
+        static inline uint64_t tiny_decode(uint32_t short_code) noexcept; // short code -> common code
+        static inline uint32_t tiny_encode(uint64_t common_code) noexcept; // common code -> short code
 
-        static inline std::string string_encode(uint32_t short_code); // short code -> string
+        static inline std::string string_encode(uint32_t short_code) noexcept; // short code -> string
         static inline uint32_t string_decode(const std::string &short_code); // string -> short code
 
     public:
         /// ShortCode validity check
-        bool valid() const;
-        static bool check(uint32_t short_code);
+        bool valid() const noexcept;
+        static bool check(uint32_t short_code) noexcept;
 
         /// ShortCode convert mode
         static void speed_up(Mode mode);
 
         /// Operators of ShortCode
-        bool operator==(const ShortCode &short_code) const;
-        bool operator!=(const ShortCode &short_code) const;
-        constexpr explicit operator uint32_t() const { return code; }
+        bool operator==(const ShortCode &short_code) const noexcept;
+        bool operator!=(const ShortCode &short_code) const noexcept;
+        constexpr explicit operator uint32_t() const noexcept { return code; }
         friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
         /// Export functions
-        std::string to_string() const;
-        CommonCode to_common_code() const;
-        constexpr uint32_t unwrap() const { return code; }
+        std::string to_string() const noexcept;
+        CommonCode to_common_code() const noexcept;
+        constexpr uint32_t unwrap() const noexcept { return code; }
 
         /// ShortCode constructors
         explicit ShortCode(uint32_t short_code);
         explicit ShortCode(std::string &&short_code);
-        explicit ShortCode(CommonCode &&common_code);
+        explicit ShortCode(CommonCode &&common_code) noexcept;
         explicit ShortCode(const std::string &short_code);
-        explicit ShortCode(const CommonCode &common_code);
+        explicit ShortCode(const CommonCode &common_code) noexcept;
 
         /// Static initialization
         static ShortCode create(uint32_t short_code);
-        static ShortCode unsafe_create(uint32_t short_code);
+        static ShortCode unsafe_create(uint32_t short_code) noexcept;
 
         static ShortCode from_string(std::string &&short_code);
         static ShortCode from_string(const std::string &short_code);
 
         static ShortCode from_common_code(uint64_t common_code);
-        static ShortCode from_common_code(CommonCode &&common_code);
+        static ShortCode from_common_code(CommonCode &&common_code) noexcept;
         static ShortCode from_common_code(std::string &&common_code);
-        static ShortCode from_common_code(const CommonCode &common_code);
+        static ShortCode from_common_code(const CommonCode &common_code) noexcept;
         static ShortCode from_common_code(const std::string &common_code);
     };
 
-    inline bool operator==(uint32_t s1, const ShortCode &s2) { return s1 == s2.unwrap(); }
-    inline bool operator!=(uint32_t s1, const ShortCode &s2) { return s1 != s2.unwrap(); }
-    inline bool operator==(const ShortCode &s1, uint32_t s2) { return s1.unwrap() == s2; }
-    inline bool operator!=(const ShortCode &s1, uint32_t s2) { return s1.unwrap() != s2; }
+    inline bool operator==(uint32_t s1, const ShortCode &s2) noexcept { return s1 == s2.unwrap(); }
+    inline bool operator!=(uint32_t s1, const ShortCode &s2) noexcept { return s1 != s2.unwrap(); }
+    inline bool operator==(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() == s2; }
+    inline bool operator!=(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() != s2; }
 }

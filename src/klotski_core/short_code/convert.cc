@@ -10,7 +10,7 @@ using klotski::CommonCode;
 
 /// ------------------------- ShortCode to CommonCode -------------------------
 
-CommonCode ShortCode::to_common_code() const {
+CommonCode ShortCode::to_common_code() const noexcept {
     if (ShortCode::mode() == ShortCode::NORMAL) {
         return CommonCode::unsafe_create(tiny_decode(code)); // normal mode
     }
@@ -19,7 +19,7 @@ CommonCode ShortCode::to_common_code() const {
 
 /// ------------------------- ShortCode to CommonCode -------------------------
 
-ShortCode::ShortCode(CommonCode &&common_code) {
+ShortCode::ShortCode(CommonCode &&common_code) noexcept {
     if (ShortCode::mode() == ShortCode::NORMAL) {
         code = tiny_encode(common_code.unwrap()); // normal mode
     } else {
@@ -27,7 +27,7 @@ ShortCode::ShortCode(CommonCode &&common_code) {
     }
 }
 
-ShortCode::ShortCode(const CommonCode &common_code) {
+ShortCode::ShortCode(const CommonCode &common_code) noexcept {
     if (ShortCode::mode() == ShortCode::NORMAL) {
         code = tiny_encode(common_code.unwrap()); // normal mode
     } else {
@@ -39,7 +39,7 @@ ShortCode ShortCode::from_common_code(uint64_t common_code) {
     return ShortCode(CommonCode(common_code));
 }
 
-ShortCode ShortCode::from_common_code(CommonCode &&common_code) {
+ShortCode ShortCode::from_common_code(CommonCode &&common_code) noexcept {
     return ShortCode(std::forward<CommonCode>(common_code));
 }
 
@@ -49,7 +49,7 @@ ShortCode ShortCode::from_common_code(std::string &&common_code) {
     ));
 }
 
-ShortCode ShortCode::from_common_code(const CommonCode &common_code) {
+ShortCode ShortCode::from_common_code(const CommonCode &common_code) noexcept {
     return ShortCode(common_code);
 }
 
@@ -60,7 +60,7 @@ ShortCode ShortCode::from_common_code(const std::string &common_code) {
 /// ----------------------------- Basic Functions -----------------------------
 
 /// NOTE: ensure that input common code is valid!
-uint32_t ShortCode::fast_encode(uint64_t common_code) { // common code --> short code
+uint32_t ShortCode::fast_encode(uint64_t common_code) noexcept { // common code --> short code
     auto head = common_code >> 32; // head index
     const auto &ranges = AllCases::fetch()[head]; // available ranges
     auto offset = std::lower_bound(ranges.begin(), ranges.end(), (uint32_t)common_code) - ranges.begin();
@@ -68,7 +68,7 @@ uint32_t ShortCode::fast_encode(uint64_t common_code) { // common code --> short
 }
 
 /// NOTE: ensure that input short code is valid!
-uint64_t ShortCode::fast_decode(uint32_t short_code) { // short code --> common code
+uint64_t ShortCode::fast_decode(uint32_t short_code) noexcept { // short code --> common code
     auto offset = std::upper_bound( // using binary search
             ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code
     ) - 1;
@@ -77,7 +77,7 @@ uint64_t ShortCode::fast_decode(uint32_t short_code) { // short code --> common 
 }
 
 /// NOTE: ensure that input common code is valid!
-uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common code --> short code
+uint32_t ShortCode::tiny_encode(uint64_t common_code) noexcept { // common code --> short code
     /// load head index and range prefix
     uint32_t head = common_code >> 32;
     uint32_t prefix = (common_code >> 20) & 0xFFF;
@@ -105,7 +105,7 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) { // common code --> short
 }
 
 /// NOTE: ensure that input short code is valid!
-uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common code
+uint64_t ShortCode::tiny_decode(uint32_t short_code) noexcept { // short code --> common code
     /// match head index
     auto offset = std::upper_bound( // binary search
         ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code

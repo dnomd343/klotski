@@ -45,7 +45,7 @@ namespace klotski {
     class AllCases : public BasicRanges {
     public:
         static void build();
-        static enum Status status();
+        static Status status();
         static const std::vector<uint32_t> (&fetch())[16];
 
     private:

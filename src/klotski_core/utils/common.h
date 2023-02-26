@@ -61,7 +61,7 @@
 namespace klotski {
     class Common {
     public:
-        static uint32_t range_reverse(uint32_t bin);
-        static uint8_t check_range(uint32_t head, uint32_t range);
+        static uint32_t range_reverse(uint32_t bin) noexcept;
+        static uint8_t check_range(uint32_t head, uint32_t range) noexcept;
     };
 }

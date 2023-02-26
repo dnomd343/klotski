@@ -23,11 +23,11 @@ namespace std {
 }
 
 namespace klotski {
-    bool ShortCode::operator==(const ShortCode &short_code) const {
+    bool ShortCode::operator==(const ShortCode &short_code) const noexcept {
         return this->code == short_code.code;
     }
 
-    bool ShortCode::operator!=(const ShortCode &short_code) const {
+    bool ShortCode::operator!=(const ShortCode &short_code) const noexcept {
         return this->code != short_code.code;
     }
 
@@ -38,7 +38,7 @@ namespace klotski {
 }
 
 namespace klotski {
-    bool ShortCode::valid() const {
+    bool ShortCode::valid() const noexcept {
         return ShortCode::check(code);
     }
 
@@ -46,7 +46,7 @@ namespace klotski {
         return ShortCode(short_code);
     }
 
-    ShortCode ShortCode::unsafe_create(uint32_t short_code) { // create without check
+    ShortCode ShortCode::unsafe_create(uint32_t short_code) noexcept { // create without check
         auto tmp = ShortCode(); // init directly
         tmp.code = short_code;
         return tmp;
@@ -60,7 +60,7 @@ namespace klotski {
     }
 }
 
-bool ShortCode::check(uint32_t short_code) {
+bool ShortCode::check(uint32_t short_code) noexcept {
     return short_code < klotski::SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
 }
 

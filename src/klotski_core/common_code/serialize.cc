@@ -44,7 +44,7 @@ inline uint8_t last_zero_num(uint32_t bin) { // get last zero number
     return binary_count(bin >> 1);
 }
 
-std::string CommonCode::string_encode(uint64_t common_code, bool shorten) { // convert uint64_t code to string
+std::string CommonCode::string_encode(uint64_t common_code, bool shorten) noexcept { // convert uint64_t code to string
     char result[10]; // max length 9-bits
     sprintf(result, "%09lX", common_code);
     if (shorten) { // remove `0` after common code
