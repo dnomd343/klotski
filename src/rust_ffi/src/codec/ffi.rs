@@ -1,4 +1,3 @@
-use std::f32::consts::E;
 use std::ffi::{c_char, CString};
 use super::Core;
 
@@ -204,11 +203,7 @@ fn to_horizontal_mirror_unsafe(raw_code: u64) -> u64 {
     }
 }
 
-// extern const uint32_t SHORT_CODE_STR_SIZE;
-// EXTERN_FUNC bool short_code_to_string(uint32_t short_code, char short_code_str[]) NOEXCEPT;
-// EXTERN_FUNC bool short_code_from_string(const char short_code_str[], uint32_t *short_code) NOEXCEPT;
-
-pub fn short_code_to_string(short_code: u32) -> Result<String, &'static str> {
+fn short_code_to_string(short_code: u32) -> Result<String, &'static str> {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::SHORT_CODE_STR_SIZE as usize];
         match Core::short_code_to_string(short_code, buffer.as_mut_ptr()) {
@@ -224,11 +219,98 @@ pub fn short_code_to_string(short_code: u32) -> Result<String, &'static str> {
     }
 }
 
-// TODO: add unsafe version
+fn short_code_to_string_unsafe(short_code: u32) -> String {
+    unsafe {
+        let mut buffer: Vec<c_char> = vec![0; Core::SHORT_CODE_STR_SIZE as usize];
+        Core::short_code_to_string(short_code, buffer.as_mut_ptr());
+        let mut result = String::new();
+        for c in &buffer[..buffer.len() - 1] {
+            result.push(*c as u8 as char);
+        }
+        result
+    }
+}
 
-// extern const uint32_t COMMON_CODE_STR_SIZE;
-// EXTERN_FUNC bool common_code_to_string(uint64_t common_code, char common_code_str[]) NOEXCEPT;
-// EXTERN_FUNC bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]) NOEXCEPT;
-// EXTERN_FUNC bool common_code_from_string(const char common_code_str[], uint64_t *common_code) NOEXCEPT;
+fn short_code_from_string(short_code: &str) -> Result<u32, &'static str> {
+    unsafe {
+        let mut result: u32 = 0;
+        match Core::short_code_from_string(
+            CString::new(short_code).unwrap().into_raw(),
+            &mut result
+        ) {
+            true => Ok(result),
+            _ => Err("invalid short code text"),
+        }
+    }
+}
 
-// TODO: add unsafe version
+fn common_code_to_string(common_code: u64) -> Result<String, &'static str> {
+    unsafe {
+        let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
+        match Core::common_code_to_string(common_code, buffer.as_mut_ptr()) {
+            true => {
+                let mut result = String::new();
+                for c in &buffer[..buffer.len() - 1] {
+                    result.push(*c as u8 as char);
+                }
+                Ok(result)
+            },
+            _ => Err("invalid common code"),
+        }
+    }
+}
+
+fn common_code_to_string_unsafe(common_code: u64) -> String {
+    unsafe {
+        let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
+        Core::common_code_to_string_unsafe(common_code, buffer.as_mut_ptr());
+        let mut result = String::new();
+        for c in &buffer[..buffer.len() - 1] {
+            result.push(*c as u8 as char);
+        }
+        result
+    }
+}
+
+fn common_code_to_string_shorten(common_code: u64) -> Result<String, &'static str> {
+    unsafe {
+        let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
+        match Core::common_code_to_string_shorten(common_code, buffer.as_mut_ptr()) {
+            true => {
+                let mut result = String::new();
+                for c in &buffer[..buffer.len() - 1] {
+                    if *c == 0 { break; }
+                    result.push(*c as u8 as char);
+                }
+                Ok(result)
+            },
+            _ => Err("invalid common code"),
+        }
+    }
+}
+
+fn common_code_to_string_shorten_unsafe(common_code: u64) -> String {
+    unsafe {
+        let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
+        Core::common_code_to_string_shorten(common_code, buffer.as_mut_ptr());
+        let mut result = String::new();
+        for c in &buffer[..buffer.len() - 1] {
+            if *c == 0 { break; }
+            result.push(*c as u8 as char);
+        }
+        result
+    }
+}
+
+fn common_code_from_string(common_code: &str) -> Result<u64, &'static str> {
+    unsafe {
+        let mut result: u64 = 0;
+        match Core::common_code_from_string(
+            CString::new(common_code).unwrap().into_raw(),
+            &mut result
+        ) {
+            true => Ok(result),
+            _ => Err("invalid common code text"),
+        }
+    }
+}
