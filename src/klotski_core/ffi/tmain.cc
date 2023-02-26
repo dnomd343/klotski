@@ -20,7 +20,10 @@ void tmain() {
 
 //    std::cout << ret.to_common_code() << std::endl << ret << std::endl;
 
-    klotski::RawCode::from_common_code(0x1A9BF0C00).is_vertical_mirror();
+//    klotski::RawCode::from_common_code(0x1A9BF0C00).is_vertical_mirror();
+    auto ret = klotski::RawCode::from_common_code(0x1A9BF0C00).to_vertical_mirror();
+
+    std::cout << ret.to_common_code() << std::endl << ret << std::endl;
 
     return;
 

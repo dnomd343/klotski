@@ -41,27 +41,37 @@ bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const {
 
 /// ----------------------------- Basic Functions -----------------------------
 
-#include <iostream>
+///  MASK_MIRROR_H1   |  MASK_MIRROR_H2
+///  111 000 000 000  |  000 111 000 000
+///  111 000 000 000  |  000 111 000 000
+///  111 000 000 000  |  000 111 000 000
+///  111 000 000 000  |  000 111 000 000
+///  111 000 000 000  |  000 111 000 000
 
-///   MASK_MIRROR_A   |   MASK_MIRROR_B
-///  111 000 000 000  |  000 111 000 000
-///  111 000 000 000  |  000 111 000 000
-///  111 000 000 000  |  000 111 000 000
-///  111 000 000 000  |  000 111 000 000
-///  111 000 000 000  |  000 111 000 000
-constexpr uint64_t MASK_MIRROR_A = 0x0'007'007'007'007'007;
-constexpr uint64_t MASK_MIRROR_B = 0x0'038'038'038'038'038;
+constexpr uint64_t MASK_MIRROR_H1 = 0x0'007'007'007'007'007;
+constexpr uint64_t MASK_MIRROR_H2 = 0x0'038'038'038'038'038;
 
-void vertical_fill(uint64_t &raw_code) {
+///  MASK_MIRROR_V1   |  MASK_MIRROR_V2   |  MASK_MIRROR_V3
+///  111 111 111 111  |  000 000 000 000  |  000 000 000 000
+///  000 000 000 000  |  111 111 111 111  |  000 000 000 000
+///  000 000 000 000  |  000 000 000 000  |  111 111 111 111
+///  000 000 000 000  |  000 000 000 000  |  000 000 000 000
+///  000 000 000 000  |  000 000 000 000  |  000 000 000 000
+
+constexpr uint64_t MASK_MIRROR_V1 = 0x0'000'000'000'000'FFF;
+constexpr uint64_t MASK_MIRROR_V2 = 0x0'000'000'000'FFF'000;
+constexpr uint64_t MASK_MIRROR_V3 = 0x0'000'000'FFF'000'000;
+
+inline void vertical_fill(uint64_t &raw_code) {
     uint64_t mask = 0;
-    for (int addr = 0; addr < 60; addr += 3) {
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
         switch ((raw_code >> addr) & 0b111) {
             case B_2x1:
             case B_2x2:
                 mask |= (uint64_t)0b111 << (addr + 12); // generate fill mask
         }
     }
-    for (int addr = 0; addr < 60; addr += 3) {
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
         switch ((raw_code | mask) >> addr & 0b111) {
             case B_2x1:
                 raw_code &= ~(uint64_t(~B_2x1 & 0b111) << (addr + 12)); // fill vertical mirror
@@ -88,6 +98,16 @@ inline void horizontal_fill(uint64_t &raw_code) {
     }
 }
 
+inline void vertical_clear(uint64_t &raw_code) {
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
+        switch ((raw_code >> addr) & 0b111) {
+            case B_2x1:
+            case B_2x2:
+                raw_code |= (uint64_t)0b111 << (addr + 12); // reset as original block
+        }
+    }
+}
+
 inline void horizontal_clear(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
         switch ((raw_code >> addr) & 0b111) {
@@ -99,33 +119,30 @@ inline void horizontal_clear(uint64_t &raw_code) {
 }
 
 uint64_t RawCode::vertical_mirror(uint64_t raw_code) {
-
-    // TODO: vertical mirror convert
-
-    return 0;
+    vertical_fill(raw_code);
+    raw_code = (raw_code & MASK_MIRROR_V3)
+        | ((raw_code >> 48) & MASK_MIRROR_V1) | ((raw_code >> 24) & MASK_MIRROR_V2)
+        | ((raw_code & MASK_MIRROR_V2) << 24) | ((raw_code & MASK_MIRROR_V1) << 48);
+    vertical_clear(raw_code);
+    return raw_code;
 }
 
 uint64_t RawCode::horizontal_mirror(uint64_t raw_code) {
     horizontal_fill(raw_code);
-    raw_code = ((raw_code >> 9) & MASK_MIRROR_A) | ((raw_code >> 3) & MASK_MIRROR_B)
-        | ((raw_code & MASK_MIRROR_B) << 3) | ((raw_code & MASK_MIRROR_A) << 9); // flip raw code
+    raw_code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
+        | ((raw_code & MASK_MIRROR_H2) << 3) | ((raw_code & MASK_MIRROR_H1) << 9); // flip raw code
     horizontal_clear(raw_code);
     return raw_code;
 }
 
 bool RawCode::vertical_mirror_check(uint64_t raw_code) {
-
-    // TODO: whether self vertical mirror
-
     vertical_fill(raw_code);
-
-    std::cout << RawCode::unsafe_create(raw_code) << std::endl;
-
-    return false;
+    return !(MASK_MIRROR_V1 & ((raw_code >> 48) ^ raw_code))
+        && !(MASK_MIRROR_V2 & ((raw_code >> 24) ^ raw_code));
 }
 
 bool RawCode::horizontal_mirror_check(uint64_t raw_code) {
     horizontal_fill(raw_code);
-    return ((MASK_MIRROR_A & ((raw_code >> 9) ^ raw_code)) == 0)
-        && ((MASK_MIRROR_B & ((raw_code >> 3) ^ raw_code)) == 0);
+    return !(MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
+        && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));
 }
