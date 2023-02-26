@@ -21,6 +21,14 @@ const static uint64_t TEST_RAW_CODE_ERR = 0x0A34'182B'3810'2D21;
 const static char TEST_SHORT_CODE_STR_ERR[] = "R50EH";
 const static char TEST_COMMON_CODE_STR_ERR[] = "123J432A9";
 
+const static uint64_t TEST_MIRROR_V = 0x0'FC0'480'6DB'FC0'480;
+const static uint64_t TEST_MIRROR_V1 = RawCode::from_common_code(0x4FEA13400).unwrap();
+const static uint64_t TEST_MIRROR_V2 = RawCode::from_common_code(0x8346AFC00).unwrap();
+
+const static uint64_t TEST_MIRROR_H = RawCode::from_common_code(0x1A9BF0C00).unwrap();
+const static uint64_t TEST_MIRROR_H1 = RawCode::from_common_code(0x4FEA13400).unwrap();
+const static uint64_t TEST_MIRROR_H2 = RawCode::from_common_code(0x6BFA47000).unwrap();
+
 TEST(FFI, codec_warm_up) {
     /// short code normal mode check
     EXPECT_EQ(is_short_code_available(), BasicRanges::status() == BasicRanges::AVAILABLE);
@@ -123,4 +131,50 @@ TEST(FFI, codec_convert_unsafe) {
     /// short code <---> common code
     EXPECT_EQ(short_code_to_common_code_unsafe(TEST_SHORT_CODE_OK), TEST_COMMON_CODE_OK);
     EXPECT_EQ(common_code_to_short_code_unsafe(TEST_COMMON_CODE_OK), TEST_SHORT_CODE_OK);
+}
+
+TEST(FFI, codec_mirror) {
+    bool result;
+    uint64_t raw_code;
+
+    /// test of safe version
+    EXPECT_EQ(is_vertical_mirror(TEST_RAW_CODE_ERR, &result), false);
+    EXPECT_EQ(is_horizontal_mirror(TEST_RAW_CODE_ERR, &result), false);
+    EXPECT_EQ(to_vertical_mirror(TEST_RAW_CODE_ERR, &raw_code), false);
+    EXPECT_EQ(to_horizontal_mirror(TEST_RAW_CODE_ERR, &raw_code), false);
+
+    EXPECT_EQ(is_vertical_mirror(TEST_RAW_CODE_OK, &result), true);
+    EXPECT_EQ(result, false); // function always return false
+    EXPECT_EQ(to_vertical_mirror(TEST_MIRROR_V1, &raw_code), true);
+    EXPECT_EQ(raw_code, TEST_MIRROR_V2);
+    EXPECT_EQ(to_vertical_mirror(TEST_MIRROR_V2, &raw_code), true);
+    EXPECT_EQ(raw_code, TEST_MIRROR_V1);
+
+    EXPECT_EQ(is_horizontal_mirror(TEST_MIRROR_H, &result), true);
+    EXPECT_EQ(result, true);
+    EXPECT_EQ(is_horizontal_mirror(TEST_MIRROR_H1, &result), true);
+    EXPECT_EQ(result, false);
+    EXPECT_EQ(is_horizontal_mirror(TEST_MIRROR_H2, &result), true);
+    EXPECT_EQ(result, false);
+    EXPECT_EQ(to_horizontal_mirror(TEST_MIRROR_H1, &raw_code), true);
+    EXPECT_EQ(raw_code, TEST_MIRROR_H2);
+    EXPECT_EQ(to_horizontal_mirror(TEST_MIRROR_H2, &raw_code), true);
+    EXPECT_EQ(raw_code, TEST_MIRROR_H1);
+
+    /// test of unsafe version
+    EXPECT_EQ(is_vertical_mirror_unsafe(TEST_MIRROR_V), true);
+    EXPECT_EQ(is_vertical_mirror_unsafe(TEST_MIRROR_V1), false);
+    EXPECT_EQ(is_vertical_mirror_unsafe(TEST_MIRROR_V2), false);
+
+    EXPECT_EQ(is_horizontal_mirror_unsafe(TEST_MIRROR_H), true);
+    EXPECT_EQ(is_horizontal_mirror_unsafe(TEST_MIRROR_H1), false);
+    EXPECT_EQ(is_horizontal_mirror_unsafe(TEST_MIRROR_H2), false);
+
+    EXPECT_EQ(to_vertical_mirror_unsafe(TEST_MIRROR_V), TEST_MIRROR_V);
+    EXPECT_EQ(to_vertical_mirror_unsafe(TEST_MIRROR_V1), TEST_MIRROR_V2);
+    EXPECT_EQ(to_vertical_mirror_unsafe(TEST_MIRROR_V2), TEST_MIRROR_V1);
+
+    EXPECT_EQ(to_horizontal_mirror_unsafe(TEST_MIRROR_H), TEST_MIRROR_H);
+    EXPECT_EQ(to_horizontal_mirror_unsafe(TEST_MIRROR_H1), TEST_MIRROR_H2);
+    EXPECT_EQ(to_horizontal_mirror_unsafe(TEST_MIRROR_H2), TEST_MIRROR_H1);
 }
