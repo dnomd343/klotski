@@ -22,6 +22,12 @@ impl fmt::Display for ShortCode {
 }
 
 impl ShortCode {
+    pub(crate) fn new(short_code: u32) -> ShortCode {
+        ShortCode {
+            code: short_code
+        }
+    }
+
     pub fn from(short_code: u32) -> Result<ShortCode, &'static str> {
         match codec_ffi::short_code_check(short_code) {
             true => Ok(ShortCode {
@@ -37,11 +43,14 @@ impl ShortCode {
         })
     }
 
-    // TODO: from CommonCode (u32 / String / CommonCode)
+    // TODO: from RawCode (u64 / RawCode)
+    // TODO: from CommonCode (u64 / String / CommonCode)
 
     pub fn to_string(&self) -> String {
         codec_ffi::short_code_to_string_unsafe(self.code)
     }
+
+    // TODO: to RawCode
 
     pub fn to_common_code(&self) -> CommonCode {
         CommonCode::new(
