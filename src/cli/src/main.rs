@@ -1,7 +1,7 @@
 extern crate klotski_ffi;
 
 fn main() {
-    println!("{:#?}", klotski_ffi::metadata());
+    // println!("{:#?}", klotski_ffi::metadata());
 
     // println!("{}", klotski_ffi::is_short_code_available());
     // println!("{}", klotski_ffi::is_short_code_available_fast());
@@ -31,4 +31,5 @@ fn main() {
     // println!("{}", klotski_ffi::common_code_from_string("1A9BF0C").unwrap());
     // println!("{}", klotski_ffi::common_code_from_string("1A9BF0C00").unwrap());
 
+    klotski_ffi::demo();
 }
