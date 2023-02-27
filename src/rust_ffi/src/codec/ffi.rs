@@ -50,7 +50,8 @@ pub fn common_code_check(common_code: u64) -> bool {
     }
 }
 
-fn raw_code_to_short_code(raw_code: u64) -> Result<u32, &'static str> {
+#[allow(dead_code)]
+pub fn raw_code_to_short_code(raw_code: u64) -> Result<u32, &'static str> {
     let mut short_code: u32 = 0;
     unsafe {
         match Core::raw_code_to_short_code(raw_code, &mut short_code) {
@@ -60,7 +61,8 @@ fn raw_code_to_short_code(raw_code: u64) -> Result<u32, &'static str> {
     }
 }
 
-fn short_code_to_raw_code(short_code: u32) -> Result<u64, &'static str> {
+#[allow(dead_code)]
+pub fn short_code_to_raw_code(short_code: u32) -> Result<u64, &'static str> {
     let mut raw_code: u64 = 0;
     unsafe {
         match Core::short_code_to_raw_code(short_code, &mut raw_code) {
@@ -70,7 +72,8 @@ fn short_code_to_raw_code(short_code: u32) -> Result<u64, &'static str> {
     }
 }
 
-fn raw_code_to_common_code(raw_code: u64) -> Result<u64, &'static str> {
+#[allow(dead_code)]
+pub fn raw_code_to_common_code(raw_code: u64) -> Result<u64, &'static str> {
     let mut common_code: u64 = 0;
     unsafe {
         match Core::raw_code_to_common_code(raw_code, &mut common_code) {
@@ -80,7 +83,8 @@ fn raw_code_to_common_code(raw_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-fn common_code_to_raw_code(common_code: u64) -> Result<u64, &'static str> {
+#[allow(dead_code)]
+pub fn common_code_to_raw_code(common_code: u64) -> Result<u64, &'static str> {
     let mut raw_code: u64 = 0;
     unsafe {
         match Core::common_code_to_raw_code(common_code, &mut raw_code) {
@@ -90,7 +94,8 @@ fn common_code_to_raw_code(common_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-fn short_code_to_common_code(short_code: u32) -> Result<u64, &'static str> {
+#[allow(dead_code)]
+pub fn short_code_to_common_code(short_code: u32) -> Result<u64, &'static str> {
     let mut common_code: u64 = 0;
     unsafe {
         match Core::short_code_to_common_code(short_code, &mut common_code) {
@@ -100,7 +105,8 @@ fn short_code_to_common_code(short_code: u32) -> Result<u64, &'static str> {
     }
 }
 
-fn common_code_to_short_code(common_code: u64) -> Result<u32, &'static str> {
+#[allow(dead_code)]
+pub fn common_code_to_short_code(common_code: u64) -> Result<u32, &'static str> {
     let mut short_code: u32 = 0;
     unsafe {
         match Core::common_code_to_short_code(common_code, &mut short_code) {
@@ -110,43 +116,50 @@ fn common_code_to_short_code(common_code: u64) -> Result<u32, &'static str> {
     }
 }
 
-fn raw_code_to_short_code_unsafe(raw_code: u64) -> u32 {
+#[allow(dead_code)]
+pub fn raw_code_to_short_code_unsafe(raw_code: u64) -> u32 {
     unsafe {
         Core::raw_code_to_short_code_unsafe(raw_code)
     }
 }
 
-fn short_code_to_raw_code_unsafe(short_code: u32) -> u64 {
+#[allow(dead_code)]
+pub fn short_code_to_raw_code_unsafe(short_code: u32) -> u64 {
     unsafe {
         Core::short_code_to_raw_code_unsafe(short_code)
     }
 }
 
-fn raw_code_to_common_code_unsafe(raw_code: u64) -> u64 {
+#[allow(dead_code)]
+pub fn raw_code_to_common_code_unsafe(raw_code: u64) -> u64 {
     unsafe {
         Core::raw_code_to_common_code_unsafe(raw_code)
     }
 }
 
-fn common_code_to_raw_code_unsafe(common_code: u64) -> u64 {
+#[allow(dead_code)]
+pub fn common_code_to_raw_code_unsafe(common_code: u64) -> u64 {
     unsafe {
         Core::common_code_to_raw_code_unsafe(common_code)
     }
 }
 
-fn short_code_to_common_code_unsafe(short_code: u32) -> u64 {
+#[allow(dead_code)]
+pub fn short_code_to_common_code_unsafe(short_code: u32) -> u64 {
     unsafe {
         Core::short_code_to_common_code_unsafe(short_code)
     }
 }
 
-fn common_code_to_short_code_unsafe(common_code: u64) -> u32 {
+#[allow(dead_code)]
+pub fn common_code_to_short_code_unsafe(common_code: u64) -> u32 {
     unsafe {
         Core::common_code_to_short_code_unsafe(common_code)
     }
 }
 
-fn is_vertical_mirror(raw_code: u64) -> Result<bool, &'static str> {
+#[allow(dead_code)]
+pub fn is_vertical_mirror(raw_code: u64) -> Result<bool, &'static str> {
     let mut result: bool = false;
     unsafe {
         match Core::is_vertical_mirror(raw_code, &mut result) {
@@ -156,7 +169,8 @@ fn is_vertical_mirror(raw_code: u64) -> Result<bool, &'static str> {
     }
 }
 
-fn is_horizontal_mirror(raw_code: u64) -> Result<bool, &'static str> {
+#[allow(dead_code)]
+pub fn is_horizontal_mirror(raw_code: u64) -> Result<bool, &'static str> {
     let mut result: bool = false;
     unsafe {
         match Core::is_horizontal_mirror(raw_code, &mut result) {
@@ -166,7 +180,8 @@ fn is_horizontal_mirror(raw_code: u64) -> Result<bool, &'static str> {
     }
 }
 
-fn to_vertical_mirror(raw_code: u64) -> Result<u64, &'static str> {
+#[allow(dead_code)]
+pub fn to_vertical_mirror(raw_code: u64) -> Result<u64, &'static str> {
     let mut result: u64 = 0;
     unsafe {
         match Core::to_vertical_mirror(raw_code, &mut result) {
@@ -176,7 +191,8 @@ fn to_vertical_mirror(raw_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-fn to_horizontal_mirror(raw_code: u64) -> Result<u64, &'static str> {
+#[allow(dead_code)]
+pub fn to_horizontal_mirror(raw_code: u64) -> Result<u64, &'static str> {
     let mut result: u64 = 0;
     unsafe {
         match Core::to_horizontal_mirror(raw_code, &mut result) {
@@ -186,31 +202,36 @@ fn to_horizontal_mirror(raw_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-fn is_vertical_mirror_unsafe(raw_code: u64) -> bool {
+#[allow(dead_code)]
+pub fn is_vertical_mirror_unsafe(raw_code: u64) -> bool {
     unsafe {
         Core::is_vertical_mirror_unsafe(raw_code)
     }
 }
 
-fn is_horizontal_mirror_unsafe(raw_code: u64) -> bool {
+#[allow(dead_code)]
+pub fn is_horizontal_mirror_unsafe(raw_code: u64) -> bool {
     unsafe {
         Core::is_horizontal_mirror_unsafe(raw_code)
     }
 }
 
-fn to_vertical_mirror_unsafe(raw_code: u64) -> u64 {
+#[allow(dead_code)]
+pub fn to_vertical_mirror_unsafe(raw_code: u64) -> u64 {
     unsafe {
         Core::to_vertical_mirror_unsafe(raw_code)
     }
 }
 
-fn to_horizontal_mirror_unsafe(raw_code: u64) -> u64 {
+#[allow(dead_code)]
+pub fn to_horizontal_mirror_unsafe(raw_code: u64) -> u64 {
     unsafe {
         Core::to_horizontal_mirror_unsafe(raw_code)
     }
 }
 
-fn short_code_to_string(short_code: u32) -> Result<String, &'static str> {
+#[allow(dead_code)]
+pub fn short_code_to_string(short_code: u32) -> Result<String, &'static str> {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::SHORT_CODE_STR_SIZE as usize];
         match Core::short_code_to_string(short_code, buffer.as_mut_ptr()) {
@@ -226,7 +247,8 @@ fn short_code_to_string(short_code: u32) -> Result<String, &'static str> {
     }
 }
 
-fn short_code_to_string_unsafe(short_code: u32) -> String {
+#[allow(dead_code)]
+pub fn short_code_to_string_unsafe(short_code: u32) -> String {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::SHORT_CODE_STR_SIZE as usize];
         Core::short_code_to_string(short_code, buffer.as_mut_ptr());
@@ -238,7 +260,8 @@ fn short_code_to_string_unsafe(short_code: u32) -> String {
     }
 }
 
-fn short_code_from_string(short_code: &str) -> Result<u32, &'static str> {
+#[allow(dead_code)]
+pub fn short_code_from_string(short_code: &str) -> Result<u32, &'static str> {
     unsafe {
         let mut result: u32 = 0;
         match Core::short_code_from_string(
@@ -251,7 +274,8 @@ fn short_code_from_string(short_code: &str) -> Result<u32, &'static str> {
     }
 }
 
-fn common_code_to_string(common_code: u64) -> Result<String, &'static str> {
+#[allow(dead_code)]
+pub fn common_code_to_string(common_code: u64) -> Result<String, &'static str> {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
         match Core::common_code_to_string(common_code, buffer.as_mut_ptr()) {
@@ -267,7 +291,8 @@ fn common_code_to_string(common_code: u64) -> Result<String, &'static str> {
     }
 }
 
-fn common_code_to_string_unsafe(common_code: u64) -> String {
+#[allow(dead_code)]
+pub fn common_code_to_string_unsafe(common_code: u64) -> String {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
         Core::common_code_to_string_unsafe(common_code, buffer.as_mut_ptr());
@@ -279,7 +304,8 @@ fn common_code_to_string_unsafe(common_code: u64) -> String {
     }
 }
 
-fn common_code_to_string_shorten(common_code: u64) -> Result<String, &'static str> {
+#[allow(dead_code)]
+pub fn common_code_to_string_shorten(common_code: u64) -> Result<String, &'static str> {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
         match Core::common_code_to_string_shorten(common_code, buffer.as_mut_ptr()) {
@@ -296,7 +322,8 @@ fn common_code_to_string_shorten(common_code: u64) -> Result<String, &'static st
     }
 }
 
-fn common_code_to_string_shorten_unsafe(common_code: u64) -> String {
+#[allow(dead_code)]
+pub fn common_code_to_string_shorten_unsafe(common_code: u64) -> String {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
         Core::common_code_to_string_shorten(common_code, buffer.as_mut_ptr());
@@ -309,7 +336,8 @@ fn common_code_to_string_shorten_unsafe(common_code: u64) -> String {
     }
 }
 
-fn common_code_from_string(common_code: &str) -> Result<u64, &'static str> {
+#[allow(dead_code)]
+pub fn common_code_from_string(common_code: &str) -> Result<u64, &'static str> {
     unsafe {
         let mut result: u64 = 0;
         match Core::common_code_from_string(

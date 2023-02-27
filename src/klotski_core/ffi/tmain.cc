@@ -21,9 +21,14 @@ void tmain() {
 //    std::cout << ret.to_common_code() << std::endl << ret << std::endl;
 
 //    klotski::RawCode::from_common_code(0x1A9BF0C00).is_vertical_mirror();
-    auto ret = klotski::RawCode::from_common_code(0x1A9BF0C00).to_vertical_mirror();
+//    auto ret = klotski::RawCode::from_common_code(0x1A9BF0C00).to_vertical_mirror();
+//
+//    std::cout << ret.to_common_code() << std::endl << ret << std::endl;
 
-    std::cout << ret.to_common_code() << std::endl << ret << std::endl;
+//    std::cout << klotski::RawCode::from_common_code(0x4FEA13400) << std::endl;
+//    std::cout << klotski::RawCode::from_common_code(0x8346AFC00) << std::endl;
+//    std::cout << klotski::RawCode::from_common_code(0x1A9BF0C00) << std::endl;
+    std::cout << klotski::RawCode::from_common_code(0x6BFA47000) << std::endl;
 
     return;
 

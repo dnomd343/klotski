@@ -79,6 +79,7 @@ TEST(FFI, codec_string) {
     uint64_t common_code;
     char common_code_buffer[COMMON_CODE_STR_SIZE];
     EXPECT_EQ(common_code_to_string(TEST_COMMON_CODE_ERR, common_code_buffer), false);
+    EXPECT_EQ(common_code_to_string_shorten(TEST_COMMON_CODE_ERR, common_code_buffer), false);
     EXPECT_EQ(common_code_from_string(TEST_COMMON_CODE_STR_ERR, &common_code), false);
 
     EXPECT_EQ(common_code_to_string(TEST_COMMON_CODE_OK, common_code_buffer), true);
@@ -156,8 +157,14 @@ TEST(FFI, codec_mirror) {
     EXPECT_EQ(to_vertical_mirror(TEST_RAW_CODE_ERR, &raw_code), false);
     EXPECT_EQ(to_horizontal_mirror(TEST_RAW_CODE_ERR, &raw_code), false);
 
+    // function always return false
     EXPECT_EQ(is_vertical_mirror(TEST_RAW_CODE_OK, &result), true);
-    EXPECT_EQ(result, false); // function always return false
+    EXPECT_EQ(result, false);
+    EXPECT_EQ(is_vertical_mirror(TEST_MIRROR_V1, &result), true);
+    EXPECT_EQ(result, false);
+    EXPECT_EQ(is_vertical_mirror(TEST_MIRROR_V2, &result), true);
+    EXPECT_EQ(result, false);
+
     EXPECT_EQ(to_vertical_mirror(TEST_MIRROR_V1, &raw_code), true);
     EXPECT_EQ(raw_code, TEST_MIRROR_V2);
     EXPECT_EQ(to_vertical_mirror(TEST_MIRROR_V2, &raw_code), true);
@@ -169,6 +176,9 @@ TEST(FFI, codec_mirror) {
     EXPECT_EQ(result, false);
     EXPECT_EQ(is_horizontal_mirror(TEST_MIRROR_H2, &result), true);
     EXPECT_EQ(result, false);
+
+    EXPECT_EQ(to_horizontal_mirror(TEST_MIRROR_H, &raw_code), true);
+    EXPECT_EQ(raw_code, TEST_MIRROR_H);
     EXPECT_EQ(to_horizontal_mirror(TEST_MIRROR_H1, &raw_code), true);
     EXPECT_EQ(raw_code, TEST_MIRROR_H2);
     EXPECT_EQ(to_horizontal_mirror(TEST_MIRROR_H2, &raw_code), true);

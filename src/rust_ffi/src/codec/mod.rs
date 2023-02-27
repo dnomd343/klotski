@@ -1,4 +1,4 @@
 mod ffi;
 mod tests;
 
-use super::core::Core;
+use crate::core::Core;
