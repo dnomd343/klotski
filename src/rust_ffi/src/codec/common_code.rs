@@ -16,9 +16,8 @@ impl PartialEq for CommonCode {
 }
 
 impl fmt::Display for CommonCode {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // TODO: using hex output of CommonCode
-        write!(f, "{}", self.code)
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:09X}", self.code)
     }
 }
 
@@ -47,14 +46,13 @@ impl CommonCode {
     // TODO: from RawCode (u64 / RawCode)
     // TODO: from ShortCode (u32 / String / CommonCode)
 
-    pub fn to_string(&self, shorten: bool) -> String {
-        match shorten {
-            true => codec_ffi::common_code_to_string_unsafe(self.code),
-            false => codec_ffi::common_code_to_string_shorten_unsafe(self.code),
-        }
+    pub fn to_string(&self) -> String {
+        codec_ffi::common_code_to_string_unsafe(self.code)
     }
 
-    // TODO: to_string_shorten
+    pub fn to_string_shorten(&self) -> String {
+        codec_ffi::common_code_to_string_shorten_unsafe(self.code)
+    }
 
     pub fn to_short_code(&self) -> ShortCode {
         ShortCode::new(

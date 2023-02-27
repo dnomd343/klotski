@@ -1,20 +1,21 @@
 use crate::core::Core;
 use std::ffi::{c_char, CString};
 
-#[allow(dead_code)]
+#[inline]
 pub fn short_code_enable() {
     unsafe {
         Core::short_code_enable()
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn short_code_enable_fast() {
     unsafe {
         Core::short_code_enable_fast()
     }
 }
 
+#[inline]
 #[allow(dead_code)]
 pub fn is_short_code_available() -> bool {
     unsafe {
@@ -22,6 +23,7 @@ pub fn is_short_code_available() -> bool {
     }
 }
 
+#[inline]
 #[allow(dead_code)]
 pub fn is_short_code_available_fast() -> bool {
     unsafe {
@@ -29,21 +31,21 @@ pub fn is_short_code_available_fast() -> bool {
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn raw_code_check(raw_code: u64) -> bool {
     unsafe {
         Core::raw_code_check(raw_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn short_code_check(short_code: u32) -> bool {
     unsafe {
         Core::short_code_check(short_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn common_code_check(common_code: u64) -> bool {
     unsafe {
         Core::common_code_check(common_code)
