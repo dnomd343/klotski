@@ -1,7 +1,7 @@
 /// Klotski c-style ABI convert by bindgen.
 /// Core module expose these interfaces for abstraction.
 
-pub mod Core {
+pub(crate) mod Core {
     #![allow(dead_code)]
     #![allow(non_snake_case)]
     #![allow(non_camel_case_types)]
