@@ -1,7 +1,6 @@
 use std::fmt;
-use crate::codec::raw_code::RawCode;
-use super::CommonCode;
 use super::ffi as codec_ffi;
+use super::{RawCode, CommonCode};
 
 #[derive(Debug)]
 pub struct ShortCode {
@@ -17,20 +16,42 @@ impl PartialEq for ShortCode {
 }
 
 impl fmt::Display for ShortCode {
+    /// Output ShortCode for debug.
+    ///     Format:  XXXXX(...num...)
+    ///     Example: 4WVE1(4091296)
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}({})", self.to_string(), self.code)
     }
 }
 
 impl ShortCode {
+    /// Check if the input `u32` value is a valid short code.
+    #[inline]
+    pub(crate) fn check(short_code: u32) -> bool {
+        codec_ffi::short_code_check(short_code)
+    }
+
+    /// Creates an unchecked short code, which is not safe and is only used
+    /// during encoding conversion (to ensure no errors).
+    #[inline]
     pub(crate) fn new(short_code: u32) -> ShortCode {
         ShortCode {
             code: short_code
         }
     }
 
+    /// Create short code from raw `u32`, and will be checked for validity.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// match ShortCode::from(4091296) {
+    ///     Ok(code) => println!("result: {}", code),
+    ///     Err(err) => println!("error: {}", err),
+    /// }
+    /// ```
     pub fn from(short_code: u32) -> Result<ShortCode, &'static str> {
-        match codec_ffi::short_code_check(short_code) {
+        match ShortCode::check(short_code) {
             true => Ok(ShortCode {
                 code: short_code
             }),
@@ -38,27 +59,65 @@ impl ShortCode {
         }
     }
 
+    /// Create short code from raw `&str`, and will be checked for validity.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// match ShortCode::from_str("4WVE1") {
+    ///     Ok(code) => println!("result: {}", code),
+    ///     Err(err) => println!("error: {}", err),
+    /// }
+    /// ```
     pub fn from_str(short_code: &str) -> Result<ShortCode, &'static str> {
         Ok(ShortCode {
             code: codec_ffi::short_code_from_string(short_code)?
         })
     }
+}
 
+impl ShortCode {
     // TODO: from RawCode (u64 / RawCode)
     // TODO: from CommonCode (u64 / String / CommonCode)
 }
 
 impl ShortCode {
+    /// Return the original `u32` type short code value.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// let code = ShortCode::from_str("4WVE1").expect("invalid short code");
+    /// println!("original: {}", code.unwrap());
+    /// ```
     #[inline]
     pub fn unwrap(&self) -> u32 {
         self.code
     }
 
+    /// Returns the short code encoded as a string.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// let code = ShortCode::from_str("4WVE1").expect("invalid short code");
+    /// println!("short code string: {}", code.to_string());
+    /// ```
     #[inline]
     pub fn to_string(&self) -> String {
         codec_ffi::short_code_to_string_unsafe(self.code)
     }
 
+    /// Convert to RawCode type, note that it will take a long time if there is no
+    /// warm-up index.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// let short_code = ShortCode::from_str("4WVE1").unwrap();
+    /// let raw_code = short_code.to_raw_code();
+    /// println!("{} => {}", short_code, raw_code);
+    /// ```
     #[inline]
     pub fn to_raw_code(&self) -> RawCode {
         RawCode::new(
@@ -66,6 +125,16 @@ impl ShortCode {
         )
     }
 
+    /// Convert to CommonCode type, note that it will take a long time if there is no
+    /// warm-up index.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// let short_code = ShortCode::from_str("4WVE1").unwrap();
+    /// let common_code = short_code.to_common_code();
+    /// println!("{} => {}", short_code, common_code);
+    /// ```
     #[inline]
     pub fn to_common_code(&self) -> CommonCode {
         CommonCode::new(

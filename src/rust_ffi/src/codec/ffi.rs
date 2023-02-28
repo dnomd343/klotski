@@ -52,7 +52,7 @@ pub fn common_code_check(common_code: u64) -> bool {
     }
 }
 
-#[allow(dead_code)]
+// #[allow(dead_code)]
 pub fn raw_code_to_short_code(raw_code: u64) -> Result<u32, &'static str> {
     let mut short_code: u32 = 0;
     unsafe {
@@ -63,7 +63,7 @@ pub fn raw_code_to_short_code(raw_code: u64) -> Result<u32, &'static str> {
     }
 }
 
-#[allow(dead_code)]
+// #[allow(dead_code)]
 pub fn short_code_to_raw_code(short_code: u32) -> Result<u64, &'static str> {
     let mut raw_code: u64 = 0;
     unsafe {
@@ -74,7 +74,7 @@ pub fn short_code_to_raw_code(short_code: u32) -> Result<u64, &'static str> {
     }
 }
 
-#[allow(dead_code)]
+// #[allow(dead_code)]
 pub fn raw_code_to_common_code(raw_code: u64) -> Result<u64, &'static str> {
     let mut common_code: u64 = 0;
     unsafe {
@@ -85,7 +85,7 @@ pub fn raw_code_to_common_code(raw_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-#[allow(dead_code)]
+// #[allow(dead_code)]
 pub fn common_code_to_raw_code(common_code: u64) -> Result<u64, &'static str> {
     let mut raw_code: u64 = 0;
     unsafe {
@@ -96,7 +96,7 @@ pub fn common_code_to_raw_code(common_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-#[allow(dead_code)]
+// #[allow(dead_code)]
 pub fn short_code_to_common_code(short_code: u32) -> Result<u64, &'static str> {
     let mut common_code: u64 = 0;
     unsafe {
@@ -107,7 +107,7 @@ pub fn short_code_to_common_code(short_code: u32) -> Result<u64, &'static str> {
     }
 }
 
-#[allow(dead_code)]
+// #[allow(dead_code)]
 pub fn common_code_to_short_code(common_code: u64) -> Result<u32, &'static str> {
     let mut short_code: u32 = 0;
     unsafe {

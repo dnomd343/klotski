@@ -1,6 +1,6 @@
 use std::fmt;
-use super::ShortCode;
 use super::ffi as codec_ffi;
+use super::{RawCode, ShortCode};
 
 #[derive(Debug)]
 pub struct CommonCode {
