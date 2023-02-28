@@ -77,8 +77,75 @@ impl ShortCode {
 }
 
 impl ShortCode {
-    // TODO: from RawCode (u64 / RawCode)
-    // TODO: from CommonCode (u64 / String / CommonCode)
+    /// Build ShortCode from RawCode.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::{RawCode, ShortCode};
+    ///
+    /// let s = ShortCode::from_raw_code(&RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap());
+    ///
+    /// println!("result: {}", s);
+    /// ```
+    #[inline]
+    pub fn from_raw_code(raw_code: &RawCode) -> ShortCode {
+        raw_code.to_short_code()
+    }
+
+    /// Build ShortCode from raw `u64` type raw code.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// let s = ShortCode::from_raw_code_val(0x0_603_EDF_5CA_FFF_5E2).unwrap();
+    ///
+    /// println!("result: {}", s);
+    /// ```
+    pub fn from_raw_code_val(raw_code: u64) -> Result<ShortCode, &'static str> {
+        let raw_code = RawCode::from(raw_code)?;
+        Ok(raw_code.to_short_code())
+    }
+
+    /// Build ShortCode from CommonCode.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::{ShortCode, CommonCode};
+    ///
+    /// let s = ShortCode::from_common_code(&CommonCode::from(0x1_A9BF_0C00).unwrap());
+    ///
+    /// println!("result: {}", s);
+    /// ```
+    #[inline]
+    pub fn from_common_code(common_code: &CommonCode) -> ShortCode {
+        common_code.to_short_code()
+    }
+
+    /// Build ShortCode from raw `u64` type common code.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// let s = ShortCode::from_common_code_val(0x1_A9BF_0C00).unwrap();
+    ///
+    /// println!("result: {}", s);
+    /// ```
+    pub fn from_common_code_val(common_code: u64) -> Result<ShortCode, &'static str> {
+        let common_code = CommonCode::from(common_code)?;
+        Ok(common_code.to_short_code())
+    }
+
+    /// Build ShortCode from raw `&str` type common code.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::ShortCode;
+    ///
+    /// let s = ShortCode::from_common_code_str("1A9BF0C00").unwrap();
+    ///
+    /// println!("result: {}", s);
+    /// ```
+    pub fn from_common_code_str(common_code: &str) -> Result<ShortCode, &'static str> {
+        let common_code = CommonCode::from_str(common_code)?;
+        Ok(common_code.to_short_code())
+    }
 }
 
 impl ShortCode {

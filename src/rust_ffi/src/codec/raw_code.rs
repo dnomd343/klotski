@@ -45,7 +45,7 @@ impl RawCode {
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// match RawCode::from(0x0603_EDF5_CAFF_F5E2) {
+    /// match RawCode::from(0x0_603_EDF_5CA_FFF_5E2) {
     ///     Ok(code) => println!("result: {}", code),
     ///     Err(err) => println!("error: {}", err),
     /// }
@@ -61,8 +61,89 @@ impl RawCode {
 }
 
 impl RawCode {
-    // TODO: from ShortCode (u32 / String / CommonCode)
-    // TODO: from CommonCode (u64 / String / CommonCode)
+    /// Build RawCode from ShortCode.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::{RawCode, ShortCode};
+    ///
+    /// let r = RawCode::from_short_code(&ShortCode::from(4091296).unwrap());
+    ///
+    /// println!("result: {}", r);
+    /// ```
+    #[inline]
+    pub fn from_short_code(short_code: &ShortCode) -> RawCode {
+        short_code.to_raw_code()
+    }
+
+    /// Build RawCode from raw `u32` type short code.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r = RawCode::from_short_code_val(4091296).unwrap();
+    ///
+    /// println!("result: {}", r);
+    /// ```
+    pub fn from_short_code_val(short_code: u32) -> Result<RawCode, &'static str> {
+        let short_code = ShortCode::from(short_code)?;
+        Ok(short_code.to_raw_code())
+    }
+
+    /// Build RawCode from raw `&str` type short code.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r = RawCode::from_short_code_str("4WVE1").unwrap();
+    ///
+    /// println!("result: {}", r);
+    /// ```
+    pub fn from_short_code_str(short_code: &str) -> Result<RawCode, &'static str> {
+        let short_code = ShortCode::from_str(short_code)?;
+        Ok(short_code.to_raw_code())
+    }
+
+    /// Build RawCode from CommonCode.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::{RawCode, CommonCode};
+    ///
+    /// let r = RawCode::from_common_code(&CommonCode::from(0x1_A9BF_0C00).unwrap());
+    ///
+    /// println!("result: {}", r);
+    /// ```
+    #[inline]
+    pub fn from_common_code(common_code: &CommonCode) -> RawCode {
+        common_code.to_raw_code()
+    }
+
+    /// Build RawCode from raw `u64` type common code.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r = RawCode::from_common_code_val(0x1_A9BF_0C00).unwrap();
+    ///
+    /// println!("result: {}", r);
+    /// ```
+    pub fn from_common_code_val(common_code: u64) -> Result<RawCode, &'static str> {
+        let common_code = CommonCode::from(common_code)?;
+        Ok(common_code.to_raw_code())
+    }
+
+    /// Build RawCode from raw `&str` type common code.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r = RawCode::from_common_code_str("1A9BF0C00").unwrap();
+    ///
+    /// println!("result: {}", r);
+    /// ```
+    pub fn from_common_code_str(common_code: &str) -> Result<RawCode, &'static str> {
+        let common_code = CommonCode::from_str(common_code)?;
+        Ok(common_code.to_raw_code())
+    }
 }
 
 impl RawCode {
