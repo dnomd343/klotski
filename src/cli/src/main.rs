@@ -31,5 +31,12 @@ fn main() {
     // println!("{}", klotski_ffi::common_code_from_string("1A9BF0C").unwrap());
     // println!("{}", klotski_ffi::common_code_from_string("1A9BF0C00").unwrap());
 
-    klotski_ffi::demo();
+    // klotski_ffi::demo();
+
+    // let r = klotski_ffi::RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
+    // let r = klotski_ffi::RawCode::from(0x0_EDB_5FF_EBC_5C8_E58).unwrap(); // 8346AFC00
+    // let r = klotski_ffi::RawCode::from(0x0_0F9_1CF_FFA_F17_6DA).unwrap(); // 6BFA47000
+    let r = klotski_ffi::RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap(); // 1A9BF0C00
+
+    println!("{} => {}", r, r.to_common_code());
 }

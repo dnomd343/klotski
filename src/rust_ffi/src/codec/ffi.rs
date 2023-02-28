@@ -204,28 +204,28 @@ pub fn to_horizontal_mirror(raw_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn is_vertical_mirror_unsafe(raw_code: u64) -> bool {
     unsafe {
         Core::is_vertical_mirror_unsafe(raw_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn is_horizontal_mirror_unsafe(raw_code: u64) -> bool {
     unsafe {
         Core::is_horizontal_mirror_unsafe(raw_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn to_vertical_mirror_unsafe(raw_code: u64) -> u64 {
     unsafe {
         Core::to_vertical_mirror_unsafe(raw_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn to_horizontal_mirror_unsafe(raw_code: u64) -> u64 {
     unsafe {
         Core::to_horizontal_mirror_unsafe(raw_code)

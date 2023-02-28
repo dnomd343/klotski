@@ -114,7 +114,121 @@ impl RawCode {
 }
 
 impl RawCode {
+    /// Determine whether two layouts are mirrored vertically.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r1 = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
+    /// let r2 = RawCode::from(0x0_EDB_5FF_EBC_5C8_E58).unwrap(); // 8346AFC00
+    ///
+    /// println!("is vertical mirror: {}", RawCode::is_vertical_mirror(&r1, &r2));
+    /// ```
+    #[inline]
+    pub fn is_vertical_mirror(r1: &RawCode, r2: &RawCode) -> bool {
+        r1 == &r2.to_vertical_mirror()
+    }
 
-    // TODO: mirror function
+    /// Determine whether two layouts are mirrored horizontally.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r1 = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
+    /// let r2 = RawCode::from(0x0_0F9_1CF_FFA_F17_6DA).unwrap(); // 6BFA47000
+    ///
+    /// println!("is horizontal mirror: {}", RawCode::is_horizontal_mirror(&r1, &r2));
+    /// ```
+    #[inline]
+    pub fn is_horizontal_mirror(r1: &RawCode, r2: &RawCode) -> bool {
+        r1 == &r2.to_horizontal_mirror()
+    }
 
+    /// Determine whether the current layout is vertically mirrored with another layout.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r1 = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
+    /// let r2 = RawCode::from(0x0_EDB_5FF_EBC_5C8_E58).unwrap(); // 8346AFC00
+    ///
+    /// println!("is vertical mirror: {}", r1.is_vertical_mirror_with(&r2));
+    /// ```
+    #[inline]
+    pub fn is_vertical_mirror_with(&self, raw_code: &RawCode) -> bool {
+        self == &raw_code.to_vertical_mirror()
+    }
+
+    /// Determine whether the current layout is horizontally mirrored with another layout.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r1 = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
+    /// let r2 = RawCode::from(0x0_0F9_1CF_FFA_F17_6DA).unwrap(); // 6BFA47000
+    ///
+    /// println!("is horizontal mirror: {}", r1.is_horizontal_mirror_with(&r2));
+    /// ```
+    #[inline]
+    pub fn is_horizontal_mirror_with(&self, raw_code: &RawCode) -> bool {
+        self == &raw_code.to_horizontal_mirror()
+    }
+
+    /// Determine whether the layout is vertically symmetrical.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap(); // 1A9BF0C00
+    ///
+    /// println!("is vertically symmetrical: {}", r.is_self_vertical_mirror());
+    /// ```
+    #[inline]
+    pub fn is_self_vertical_mirror(&self) -> bool {
+        codec_ffi::is_vertical_mirror_unsafe(self.code)
+    }
+
+    /// Determine whether the layout is horizontally symmetrical.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap(); // 1A9BF0C00
+    ///
+    /// println!("is horizontally symmetrical: {}", r.is_self_horizontal_mirror());
+    /// ```
+    #[inline]
+    pub fn is_self_horizontal_mirror(&self) -> bool {
+        codec_ffi::is_horizontal_mirror_unsafe(self.code)
+    }
+
+    /// Get vertical mirroring of the layout.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
+    /// println!("vertical mirror: {}", r.to_vertical_mirror());
+    /// ```
+    #[inline]
+    pub fn to_vertical_mirror(&self) -> RawCode {
+        RawCode::new(
+            codec_ffi::to_vertical_mirror_unsafe(self.code)
+        )
+    }
+
+    /// Get horizontally mirroring of the layout.
+    /// # Example
+    /// ```
+    /// use klotski_ffi::RawCode;
+    ///
+    /// let r = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
+    /// println!("horizontal mirror: {}", r.to_horizontal_mirror());
+    /// ```
+    #[inline]
+    pub fn to_horizontal_mirror(&self) -> RawCode {
+        RawCode::new(
+            codec_ffi::to_horizontal_mirror_unsafe(self.code)
+        )
+    }
 }
