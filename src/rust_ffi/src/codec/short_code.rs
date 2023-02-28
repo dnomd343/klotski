@@ -258,3 +258,12 @@ impl ShortCode {
         codec_ffi::short_code_enable_fast();
     }
 }
+
+#[cfg(test)]
+mod tests {
+    const TEST_CODE: u32 = 4091296;
+    const TEST_CODE_STR: &str = "4WVE1";
+
+    const TEST_CODE_ERR: u32 = 29670987;
+    const TEST_CODE_STR_ERR: &str = "R50EH";
+}
