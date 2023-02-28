@@ -231,10 +231,114 @@ impl CommonCode {
 
 #[cfg(test)]
 pub(crate) mod tests {
+    use crate::{RawCode, ShortCode, CommonCode};
+    use super::super::raw_code::tests as raw_code;
+    use super::super::short_code::tests as short_code;
+
     pub(crate) const TEST_CODE: u64 = 0x1_A9BF_0C00;
     pub(crate) const TEST_CODE_STR: &str = "1A9BF0C00";
     pub(crate) const TEST_CODE_STR_SHR: &str = "1A9BF0C";
 
     pub(crate) const TEST_CODE_ERR: u64 = 0x1_A9BF_FC00;
     pub(crate) const TEST_CODE_STR_ERR: &str = "123J432A9";
+
+
+    #[test]
+    fn construct() {
+        assert!(CommonCode::check(TEST_CODE));
+        assert!(!CommonCode::check(TEST_CODE_ERR));
+
+        assert!(CommonCode::from(TEST_CODE).is_ok());
+        assert!(CommonCode::from(TEST_CODE_ERR).is_err());
+
+        assert!(CommonCode::from_str(TEST_CODE_STR).is_ok());
+        assert!(CommonCode::from_str(TEST_CODE_STR_ERR).is_err());
+
+        assert_eq!(
+            CommonCode::new(TEST_CODE),
+            CommonCode::from(TEST_CODE).unwrap()
+        );
+        assert_eq!(
+            CommonCode::from(TEST_CODE).unwrap(),
+            CommonCode::from_str(TEST_CODE_STR).unwrap()
+        );
+        assert_eq!(
+            CommonCode::from(TEST_CODE).unwrap(),
+            CommonCode::from_str(TEST_CODE_STR_SHR).unwrap()
+        );
+    }
+
+    #[test]
+    fn convert() {
+        // CommonCode <-- raw code
+        assert_eq!(
+            CommonCode::from_raw_code(
+                &RawCode::from(raw_code::TEST_CODE).unwrap()
+            ),
+            CommonCode::from(TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            CommonCode::from_raw_code_val(raw_code::TEST_CODE).unwrap(),
+            CommonCode::from(TEST_CODE).unwrap()
+        );
+
+        assert!(
+            CommonCode::from_raw_code_val(raw_code::TEST_CODE_ERR).is_err()
+        );
+
+        // CommonCode <-- short code
+        assert_eq!(
+            CommonCode::from_short_code(
+                &ShortCode::from(short_code::TEST_CODE).unwrap()
+            ),
+            CommonCode::from(TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            CommonCode::from_short_code_val(short_code::TEST_CODE).unwrap(),
+            CommonCode::from(TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            CommonCode::from_short_code_str(short_code::TEST_CODE_STR).unwrap(),
+            CommonCode::from(TEST_CODE).unwrap()
+        );
+
+        assert!(
+            CommonCode::from_short_code_val(short_code::TEST_CODE_ERR).is_err()
+        );
+
+        assert!(
+            CommonCode::from_short_code_str(short_code::TEST_CODE_STR_ERR).is_err()
+        );
+    }
+
+    #[test]
+    fn export() {
+        assert_eq!(
+            CommonCode::from(TEST_CODE).unwrap().unwrap(),
+            TEST_CODE
+        );
+
+        assert_eq!(
+            CommonCode::from(TEST_CODE).unwrap().to_string(),
+            TEST_CODE_STR
+        );
+
+        assert_eq!(
+            CommonCode::from(TEST_CODE).unwrap().to_string_shorten(),
+            TEST_CODE_STR_SHR
+        );
+
+        assert_eq!(
+            CommonCode::from(TEST_CODE).unwrap().to_raw_code(),
+            RawCode::from(raw_code::TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            CommonCode::from(TEST_CODE).unwrap().to_short_code(),
+            ShortCode::from(short_code::TEST_CODE).unwrap()
+        );
+    }
 }

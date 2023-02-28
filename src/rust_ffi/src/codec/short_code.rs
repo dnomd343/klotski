@@ -260,16 +260,16 @@ impl ShortCode {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use crate::{RawCode, ShortCode, CommonCode};
     use super::super::raw_code::tests as raw_code;
     use super::super::common_code::tests as common_code;
 
-    const TEST_CODE: u32 = 4091296;
-    const TEST_CODE_STR: &str = "4WVE1";
+    pub(crate) const TEST_CODE: u32 = 4091296;
+    pub(crate) const TEST_CODE_STR: &str = "4WVE1";
 
-    const TEST_CODE_ERR: u32 = 29670987;
-    const TEST_CODE_STR_ERR: &str = "R50EH";
+    pub(crate) const TEST_CODE_ERR: u32 = 29670987;
+    pub(crate) const TEST_CODE_STR_ERR: &str = "R50EH";
 
     #[test]
     fn construct() {
