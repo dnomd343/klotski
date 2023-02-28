@@ -40,6 +40,9 @@ fn main() {
 
     // println!("{} => {}", r, r.to_common_code());
 
-    klotski_ffi::demo();
+    let all_cases = klotski_ffi::all_cases_fetch();
+    for &code in &all_cases[..16] {
+        println!("{:09X}", code);
+    }
 
 }
