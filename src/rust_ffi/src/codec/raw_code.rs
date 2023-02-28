@@ -315,7 +315,7 @@ impl RawCode {
 }
 
 #[cfg(test)]
-mod tests {
-    const TEST_CODE: u64 = 0x0_603_EDF_5CA_FFF_5E2;
-    const TEST_CODE_ERR: u64 = 0x0_A34_182_B38_102_D21;
+pub(crate) mod tests {
+    pub(crate) const TEST_CODE: u64 = 0x0_603_EDF_5CA_FFF_5E2;
+    pub(crate) const TEST_CODE_ERR: u64 = 0x0_A34_182_B38_102_D21;
 }

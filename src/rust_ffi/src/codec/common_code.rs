@@ -230,11 +230,11 @@ impl CommonCode {
 }
 
 #[cfg(test)]
-mod tests {
-    const TEST_CODE: u64 = 0x1_A9BF_0C00;
-    const TEST_CODE_STR: &str = "1A9BF0C00";
-    const TEST_CODE_STR_SHR: &str = "1A9BF0C";
+pub(crate) mod tests {
+    pub(crate) const TEST_CODE: u64 = 0x1_A9BF_0C00;
+    pub(crate) const TEST_CODE_STR: &str = "1A9BF0C00";
+    pub(crate) const TEST_CODE_STR_SHR: &str = "1A9BF0C";
 
-    const TEST_CODE_ERR: u64 = 0x1_A9BF_FC00;
-    const TEST_CODE_STR_ERR: &str = "123J432A9";
+    pub(crate) const TEST_CODE_ERR: u64 = 0x1_A9BF_FC00;
+    pub(crate) const TEST_CODE_STR_ERR: &str = "123J432A9";
 }
