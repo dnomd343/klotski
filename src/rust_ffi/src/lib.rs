@@ -10,6 +10,6 @@ pub use codec::RawCode;
 pub use codec::ShortCode;
 pub use codec::CommonCode;
 
-pub use all_cases::all_cases_fetch;
+pub use all_cases::AllCases;
 
 pub use metadata::load_metadata as metadata;
