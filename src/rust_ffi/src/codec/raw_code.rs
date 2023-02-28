@@ -316,6 +316,198 @@ impl RawCode {
 
 #[cfg(test)]
 pub(crate) mod tests {
+    use crate::{RawCode, ShortCode, CommonCode};
+    use super::super::short_code::tests as short_code;
+    use super::super::common_code::tests as common_code;
+
     pub(crate) const TEST_CODE: u64 = 0x0_603_EDF_5CA_FFF_5E2;
     pub(crate) const TEST_CODE_ERR: u64 = 0x0_A34_182_B38_102_D21;
+
+    const TEST_MIRROR_V: u64  = 0x0_FC0_480_6DB_FC0_480; // only for test
+    const TEST_MIRROR_V1: u64 = 0x0_E58_FC8_5FF_EBC_4DB;
+    const TEST_MIRROR_V2: u64 = 0x0_EDB_5FF_EBC_5C8_E58;
+
+    const TEST_MIRROR_H: u64  = 0x0_603_EDF_5CA_FFF_5E2;
+    const TEST_MIRROR_H1: u64 = 0x0_E58_FC8_5FF_EBC_4DB;
+    const TEST_MIRROR_H2: u64 = 0x0_0F9_1CF_FFA_F17_6DA;
+
+    #[test]
+    fn construct() {
+        assert!(RawCode::check(TEST_CODE));
+        assert!(!RawCode::check(TEST_CODE_ERR));
+
+        assert!(RawCode::from(TEST_CODE).is_ok());
+        assert!(RawCode::from(TEST_CODE_ERR).is_err());
+
+        assert_eq!(
+            RawCode::new(TEST_CODE),
+            RawCode::from(TEST_CODE).unwrap()
+        );
+    }
+
+    #[test]
+    fn convert() {
+        // RawCode <-- short code
+        assert_eq!(
+            RawCode::from_short_code(
+                &ShortCode::from(short_code::TEST_CODE).unwrap()
+            ),
+            RawCode::from(TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            RawCode::from_short_code_val(short_code::TEST_CODE).unwrap(),
+            RawCode::from(TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            RawCode::from_short_code_str(short_code::TEST_CODE_STR).unwrap(),
+            RawCode::from(TEST_CODE).unwrap()
+        );
+
+        assert!(
+            RawCode::from_short_code_val(short_code::TEST_CODE_ERR).is_err()
+        );
+
+        assert!(
+            RawCode::from_short_code_str(short_code::TEST_CODE_STR_ERR).is_err()
+        );
+
+        // RawCode <-- common code
+        assert_eq!(
+            RawCode::from_common_code(
+                &CommonCode::from(common_code::TEST_CODE).unwrap()
+            ),
+            RawCode::from(TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            RawCode::from_common_code_val(common_code::TEST_CODE).unwrap(),
+            RawCode::from(TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            RawCode::from_common_code_str(common_code::TEST_CODE_STR).unwrap(),
+            RawCode::from(TEST_CODE).unwrap()
+        );
+
+        assert!(
+            RawCode::from_common_code_val(common_code::TEST_CODE_ERR).is_err()
+        );
+
+        assert!(
+            RawCode::from_common_code_str(common_code::TEST_CODE_STR_ERR).is_err()
+        );
+    }
+
+    #[test]
+    fn export() {
+        assert_eq!(
+            RawCode::from(TEST_CODE).unwrap().unwrap(),
+            TEST_CODE
+        );
+
+        assert_eq!(
+            RawCode::from(TEST_CODE).unwrap().to_short_code(),
+            ShortCode::from(short_code::TEST_CODE).unwrap()
+        );
+
+        assert_eq!(
+            RawCode::from(TEST_CODE).unwrap().to_common_code(),
+            CommonCode::from(common_code::TEST_CODE).unwrap()
+        );
+    }
+
+    #[test]
+    fn mirror() {
+        // Static mirror check
+
+        assert!(RawCode::is_vertical_mirror(
+            &RawCode::from(TEST_MIRROR_V1).unwrap(),
+            &RawCode::from(TEST_MIRROR_V2).unwrap(),
+        ));
+
+        assert!(RawCode::is_horizontal_mirror(
+            &RawCode::from(TEST_MIRROR_H1).unwrap(),
+            &RawCode::from(TEST_MIRROR_H2).unwrap(),
+        ));
+
+        assert!(!RawCode::is_vertical_mirror(
+            &RawCode::new(TEST_MIRROR_V),
+            &RawCode::from(TEST_MIRROR_V1).unwrap(),
+        ));
+        assert!(!RawCode::is_vertical_mirror(
+            &RawCode::new(TEST_MIRROR_V),
+            &RawCode::from(TEST_MIRROR_V2).unwrap(),
+        ));
+
+        assert!(!RawCode::is_horizontal_mirror(
+            &RawCode::from(TEST_MIRROR_H).unwrap(),
+            &RawCode::from(TEST_MIRROR_H1).unwrap(),
+        ));
+        assert!(!RawCode::is_horizontal_mirror(
+            &RawCode::from(TEST_MIRROR_H).unwrap(),
+            &RawCode::from(TEST_MIRROR_H2).unwrap(),
+        ));
+
+        // Mirror check as member function
+
+        assert!(!RawCode::new(TEST_MIRROR_V).is_vertical_mirror_with(
+            &RawCode::from(TEST_MIRROR_V1).unwrap()
+        ));
+        assert!(!RawCode::new(TEST_MIRROR_V).is_vertical_mirror_with(
+            &RawCode::from(TEST_MIRROR_V2).unwrap()
+        ));
+        assert!(RawCode::new(TEST_MIRROR_V1).is_vertical_mirror_with(
+            &RawCode::from(TEST_MIRROR_V2).unwrap()
+        ));
+
+        assert!(!RawCode::new(TEST_MIRROR_H).is_horizontal_mirror_with(
+            &RawCode::from(TEST_MIRROR_H1).unwrap()
+        ));
+        assert!(!RawCode::new(TEST_MIRROR_H).is_horizontal_mirror_with(
+            &RawCode::from(TEST_MIRROR_H2).unwrap()
+        ));
+        assert!(RawCode::new(TEST_MIRROR_H1).is_horizontal_mirror_with(
+            &RawCode::from(TEST_MIRROR_H2).unwrap()
+        ));
+
+        // Symmetry test
+
+        assert!(RawCode::new(TEST_MIRROR_V).is_self_vertical_mirror());
+        assert!(!RawCode::new(TEST_MIRROR_V1).is_self_vertical_mirror());
+        assert!(!RawCode::new(TEST_MIRROR_V2).is_self_vertical_mirror());
+
+        assert!(RawCode::new(TEST_MIRROR_H).is_self_horizontal_mirror());
+        assert!(!RawCode::new(TEST_MIRROR_H1).is_self_horizontal_mirror());
+        assert!(!RawCode::new(TEST_MIRROR_H2).is_self_horizontal_mirror());
+
+        // Mirror layout calculations
+
+        assert_eq!(
+            RawCode::new(TEST_MIRROR_V).to_vertical_mirror(),
+            RawCode::new(TEST_MIRROR_V)
+        );
+        assert_eq!(
+            RawCode::new(TEST_MIRROR_V1).to_vertical_mirror(),
+            RawCode::new(TEST_MIRROR_V2)
+        );
+        assert_eq!(
+            RawCode::new(TEST_MIRROR_V2).to_vertical_mirror(),
+            RawCode::new(TEST_MIRROR_V1)
+        );
+
+        assert_eq!(
+            RawCode::new(TEST_MIRROR_H).to_horizontal_mirror(),
+            RawCode::new(TEST_MIRROR_H)
+        );
+        assert_eq!(
+            RawCode::new(TEST_MIRROR_H1).to_horizontal_mirror(),
+            RawCode::new(TEST_MIRROR_H2)
+        );
+        assert_eq!(
+            RawCode::new(TEST_MIRROR_H2).to_horizontal_mirror(),
+            RawCode::new(TEST_MIRROR_H1)
+        );
+    }
 }
