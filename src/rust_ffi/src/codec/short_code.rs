@@ -17,8 +17,8 @@ impl PartialEq for ShortCode {
 
 impl fmt::Display for ShortCode {
     /// Output ShortCode for debug.
-    ///     Format:  XXXXX(...num...)
-    ///     Example: 4WVE1(4091296)
+    ///   Format:  XXXXX(...num...)
+    ///   Example: 4WVE1(4091296)
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}({})", self.to_string(), self.code)
     }
@@ -100,7 +100,7 @@ impl ShortCode {
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
-    /// let code = ShortCode::from_str("4WVE1").expect("invalid short code");
+    /// let code = ShortCode::from(4091296).expect("invalid short code");
     /// println!("short code string: {}", code.to_string());
     /// ```
     #[inline]
@@ -108,8 +108,8 @@ impl ShortCode {
         codec_ffi::short_code_to_string_unsafe(self.code)
     }
 
-    /// Convert to RawCode type, note that it will take a long time if there is no
-    /// warm-up index.
+    /// Convert ShortCode to RawCode type, note that it will take a long time if there
+    /// is no warm-up index.
     /// # Example
     /// ```
     /// use klotski_ffi::ShortCode;
@@ -125,8 +125,8 @@ impl ShortCode {
         )
     }
 
-    /// Convert to CommonCode type, note that it will take a long time if there is no
-    /// warm-up index.
+    /// Convert ShortCode to CommonCode type, note that it will take a long time if there
+    /// is no warm-up index.
     /// # Example
     /// ```
     /// use klotski_ffi::ShortCode;

@@ -52,7 +52,7 @@ pub fn common_code_check(common_code: u64) -> bool {
     }
 }
 
-// #[allow(dead_code)]
+#[allow(dead_code)]
 pub fn raw_code_to_short_code(raw_code: u64) -> Result<u32, &'static str> {
     let mut short_code: u32 = 0;
     unsafe {
@@ -63,7 +63,7 @@ pub fn raw_code_to_short_code(raw_code: u64) -> Result<u32, &'static str> {
     }
 }
 
-// #[allow(dead_code)]
+#[allow(dead_code)]
 pub fn short_code_to_raw_code(short_code: u32) -> Result<u64, &'static str> {
     let mut raw_code: u64 = 0;
     unsafe {
@@ -74,7 +74,7 @@ pub fn short_code_to_raw_code(short_code: u32) -> Result<u64, &'static str> {
     }
 }
 
-// #[allow(dead_code)]
+#[allow(dead_code)]
 pub fn raw_code_to_common_code(raw_code: u64) -> Result<u64, &'static str> {
     let mut common_code: u64 = 0;
     unsafe {
@@ -85,7 +85,7 @@ pub fn raw_code_to_common_code(raw_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-// #[allow(dead_code)]
+#[allow(dead_code)]
 pub fn common_code_to_raw_code(common_code: u64) -> Result<u64, &'static str> {
     let mut raw_code: u64 = 0;
     unsafe {
@@ -96,7 +96,7 @@ pub fn common_code_to_raw_code(common_code: u64) -> Result<u64, &'static str> {
     }
 }
 
-// #[allow(dead_code)]
+#[allow(dead_code)]
 pub fn short_code_to_common_code(short_code: u32) -> Result<u64, &'static str> {
     let mut common_code: u64 = 0;
     unsafe {
@@ -107,7 +107,7 @@ pub fn short_code_to_common_code(short_code: u32) -> Result<u64, &'static str> {
     }
 }
 
-// #[allow(dead_code)]
+#[allow(dead_code)]
 pub fn common_code_to_short_code(common_code: u64) -> Result<u32, &'static str> {
     let mut short_code: u32 = 0;
     unsafe {
@@ -118,42 +118,42 @@ pub fn common_code_to_short_code(common_code: u64) -> Result<u32, &'static str> 
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn raw_code_to_short_code_unsafe(raw_code: u64) -> u32 {
     unsafe {
         Core::raw_code_to_short_code_unsafe(raw_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn short_code_to_raw_code_unsafe(short_code: u32) -> u64 {
     unsafe {
         Core::short_code_to_raw_code_unsafe(short_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn raw_code_to_common_code_unsafe(raw_code: u64) -> u64 {
     unsafe {
         Core::raw_code_to_common_code_unsafe(raw_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn common_code_to_raw_code_unsafe(common_code: u64) -> u64 {
     unsafe {
         Core::common_code_to_raw_code_unsafe(common_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn short_code_to_common_code_unsafe(short_code: u32) -> u64 {
     unsafe {
         Core::short_code_to_common_code_unsafe(short_code)
     }
 }
 
-#[allow(dead_code)]
+#[inline]
 pub fn common_code_to_short_code_unsafe(common_code: u64) -> u32 {
     unsafe {
         Core::common_code_to_short_code_unsafe(common_code)
@@ -249,7 +249,6 @@ pub fn short_code_to_string(short_code: u32) -> Result<String, &'static str> {
     }
 }
 
-#[allow(dead_code)]
 pub fn short_code_to_string_unsafe(short_code: u32) -> String {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::SHORT_CODE_STR_SIZE as usize];
@@ -262,7 +261,6 @@ pub fn short_code_to_string_unsafe(short_code: u32) -> String {
     }
 }
 
-#[allow(dead_code)]
 pub fn short_code_from_string(short_code: &str) -> Result<u32, &'static str> {
     unsafe {
         let mut result: u32 = 0;
@@ -293,7 +291,6 @@ pub fn common_code_to_string(common_code: u64) -> Result<String, &'static str> {
     }
 }
 
-#[allow(dead_code)]
 pub fn common_code_to_string_unsafe(common_code: u64) -> String {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
@@ -324,7 +321,6 @@ pub fn common_code_to_string_shorten(common_code: u64) -> Result<String, &'stati
     }
 }
 
-#[allow(dead_code)]
 pub fn common_code_to_string_shorten_unsafe(common_code: u64) -> String {
     unsafe {
         let mut buffer: Vec<c_char> = vec![0; Core::COMMON_CODE_STR_SIZE as usize];
@@ -338,7 +334,6 @@ pub fn common_code_to_string_shorten_unsafe(common_code: u64) -> String {
     }
 }
 
-#[allow(dead_code)]
 pub fn common_code_from_string(common_code: &str) -> Result<u64, &'static str> {
     unsafe {
         let mut result: u64 = 0;
