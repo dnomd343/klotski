@@ -1,6 +1,22 @@
 #pragma once
 
-#include <ostream>
+/// This is a built-in performance testing module for klotski core, which will
+/// directly call the underlying functions to avoid the additional overhead
+/// of the glue ABI.
+
+/// Multiple test items are provided here, and the corresponding float value is
+/// returned according to the specified time format (seconds, milliseconds,
+/// microseconds, nanoseconds).
+
+/// The test items are all multi-thread safe, but you should not run multiple
+/// test items at the same time, which will lead to unstable tests in many ways,
+/// such as changes in CPU turbo frequency.
+
+/// Pay attention to the two test items `basic_ranges` and `all_cases`, they can
+/// only be run once (the reason for the construction of static data), and cannot
+/// be run after short code related items.
+
+#include <ctime>
 
 namespace klotski {
     class Benchmark {
@@ -8,14 +24,10 @@ namespace klotski {
         enum TIME {
             S, MS, US, NS
         };
-        static float all_cases(enum TIME format);
-        static float basic_ranges(enum TIME format);
+        static float all_cases(TIME format = MS);
+        static float basic_ranges(TIME format = MS);
 
     private:
-//        static std::string time_s(clock_t start);
-//        static std::string time_ms(clock_t start);
-//        static std::string time_us(clock_t start);
-//        static std::string time_ns(clock_t start);
         static float time_format(clock_t start, enum TIME format);
     };
 }

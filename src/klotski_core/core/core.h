@@ -24,7 +24,7 @@
 /// the help of a sub-BFS search, the target can be obtained. It can be shown that this step
 /// produces at most 15 derived layouts, so it can be stored and computed in a queue of length
 /// 16. By performing such a search on each block in the layout, we can get all the next-step
-/// layouts, which have a minimum of 0 and a maximum of 68.
+/// layouts, which have a minimum of `0` and a maximum of `68`.
 
 /// For a single block, search for the situation after it has moved one grid, `addr` is its current
 /// position information, which is (0 ~ 19) * 3. When moving up and down, judge the value of `addr`

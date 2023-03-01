@@ -5,44 +5,21 @@
 #include "klotski.h"
 #include "core.h"
 
-//#include "common.h"
+#include "common.h"
 #include "benchmark.h"
 
 #include "all_cases.h"
 #include "common_code.h"
 
+using klotski::Benchmark;
+
 void tmain() {
-    printf("tmain start\n");
+//    printf("tmain start\n");
 
-//    klotski::RawCode::from_common_code(0x1A9BF0C00).is_horizontal_mirror();
-//    auto ret = klotski::RawCode::from_common_code(0x1A9BF0C00).to_horizontal_mirror();
-//    auto ret = klotski::RawCode::from_common_code(0x4FEA13400).to_horizontal_mirror();
-
-//    std::cout << ret.to_common_code() << std::endl << ret << std::endl;
-
-//    klotski::RawCode::from_common_code(0x1A9BF0C00).is_vertical_mirror();
-//    auto ret = klotski::RawCode::from_common_code(0x1A9BF0C00).to_vertical_mirror();
-//
-//    std::cout << ret.to_common_code() << std::endl << ret << std::endl;
-
-//    std::cout << klotski::RawCode::from_common_code(0x4FEA13400) << std::endl;
-//    std::cout << klotski::RawCode::from_common_code(0x8346AFC00) << std::endl;
-//    std::cout << klotski::RawCode::from_common_code(0x1A9BF0C00) << std::endl;
-    std::cout << klotski::RawCode::from_common_code(0x6BFA47000) << std::endl;
+    std::cout << "basic ranges: " << Benchmark::basic_ranges() << "ms" << std::endl;
+    std::cout << "all cases: " << Benchmark::all_cases() << "ms" << std::endl;
 
     return;
-
-//    printf("%d\n", ALL_CASES_SIZE_SUM);
-//    std::cout << ALL_CASES_SIZE_SUM << std::endl;
-
-//    uint64_t common_code = 0x1A9BC0C00;
-//    klotski::Common::range_reverse(common_code);
-
-//    printf("%f\n", Benchmark::basic_ranges(Benchmark::MS));
-//    printf("%f\n", Benchmark::all_cases(Benchmark::MS));
-//    std::cout << Benchmark::basic_ranges(Benchmark::MS) << std::endl;
-//    std::cout << Benchmark::all_cases(Benchmark::MS) << std::endl;
-
 
     std::vector<uint64_t> next;
 

@@ -1,9 +1,9 @@
 #include "benchmark.h"
 #include "all_cases.h"
 
-using namespace klotski;
+using klotski::Benchmark;
 
-float Benchmark::basic_ranges(Benchmark::TIME format) {
+float Benchmark::basic_ranges(TIME format) {
     if (BasicRanges::status() != BasicRanges::NO_INIT) {
         return -1; // data already built -> skip
     }
@@ -12,7 +12,7 @@ float Benchmark::basic_ranges(Benchmark::TIME format) {
     return time_format(start, format);
 }
 
-float Benchmark::all_cases(Benchmark::TIME format) {
+float Benchmark::all_cases(TIME format) {
     if (AllCases::status() != AllCases::NO_INIT) {
         return -1; // data already built -> skip
     }
