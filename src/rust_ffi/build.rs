@@ -6,11 +6,12 @@ use std::path::PathBuf;
 const KLOTSKI_LIB: &str = "klotski";
 const KLOTSKI_HEADER: &str = "klotski.h";
 const KLOTSKI_RUST_ABI: &str = "bindings.rs";
-const KLOTSKI_RELEASE_DIR: &str = "../../bin/";
+const KLOTSKI_CORE_DIR: &str = "../klotski_core/";
+const KLOTSKI_RELEASE_DIR: &str = "../bin/";
 
 fn main() {
     // path of klotski c-header file
-    let header_path = PathBuf::from(KLOTSKI_RELEASE_DIR).join(KLOTSKI_HEADER);
+    let header_path = PathBuf::from(KLOTSKI_CORE_DIR).join(KLOTSKI_HEADER);
     let klotski_c_header = header_path.to_str().unwrap();
 
     // basic cargo compile options

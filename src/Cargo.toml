@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "rust_ffi",
+    "cli"
+]
