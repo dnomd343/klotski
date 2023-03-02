@@ -14,9 +14,10 @@
 
 /// Pay attention to the two test items `basic_ranges` and `all_cases`, they can
 /// only be run once (the reason for the construction of static data), and cannot
-/// be run after short code related items.
+/// be run after other global related items.
 
 #include <ctime>
+#include <cstdint>
 
 namespace klotski {
     class Benchmark {
@@ -24,10 +25,30 @@ namespace klotski {
         enum TIME {
             S, MS, US, NS
         };
-        static float all_cases(TIME format = MS);
-        static float basic_ranges(TIME format = MS);
+        static uint32_t core_num() noexcept;
+        static double warm_up(uint64_t count) noexcept;
+
+        static double all_cases(TIME format = MS) noexcept;
+        static double basic_ranges(TIME format = MS) noexcept;
+
+        static double short_code_to_string(TIME format = NS) noexcept;
+        static double short_code_from_string(TIME format = NS) noexcept;
+
+        static double common_code_to_string(TIME format = NS) noexcept;
+        static double common_code_from_string(TIME format = NS) noexcept;
+
+        static double common_code_to_string_shorten(TIME format = NS) noexcept;
+        static double common_code_from_string_shorten(TIME format = NS) noexcept;
+
+//        static float codec_common_to_raw(TIME format = US);
+//        static float codec_raw_to_common(TIME format = US);
+//        static float codec_common_to_short();
+//        static float codec_short_to_common();
+//        static float codec_common_to_short_fast();
+//        static float codec_short_to_common_fast();
+
 
     private:
-        static float time_format(clock_t start, enum TIME format);
+        static double time_format(clock_t start, TIME format) noexcept;
     };
 }
