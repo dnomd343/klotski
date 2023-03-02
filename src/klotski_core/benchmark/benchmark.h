@@ -43,6 +43,16 @@ namespace klotski {
         static double common_code_to_string(TIME format = NS) noexcept;
         static double common_code_from_string(TIME format = NS) noexcept;
 
+        static double common_code_to_raw_code(TIME format = NS) noexcept;
+        static double raw_code_to_common_code(TIME format = NS) noexcept;
+
+        static double common_code_to_short_code(TIME format = NS) noexcept;
+        static double short_code_to_common_code(TIME format = NS) noexcept;
+
+        static double common_code_to_short_code_fast(TIME format = NS) noexcept;
+        static double short_code_to_common_code_fast(TIME format = NS) noexcept;
+
+
 //        static float codec_common_to_raw(TIME format = US);
 //        static float codec_raw_to_common(TIME format = US);
 //        static float codec_common_to_short();

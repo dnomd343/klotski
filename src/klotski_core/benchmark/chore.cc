@@ -49,13 +49,15 @@ void Benchmark::data_preparation() noexcept {
     std::iota(tmp.begin(), tmp.end(), 0);
 
     all_short_codes.reserve(klotski::SHORT_CODE_LIMIT);
-    for (auto &&short_code : tmp) {
+    for (auto &&short_code : tmp) { // 0 ~ (SHORT_CODE_LIMIT - 1)
         all_short_codes.emplace_back(ShortCode::unsafe_create(short_code));
     }
 
     all_short_codes_str.reserve(klotski::SHORT_CODE_LIMIT);
-    for (auto &&short_code : all_short_codes) {
-        all_short_codes_str.emplace_back(short_code.to_string());
+    for (auto &&short_code : tmp) { // 0 ~ (SHORT_CODE_LIMIT - 1)
+        all_short_codes_str.emplace_back(
+            ShortCode::unsafe_create(short_code).to_string()
+        );
     }
 
     /// common code info preparation

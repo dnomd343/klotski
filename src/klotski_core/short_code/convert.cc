@@ -70,7 +70,7 @@ uint32_t ShortCode::fast_encode(uint64_t common_code) noexcept { // common code 
 /// NOTE: ensure that input short code is valid!
 uint64_t ShortCode::fast_decode(uint32_t short_code) noexcept { // short code --> common code
     auto offset = std::upper_bound( // using binary search
-            ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code
+        ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code
     ) - 1;
     uint64_t head = offset - ALL_CASES_OFFSET; // head index
     return (head << 32) | AllCases::fetch()[head][short_code - *offset]; // release common code

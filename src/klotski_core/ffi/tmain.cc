@@ -23,11 +23,22 @@ void tmain() {
 
     Benchmark::data_preparation();
 
-    std::cout << Benchmark::short_code_to_string() << "ns" << std::endl;
-    std::cout << Benchmark::short_code_from_string() << "ns" << std::endl;
+    std::cout << "start benchmark" << std::endl;
 
-    std::cout << Benchmark::common_code_to_string() << "ns" << std::endl;
-    std::cout << Benchmark::common_code_from_string() << "ns" << std::endl;
+//    std::cout << Benchmark::short_code_to_string() << "ns" << std::endl;
+//    std::cout << Benchmark::short_code_from_string() << "ns" << std::endl;
+//
+//    std::cout << Benchmark::common_code_to_string() << "ns" << std::endl;
+//    std::cout << Benchmark::common_code_from_string() << "ns" << std::endl;
+//
+//    std::cout << Benchmark::common_code_to_raw_code() << "ns" << std::endl;
+//    std::cout << Benchmark::raw_code_to_common_code() << "ns" << std::endl;
+
+    std::cout << Benchmark::common_code_to_short_code() << "ns" << std::endl;
+    std::cout << Benchmark::short_code_to_common_code() << "ns" << std::endl;
+
+    std::cout << Benchmark::common_code_to_short_code_fast() << "ns" << std::endl;
+    std::cout << Benchmark::short_code_to_common_code_fast() << "ns" << std::endl;
 
     return;
 
