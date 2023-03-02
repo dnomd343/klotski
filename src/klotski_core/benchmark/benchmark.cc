@@ -226,3 +226,49 @@ double Benchmark::short_code_to_common_code_fast(TIME format) noexcept {
     }
     return time_format(start, format) / (double)all_short_codes.size();
 }
+
+/// ---------------------------- Benchmark Mirror -----------------------------
+
+double Benchmark::vertical_mirror_check(TIME format) noexcept {
+    if (!data_ready) {
+        return -1; // data no ready -> skip
+    }
+    auto start = clock();
+    for (auto &&raw_code : all_raw_codes) {
+        raw_code.is_vertical_mirror();
+    }
+    return time_format(start, format) / (double)all_raw_codes.size();
+}
+
+double Benchmark::horizontal_mirror_check(TIME format) noexcept {
+    if (!data_ready) {
+        return -1; // data no ready -> skip
+    }
+    auto start = clock();
+    for (auto &&raw_code : all_raw_codes) {
+        raw_code.is_horizontal_mirror();
+    }
+    return time_format(start, format) / (double)all_raw_codes.size();
+}
+
+double Benchmark::vertical_mirror_convert(TIME format) noexcept {
+    if (!data_ready) {
+        return -1; // data no ready -> skip
+    }
+    auto start = clock();
+    for (auto &&raw_code : all_raw_codes) {
+        raw_code.to_vertical_mirror();
+    }
+    return time_format(start, format) / (double)all_raw_codes.size();
+}
+
+double Benchmark::horizontal_mirror_convert(TIME format) noexcept {
+    if (!data_ready) {
+        return -1; // data no ready -> skip
+    }
+    auto start = clock();
+    for (auto &&raw_code : all_raw_codes) {
+        raw_code.to_horizontal_mirror();
+    }
+    return time_format(start, format) / (double)all_raw_codes.size();
+}

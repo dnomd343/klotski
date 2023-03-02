@@ -33,7 +33,6 @@ namespace klotski {
         };
         static void data_preparation() noexcept;
         static double warm_up(uint64_t count) noexcept;
-
         static double range_flip(TIME format = NS) noexcept;
 
         static double all_cases(TIME format = MS) noexcept;
@@ -42,25 +41,26 @@ namespace klotski {
         static double raw_code_check(TIME format = NS) noexcept;
         static double short_code_check(TIME format = NS) noexcept;
         static double common_code_check(TIME format = NS) noexcept;
-
         static double raw_code_check_random(TIME format = NS) noexcept;
         static double short_code_check_random(TIME format = NS) noexcept;
         static double common_code_check_random(TIME format = NS) noexcept;
 
         static double short_code_to_string(TIME format = NS) noexcept;
         static double short_code_from_string(TIME format = NS) noexcept;
-
         static double common_code_to_string(TIME format = NS) noexcept;
         static double common_code_from_string(TIME format = NS) noexcept;
 
         static double common_code_to_raw_code(TIME format = NS) noexcept;
         static double raw_code_to_common_code(TIME format = NS) noexcept;
-
         static double common_code_to_short_code(TIME format = NS) noexcept;
         static double short_code_to_common_code(TIME format = NS) noexcept;
-
         static double common_code_to_short_code_fast(TIME format = NS) noexcept;
         static double short_code_to_common_code_fast(TIME format = NS) noexcept;
+
+        static double vertical_mirror_check(TIME format = NS) noexcept;
+        static double horizontal_mirror_check(TIME format = NS) noexcept;
+        static double vertical_mirror_convert(TIME format = NS) noexcept;
+        static double horizontal_mirror_convert(TIME format = NS) noexcept;
 
     private:
         static bool data_ready;

@@ -67,6 +67,15 @@ void tmain() {
     std::cout << "short code to common code fast: " <<
         Benchmark::short_code_to_common_code_fast() << "ns" << std::endl;
 
+    std::cout << "vertical mirror check: " <<
+        Benchmark::vertical_mirror_check() << "ns" << std::endl;
+    std::cout << "horizontal mirror check: " <<
+          Benchmark::horizontal_mirror_check() << "ns" << std::endl;
+    std::cout << "vertical mirror convert: " <<
+          Benchmark::vertical_mirror_convert() << "ns" << std::endl;
+    std::cout << "horizontal mirror convert: " <<
+          Benchmark::horizontal_mirror_convert() << "ns" << std::endl;
+
     return;
 
     std::vector<uint64_t> next;
