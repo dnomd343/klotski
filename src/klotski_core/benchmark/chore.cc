@@ -1,4 +1,5 @@
-#include <thread>
+#include <chrono>
+#include <random>
 #include "benchmark.h"
 
 using klotski::RawCode;
@@ -12,6 +13,12 @@ std::vector<ShortCode> Benchmark::all_short_codes;
 std::vector<CommonCode> Benchmark::all_common_codes;
 std::vector<std::string> Benchmark::all_short_codes_str;
 std::vector<std::string> Benchmark::all_common_codes_str;
+
+uint32_t Benchmark::random_seed() noexcept {
+    using namespace std::chrono;
+    auto tmp = system_clock::now().time_since_epoch();
+    return duration_cast<microseconds>(tmp).count();
+}
 
 double Benchmark::warm_up(uint64_t count) noexcept {
     auto start = clock();
@@ -37,6 +44,33 @@ double Benchmark::time_format(clock_t start, TIME format) noexcept {
             break;
     }
     return time / CLOCKS_PER_SEC;
+}
+
+std::vector<uint32_t> Benchmark::generate_u32_rand(uint32_t count) noexcept {
+    std::vector<uint32_t> result;
+    result.reserve(count);
+
+    auto seed = random_seed();
+    auto high_bit = (uint32_t)seed << 31;
+
+    std::srand(seed);
+    for (uint32_t i = 0; i < count; ++i) {
+        auto tmp = high_bit | static_cast<uint32_t>(std::rand());
+        result.emplace_back(tmp);
+        high_bit = tmp << 31;
+    }
+    return result;
+}
+
+std::vector<uint64_t> Benchmark::generate_u64_rand(uint32_t count) noexcept {
+    std::vector<uint64_t> result;
+    result.reserve(count);
+
+    auto tmp = generate_u32_rand(count * 2);
+    for (uint32_t i = 0; i < count; ++i) {
+        result.emplace_back((uint64_t)tmp[i * 2] << 32 | tmp[i * 2 + 1]);
+    }
+    return result;
 }
 
 void Benchmark::data_preparation() noexcept {

@@ -18,27 +18,54 @@ void tmain() {
 
 //    std::cout << "warm up: " << Benchmark::warm_up(1000000) << "us" << std::endl;
 
-//    std::cout << "basic ranges: " << Benchmark::basic_ranges() << "ms" << std::endl;
-//    std::cout << "all cases: " << Benchmark::all_cases() << "ms" << std::endl;
+    std::cout << "range flip: " <<
+        Benchmark::range_flip() << "ns" << std::endl;
+
+    std::cout << "basic ranges: " <<
+        Benchmark::basic_ranges() << "ms" << std::endl;
+    std::cout << "all cases: " <<
+        Benchmark::all_cases() << "ms" << std::endl;
 
     Benchmark::data_preparation();
 
-    std::cout << "start benchmark" << std::endl;
+    std::cout << "raw code check: " <<
+        Benchmark::raw_code_check() << "ns" << std::endl;
+    std::cout << "short code check: " <<
+        Benchmark::short_code_check() << "ns" << std::endl;
+    std::cout << "common code check: " <<
+        Benchmark::common_code_check() << "ns" << std::endl;
 
-//    std::cout << Benchmark::short_code_to_string() << "ns" << std::endl;
-//    std::cout << Benchmark::short_code_from_string() << "ns" << std::endl;
-//
-//    std::cout << Benchmark::common_code_to_string() << "ns" << std::endl;
-//    std::cout << Benchmark::common_code_from_string() << "ns" << std::endl;
-//
-//    std::cout << Benchmark::common_code_to_raw_code() << "ns" << std::endl;
-//    std::cout << Benchmark::raw_code_to_common_code() << "ns" << std::endl;
+    std::cout << "raw code check random: " <<
+        Benchmark::raw_code_check_random() << "ns" << std::endl;
+    std::cout << "short code check random: " <<
+        Benchmark::short_code_check_random() << "ns" << std::endl;
+    std::cout << "common code check random: " <<
+        Benchmark::common_code_check_random() << "ns" << std::endl;
 
-    std::cout << Benchmark::common_code_to_short_code() << "ns" << std::endl;
-    std::cout << Benchmark::short_code_to_common_code() << "ns" << std::endl;
+    std::cout << "short code to string: " <<
+        Benchmark::short_code_to_string() << "ns" << std::endl;
+    std::cout << "short code from string: " <<
+        Benchmark::short_code_from_string() << "ns" << std::endl;
 
-    std::cout << Benchmark::common_code_to_short_code_fast() << "ns" << std::endl;
-    std::cout << Benchmark::short_code_to_common_code_fast() << "ns" << std::endl;
+    std::cout << "common code to string: " <<
+        Benchmark::common_code_to_string() << "ns" << std::endl;
+    std::cout << "common code from string: " <<
+        Benchmark::common_code_from_string() << "ns" << std::endl;
+
+    std::cout << "common code to raw code: " <<
+        Benchmark::common_code_to_raw_code() << "ns" << std::endl;
+    std::cout << "raw code to common code: " <<
+        Benchmark::raw_code_to_common_code() << "ns" << std::endl;
+
+    std::cout << "common code to short code: " <<
+        Benchmark::common_code_to_short_code() << "ns" << std::endl;
+    std::cout << "short code to common code: " <<
+        Benchmark::short_code_to_common_code() << "ns" << std::endl;
+
+    std::cout << "common code to short code fast: " <<
+        Benchmark::common_code_to_short_code_fast() << "ns" << std::endl;
+    std::cout << "short code to common code fast: " <<
+        Benchmark::short_code_to_common_code_fast() << "ns" << std::endl;
 
     return;
 

@@ -34,8 +34,18 @@ namespace klotski {
         static void data_preparation() noexcept;
         static double warm_up(uint64_t count) noexcept;
 
+        static double range_flip(TIME format = NS) noexcept;
+
         static double all_cases(TIME format = MS) noexcept;
         static double basic_ranges(TIME format = MS) noexcept;
+
+        static double raw_code_check(TIME format = NS) noexcept;
+        static double short_code_check(TIME format = NS) noexcept;
+        static double common_code_check(TIME format = NS) noexcept;
+
+        static double raw_code_check_random(TIME format = NS) noexcept;
+        static double short_code_check_random(TIME format = NS) noexcept;
+        static double common_code_check_random(TIME format = NS) noexcept;
 
         static double short_code_to_string(TIME format = NS) noexcept;
         static double short_code_from_string(TIME format = NS) noexcept;
@@ -52,14 +62,6 @@ namespace klotski {
         static double common_code_to_short_code_fast(TIME format = NS) noexcept;
         static double short_code_to_common_code_fast(TIME format = NS) noexcept;
 
-
-//        static float codec_common_to_raw(TIME format = US);
-//        static float codec_raw_to_common(TIME format = US);
-//        static float codec_common_to_short();
-//        static float codec_short_to_common();
-//        static float codec_common_to_short_fast();
-//        static float codec_short_to_common_fast();
-
     private:
         static bool data_ready;
         static std::vector<RawCode> all_raw_codes;
@@ -68,6 +70,9 @@ namespace klotski {
         static std::vector<std::string> all_short_codes_str;
         static std::vector<std::string> all_common_codes_str;
 
+        static uint32_t random_seed() noexcept;
         static double time_format(clock_t start, TIME format) noexcept;
+        static std::vector<uint32_t> generate_u32_rand(uint32_t count) noexcept;
+        static std::vector<uint64_t> generate_u64_rand(uint32_t count) noexcept;
     };
 }
