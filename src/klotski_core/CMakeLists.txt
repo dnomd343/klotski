@@ -118,7 +118,7 @@ add_subdirectory(benchmark)
 ################################################################################
 
 include_directories(.)
-set(FFI_SRC codec.cc all_cases.cc tmain.cc metadata.cc)
+set(FFI_SRC codec.cc all_cases.cc tmain.cc metadata.cc benchmark.cc)
 list(TRANSFORM FFI_SRC PREPEND "ffi/")
 add_library(klotski-ffi OBJECT ${FFI_SRC})
 

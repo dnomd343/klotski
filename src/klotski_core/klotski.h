@@ -19,7 +19,7 @@ extern "C" {
 }
 #endif
 
-/// -------------------------------- klotski metadata info ----------------------------------
+/// ---------------------------------- klotski metadata info ----------------------------------
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,7 +41,7 @@ extern "C" {
 }
 #endif
 
-/// ------------------------------- klotski all cases export --------------------------------
+/// -------------------------------- klotski all cases export ---------------------------------
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,7 +60,7 @@ extern "C" {
 }
 #endif
 
-/// -------------------------------- klotski codec interface --------------------------------
+/// --------------------------------- klotski codec interface ---------------------------------
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,6 +109,46 @@ extern "C" {
     EXTERN_FUNC bool common_code_to_string_shorten(uint64_t common_code, char common_code_str[]);
     EXTERN_FUNC void common_code_to_string_shorten_unsafe(uint64_t common_code, char common_code_str[]);
     EXTERN_FUNC bool common_code_from_string(const char common_code_str[], uint64_t *common_code);
+#ifdef __cplusplus
+}
+#endif
+
+/// ------------------------------------ klotski benchmark ------------------------------------
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    EXTERN_FUNC void benchmark_preparation();
+    EXTERN_FUNC double benchmark_warm_up(uint64_t count);
+
+    EXTERN_FUNC double benchmark_range_flip_ns();
+
+    EXTERN_FUNC double benchmark_all_cases_ms();
+    EXTERN_FUNC double benchmark_basic_ranges_ms();
+
+    EXTERN_FUNC double benchmark_raw_code_check_ns();
+    EXTERN_FUNC double benchmark_short_code_check_ns();
+    EXTERN_FUNC double benchmark_common_code_check_ns();
+    EXTERN_FUNC double benchmark_raw_code_check_random_ns();
+    EXTERN_FUNC double benchmark_short_code_check_random_ns();
+    EXTERN_FUNC double benchmark_common_code_check_random_ns();
+
+    EXTERN_FUNC double benchmark_short_code_to_string_ns();
+    EXTERN_FUNC double benchmark_short_code_from_string_ns();
+    EXTERN_FUNC double benchmark_common_code_to_string_ns();
+    EXTERN_FUNC double benchmark_common_code_from_string_ns();
+
+    EXTERN_FUNC double benchmark_common_code_to_raw_code_ns();
+    EXTERN_FUNC double benchmark_raw_code_to_common_code_ns();
+    EXTERN_FUNC double benchmark_common_code_to_short_code_us();
+    EXTERN_FUNC double benchmark_short_code_to_common_code_us();
+    EXTERN_FUNC double benchmark_common_code_to_short_code_fast_ns();
+    EXTERN_FUNC double benchmark_short_code_to_common_code_fast_ns();
+
+    EXTERN_FUNC double benchmark_vertical_mirror_check_ns();
+    EXTERN_FUNC double benchmark_horizontal_mirror_check_ns();
+    EXTERN_FUNC double benchmark_vertical_mirror_convert_ns();
+    EXTERN_FUNC double benchmark_horizontal_mirror_convert_ns();
 #ifdef __cplusplus
 }
 #endif

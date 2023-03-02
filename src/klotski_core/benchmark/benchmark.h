@@ -52,8 +52,8 @@ namespace klotski {
 
         static double common_code_to_raw_code(TIME format = NS) noexcept;
         static double raw_code_to_common_code(TIME format = NS) noexcept;
-        static double common_code_to_short_code(TIME format = NS) noexcept;
-        static double short_code_to_common_code(TIME format = NS) noexcept;
+        static double common_code_to_short_code(TIME format = US) noexcept;
+        static double short_code_to_common_code(TIME format = US) noexcept;
         static double common_code_to_short_code_fast(TIME format = NS) noexcept;
         static double short_code_to_common_code_fast(TIME format = NS) noexcept;
 

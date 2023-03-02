@@ -58,9 +58,9 @@ void tmain() {
         Benchmark::raw_code_to_common_code() << "ns" << std::endl;
 
     std::cout << "common code to short code: " <<
-        Benchmark::common_code_to_short_code() << "ns" << std::endl;
+        Benchmark::common_code_to_short_code() << "us" << std::endl;
     std::cout << "short code to common code: " <<
-        Benchmark::short_code_to_common_code() << "ns" << std::endl;
+        Benchmark::short_code_to_common_code() << "us" << std::endl;
 
     std::cout << "common code to short code fast: " <<
         Benchmark::common_code_to_short_code_fast() << "ns" << std::endl;
