@@ -1,6 +1,6 @@
 extern crate klotski_ffi;
 
-use klotski_ffi::AllCases;
+// use klotski_ffi::AllCases;
 
 // use std::thread::sleep;
 // use std::time::Duration;
@@ -50,18 +50,20 @@ fn main() {
     //     println!("{:09X}", code);
     // }
 
-    for raw_code in &AllCases::raw_codes()[..8] {
-        println!("{}", raw_code);
-    }
-    for short_code in &AllCases::short_codes()[..8] {
-        println!("{}", short_code);
-    }
-    for common_code in &AllCases::common_codes()[..8] {
-        println!("{}", common_code);
-    }
+    // for raw_code in &AllCases::raw_codes()[..8] {
+    //     println!("{}", raw_code);
+    // }
+    // for short_code in &AllCases::short_codes()[..8] {
+    //     println!("{}", short_code);
+    // }
+    // for common_code in &AllCases::common_codes()[..8] {
+    //     println!("{}", common_code);
+    // }
 
     // loop {
     //     sleep(Duration::from_secs(1));
     // }
+
+    klotski_ffi::demo();
 
 }

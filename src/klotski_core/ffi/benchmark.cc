@@ -9,7 +9,7 @@ void benchmark_preparation() {
     Benchmark::data_preparation();
 }
 
-double benchmark_warm_up(uint64_t count) {
+double benchmark_warm_up_us(uint64_t count) {
     return Benchmark::warm_up(count);
 }
 

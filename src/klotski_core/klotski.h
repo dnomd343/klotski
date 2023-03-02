@@ -119,7 +119,7 @@ extern "C" {
 extern "C" {
 #endif
     EXTERN_FUNC void benchmark_preparation();
-    EXTERN_FUNC double benchmark_warm_up(uint64_t count);
+    EXTERN_FUNC double benchmark_warm_up_us(uint64_t count);
 
     EXTERN_FUNC double benchmark_range_flip_ns();
 
