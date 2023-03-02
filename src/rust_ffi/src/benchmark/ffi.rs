@@ -39,3 +39,51 @@ pub(crate) fn all_cases() -> Result<Duration, &'static str> {
         }
     }
 }
+
+pub(crate) fn raw_code_check() -> Result<Duration, &'static str> {
+    unsafe {
+        let time = Core::benchmark_raw_code_check_ns();
+        match time.total_cmp(&(0 as f64)) {
+            Ordering::Greater => Ok(Duration::from_ns(time)),
+            _ => Err("data not ready"),
+        }
+    }
+}
+
+pub(crate) fn short_code_check() -> Result<Duration, &'static str> {
+    unsafe {
+        let time = Core::benchmark_short_code_check_ns();
+        match time.total_cmp(&(0 as f64)) {
+            Ordering::Greater => Ok(Duration::from_ns(time)),
+            _ => Err("data not ready"),
+        }
+    }
+}
+
+pub(crate) fn common_code_check() -> Result<Duration, &'static str> {
+    unsafe {
+        let time = Core::benchmark_common_code_check_ns();
+        match time.total_cmp(&(0 as f64)) {
+            Ordering::Greater => Ok(Duration::from_ns(time)),
+            _ => Err("data not ready"),
+        }
+    }
+}
+
+pub(crate) fn raw_code_check_random() -> Duration {
+    unsafe {
+        Duration::from_ns(Core::benchmark_raw_code_check_random_ns())
+    }
+}
+
+pub(crate) fn short_code_check_random() -> Duration {
+    unsafe {
+        Duration::from_ns(Core::benchmark_short_code_check_random_ns())
+    }
+}
+
+pub(crate) fn common_code_check_random() -> Duration {
+    unsafe {
+        Duration::from_ns(Core::benchmark_common_code_check_random_ns())
+    }
+}
