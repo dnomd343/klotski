@@ -21,9 +21,11 @@ lazy_static! {
     };
 
     static ref ALL_SHORT_CODES: Vec<ShortCode> = {
-        ShortCode::warm_up_fast();
-        build_all_cases().iter()
-            .map(|code| CommonCode::new(*code).to_short_code())
+        let all_cases_size = unsafe {
+            Core::ALL_CASES_SIZE
+        };
+        (0..all_cases_size)
+            .map(|code| ShortCode::new(code))
             .collect()
     };
 }
