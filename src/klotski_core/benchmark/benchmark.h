@@ -8,16 +8,22 @@
 /// returned according to the specified time format (seconds, milliseconds,
 /// microseconds, nanoseconds).
 
-/// The test items are all multi-thread safe, but you should not run multiple
-/// test items at the same time, which will lead to unstable tests in many ways,
-/// such as changes in CPU turbo frequency.
+/// The test items are all multi-thread safe(except `data_prepare`), but you
+/// should not run multiple test items at the same time, which will lead to
+/// unstable tests in many ways, such as changes in CPU turbo frequency.
 
 /// Pay attention to the two test items `basic_ranges` and `all_cases`, they can
 /// only be run once (the reason for the construction of static data), and cannot
 /// be run after other global related items.
 
 #include <ctime>
+#include <string>
+#include <vector>
 #include <cstdint>
+
+#include "raw_code.h"
+#include "short_code.h"
+#include "common_code.h"
 
 namespace klotski {
     class Benchmark {
@@ -25,7 +31,7 @@ namespace klotski {
         enum TIME {
             S, MS, US, NS
         };
-        static uint32_t core_num() noexcept;
+        static void data_preparation() noexcept;
         static double warm_up(uint64_t count) noexcept;
 
         static double all_cases(TIME format = MS) noexcept;
@@ -37,9 +43,6 @@ namespace klotski {
         static double common_code_to_string(TIME format = NS) noexcept;
         static double common_code_from_string(TIME format = NS) noexcept;
 
-        static double common_code_to_string_shorten(TIME format = NS) noexcept;
-        static double common_code_from_string_shorten(TIME format = NS) noexcept;
-
 //        static float codec_common_to_raw(TIME format = US);
 //        static float codec_raw_to_common(TIME format = US);
 //        static float codec_common_to_short();
@@ -47,8 +50,14 @@ namespace klotski {
 //        static float codec_common_to_short_fast();
 //        static float codec_short_to_common_fast();
 
-
     private:
+        static bool data_ready;
+        static std::vector<RawCode> all_raw_codes;
+        static std::vector<ShortCode> all_short_codes;
+        static std::vector<CommonCode> all_common_codes;
+        static std::vector<std::string> all_short_codes_str;
+        static std::vector<std::string> all_common_codes_str;
+
         static double time_format(clock_t start, TIME format) noexcept;
     };
 }

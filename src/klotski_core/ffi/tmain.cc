@@ -21,14 +21,13 @@ void tmain() {
 //    std::cout << "basic ranges: " << Benchmark::basic_ranges() << "ms" << std::endl;
 //    std::cout << "all cases: " << Benchmark::all_cases() << "ms" << std::endl;
 
+    Benchmark::data_preparation();
+
     std::cout << Benchmark::short_code_to_string() << "ns" << std::endl;
     std::cout << Benchmark::short_code_from_string() << "ns" << std::endl;
 
     std::cout << Benchmark::common_code_to_string() << "ns" << std::endl;
     std::cout << Benchmark::common_code_from_string() << "ns" << std::endl;
-
-    std::cout << Benchmark::common_code_to_string_shorten() << "ns" << std::endl;
-    std::cout << Benchmark::common_code_from_string_shorten() << "ns" << std::endl;
 
     return;
 
