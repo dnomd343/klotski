@@ -17,6 +17,13 @@ pub struct Metadata {
     pub version_patch: u32,
 }
 
+/// Get klotski core metadata information.
+/// # Examples
+/// ```
+/// use klotski_ffi::metadata;
+///
+/// println!("{:#?}", metadata());
+/// ```
 pub fn load_metadata() -> Metadata {
     unsafe {
         Metadata {

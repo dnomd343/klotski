@@ -41,14 +41,14 @@ impl RawCode {
     }
 
     /// Create raw code from raw `u64`, and will be checked for validity.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// match RawCode::from(0x0_603_EDF_5CA_FFF_5E2) {
-    ///     Ok(code) => println!("result: {}", code),
-    ///     Err(err) => println!("error: {}", err),
-    /// }
+    /// let raw_code = RawCode::from(0x0_603_EDF_5CA_FFF_5E2);
+    ///
+    /// assert!(raw_code.is_ok());
+    /// assert_eq!(raw_code.unwrap().unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     pub fn from(raw_code: u64) -> Result<RawCode, &'static str> {
         match RawCode::check(raw_code) {
@@ -62,13 +62,14 @@ impl RawCode {
 
 impl RawCode {
     /// Build RawCode from ShortCode.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::{RawCode, ShortCode};
     ///
-    /// let r = RawCode::from_short_code(&ShortCode::from(4091296).unwrap());
+    /// let short_code = ShortCode::from(4091296).unwrap();
+    /// let raw_code = RawCode::from_short_code(&short_code);
     ///
-    /// println!("result: {}", r);
+    /// assert_eq!(raw_code.unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     #[inline]
     pub fn from_short_code(short_code: &ShortCode) -> RawCode {
@@ -76,13 +77,13 @@ impl RawCode {
     }
 
     /// Build RawCode from raw `u32` type short code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// let r = RawCode::from_short_code_val(4091296).unwrap();
+    /// let raw_code = RawCode::from_short_code_val(4091296).unwrap();
     ///
-    /// println!("result: {}", r);
+    /// assert_eq!(raw_code.unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     pub fn from_short_code_val(short_code: u32) -> Result<RawCode, &'static str> {
         let short_code = ShortCode::from(short_code)?;
@@ -90,13 +91,13 @@ impl RawCode {
     }
 
     /// Build RawCode from raw `&str` type short code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// let r = RawCode::from_short_code_str("4WVE1").unwrap();
+    /// let raw_code = RawCode::from_short_code_str("4WVE1").unwrap();
     ///
-    /// println!("result: {}", r);
+    /// assert_eq!(raw_code.unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     pub fn from_short_code_str(short_code: &str) -> Result<RawCode, &'static str> {
         let short_code = ShortCode::from_str(short_code)?;
@@ -104,13 +105,14 @@ impl RawCode {
     }
 
     /// Build RawCode from CommonCode.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::{RawCode, CommonCode};
     ///
-    /// let r = RawCode::from_common_code(&CommonCode::from(0x1_A9BF_0C00).unwrap());
+    /// let common_code = CommonCode::from(0x1_A9BF_0C00).unwrap();
+    /// let raw_code = RawCode::from_common_code(&common_code);
     ///
-    /// println!("result: {}", r);
+    /// assert_eq!(raw_code.unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     #[inline]
     pub fn from_common_code(common_code: &CommonCode) -> RawCode {
@@ -118,13 +120,13 @@ impl RawCode {
     }
 
     /// Build RawCode from raw `u64` type common code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// let r = RawCode::from_common_code_val(0x1_A9BF_0C00).unwrap();
+    /// let raw_code = RawCode::from_common_code_val(0x1_A9BF_0C00).unwrap();
     ///
-    /// println!("result: {}", r);
+    /// assert_eq!(raw_code.unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     pub fn from_common_code_val(common_code: u64) -> Result<RawCode, &'static str> {
         let common_code = CommonCode::from(common_code)?;
@@ -132,13 +134,13 @@ impl RawCode {
     }
 
     /// Build RawCode from raw `&str` type common code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// let r = RawCode::from_common_code_str("1A9BF0C00").unwrap();
+    /// let raw_code = RawCode::from_common_code_str("1A9BF0C00").unwrap();
     ///
-    /// println!("result: {}", r);
+    /// assert_eq!(raw_code.unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     pub fn from_common_code_str(common_code: &str) -> Result<RawCode, &'static str> {
         let common_code = CommonCode::from_str(common_code)?;
@@ -148,12 +150,13 @@ impl RawCode {
 
 impl RawCode {
     /// Return the original `u64` type raw code value.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// let code = RawCode::from(0x0603_EDF5_CAFF_F5E2).expect("invalid raw code");
-    /// println!("original: {}", code.unwrap());
+    /// let raw_code = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).expect("invalid raw code");
+    ///
+    /// assert_eq!(raw_code.unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     #[inline]
     pub fn unwrap(&self) -> u64 {
@@ -162,13 +165,14 @@ impl RawCode {
 
     /// Convert RawCode to ShortCode type, note that it will take a long time if there
     /// is no warm-up index.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// let raw_code = RawCode::from(0x0603_EDF5_CAFF_F5E2).unwrap();
+    /// let raw_code = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap();
     /// let short_code = raw_code.to_short_code();
-    /// println!("{} => {}", raw_code, short_code);
+    ///
+    /// assert_eq!(short_code.unwrap(), 4091296);
     /// ```
     #[inline]
     pub fn to_short_code(&self) -> ShortCode {
@@ -178,13 +182,14 @@ impl RawCode {
     }
 
     /// Convert RawCode to CommonCode type.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
-    /// let raw_code = RawCode::from(0x0603_EDF5_CAFF_F5E2).unwrap();
+    /// let raw_code = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap();
     /// let common_code = raw_code.to_common_code();
-    /// println!("{} => {}", raw_code, common_code);
+    ///
+    /// assert_eq!(common_code.unwrap(), 0x1_A9BF_0C00);
     /// ```
     #[inline]
     pub fn to_common_code(&self) -> CommonCode {
@@ -196,14 +201,14 @@ impl RawCode {
 
 impl RawCode {
     /// Determine whether two layouts are mirrored vertically.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
     /// let r1 = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
     /// let r2 = RawCode::from(0x0_EDB_5FF_EBC_5C8_E58).unwrap(); // 8346AFC00
     ///
-    /// println!("is vertical mirror: {}", RawCode::is_vertical_mirror(&r1, &r2));
+    /// assert!(RawCode::is_vertical_mirror(&r1, &r2));
     /// ```
     #[inline]
     pub fn is_vertical_mirror(r1: &RawCode, r2: &RawCode) -> bool {
@@ -211,14 +216,14 @@ impl RawCode {
     }
 
     /// Determine whether two layouts are mirrored horizontally.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
     /// let r1 = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
     /// let r2 = RawCode::from(0x0_0F9_1CF_FFA_F17_6DA).unwrap(); // 6BFA47000
     ///
-    /// println!("is horizontal mirror: {}", RawCode::is_horizontal_mirror(&r1, &r2));
+    /// assert!(RawCode::is_horizontal_mirror(&r1, &r2));
     /// ```
     #[inline]
     pub fn is_horizontal_mirror(r1: &RawCode, r2: &RawCode) -> bool {
@@ -226,14 +231,14 @@ impl RawCode {
     }
 
     /// Determine whether the current layout is vertically mirrored with another layout.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
     /// let r1 = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
     /// let r2 = RawCode::from(0x0_EDB_5FF_EBC_5C8_E58).unwrap(); // 8346AFC00
     ///
-    /// println!("is vertical mirror: {}", r1.is_vertical_mirror_with(&r2));
+    /// assert!(r1.is_vertical_mirror_with(&r2));
     /// ```
     #[inline]
     pub fn is_vertical_mirror_with(&self, raw_code: &RawCode) -> bool {
@@ -241,14 +246,14 @@ impl RawCode {
     }
 
     /// Determine whether the current layout is horizontally mirrored with another layout.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
     /// let r1 = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
     /// let r2 = RawCode::from(0x0_0F9_1CF_FFA_F17_6DA).unwrap(); // 6BFA47000
     ///
-    /// println!("is horizontal mirror: {}", r1.is_horizontal_mirror_with(&r2));
+    /// assert!(r1.is_horizontal_mirror_with(&r2));
     /// ```
     #[inline]
     pub fn is_horizontal_mirror_with(&self, raw_code: &RawCode) -> bool {
@@ -256,13 +261,13 @@ impl RawCode {
     }
 
     /// Determine whether the layout is vertically symmetrical.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
     /// let r = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap(); // 1A9BF0C00
     ///
-    /// println!("is vertically symmetrical: {}", r.is_self_vertical_mirror());
+    /// assert!(!r.is_self_vertical_mirror());
     /// ```
     #[inline]
     pub fn is_self_vertical_mirror(&self) -> bool {
@@ -270,13 +275,13 @@ impl RawCode {
     }
 
     /// Determine whether the layout is horizontally symmetrical.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
     /// let r = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap(); // 1A9BF0C00
     ///
-    /// println!("is horizontally symmetrical: {}", r.is_self_horizontal_mirror());
+    /// assert!(r.is_self_horizontal_mirror());
     /// ```
     #[inline]
     pub fn is_self_horizontal_mirror(&self) -> bool {
@@ -284,12 +289,13 @@ impl RawCode {
     }
 
     /// Get vertical mirroring of the layout.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
     /// let r = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
-    /// println!("vertical mirror: {}", r.to_vertical_mirror());
+    ///
+    /// assert_eq!(r.to_vertical_mirror(), RawCode::from(0x0_EDB_5FF_EBC_5C8_E58).unwrap());
     /// ```
     #[inline]
     pub fn to_vertical_mirror(&self) -> RawCode {
@@ -299,12 +305,13 @@ impl RawCode {
     }
 
     /// Get horizontally mirroring of the layout.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::RawCode;
     ///
     /// let r = RawCode::from(0x0_E58_FC8_5FF_EBC_4DB).unwrap(); // 4FEA13400
-    /// println!("horizontal mirror: {}", r.to_horizontal_mirror());
+    ///
+    /// assert_eq!(r.to_horizontal_mirror(), RawCode::from(0x0_0F9_1CF_FFA_F17_6DA).unwrap());
     /// ```
     #[inline]
     pub fn to_horizontal_mirror(&self) -> RawCode {
@@ -324,12 +331,12 @@ pub(crate) mod tests {
     pub(crate) const TEST_CODE_ERR: u64 = 0x0_A34_182_B38_102_D21;
 
     const TEST_MIRROR_V: u64  = 0x0_FC0_480_6DB_FC0_480; // only for test
-    const TEST_MIRROR_V1: u64 = 0x0_E58_FC8_5FF_EBC_4DB;
-    const TEST_MIRROR_V2: u64 = 0x0_EDB_5FF_EBC_5C8_E58;
+    const TEST_MIRROR_V1: u64 = 0x0_E58_FC8_5FF_EBC_4DB; // 4FEA13400
+    const TEST_MIRROR_V2: u64 = 0x0_EDB_5FF_EBC_5C8_E58; // 8346AFC00
 
-    const TEST_MIRROR_H: u64  = 0x0_603_EDF_5CA_FFF_5E2;
-    const TEST_MIRROR_H1: u64 = 0x0_E58_FC8_5FF_EBC_4DB;
-    const TEST_MIRROR_H2: u64 = 0x0_0F9_1CF_FFA_F17_6DA;
+    const TEST_MIRROR_H: u64  = 0x0_603_EDF_5CA_FFF_5E2; // 1A9BF0C00
+    const TEST_MIRROR_H1: u64 = 0x0_E58_FC8_5FF_EBC_4DB; // 4FEA13400
+    const TEST_MIRROR_H2: u64 = 0x0_0F9_1CF_FFA_F17_6DA; // 6BFA47000
 
     #[test]
     fn construct() {

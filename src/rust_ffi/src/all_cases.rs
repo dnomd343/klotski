@@ -45,15 +45,22 @@ impl AllCases {
     }
 
     /// Get all possible layouts and return an vector loaded with RawCode.
-    /// # Example
+    /// # Examples
     /// ```
-    /// use klotski_ffi::AllCases;
+    /// use klotski_ffi::{AllCases, RawCode};
     ///
     /// let all_raw_codes = AllCases::raw_codes();
     ///
-    /// for raw_code in &all_raw_codes[..16] {
-    ///     println!("{}", raw_code);
-    /// }
+    /// assert_eq!(all_raw_codes[..8], vec![
+    ///     RawCode::from(0x0_000_000_000_03F_03C).unwrap(),
+    ///     RawCode::from(0x0_600_000_000_03F_03C).unwrap(),
+    ///     RawCode::from(0x0_E40_000_000_03F_03C).unwrap(),
+    ///     RawCode::from(0x0_0C0_000_000_03F_03C).unwrap(),
+    ///     RawCode::from(0x0_6C0_000_000_03F_03C).unwrap(),
+    ///     RawCode::from(0x0_1C8_000_000_03F_03C).unwrap(),
+    ///     RawCode::from(0x0_7C8_000_000_03F_03C).unwrap(),
+    ///     RawCode::from(0x0_018_000_000_03F_03C).unwrap(),
+    /// ]);
     /// ```
     #[inline]
     pub fn raw_codes() -> &'static Vec<RawCode> {
@@ -61,15 +68,22 @@ impl AllCases {
     }
 
     /// Get all possible layouts and return an vector loaded with ShortCode.
-    /// # Example
+    /// # Examples
     /// ```
-    /// use klotski_ffi::AllCases;
+    /// use klotski_ffi::{AllCases, ShortCode};
     ///
     /// let all_short_codes = AllCases::short_codes();
     ///
-    /// for short_code in &all_short_codes[..16] {
-    ///     println!("{}", short_code);
-    /// }
+    /// assert_eq!(all_short_codes[..8], vec![
+    ///     ShortCode::from(0).unwrap(),
+    ///     ShortCode::from(1).unwrap(),
+    ///     ShortCode::from(2).unwrap(),
+    ///     ShortCode::from(3).unwrap(),
+    ///     ShortCode::from(4).unwrap(),
+    ///     ShortCode::from(5).unwrap(),
+    ///     ShortCode::from(6).unwrap(),
+    ///     ShortCode::from(7).unwrap(),
+    /// ]);
     /// ```
     #[inline]
     pub fn short_codes() -> &'static Vec<ShortCode> {
@@ -77,15 +91,22 @@ impl AllCases {
     }
 
     /// Get all possible layouts and return an vector loaded with CommonCode.
-    /// # Example
+    /// # Examples
     /// ```
-    /// use klotski_ffi::AllCases;
+    /// use klotski_ffi::{AllCases, CommonCode};
     ///
     /// let all_common_codes = AllCases::common_codes();
     ///
-    /// for common_code in &all_common_codes[..16] {
-    ///     println!("{}", common_code);
-    /// }
+    /// assert_eq!(all_common_codes[..8], vec![
+    ///     CommonCode::from(0x0_0000_0000).unwrap(),
+    ///     CommonCode::from(0x0_0000_0003).unwrap(),
+    ///     CommonCode::from(0x0_0000_0004).unwrap(),
+    ///     CommonCode::from(0x0_0000_000C).unwrap(),
+    ///     CommonCode::from(0x0_0000_000F).unwrap(),
+    ///     CommonCode::from(0x0_0000_0010).unwrap(),
+    ///     CommonCode::from(0x0_0000_001C).unwrap(),
+    ///     CommonCode::from(0x0_0000_0030).unwrap(),
+    /// ]);
     /// ```
     #[inline]
     pub fn common_codes() -> &'static Vec<CommonCode> {

@@ -41,14 +41,14 @@ impl CommonCode {
     }
 
     /// Create common code from raw `u64`, and will be checked for validity.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
-    /// match CommonCode::from(0x1_A9BF_0C00) {
-    ///     Ok(code) => println!("result: {}", code),
-    ///     Err(err) => println!("error: {}", err),
-    /// }
+    /// let common_code = CommonCode::from(0x1_A9BF_0C00);
+    ///
+    /// assert!(common_code.is_ok());
+    /// assert_eq!(common_code.unwrap().unwrap(), 0x1_A9BF_0C00);
     /// ```
     pub fn from(common_code: u64) -> Result<CommonCode, &'static str> {
         match CommonCode::check(common_code) {
@@ -60,19 +60,19 @@ impl CommonCode {
     }
 
     /// Create common code from raw `&str`, and will be checked for validity.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
-    /// match CommonCode::from_str("1A9BF0C00") {
-    ///     Ok(code) => println!("result: {}", code),
-    ///     Err(err) => println!("error: {}", err),
-    /// }
+    /// let common_code = CommonCode::from_str("1A9BF0C00");
     ///
-    /// match CommonCode::from_str("1a9bf0c") {
-    ///     Ok(code) => println!("result: {}", code),
-    ///     Err(err) => println!("error: {}", err),
-    /// }
+    /// assert!(common_code.is_ok());
+    /// assert_eq!(common_code.unwrap().unwrap(), 0x1_A9BF_0C00);
+    ///
+    /// let common_code = CommonCode::from_str("1a9bf0c");
+    ///
+    /// assert!(common_code.is_ok());
+    /// assert_eq!(common_code.unwrap().unwrap(), 0x1_A9BF_0C00);
     /// ```
     pub fn from_str(common_code: &str) -> Result<CommonCode, &'static str> {
         Ok(CommonCode {
@@ -83,13 +83,14 @@ impl CommonCode {
 
 impl CommonCode {
     /// Build CommonCode from RawCode.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::{RawCode, CommonCode};
     ///
-    /// let c = CommonCode::from_raw_code(&RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap());
+    /// let raw_code = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap();
+    /// let common_code = CommonCode::from_raw_code(&raw_code);
     ///
-    /// println!("result: {}", c);
+    /// assert_eq!(common_code.unwrap(), 0x1_A9BF_0C00);
     /// ```
     #[inline]
     pub fn from_raw_code(raw_code: &RawCode) -> CommonCode {
@@ -97,13 +98,13 @@ impl CommonCode {
     }
 
     /// Build CommonCode from raw `u64` type raw code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
-    /// let c = CommonCode::from_raw_code_val(0x0_603_EDF_5CA_FFF_5E2).unwrap();
+    /// let common_code = CommonCode::from_raw_code_val(0x0_603_EDF_5CA_FFF_5E2).unwrap();
     ///
-    /// println!("result: {}", c);
+    /// assert_eq!(common_code.unwrap(), 0x1_A9BF_0C00);
     /// ```
     pub fn from_raw_code_val(raw_code: u64) -> Result<CommonCode, &'static str> {
         let raw_code = RawCode::from(raw_code)?;
@@ -111,13 +112,13 @@ impl CommonCode {
     }
 
     /// Build CommonCode from ShortCode.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::{ShortCode, CommonCode};
     ///
-    /// let c = CommonCode::from_short_code(&ShortCode::from(4091296).unwrap());
+    /// let common_code = CommonCode::from_short_code(&ShortCode::from(4091296).unwrap());
     ///
-    /// println!("result: {}", c);
+    /// assert_eq!(common_code.unwrap(), 0x1_A9BF_0C00);
     /// ```
     #[inline]
     pub fn from_short_code(short_code: &ShortCode) -> CommonCode {
@@ -125,13 +126,13 @@ impl CommonCode {
     }
 
     /// Build CommonCode from raw `u32` type short code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
-    /// let c = CommonCode::from_short_code_val(4091296).unwrap();
+    /// let common_code = CommonCode::from_short_code_val(4091296).unwrap();
     ///
-    /// println!("result: {}", c);
+    /// assert_eq!(common_code.unwrap(), 0x1_A9BF_0C00);
     /// ```
     pub fn from_short_code_val(short_code: u32) -> Result<CommonCode, &'static str> {
         let short_code = ShortCode::from(short_code)?;
@@ -139,13 +140,13 @@ impl CommonCode {
     }
 
     /// Build CommonCode from raw `&str` type short code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
-    /// let c = CommonCode::from_short_code_str("4WVE1").unwrap();
+    /// let common_code = CommonCode::from_short_code_str("4WVE1").unwrap();
     ///
-    /// println!("result: {}", c);
+    /// assert_eq!(common_code.unwrap(), 0x1_A9BF_0C00);
     /// ```
     pub fn from_short_code_str(short_code: &str) -> Result<CommonCode, &'static str> {
         let short_code = ShortCode::from_str(short_code)?;
@@ -155,12 +156,13 @@ impl CommonCode {
 
 impl CommonCode {
     /// Return the original `u64` type common code value.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
-    /// let code = CommonCode::from_str("1A9BF0C00").expect("invalid common code");
-    /// println!("original: {}", code.unwrap());
+    /// let common_code = CommonCode::from_str("1A9BF0C00").expect("invalid common code");
+    ///
+    /// assert_eq!(common_code.unwrap(), 0x1_A9BF_0C00);
     /// ```
     #[inline]
     pub fn unwrap(&self) -> u64 {
@@ -168,12 +170,13 @@ impl CommonCode {
     }
 
     /// Returns the common code encoded as a string.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
-    /// let code = CommonCode::from(0x1_A9BF_0C00).expect("invalid common code");
-    /// println!("common code string: {}", code.to_string());
+    /// let common_code = CommonCode::from(0x1_A9BF_0C00).expect("invalid common code");
+    ///
+    /// assert_eq!(common_code.to_string(), "1A9BF0C00");
     /// ```
     #[inline]
     pub fn to_string(&self) -> String {
@@ -183,12 +186,13 @@ impl CommonCode {
     /// Returns the common code encoded as a shorten string, based on the
     /// provisions of the common code, it is allowed to omit the last `0`
     /// of the string (but at least one byte length must be reserved).
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
-    /// let code = CommonCode::from(0x1_A9BF_0C00).expect("invalid common code");
-    /// println!("common code shorten string: {}", code.to_string_shorten());
+    /// let common_code = CommonCode::from(0x1_A9BF_0C00).expect("invalid common code");
+    ///
+    /// assert_eq!(common_code.to_string_shorten(), "1A9BF0C");
     /// ```
     #[inline]
     pub fn to_string_shorten(&self) -> String {
@@ -196,13 +200,13 @@ impl CommonCode {
     }
 
     /// Convert CommonCode to RawCode type.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
     /// let common_code = CommonCode::from_str("1A9BF0C00").unwrap();
-    /// let raw_code = common_code.to_raw_code();
-    /// println!("{} => {}", common_code, raw_code);
+    ///
+    /// assert_eq!(common_code.to_raw_code().unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     #[inline]
     pub fn to_raw_code(&self) -> RawCode {
@@ -213,13 +217,13 @@ impl CommonCode {
 
     /// Convert CommonCode to ShortCode type, note that it will take a long time if there
     /// is no warm-up index.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::CommonCode;
     ///
     /// let common_code = CommonCode::from_str("1A9BF0C00").unwrap();
-    /// let short_code = common_code.to_short_code();
-    /// println!("{} => {}", common_code, short_code);
+    ///
+    /// assert_eq!(common_code.to_short_code().unwrap(), 4091296);
     /// ```
     #[inline]
     pub fn to_short_code(&self) -> ShortCode {

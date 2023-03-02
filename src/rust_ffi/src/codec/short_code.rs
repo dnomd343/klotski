@@ -41,14 +41,14 @@ impl ShortCode {
     }
 
     /// Create short code from raw `u32`, and will be checked for validity.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
-    /// match ShortCode::from(4091296) {
-    ///     Ok(code) => println!("result: {}", code),
-    ///     Err(err) => println!("error: {}", err),
-    /// }
+    /// let short_code = ShortCode::from(4091296);
+    ///
+    /// assert!(short_code.is_ok());
+    /// assert_eq!(short_code.unwrap().unwrap(), 4091296);
     /// ```
     pub fn from(short_code: u32) -> Result<ShortCode, &'static str> {
         match ShortCode::check(short_code) {
@@ -60,14 +60,14 @@ impl ShortCode {
     }
 
     /// Create short code from raw `&str`, and will be checked for validity.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
-    /// match ShortCode::from_str("4WVE1") {
-    ///     Ok(code) => println!("result: {}", code),
-    ///     Err(err) => println!("error: {}", err),
-    /// }
+    /// let short_code = ShortCode::from_str("4WVE1");
+    ///
+    /// assert!(short_code.is_ok());
+    /// assert_eq!(short_code.unwrap().unwrap(), 4091296);
     /// ```
     pub fn from_str(short_code: &str) -> Result<ShortCode, &'static str> {
         Ok(ShortCode {
@@ -78,13 +78,14 @@ impl ShortCode {
 
 impl ShortCode {
     /// Build ShortCode from RawCode.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::{RawCode, ShortCode};
     ///
-    /// let s = ShortCode::from_raw_code(&RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap());
+    /// let raw_code = RawCode::from(0x0_603_EDF_5CA_FFF_5E2).unwrap();
+    /// let short_code = ShortCode::from_raw_code(&raw_code);
     ///
-    /// println!("result: {}", s);
+    /// assert_eq!(short_code.unwrap(), 4091296);
     /// ```
     #[inline]
     pub fn from_raw_code(raw_code: &RawCode) -> ShortCode {
@@ -92,13 +93,13 @@ impl ShortCode {
     }
 
     /// Build ShortCode from raw `u64` type raw code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
-    /// let s = ShortCode::from_raw_code_val(0x0_603_EDF_5CA_FFF_5E2).unwrap();
+    /// let short_code = ShortCode::from_raw_code_val(0x0_603_EDF_5CA_FFF_5E2).unwrap();
     ///
-    /// println!("result: {}", s);
+    /// assert_eq!(short_code.unwrap(), 4091296);
     /// ```
     pub fn from_raw_code_val(raw_code: u64) -> Result<ShortCode, &'static str> {
         let raw_code = RawCode::from(raw_code)?;
@@ -106,13 +107,13 @@ impl ShortCode {
     }
 
     /// Build ShortCode from CommonCode.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::{ShortCode, CommonCode};
     ///
-    /// let s = ShortCode::from_common_code(&CommonCode::from(0x1_A9BF_0C00).unwrap());
+    /// let short_code = ShortCode::from_common_code(&CommonCode::from(0x1_A9BF_0C00).unwrap());
     ///
-    /// println!("result: {}", s);
+    /// assert_eq!(short_code.unwrap(), 4091296);
     /// ```
     #[inline]
     pub fn from_common_code(common_code: &CommonCode) -> ShortCode {
@@ -120,13 +121,13 @@ impl ShortCode {
     }
 
     /// Build ShortCode from raw `u64` type common code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
-    /// let s = ShortCode::from_common_code_val(0x1_A9BF_0C00).unwrap();
+    /// let short_code = ShortCode::from_common_code_val(0x1_A9BF_0C00).unwrap();
     ///
-    /// println!("result: {}", s);
+    /// assert_eq!(short_code.unwrap(), 4091296);
     /// ```
     pub fn from_common_code_val(common_code: u64) -> Result<ShortCode, &'static str> {
         let common_code = CommonCode::from(common_code)?;
@@ -134,13 +135,13 @@ impl ShortCode {
     }
 
     /// Build ShortCode from raw `&str` type common code.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
-    /// let s = ShortCode::from_common_code_str("1A9BF0C00").unwrap();
+    /// let short_code = ShortCode::from_common_code_str("1A9BF0C00").unwrap();
     ///
-    /// println!("result: {}", s);
+    /// assert_eq!(short_code.unwrap(), 4091296);
     /// ```
     pub fn from_common_code_str(common_code: &str) -> Result<ShortCode, &'static str> {
         let common_code = CommonCode::from_str(common_code)?;
@@ -150,12 +151,13 @@ impl ShortCode {
 
 impl ShortCode {
     /// Return the original `u32` type short code value.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
-    /// let code = ShortCode::from_str("4WVE1").expect("invalid short code");
-    /// println!("original: {}", code.unwrap());
+    /// let short_code = ShortCode::from_str("4WVE1").expect("invalid short code");
+    ///
+    /// assert_eq!(short_code.unwrap(), 4091296);
     /// ```
     #[inline]
     pub fn unwrap(&self) -> u32 {
@@ -163,12 +165,13 @@ impl ShortCode {
     }
 
     /// Returns the short code encoded as a string.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
-    /// let code = ShortCode::from(4091296).expect("invalid short code");
-    /// println!("short code string: {}", code.to_string());
+    /// let short_code = ShortCode::from(4091296).expect("invalid short code");
+    ///
+    /// assert_eq!(short_code.to_string(), "4WVE1");
     /// ```
     #[inline]
     pub fn to_string(&self) -> String {
@@ -177,13 +180,13 @@ impl ShortCode {
 
     /// Convert ShortCode to RawCode type, note that it will take a long time if there
     /// is no warm-up index.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
     /// let short_code = ShortCode::from_str("4WVE1").unwrap();
-    /// let raw_code = short_code.to_raw_code();
-    /// println!("{} => {}", short_code, raw_code);
+    ///
+    /// assert_eq!(short_code.to_raw_code().unwrap(), 0x0_603_EDF_5CA_FFF_5E2);
     /// ```
     #[inline]
     pub fn to_raw_code(&self) -> RawCode {
@@ -194,13 +197,13 @@ impl ShortCode {
 
     /// Convert ShortCode to CommonCode type, note that it will take a long time if there
     /// is no warm-up index.
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
     /// let short_code = ShortCode::from_str("4WVE1").unwrap();
-    /// let common_code = short_code.to_common_code();
-    /// println!("{} => {}", short_code, common_code);
+    ///
+    /// assert_eq!(short_code.to_common_code().unwrap(), 0x1_A9BF_0C00);
     /// ```
     #[inline]
     pub fn to_common_code(&self) -> CommonCode {
@@ -228,7 +231,7 @@ impl ShortCode {
     ///
     /// If you are already in fast mode, it will have no effect.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
@@ -247,7 +250,7 @@ impl ShortCode {
     ///
     /// If you are already in normal mode, it will reduce part of time.
     ///
-    /// # Example
+    /// # Examples
     /// ```
     /// use klotski_ffi::ShortCode;
     ///
