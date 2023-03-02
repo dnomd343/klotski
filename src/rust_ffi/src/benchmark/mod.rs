@@ -7,12 +7,7 @@ pub fn demo() {
 
     use ffi::*;
 
-    // println!("demo: {}", Duration::from_ps(233 as f64).to_string());
-    // println!("demo: {}", Duration::from_ns(233 as f64).to_string());
-    // println!("demo: {}", Duration::from_us(233 as f64).to_string());
-    // println!("demo: {}", Duration::from_ms(233 as f64).to_string());
-    // println!("demo: {}", Duration::from_ms(233000 as f64).to_string());
-
+    println!("start benchmark\n");
     println!("warm up: {}", warm_up(0x100_0000));
 
     println!("range flip: {}", range_flip());
@@ -30,6 +25,23 @@ pub fn demo() {
     println!("short code check random: {}", short_code_check_random());
     println!("common code check random: {}", common_code_check_random());
 
-    println!("benchmark complete");
+    println!("short code to string: {}", short_code_to_string().unwrap());
+    println!("short code from string: {}", short_code_from_string().unwrap());
+    println!("common code to string: {}", common_code_to_string().unwrap());
+    println!("common code from string: {}", common_code_from_string().unwrap());
+
+    println!("common code to raw code: {}", common_code_to_raw_code().unwrap());
+    println!("raw code to common code: {}", raw_code_to_common_code().unwrap());
+    println!("common code to short code: {}", common_code_to_short_code().unwrap());
+    println!("short code to common code: {}", short_code_to_common_code().unwrap());
+    println!("common code to short code fast: {}", common_code_to_short_code_fast().unwrap());
+    println!("short code to common code fast: {}", short_code_to_common_code_fast().unwrap());
+
+    println!("vertical mirror check: {}", vertical_mirror_check().unwrap());
+    println!("horizontal mirror check: {}", horizontal_mirror_check().unwrap());
+    println!("vertical mirror convert: {}", vertical_mirror_convert().unwrap());
+    println!("horizontal mirror convert: {}", horizontal_mirror_convert().unwrap());
+
+    println!("\nbenchmark complete");
 
 }

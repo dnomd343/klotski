@@ -8,6 +8,7 @@ using klotski::CommonCode;
 using klotski::Benchmark;
 
 bool Benchmark::data_ready = false;
+std::mutex Benchmark::data_building;
 std::vector<RawCode> Benchmark::all_raw_codes;
 std::vector<ShortCode> Benchmark::all_short_codes;
 std::vector<CommonCode> Benchmark::all_common_codes;
@@ -74,10 +75,18 @@ std::vector<uint64_t> Benchmark::generate_u64_rand(uint32_t count) noexcept {
 }
 
 void Benchmark::data_preparation() noexcept {
-    if (Benchmark::data_ready) {
-        return;
+    if (!Benchmark::data_ready) {
+        if (Benchmark::data_building.try_lock()) { // mutex lock success
+            build_data(); // start build process
+            Benchmark::data_ready = true; // set available flag
+        } else {
+            Benchmark::data_building.lock(); // blocking waiting
+        }
+        Benchmark::data_building.unlock(); // release mutex
     }
+}
 
+void Benchmark::build_data() noexcept {
     /// short code data preparation
     std::vector<uint32_t> tmp(klotski::SHORT_CODE_LIMIT);
     std::iota(tmp.begin(), tmp.end(), 0);
@@ -114,6 +123,4 @@ void Benchmark::data_preparation() noexcept {
     for (auto &&common_code : all_common_codes) {
         all_raw_codes.emplace_back(common_code.to_raw_code());
     }
-
-    Benchmark::data_ready = true;
 }

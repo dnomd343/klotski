@@ -8,15 +8,16 @@
 /// returned according to the specified time format (seconds, milliseconds,
 /// microseconds, nanoseconds).
 
-/// The test items are all multi-thread safe(except `data_prepare`), but you
-/// should not run multiple test items at the same time, which will lead to
-/// unstable tests in many ways, such as changes in CPU turbo frequency.
+/// The test items are all multi-thread safe, but you should not run multiple
+/// test items at the same time, which will lead to unstable tests in many ways,
+/// such as changes in CPU turbo frequency.
 
 /// Pay attention to the two test items `basic_ranges` and `all_cases`, they can
 /// only be run once (the reason for the construction of static data), and cannot
 /// be run after other global related items.
 
 #include <ctime>
+#include <mutex>
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -64,12 +65,14 @@ namespace klotski {
 
     private:
         static bool data_ready;
+        static std::mutex data_building;
         static std::vector<RawCode> all_raw_codes;
         static std::vector<ShortCode> all_short_codes;
         static std::vector<CommonCode> all_common_codes;
         static std::vector<std::string> all_short_codes_str;
         static std::vector<std::string> all_common_codes_str;
 
+        static void build_data() noexcept;
         static uint32_t random_seed() noexcept;
         static double time_format(clock_t start, TIME format) noexcept;
         static std::vector<uint32_t> generate_u32_rand(uint32_t count) noexcept;
