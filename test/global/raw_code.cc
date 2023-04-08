@@ -3,14 +3,14 @@
 #include "gtest/gtest.h"
 #include "global_utils.h"
 
-using klotski::Common;
 using klotski::RawCode;
 using klotski::AllCases;
 using klotski::CommonCode;
+using klotski::Common::range_reverse;
 
 uint64_t convert(uint64_t common_code) { // try to convert as raw code
     auto code = C_2x2 << (common_code >> 32) * 3;
-    auto range = Common::range_reverse((uint32_t)common_code);
+    auto range = range_reverse((uint32_t)common_code);
     for (int addr = 0; range; range >>= 2) {
         while ((code >> addr) & 0b111 && addr < 60) {
             addr += 3;
