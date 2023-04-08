@@ -20,7 +20,6 @@
 #include <mutex>
 #include <vector>
 #include <cstdint>
-#include <numeric>
 #include "common_code.h"
 #include "basic_ranges.h"
 
