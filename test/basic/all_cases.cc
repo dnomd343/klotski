@@ -70,6 +70,9 @@ TEST(AllCases, all_cases_size) {
     for (uint32_t head = 0; head < 16; ++head) {
         EXPECT_EQ(all_cases[head].size(), ALL_CASES_SIZE[head]);
     }
+    EXPECT_EQ(
+        std::accumulate(ALL_CASES_SIZE, ALL_CASES_SIZE + 16, (uint32_t)0), ALL_CASES_SIZE_SUM
+    );
 }
 
 /// all cases data verify
@@ -92,7 +95,7 @@ TEST(AllCases, all_cases_release) {
     auto current = release.begin();
     for (uint64_t head = 0; head < 16; ++head) {
         for (const auto &range : AllCases::fetch()[head]) {
-            EXPECT_EQ(*current, head << 32 | range);
+            EXPECT_EQ(current->unwrap(), head << 32 | range);
             ++current;
         }
     }

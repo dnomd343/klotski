@@ -60,7 +60,7 @@ namespace klotski {
 
 class CommonCode;
 
-const uint32_t SHORT_CODE_LIMIT = klotski::ALL_CASES_SIZE_SUM;
+const uint32_t SHORT_CODE_LIMIT = 29334498;
 
 class ShortCodeException : public std::runtime_error {
 public:

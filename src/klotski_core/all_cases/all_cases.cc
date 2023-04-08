@@ -41,8 +41,8 @@ void AllCases::build() { // ensure that data is available
     }
 }
 
-std::vector<uint64_t> AllCases::release() {
-    std::vector<uint64_t> data;
+std::vector<CommonCode> AllCases::release() {
+    std::vector<CommonCode> data;
     data.reserve(ALL_CASES_SIZE_SUM); // memory pre-allocated
     for (uint64_t head = 0; head < 16; ++head) {
         for (const auto &range : fetch()[head]) {

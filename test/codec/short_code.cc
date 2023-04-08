@@ -10,6 +10,9 @@ using klotski::ShortCode;
 using klotski::CommonCode;
 using klotski::BasicRanges;
 
+using klotski::SHORT_CODE_LIMIT;
+using klotski::ALL_CASES_SIZE_SUM;
+
 const static uint32_t TEST_CODE = 4091296;
 const static std::string TEST_CODE_STR = "4WVE1";
 
@@ -21,6 +24,10 @@ static inline void SHOULD_PANIC(const std::function<void()> &func) {
         panic_flag = true;
     }
     EXPECT_EQ(panic_flag, true);
+}
+
+TEST(ShortCode, limit) {
+    EXPECT_EQ(ALL_CASES_SIZE_SUM, SHORT_CODE_LIMIT);
 }
 
 TEST(ShortCode, hash) {

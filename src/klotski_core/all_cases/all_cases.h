@@ -21,9 +21,12 @@
 #include <vector>
 #include <cstdint>
 #include <numeric>
+#include "common_code.h"
 #include "basic_ranges.h"
 
 namespace klotski {
+
+class CommonCode;
 
 /// all cases count
 const uint32_t ALL_CASES_SIZE[16] = {
@@ -32,9 +35,8 @@ const uint32_t ALL_CASES_SIZE[16] = {
     2322050, 1876945, 2322050, 0,
     2942906, 2260392, 2942906, 0,
 };
-const uint32_t ALL_CASES_SIZE_SUM = std::accumulate( // aka 29334498
-    ALL_CASES_SIZE, ALL_CASES_SIZE + 16, (uint32_t)0
-);
+
+const uint32_t ALL_CASES_SIZE_SUM = 29334498;
 
 class AllCases : public BasicRanges {
 public:
@@ -48,7 +50,7 @@ public:
     static const std::vector<uint32_t> (&fetch())[16];
 
     /// Export all possible common codes.
-    static std::vector<uint64_t> release();
+    static std::vector<CommonCode> release();
 
 private:
     static bool available_;
