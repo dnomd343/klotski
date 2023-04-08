@@ -2,16 +2,16 @@
 #include "common.h"
 
 /// block move direction
-#define UP    (-4 * 3)
-#define LEFT  (-1 * 3)
-#define DOWN  (+4 * 3)
-#define RIGHT (+1 * 3)
+#define DIR_UP    (-4 * 3)
+#define DIR_LEFT  (-1 * 3)
+#define DIR_DOWN  (+4 * 3)
+#define DIR_RIGHT (+1 * 3)
 
 /// block direction limit
-#define ALLOW_UP    (filter != -UP)
-#define ALLOW_DOWN  (filter != -DOWN)
-#define ALLOW_LEFT  (filter != -LEFT)
-#define ALLOW_RIGHT (filter != -RIGHT)
+#define ALLOW_UP    (filter != -DIR_UP)
+#define ALLOW_DOWN  (filter != -DIR_DOWN)
+#define ALLOW_LEFT  (filter != -DIR_LEFT)
+#define ALLOW_RIGHT (filter != -DIR_RIGHT)
 
 /// horizontal restraints
 #define NOT_COLUMN_0 ((addr & 3) != 0b00)
@@ -19,10 +19,10 @@
 #define NOT_COLUMN_3 ((addr & 3) != 0b01)
 
 /// try to move block
-#define MOVE_UP    (next_addr = addr + UP)
-#define MOVE_DOWN  (next_addr = addr + DOWN)
-#define MOVE_LEFT  (next_addr = addr + LEFT)
-#define MOVE_RIGHT (next_addr = addr + RIGHT)
+#define MOVE_UP    (next_addr = addr + DIR_UP)
+#define MOVE_DOWN  (next_addr = addr + DIR_DOWN)
+#define MOVE_LEFT  (next_addr = addr + DIR_LEFT)
+#define MOVE_RIGHT (next_addr = addr + DIR_RIGHT)
 
 /// vertical restraints
 #define TOP_LIMIT(ADDR)    (addr >= ADDR * 3)
@@ -61,28 +61,28 @@ cache_insert(cache_t { \
 #define BFS_INIT \
 int next_addr; \
 int current = 0; \
-cache[0].addr = addr;
+cache_[0].addr = addr;
 
 #define BFS_LOAD \
-code = cache[current].code; \
-addr = cache[current].addr; \
-int filter = cache[current++].filter;
+code = cache_[current].code; \
+addr = cache_[current].addr; \
+int filter = cache_[current++].filter;
 
-#define BFS_STOP (current == cache_size)
+#define BFS_STOP (current == cache_size_)
 
 ///////////////////////////////////////////////
 
 using klotski::Core;
 
 inline void Core::cache_insert(cache_t next_case) { // try to insert into cache
-    auto *cache_ptr = cache;
-    for (; cache_ptr < cache + cache_size; ++cache_ptr) {
+    auto *cache_ptr = cache_;
+    for (; cache_ptr < cache_ + cache_size_; ++cache_ptr) {
         if (cache_ptr->code == next_case.code) {
             return; // already exist -> insert failed
         }
     }
     *cache_ptr = next_case; // cache push back
-    ++cache_size;
+    ++cache_size_;
 }
 
 void Core::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
@@ -90,16 +90,16 @@ void Core::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
         if (ALLOW_UP && TOP_LIMIT(4) && CHECK_UP(F_1x1)) {
-            RELEASE_1x1(UP) // 1x1 block move up
+            RELEASE_1x1(DIR_UP) // 1x1 block move up
         }
         if (ALLOW_DOWN && BOTTOM_LIMIT(15) && CHECK_DOWN(F_1x1)) {
-            RELEASE_1x1(DOWN) // 1x1 block move down
+            RELEASE_1x1(DIR_DOWN) // 1x1 block move down
         }
         if (ALLOW_LEFT && NOT_COLUMN_0 && CHECK_LEFT(F_1x1)) {
-            RELEASE_1x1(LEFT) // 1x1 block move left
+            RELEASE_1x1(DIR_LEFT) // 1x1 block move left
         }
         if (ALLOW_RIGHT && NOT_COLUMN_3 && CHECK_RIGHT(F_1x1)) {
-            RELEASE_1x1(RIGHT) // 1x1 block move right
+            RELEASE_1x1(DIR_RIGHT) // 1x1 block move right
         }
     }
 }
@@ -109,16 +109,16 @@ void Core::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
         if (ALLOW_UP && TOP_LIMIT(4) && CHECK_UP(F_1x2)) {
-            RELEASE_1x2(UP) // 1x2 block move up
+            RELEASE_1x2(DIR_UP) // 1x2 block move up
         }
         if (ALLOW_DOWN && BOTTOM_LIMIT(14) && CHECK_DOWN(F_1x2)) {
-            RELEASE_1x2(DOWN) // 1x2 block move down
+            RELEASE_1x2(DIR_DOWN) // 1x2 block move down
         }
         if (ALLOW_LEFT && NOT_COLUMN_0 && CHECK_LEFT(F_1x1)) {
-            RELEASE_1x2(LEFT) // 1x2 block move left
+            RELEASE_1x2(DIR_LEFT) // 1x2 block move left
         }
         if (ALLOW_RIGHT && NOT_COLUMN_2 && CHECK_RIGHT(F_1x1_R)) {
-            RELEASE_1x2(RIGHT) // 1x2 block move right
+            RELEASE_1x2(DIR_RIGHT) // 1x2 block move right
         }
     }
 }
@@ -128,16 +128,16 @@ void Core::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
         if (ALLOW_UP && TOP_LIMIT(4) && CHECK_UP(F_1x1)) {
-            RELEASE_2x1(UP) // 2x1 block move up
+            RELEASE_2x1(DIR_UP) // 2x1 block move up
         }
         if (ALLOW_DOWN && BOTTOM_LIMIT(11) && CHECK_DOWN(F_1x1_D)) {
-            RELEASE_2x1(DOWN) // 2x1 block move down
+            RELEASE_2x1(DIR_DOWN) // 2x1 block move down
         }
         if (ALLOW_LEFT && NOT_COLUMN_0 && CHECK_LEFT(F_2x1)) {
-            RELEASE_2x1(LEFT) // 2x1 block move left
+            RELEASE_2x1(DIR_LEFT) // 2x1 block move left
         }
         if (ALLOW_RIGHT && NOT_COLUMN_3 && CHECK_RIGHT(F_2x1)) {
-            RELEASE_2x1(RIGHT) // 2x1 block move right
+            RELEASE_2x1(DIR_RIGHT) // 2x1 block move right
         }
     }
 }
@@ -147,23 +147,23 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
         if (ALLOW_UP && TOP_LIMIT(4) && CHECK_UP(F_1x2)) {
-            RELEASE_2x2(UP) // 2x2 block move up
+            RELEASE_2x2(DIR_UP) // 2x2 block move up
         }
         if (ALLOW_DOWN && BOTTOM_LIMIT(10) && CHECK_DOWN(F_1x2_D)) {
-            RELEASE_2x2(DOWN) // 2x2 block move down
+            RELEASE_2x2(DIR_DOWN) // 2x2 block move down
         }
         if (ALLOW_LEFT && NOT_COLUMN_0 && CHECK_LEFT(F_2x1)) {
-            RELEASE_2x2(LEFT) // 2x2 block move left
+            RELEASE_2x2(DIR_LEFT) // 2x2 block move left
         }
         if (ALLOW_RIGHT && NOT_COLUMN_2 && CHECK_RIGHT(F_2x1_R)) {
-            RELEASE_2x2(RIGHT) // 2x2 block move right
+            RELEASE_2x2(DIR_RIGHT) // 2x2 block move right
         }
     }
 }
 
 void Core::next_cases(uint64_t code, uint64_t mask) { // search next step cases
-    cache[0].filter = 0; // without filter
-    cache[0].code = code; // bfs root code
+    cache_[0].filter = 0; // without filter
+    cache_[0].code = code; // bfs root code
     auto range = code | mask;
 
     for (int addr = 0; range; addr += 3, range >>= 3) { // traverse every 3-bits
@@ -183,11 +183,11 @@ void Core::next_cases(uint64_t code, uint64_t mask) { // search next step cases
             default:
                 continue; // B_space or B_fill
         }
-        if (cache_size != 1) { // found one or more next cases
-            for (int i = 1; i < cache_size; ++i) {
-                Core::release(cache[i].code, cache[i].mask); // release next cases
+        if (cache_size_ != 1) { // found one or more next cases
+            for (int i = 1; i < cache_size_; ++i) {
+                Core::release_(cache_[i].code, cache_[i].mask); // release next cases
             }
-            cache_size = 1; // reset cache size
+            cache_size_ = 1; // reset cache size
         }
     }
 }

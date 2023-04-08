@@ -47,31 +47,33 @@
 #include <functional>
 
 namespace klotski {
-    class Core {
-    public:
-        /// Release with code and mask
-        typedef std::function<void(uint64_t, uint64_t)> release_t;
 
-        /// Core interface
-        void next_cases(uint64_t code, uint64_t mask);
-        explicit Core(release_t release_func) : release(std::move(release_func)) {}
+class Core {
+public:
+    /// Release with code and mask
+    typedef std::function<void(uint64_t, uint64_t)> release_t;
 
-    private:
-        struct cache_t {
-            uint64_t code;
-            uint64_t mask; /// (000) or (111)
-            int filter; /// UP | DOWN | LEFT | RIGHT
-            int addr; /// (0 ~ 19) * 3
-        };
+    /// Core interface
+    void next_cases(uint64_t code, uint64_t mask);
+    explicit Core(release_t release_func) : release_(std::move(release_func)) {}
 
-        int cache_size = 1;
-        cache_t cache[16]{};
-        release_t release; // release function
-
-        void move_1x1(uint64_t code, int addr);
-        void move_1x2(uint64_t code, int addr);
-        void move_2x1(uint64_t code, int addr);
-        void move_2x2(uint64_t code, int addr);
-        inline void cache_insert(cache_t next_case);
+private:
+    struct cache_t {
+        uint64_t code;
+        uint64_t mask; /// (000) or (111)
+        int filter; /// DIR_UP | DIR_DOWN | DIR_LEFT | DIR_RIGHT
+        int addr; /// (0 ~ 19) * 3
     };
-}
+
+    int cache_size_ = 1;
+    cache_t cache_[16]{};
+    release_t release_; // release function
+
+    void move_1x1(uint64_t code, int addr);
+    void move_1x2(uint64_t code, int addr);
+    void move_2x1(uint64_t code, int addr);
+    void move_2x2(uint64_t code, int addr);
+    inline void cache_insert(cache_t next_case);
+};
+
+} // namespace klotski
