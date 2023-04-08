@@ -5,6 +5,7 @@
 
 using klotski::AllCases;
 using klotski::BasicRanges;
+
 using klotski::ALL_CASES_SIZE;
 using klotski::BASIC_RANGES_SIZE;
 using klotski::ALL_CASES_SIZE_SUM;
@@ -38,7 +39,7 @@ TEST(AllCases, basic_ranges_size) {
 
 /// basic ranges data verify
 TEST(AllCases, basic_ranges_data) {
-    auto *basic_ranges_data = new char[BASIC_RANGES_SIZE * 9];
+    auto *basic_ranges_data = new char[BASIC_RANGES_SIZE * 9 + 1]; // 8-bit + '\n'
     auto *current = basic_ranges_data;
     for (const auto &range : BasicRanges::fetch()) {
         sprintf(current, "%08X\n", range);
@@ -73,7 +74,7 @@ TEST(AllCases, all_cases_size) {
 
 /// all cases data verify
 TEST(AllCases, all_cases_data) {
-    auto *all_cases_data = new char[ALL_CASES_SIZE_SUM * 10];
+    auto *all_cases_data = new char[ALL_CASES_SIZE_SUM * 10 + 1]; // 9-bit + '\n'
     auto *current = all_cases_data;
     for (uint64_t head = 0; head < 16; ++head) {
         for (const auto &range : AllCases::fetch()[head]) {
@@ -83,4 +84,16 @@ TEST(AllCases, all_cases_data) {
     }
     auto all_cases_md5 = md5(all_cases_data, ALL_CASES_SIZE_SUM * 10);
     EXPECT_STREQ(all_cases_md5.c_str(), ALL_CASES_MD5);
+}
+
+/// all cases release verify
+TEST(AllCases, all_cases_release) {
+    auto release = AllCases::release();
+    auto current = release.begin();
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : AllCases::fetch()[head]) {
+            EXPECT_EQ(*current, head << 32 | range);
+            ++current;
+        }
+    }
 }
