@@ -19,7 +19,7 @@ double Benchmark::range_flip(TIME format) noexcept {
 /// --------------------------- Benchmark AllCases ----------------------------
 
 double Benchmark::basic_ranges(TIME format) noexcept {
-    if (BasicRanges::status() != BasicRanges::NO_INIT) {
+    if (BasicRanges::status() != BasicRanges::NOT_INIT) {
         return -1; // data already built -> skip
     }
     auto start = clock();
@@ -28,7 +28,7 @@ double Benchmark::basic_ranges(TIME format) noexcept {
 }
 
 double Benchmark::all_cases(TIME format) noexcept {
-    if (AllCases::status() != AllCases::NO_INIT) {
+    if (AllCases::status() != AllCases::NOT_INIT) {
         return -1; // data already built -> skip
     }
     BasicRanges::build(); // preparing benchmark data

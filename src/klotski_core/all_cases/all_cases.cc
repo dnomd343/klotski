@@ -1,67 +1,85 @@
 #include "common.h"
 #include "all_cases.h"
 
-using klotski::AllCases;
+namespace klotski {
+
+using Common::check_range;
+using Common::range_reverse;
 
 /// static variable initialize
-std::mutex AllCases::building;
-bool AllCases::available = false;
-std::vector<uint32_t> AllCases::data[];
+std::mutex AllCases::building_;
+bool AllCases::available_ = false;
+std::vector<uint32_t> AllCases::data_[];
 
-const std::vector<uint32_t> (&AllCases::fetch())[16] { // get all cases content
+const std::vector<uint32_t> (&AllCases::fetch())[16] {
     if (status() != AVAILABLE) {
-        AllCases::build(); // all cases initialize
+        build();
     }
-    return AllCases::data; // return const ref
+    return data_; // return const reference
 }
 
-AllCases::Status AllCases::status() { // get all cases status
-    if (AllCases::available) {
-        return AVAILABLE; // all cases already built
+AllCases::Status AllCases::status() {
+    if (available_) {
+        return AVAILABLE; // data already built
     }
-    if (!AllCases::building.try_lock()) { // fail to lock mutex
+    if (!building_.try_lock()) { // fail to lock mutex
         return BUILDING; // another thread working
     }
-    AllCases::building.unlock(); // release mutex
-    return NO_INIT;
+    building_.unlock(); // release mutex
+    return NOT_INIT;
 }
 
-void AllCases::build() { // ensure that all cases available
-    if (!AllCases::available) {
-        if (AllCases::building.try_lock()) { // mutex lock success
+void AllCases::build() { // ensure that data is available
+    if (!available_) {
+        if (building_.try_lock()) { // mutex lock success
             build_data(); // start build process
-            AllCases::available = true; // set available flag
+            available_ = true;
         } else {
-            AllCases::building.lock(); // blocking waiting
+            building_.lock(); // blocking waiting
         }
-        AllCases::building.unlock();
+        building_.unlock();
     }
 }
 
-void AllCases::build_data() { // find all cases
+std::vector<uint64_t> AllCases::release() {
+    std::vector<uint64_t> data;
+    data.reserve(ALL_CASES_SIZE_SUM); // memory pre-allocated
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto &range : fetch()[head]) {
+            data.emplace_back(head << 32 | range); // release common codes
+        }
+    }
+    return data;
+}
+
+/// Search all possible layouts based on basic-ranges.
+void AllCases::build_data() {
     const auto &basic_ranges = BasicRanges::fetch();
     for (uint32_t head = 0; head < 15; ++head) { // address of 2x2 block
+        /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
         if ((head & 0b11) == 0b11) {
             ++head; // skip invalid address
         }
-        /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
-        data[head].reserve(ALL_CASES_SIZE[head]); // memory pre-allocated
-        /// head(4-bits) + basic ranges(32-bits) --check--> valid cases
+        data_[head].reserve(ALL_CASES_SIZE[head]); // memory pre-allocated
+
+        /// head(4-bit) + basic-range(32-bit) --check--> valid cases
         for (uint32_t index = 0; index < basic_ranges.size(); ++index) {
-            auto broken_offset = Common::check_range(head, basic_ranges[index]);
+            auto broken_offset = check_range(head, basic_ranges[index]);
             if (broken_offset) { // case invalid
                 auto delta = (uint32_t)1 << (32 - broken_offset * 2); // delta to next possible range
                 ///         !! -> broken
                 /// ( xx xx xx ) xx xx xx ... (reversed range)
                 ///         +1   00 00 00 ... (delta)
-                auto next_min = (Common::range_reverse(basic_ranges[index]) & ~(delta - 1)) + delta;
-                while (Common::range_reverse(basic_ranges[++index]) < next_min); // located next range
+                auto at_least = (range_reverse(basic_ranges[index]) & ~(delta - 1)) + delta;
+                while (range_reverse(basic_ranges[++index]) < at_least); // located next range
                 --index;
-            } else {
-                AllCases::data[head].emplace_back(
-                    Common::range_reverse(basic_ranges[index]) // release valid cases
-                );
+                continue;
             }
+            data_[head].emplace_back(
+                range_reverse(basic_ranges[index]) // release valid cases
+            );
         }
     }
 }
+
+} // namespace klotski

@@ -4,7 +4,7 @@
 /// and only one, witch will occupy 4 empty slots, and the remaining 16 slots
 /// will be allocated to space, `1x2`, `2x1` and `1x1`. Then, according to the
 /// rules of CommonCode, they are coded as `00` `01` `10` `11` respectively, and
-/// the remaining positions are filled with `0` and stored as 32-bits variables.
+/// the remaining positions are filled with `0` and stored as 32-bit variables.
 
 /// As we all know, a space or `1x1` block will occupy 1 slot, `1x2` or `2x1`
 /// block will occupy 2 slots, and together they fill 16 positions, so all
@@ -31,33 +31,43 @@
 #include <cstdint>
 
 namespace klotski {
-    /// basic ranges count
-    const uint32_t BASIC_RANGES_SIZE = 7311921;
 
-    class BasicRanges {
-    public:
-        enum Status {
-            NO_INIT,
-            BUILDING,
-            AVAILABLE,
-        };
-        static void build();
-        static Status status();
-        static const std::vector<uint32_t> &fetch();
+/// basic ranges count
+const uint32_t BASIC_RANGES_SIZE = 7311921;
 
-    private:
-        struct generate_t {
-            int n1; // number of `00`
-            int n2; // number of `01`
-            int n3; // number of `10`
-            int n4; // number of `11`
-        };
-
-        static bool available;
-        static std::mutex building;
-        static std::vector<uint32_t> data;
-
-        static void build_data();
-        static void generate(generate_t info);
+class BasicRanges {
+public:
+    /// Three basic states, one-way transition.
+    /// {NO_INIT} -> {BUILDING} -> {AVAILABLE}
+    enum Status {
+        NOT_INIT,
+        BUILDING,
+        AVAILABLE,
     };
-}
+
+    /// Trigger the build process, from `NOT_INIT` to `BUILDING`.
+    static void build();
+
+    /// Get current status of BasicRanges.
+    static Status status();
+
+    /// Blocking access to constructed data.
+    static const std::vector<uint32_t>& fetch();
+
+private:
+    struct generate_t {
+        int n1; // number of `00`
+        int n2; // number of `01`
+        int n3; // number of `10`
+        int n4; // number of `11`
+    };
+
+    static bool available_;
+    static std::mutex building_;
+    static std::vector<uint32_t> data_;
+
+    static void build_data();
+    static void generate(generate_t info);
+};
+
+} // namespace klotski

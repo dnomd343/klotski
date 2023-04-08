@@ -14,15 +14,8 @@
 ///   16 17 18 19    12 13 14
 
 /// After checking, each head has a different valid `range`, and they are
-/// stored in different arrays to save memory (otherwise the 64-bits length
-/// must be consumed), and all CommonCodes can be exported by using the
-/// following code, which is also integrated in FFI.
-
-///   for (uint64_t head = 0; head < 16; ++head) {
-///       for (const auto &range : AllCases::fetch()[head]) {
-///           printf("%09lX\n", head << 32 | range);
-///       }
-///   }
+/// stored in different arrays to save memory (otherwise the 64-bit length
+/// must be consumed).
 
 #include <mutex>
 #include <vector>
@@ -31,28 +24,38 @@
 #include "basic_ranges.h"
 
 namespace klotski {
-    /// all cases count
-    const uint32_t ALL_CASES_SIZE[16] = {
-        2942906, 2260392, 2942906, 0,
-        2322050, 1876945, 2322050, 0,
-        2322050, 1876945, 2322050, 0,
-        2942906, 2260392, 2942906, 0,
-    };
-    const uint32_t ALL_CASES_SIZE_SUM = std::accumulate( // aka 29334498
-        ALL_CASES_SIZE, ALL_CASES_SIZE + 16, (uint32_t)0
-    );
 
-    class AllCases : public BasicRanges {
-    public:
-        static void build();
-        static Status status();
-        static const std::vector<uint32_t> (&fetch())[16];
+/// all cases count
+const uint32_t ALL_CASES_SIZE[16] = {
+    2942906, 2260392, 2942906, 0,
+    2322050, 1876945, 2322050, 0,
+    2322050, 1876945, 2322050, 0,
+    2942906, 2260392, 2942906, 0,
+};
+const uint32_t ALL_CASES_SIZE_SUM = std::accumulate( // aka 29334498
+    ALL_CASES_SIZE, ALL_CASES_SIZE + 16, (uint32_t)0
+);
 
-    private:
-        static bool available;
-        static std::mutex building;
-        static std::vector<uint32_t> data[16];
+class AllCases : public BasicRanges {
+public:
+    /// Trigger the build process.
+    static void build();
 
-        static void build_data();
-    };
-}
+    /// Get current status of AllCases.
+    static Status status();
+
+    /// Blocking access to constructed data.
+    static const std::vector<uint32_t> (&fetch())[16];
+
+    /// Export all possible common codes.
+    static std::vector<uint64_t> release();
+
+private:
+    static bool available_;
+    static std::mutex building_;
+    static std::vector<uint32_t> data_[16];
+
+    static void build_data();
+};
+
+} // namespace klotski

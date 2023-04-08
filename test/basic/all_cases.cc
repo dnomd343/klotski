@@ -18,7 +18,7 @@ const char ALL_CASES_MD5[] = "3888e9fab8d3cbb50908b12b147cfb23";
 /// basic ranges mutex check
 TEST(AllCases, basic_ranges_mutex) {
     std::thread threads[4];
-    EXPECT_EQ(BasicRanges::status(), BasicRanges::NO_INIT);
+    EXPECT_EQ(BasicRanges::status(), BasicRanges::NOT_INIT);
     for (auto &t : threads) {
         t = std::thread(BasicRanges::build);
     }
@@ -51,7 +51,7 @@ TEST(AllCases, basic_ranges_data) {
 /// basic ranges mutex check
 TEST(AllCases, all_cases_mutex) {
     std::thread threads[4];
-    EXPECT_EQ(AllCases::status(), AllCases::NO_INIT);
+    EXPECT_EQ(AllCases::status(), AllCases::NOT_INIT);
     for (auto &t : threads) {
         t = std::thread(AllCases::build);
     }

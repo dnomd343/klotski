@@ -3,71 +3,75 @@
 #include "common.h"
 #include "basic_ranges.h"
 
-using klotski::BasicRanges;
+namespace klotski {
+
+using Common::range_reverse;
 
 /// static variable initialize
-std::mutex BasicRanges::building;
-bool BasicRanges::available = false;
-std::vector<uint32_t> BasicRanges::data;
+std::mutex BasicRanges::building_;
+bool BasicRanges::available_ = false;
+std::vector<uint32_t> BasicRanges::data_;
 
-const std::vector<uint32_t>& BasicRanges::fetch() { // get basic ranges content
+const std::vector<uint32_t>& BasicRanges::fetch() {
     if (status() != AVAILABLE) {
-        BasicRanges::build(); // basic ranges initialize
+        build();
     }
-    return BasicRanges::data; // return const ref
+    return data_; // return const reference
 }
 
-BasicRanges::Status BasicRanges::status() { // get basic ranges status
-    if (BasicRanges::available) {
-        return AVAILABLE; // basic ranges already built
+BasicRanges::Status BasicRanges::status() {
+    if (available_) {
+        return AVAILABLE; // data already built
     }
-    if (!BasicRanges::building.try_lock()) { // fail to lock mutex
+    if (!building_.try_lock()) { // fail to lock mutex
         return BUILDING; // another thread working
     }
-    BasicRanges::building.unlock(); // release mutex
-    return NO_INIT;
+    building_.unlock(); // release mutex
+    return NOT_INIT;
 }
 
-void BasicRanges::build() { // ensure that basic ranges available
-    if (!BasicRanges::available) {
-        if (BasicRanges::building.try_lock()) { // mutex lock success
+void BasicRanges::build() { // ensure that data is available
+    if (!available_) {
+        if (building_.try_lock()) { // mutex lock success
             build_data(); // start build process
-            BasicRanges::available = true; // set available flag
+            available_ = true;
         } else {
-            BasicRanges::building.lock(); // blocking waiting
+            building_.lock(); // blocking waiting
         }
-        BasicRanges::building.unlock(); // release mutex
+        building_.unlock(); // release mutex
     }
 }
 
-void BasicRanges::build_data() { // build basic ranges
-    BasicRanges::data.reserve(BASIC_RANGES_SIZE); // memory pre-allocated
-    for (int n = 0; n <= 7; ++n) { // number of 1x2 and 2x1 block -> 0 ~ 7
-        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // number of 2x1 block -> 0 ~ n
-            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // number of 1x1 block -> 0 ~ (14 - 2n)
+/// Search and sort all possible basic-ranges combinations.
+void BasicRanges::build_data() {
+    data_.reserve(BASIC_RANGES_SIZE); // memory pre-allocated
+
+    /// This will create 204 different combinations.
+    for (int n = 0; n <= 7; ++n) // number of 1x2 and 2x1 block -> 0 ~ 7
+        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) // number of 2x1 block -> 0 ~ n
+            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) // number of 1x1 block -> 0 ~ (14 - 2n)
                 generate(generate_t { // generate target ranges
                     .n1 = 16 - n * 2 - n_1x1, /// space -> 00
                     .n2 = n - n_2x1, /// 1x2 -> 01
                     .n3 = n_2x1, /// 2x1 -> 10
                     .n4 = n_1x1, /// 1x1 -> 11
                 });
-            }
-        }
-    }
+
     /// NOTE: multiple sets of ordered data -> use merge sort instead of quick sort
-    std::stable_sort(BasicRanges::data.begin(), BasicRanges::data.end()); // sort basic ranges
-    for (auto &range : BasicRanges::data) {
-        range = Common::range_reverse(range); // basic ranges reverse
+    std::stable_sort(data_.begin(), data_.end()); // sort basic ranges
+    for (auto &range : data_) {
+        range = range_reverse(range); // basic ranges reversed
     }
 }
 
-void BasicRanges::generate(generate_t info) { // generate specific basic ranges
+/// Generate basic-ranges of specific type.
+void BasicRanges::generate(generate_t info) {
     constexpr auto MASK_01 = (uint32_t)0b01 << 30;
     constexpr auto MASK_10 = (uint32_t)0b10 << 30;
     constexpr auto MASK_11 = (uint32_t)0b11 << 30;
 
     /// nx:  n4       n3       n2       n1
-    ///      00000000 00000000 00000000 00000000 (32-bits)
+    ///      00000000 00000000 00000000 00000000 (32-bit)
     struct build_t {
         uint32_t nx; // (n4, n3, n2, n1)
         uint32_t prefix;
@@ -84,9 +88,9 @@ void BasicRanges::generate(generate_t info) { // generate specific basic ranges
     while (!cache.empty()) { // queue without element -> work complete
         auto current = cache.front();
         if (!current.nx) { // both n1, n2, n3, n4 -> 0
-            BasicRanges::data.emplace_back(current.prefix); // release prefix as basic range
+            data_.emplace_back(current.prefix); // release prefix as basic range
             cache.pop();
-            continue; // skip search
+            continue; // skip current search
         }
         if (current.nx & 0xFF) { // n1 -> `00`
             cache.emplace(build_t {
@@ -116,6 +120,8 @@ void BasicRanges::generate(generate_t info) { // generate specific basic ranges
                 .offset = current.offset + 2,
             });
         }
-        cache.pop(); // remove searched case
+        cache.pop(); // remove handled case
     }
 }
+
+} // namespace klotski
