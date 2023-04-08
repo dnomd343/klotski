@@ -40,36 +40,36 @@ double Benchmark::all_cases(TIME format) noexcept {
 /// -------------------------- Benchmark Code Check ---------------------------
 
 double Benchmark::raw_code_check(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&raw_code : all_raw_codes) {
+    for (auto &&raw_code : all_raw_codes_) {
         raw_code.valid();
     }
-    return time_format(start, format) / (double)all_raw_codes.size();
+    return time_format(start, format) / (double)all_raw_codes_.size();
 }
 
 double Benchmark::short_code_check(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&short_code : all_short_codes) {
+    for (auto &&short_code : all_short_codes_) {
         short_code.valid();
     }
-    return time_format(start, format) / (double)all_short_codes.size();
+    return time_format(start, format) / (double)all_short_codes_.size();
 }
 
 double Benchmark::common_code_check(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&common_code : all_common_codes) {
+    for (auto &&common_code : all_common_codes_) {
         common_code.valid();
     }
-    return time_format(start, format) / (double)all_common_codes.size();
+    return time_format(start, format) / (double)all_common_codes_.size();
 }
 
 double Benchmark::raw_code_check_random(TIME format) noexcept {
@@ -108,167 +108,167 @@ double Benchmark::common_code_check_random(TIME format) noexcept {
 /// -------------------------- Benchmark Code String --------------------------
 
 double Benchmark::short_code_to_string(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&short_code : all_short_codes) {
+    for (auto &&short_code : all_short_codes_) {
         short_code.to_string();
     }
-    return time_format(start, format) / (double)all_short_codes.size();
+    return time_format(start, format) / (double)all_short_codes_.size();
 }
 
 double Benchmark::short_code_from_string(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&short_code : all_short_codes_str) {
+    for (auto &&short_code : all_short_codes_str_) {
         ShortCode{std::forward<std::string>(short_code)};
     }
-    return time_format(start, format) / (double)all_short_codes_str.size();
+    return time_format(start, format) / (double)all_short_codes_str_.size();
 }
 
 double Benchmark::common_code_to_string(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&common_code : all_common_codes) {
+    for (auto &&common_code : all_common_codes_) {
         common_code.to_string();
     }
-    return time_format(start, format) / (double)all_common_codes.size();
+    return time_format(start, format) / (double)all_common_codes_.size();
 }
 
 double Benchmark::common_code_from_string(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&common_code : all_common_codes_str) {
+    for (auto &&common_code : all_common_codes_str_) {
         CommonCode{std::forward<std::string>(common_code)};
     }
-    return time_format(start, format) / (double)all_common_codes_str.size();
+    return time_format(start, format) / (double)all_common_codes_str_.size();
 }
 
 /// ------------------------- Benchmark Code Convert --------------------------
 
 double Benchmark::common_code_to_raw_code(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&common_code : all_common_codes) {
+    for (auto &&common_code : all_common_codes_) {
         RawCode{std::forward<CommonCode>(common_code)};
     }
-    return time_format(start, format) / (double)all_common_codes.size();
+    return time_format(start, format) / (double)all_common_codes_.size();
 }
 
 double Benchmark::raw_code_to_common_code(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&raw_code : all_raw_codes) {
+    for (auto &&raw_code : all_raw_codes_) {
         raw_code.to_common_code();
     }
-    return time_format(start, format) / (double)all_raw_codes.size();
+    return time_format(start, format) / (double)all_raw_codes_.size();
 }
 
 double Benchmark::common_code_to_short_code(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     uint32_t num = 0;
     ShortCode::speed_up(ShortCode::NORMAL);
     auto start = clock();
-    for (uint64_t i = 0; i < all_common_codes.size(); i += 1000) {
-        ShortCode{all_common_codes[i]};
+    for (uint64_t i = 0; i < all_common_codes_.size(); i += 1000) {
+        ShortCode{all_common_codes_[i]};
         ++num;
     }
     return time_format(start, format) / (double)num;
 }
 
 double Benchmark::short_code_to_common_code(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     uint32_t num = 0;
     ShortCode::speed_up(ShortCode::NORMAL);
     auto start = clock();
-    for (uint64_t i = 0; i < all_short_codes.size(); i += 1000) {
-        all_short_codes[i].to_common_code();
+    for (uint64_t i = 0; i < all_short_codes_.size(); i += 1000) {
+        all_short_codes_[i].to_common_code();
         ++num;
     }
     return time_format(start, format) / (double)num;
 }
 
 double Benchmark::common_code_to_short_code_fast(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     ShortCode::speed_up(ShortCode::FAST);
     auto start = clock();
-    for (auto &&common_code : all_common_codes) {
+    for (auto &&common_code : all_common_codes_) {
         ShortCode{std::forward<CommonCode>(common_code)};
     }
-    return time_format(start, format) / (double)all_common_codes.size();
+    return time_format(start, format) / (double)all_common_codes_.size();
 }
 
 double Benchmark::short_code_to_common_code_fast(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     ShortCode::speed_up(ShortCode::FAST);
     auto start = clock();
-    for (auto &&short_code : all_short_codes) {
+    for (auto &&short_code : all_short_codes_) {
         short_code.to_common_code();
     }
-    return time_format(start, format) / (double)all_short_codes.size();
+    return time_format(start, format) / (double)all_short_codes_.size();
 }
 
 /// ---------------------------- Benchmark Mirror -----------------------------
 
 double Benchmark::vertical_mirror_check(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&raw_code : all_raw_codes) {
+    for (auto &&raw_code : all_raw_codes_) {
         raw_code.is_vertical_mirror();
     }
-    return time_format(start, format) / (double)all_raw_codes.size();
+    return time_format(start, format) / (double)all_raw_codes_.size();
 }
 
 double Benchmark::horizontal_mirror_check(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&raw_code : all_raw_codes) {
+    for (auto &&raw_code : all_raw_codes_) {
         raw_code.is_horizontal_mirror();
     }
-    return time_format(start, format) / (double)all_raw_codes.size();
+    return time_format(start, format) / (double)all_raw_codes_.size();
 }
 
 double Benchmark::vertical_mirror_convert(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&raw_code : all_raw_codes) {
+    for (auto &&raw_code : all_raw_codes_) {
         raw_code.to_vertical_mirror();
     }
-    return time_format(start, format) / (double)all_raw_codes.size();
+    return time_format(start, format) / (double)all_raw_codes_.size();
 }
 
 double Benchmark::horizontal_mirror_convert(TIME format) noexcept {
-    if (!data_ready) {
+    if (!data_ready_) {
         return -1; // data no ready -> skip
     }
     auto start = clock();
-    for (auto &&raw_code : all_raw_codes) {
+    for (auto &&raw_code : all_raw_codes_) {
         raw_code.to_horizontal_mirror();
     }
-    return time_format(start, format) / (double)all_raw_codes.size();
+    return time_format(start, format) / (double)all_raw_codes_.size();
 }

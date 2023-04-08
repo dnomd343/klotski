@@ -2,18 +2,15 @@
 #include <random>
 #include "benchmark.h"
 
-using klotski::RawCode;
-using klotski::ShortCode;
-using klotski::CommonCode;
-using klotski::Benchmark;
+namespace klotski {
 
-bool Benchmark::data_ready = false;
-std::mutex Benchmark::data_building;
-std::vector<RawCode> Benchmark::all_raw_codes;
-std::vector<ShortCode> Benchmark::all_short_codes;
-std::vector<CommonCode> Benchmark::all_common_codes;
-std::vector<std::string> Benchmark::all_short_codes_str;
-std::vector<std::string> Benchmark::all_common_codes_str;
+bool Benchmark::data_ready_ = false;
+std::mutex Benchmark::data_building_;
+std::vector<RawCode> Benchmark::all_raw_codes_;
+std::vector<ShortCode> Benchmark::all_short_codes_;
+std::vector<CommonCode> Benchmark::all_common_codes_;
+std::vector<std::string> Benchmark::all_short_codes_str_;
+std::vector<std::string> Benchmark::all_common_codes_str_;
 
 uint32_t Benchmark::random_seed() noexcept {
     using namespace std::chrono;
@@ -47,6 +44,7 @@ double Benchmark::time_format(clock_t start, TIME format) noexcept {
     return time / CLOCKS_PER_SEC;
 }
 
+/// Generate a specified count of 32-bit random numbers.
 std::vector<uint32_t> Benchmark::generate_u32_rand(uint32_t count) noexcept {
     std::vector<uint32_t> result;
     result.reserve(count);
@@ -56,71 +54,73 @@ std::vector<uint32_t> Benchmark::generate_u32_rand(uint32_t count) noexcept {
 
     std::srand(seed);
     for (uint32_t i = 0; i < count; ++i) {
-        auto tmp = high_bit | static_cast<uint32_t>(std::rand());
+        auto tmp = high_bit | static_cast<uint32_t>(std::rand()); // int32_t -> uint32_t
         result.emplace_back(tmp);
         high_bit = tmp << 31;
     }
     return result;
 }
 
+/// Generate a specified count of 64-bit random numbers.
 std::vector<uint64_t> Benchmark::generate_u64_rand(uint32_t count) noexcept {
     std::vector<uint64_t> result;
     result.reserve(count);
-
     auto tmp = generate_u32_rand(count * 2);
     for (uint32_t i = 0; i < count; ++i) {
-        result.emplace_back((uint64_t)tmp[i * 2] << 32 | tmp[i * 2 + 1]);
+        result.emplace_back((uint64_t)tmp[i * 2] << 32 | tmp[i * 2 + 1]); // combine two uint32_t
     }
     return result;
 }
 
-void Benchmark::data_preparation() noexcept {
-    if (!Benchmark::data_ready) {
-        if (Benchmark::data_building.try_lock()) { // mutex lock success
+void Benchmark::data_initialize() noexcept {
+    if (!data_ready_) {
+        if (data_building_.try_lock()) { // mutex lock success
             build_data(); // start build process
-            Benchmark::data_ready = true; // set available flag
+            data_ready_ = true;
         } else {
-            Benchmark::data_building.lock(); // blocking waiting
+            data_building_.lock(); // blocking waiting
         }
-        Benchmark::data_building.unlock(); // release mutex
+        data_building_.unlock(); // release mutex
     }
 }
 
 void Benchmark::build_data() noexcept {
     /// short code data preparation
-    std::vector<uint32_t> tmp(klotski::SHORT_CODE_LIMIT);
+    std::vector<uint32_t> tmp(SHORT_CODE_LIMIT);
     std::iota(tmp.begin(), tmp.end(), 0);
 
-    all_short_codes.reserve(klotski::SHORT_CODE_LIMIT);
+    all_short_codes_.reserve(SHORT_CODE_LIMIT);
     for (auto &&short_code : tmp) { // 0 ~ (SHORT_CODE_LIMIT - 1)
-        all_short_codes.emplace_back(ShortCode::unsafe_create(short_code));
+        all_short_codes_.emplace_back(ShortCode::unsafe_create(short_code));
     }
 
-    all_short_codes_str.reserve(klotski::SHORT_CODE_LIMIT);
+    all_short_codes_str_.reserve(SHORT_CODE_LIMIT);
     for (auto &&short_code : tmp) { // 0 ~ (SHORT_CODE_LIMIT - 1)
-        all_short_codes_str.emplace_back(
+        all_short_codes_str_.emplace_back(
             ShortCode::unsafe_create(short_code).to_string()
         );
     }
 
     /// common code info preparation
-    all_common_codes.reserve(klotski::ALL_CASES_SIZE_SUM);
+    all_common_codes_.reserve(ALL_CASES_SIZE_SUM);
     for (uint64_t head = 0; head < 16; ++head) {
         for (const auto &range : AllCases::fetch()[head]) {
-            all_common_codes.emplace_back(
+            all_common_codes_.emplace_back(
                 CommonCode::unsafe_create(head << 32 | range)
             );
         }
     }
 
-    all_common_codes_str.reserve(klotski::ALL_CASES_SIZE_SUM);
-    for (auto &&common_code : all_common_codes) {
-        all_common_codes_str.emplace_back(common_code.to_string());
+    all_common_codes_str_.reserve(ALL_CASES_SIZE_SUM);
+    for (auto &&common_code : all_common_codes_) {
+        all_common_codes_str_.emplace_back(common_code.to_string());
     }
 
     /// raw code data preparation
-    all_raw_codes.reserve(klotski::ALL_CASES_SIZE_SUM);
-    for (auto &&common_code : all_common_codes) {
-        all_raw_codes.emplace_back(common_code.to_raw_code());
+    all_raw_codes_.reserve(ALL_CASES_SIZE_SUM);
+    for (auto &&common_code : all_common_codes_) {
+        all_raw_codes_.emplace_back(common_code.to_raw_code());
     }
 }
+
+} // namespace klotski
