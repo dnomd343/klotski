@@ -43,6 +43,19 @@ add_test(NAME codec COMMAND test_codec)
 
 ################################################################################
 
+include_directories(../src/klotski_core/core)
+include_directories(../src/klotski_core/raw_code)
+include_directories(../src/klotski_core/all_cases)
+include_directories(../src/klotski_core/common_code)
+
+set(TEST_CORE_SRC core.cc)
+list(TRANSFORM TEST_CORE_SRC PREPEND "core/")
+add_executable(test_core ${TEST_CORE_SRC})
+target_link_libraries(test_core ${TEST_DEPS})
+add_test(NAME core COMMAND test_core)
+
+################################################################################
+
 include_directories(../src/klotski_core)
 include_directories(../src/klotski_core/utils)
 
@@ -65,20 +78,5 @@ include_directories(../src/klotski_core/common_code)
 add_executable(test_codec_global global/short_code.cc global/common_code.cc global/raw_code.cc)
 target_link_libraries(test_codec_global ${TEST_GLOBAL_DEPS})
 add_test(NAME codec_global COMMAND test_codec_global)
-
-#include_directories(../src/klotski_core/common_code)
-#add_executable(test_global_common_code global/common_code.cc)
-#target_link_libraries(test_global_common_code ${TEST_GLOBAL_DEPS})
-#add_test(NAME global_common_code COMMAND test_global_common_code)
-#
-#include_directories(../src/klotski_core/short_code)
-#add_executable(test_global_short_code global/short_code.cc)
-#target_link_libraries(test_global_short_code ${TEST_GLOBAL_DEPS})
-#add_test(NAME global_short_code COMMAND test_global_short_code)
-#
-#include_directories(../src/klotski_core/raw_code)
-#add_executable(test_global_raw_code global/raw_code.cc)
-#target_link_libraries(test_global_raw_code ${TEST_GLOBAL_DEPS})
-#add_test(NAME global_raw_code COMMAND test_global_raw_code)
 
 ################################################################################
