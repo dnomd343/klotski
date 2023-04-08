@@ -7,17 +7,17 @@ using klotski::ShortCodeException;
 /// --------------------------- ShortCode to String ---------------------------
 
 std::string ShortCode::to_string() const noexcept { // encode as 5-bits string
-    return string_encode(code);
+    return string_encode(code_);
 }
 
 /// --------------------------- String to ShortCode ---------------------------
 
 ShortCode::ShortCode(std::string &&short_code) {
-    code = string_decode(short_code);
+    code_ = string_decode(short_code);
 }
 
 ShortCode::ShortCode(const std::string &short_code) {
-    code = string_decode(short_code);
+    code_ = string_decode(short_code);
 }
 
 ShortCode ShortCode::from_string(std::string &&short_code) {

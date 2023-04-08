@@ -2,7 +2,7 @@
 
 /// ShortCode is a high-compression encoding scheme based on CommonCode. Since there
 /// are a total of 29334498 valid klotski layouts, arrange their CommonCodes from
-/// small to large (36-bits positive integers), and use the index as the ShortCode.
+/// small to large (36-bit positive integers), and use the index as the ShortCode.
 
 /// Therefore, the valid value of ShortCode is [0, 29334498), stored in `uint32_t`.
 /// The goal of high compression ratio is to facilitate verbal sharing, so it is
@@ -11,21 +11,21 @@
 /// and 26 characters, forming a private base32 scheme.
 
 /// Coincidentally, log(32, 29334498) is approximately equal to `4.96`, so using
-/// 5-bits base32 can make good use of space, so any valid klotski layout can be
-/// represented by a 5-bits length code. As in CommonCode, the characters here are
+/// 5-bit base32 can make good use of space, so any valid klotski layout can be
+/// represented by a 5-bit length code. As in CommonCode, the characters here are
 /// case insensitive, but uppercase is still recommended.
 
-///   ShortCode Convert Table
+///                ShortCode Convert Table
 ///   -------------------------------------------------
 ///   |  00 |  01 |  02 |  03 |  04 |  05 |  06 |  07 |
 ///   | `1` | `2` | `3` | `4` | `5` | `6` | `7` | `8` |
-///   -------------------------------------------------
+///   |-----------------------------------------------|
 ///   |  08 |  09 |  10 |  11 |  12 |  13 |  14 |  15 |
 ///   | `9` | `A` | `B` | `C` | `D` | `E` | `F` | `G` |
-///   -------------------------------------------------
+///   |-----------------------------------------------|
 ///   |  16 |  17 |  18 |  19 |  20 |  21 |  22 |  23 |
 ///   | `H` | `J` | `K` | `M` | `N` | `P` | `Q` | `R` |
-///   -------------------------------------------------
+///   |-----------------------------------------------|
 ///   |  24 |  25 |  26 |  27 |  28 |  29 |  30 |  31 |
 ///   | `S` | `T` | `U` | `V` | `W` | `X` | `Y` | `Z` |
 ///   -------------------------------------------------
@@ -51,85 +51,93 @@
 #include <string>
 #include <cstdint>
 #include <ostream>
-#include <stdexcept>
 #include <utility>
+#include <stdexcept>
 #include "all_cases.h"
 #include "common_code.h"
 
 namespace klotski {
-    class CommonCode; // import for convert interface
 
-    const uint32_t SHORT_CODE_LIMIT = klotski::ALL_CASES_SIZE_SUM;
+class CommonCode;
 
-    class ShortCodeException : public std::runtime_error {
-    public:
-        ShortCodeException() : std::runtime_error("invalid short code") {}
-        explicit ShortCodeException(const std::string &msg) : std::runtime_error(msg) {}
-        ~ShortCodeException() noexcept override = default;
-    };
+const uint32_t SHORT_CODE_LIMIT = klotski::ALL_CASES_SIZE_SUM;
 
-    class ShortCode {
-    public:
-        enum Mode {NORMAL, FAST};
+class ShortCodeException : public std::runtime_error {
+public:
+    ShortCodeException() : std::runtime_error("invalid short code") {}
+    explicit ShortCodeException(const std::string &msg) : std::runtime_error(msg) {}
+    ~ShortCodeException() noexcept override = default;
+};
 
-    private:
-        uint32_t code;
-        ShortCode() = default; // unsafe initialize
+/// For ShortCode, you must choose at least one mode (NORMAL or FAST) to convert, and
+/// they all need a certain amount of time to warm up. `NORMAL` warms up quickly, and
+/// `FAST` is slower, but the conversion speed of `FAST` is much faster than `NORMAL`.
+/// When only converting a small amount of codes, please choose NORMAL mode. Otherwise
+/// FAST mode should be used.
 
-        static Mode mode();
-        static bool fast_mode_available;
-        static bool normal_mode_available;
+class ShortCode {
+public:
+    enum Mode {NORMAL, FAST};
 
-        static inline uint64_t fast_decode(uint32_t short_code) noexcept; // short code -> common code
-        static inline uint32_t fast_encode(uint64_t common_code) noexcept; // common code -> short code
-        static inline uint64_t tiny_decode(uint32_t short_code) noexcept; // short code -> common code
-        static inline uint32_t tiny_encode(uint64_t common_code) noexcept; // common code -> short code
+private:
+    uint32_t code_;
+    ShortCode() = default; // unsafe initialize
 
-        static inline std::string string_encode(uint32_t short_code) noexcept; // short code -> string
-        static inline uint32_t string_decode(const std::string &short_code); // string -> short code
+    static Mode mode();
+    static bool fast_mode_available_;
+    static bool normal_mode_available_;
 
-    public:
-        /// ShortCode validity check
-        bool valid() const noexcept;
-        static bool check(uint32_t short_code) noexcept;
+    static inline uint64_t fast_decode(uint32_t short_code) noexcept; // short code -> common code
+    static inline uint32_t fast_encode(uint64_t common_code) noexcept; // common code -> short code
+    static inline uint64_t tiny_decode(uint32_t short_code) noexcept; // short code -> common code
+    static inline uint32_t tiny_encode(uint64_t common_code) noexcept; // common code -> short code
 
-        /// ShortCode convert mode
-        static void speed_up(Mode mode);
+    static inline uint32_t string_decode(const std::string &short_code);
+    static inline std::string string_encode(uint32_t short_code) noexcept;
 
-        /// Operators of ShortCode
-        bool operator==(const ShortCode &short_code) const noexcept;
-        bool operator!=(const ShortCode &short_code) const noexcept;
-        constexpr explicit operator uint32_t() const noexcept { return code; }
-        friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
+public:
+    /// Validity check
+    bool valid() const noexcept;
+    static bool check(uint32_t short_code) noexcept;
 
-        /// Export functions
-        std::string to_string() const noexcept;
-        CommonCode to_common_code() const noexcept;
-        constexpr uint32_t unwrap() const noexcept { return code; }
+    /// ShortCode convert mode
+    static void speed_up(Mode mode); // {} -> {NORMAL} -> {FAST}
 
-        /// ShortCode constructors
-        explicit ShortCode(uint32_t short_code);
-        explicit ShortCode(std::string &&short_code);
-        explicit ShortCode(CommonCode &&common_code) noexcept;
-        explicit ShortCode(const std::string &short_code);
-        explicit ShortCode(const CommonCode &common_code) noexcept;
+    /// Operators of ShortCode
+    constexpr explicit operator uint32_t() const noexcept { return code_; }
+    friend std::ostream& operator<<(std::ostream &out, const ShortCode &self);
 
-        /// Static initialization
-        static ShortCode create(uint32_t short_code);
-        static ShortCode unsafe_create(uint32_t short_code) noexcept;
+    /// Export functions
+    std::string to_string() const noexcept;
+    CommonCode to_common_code() const noexcept;
+    constexpr uint32_t unwrap() const noexcept { return code_; }
 
-        static ShortCode from_string(std::string &&short_code);
-        static ShortCode from_string(const std::string &short_code);
+    /// ShortCode constructors
+    explicit ShortCode(uint32_t short_code);
+    explicit ShortCode(std::string &&short_code);
+    explicit ShortCode(CommonCode &&common_code) noexcept;
+    explicit ShortCode(const std::string &short_code);
+    explicit ShortCode(const CommonCode &common_code) noexcept;
 
-        static ShortCode from_common_code(uint64_t common_code);
-        static ShortCode from_common_code(CommonCode &&common_code) noexcept;
-        static ShortCode from_common_code(std::string &&common_code);
-        static ShortCode from_common_code(const CommonCode &common_code) noexcept;
-        static ShortCode from_common_code(const std::string &common_code);
-    };
+    /// Static initialization
+    static ShortCode create(uint32_t short_code);
+    static ShortCode unsafe_create(uint32_t short_code) noexcept;
 
-    inline bool operator==(uint32_t s1, const ShortCode &s2) noexcept { return s1 == s2.unwrap(); }
-    inline bool operator!=(uint32_t s1, const ShortCode &s2) noexcept { return s1 != s2.unwrap(); }
-    inline bool operator==(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() == s2; }
-    inline bool operator!=(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() != s2; }
-}
+    static ShortCode from_string(std::string &&short_code);
+    static ShortCode from_string(const std::string &short_code);
+
+    static ShortCode from_common_code(uint64_t common_code);
+    static ShortCode from_common_code(CommonCode &&common_code) noexcept;
+    static ShortCode from_common_code(std::string &&common_code);
+    static ShortCode from_common_code(const CommonCode &common_code) noexcept;
+    static ShortCode from_common_code(const std::string &common_code);
+};
+
+inline bool operator==(uint32_t s1, const ShortCode &s2) noexcept { return s1 == s2.unwrap(); }
+inline bool operator!=(uint32_t s1, const ShortCode &s2) noexcept { return s1 != s2.unwrap(); }
+inline bool operator==(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() == s2; }
+inline bool operator!=(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() != s2; }
+inline bool operator==(const ShortCode &s1, const ShortCode &s2) noexcept { return s1.unwrap() == s2.unwrap(); }
+inline bool operator!=(const ShortCode &s1, const ShortCode &s2) noexcept { return s1.unwrap() != s2.unwrap(); }
+
+} // namespace klotski

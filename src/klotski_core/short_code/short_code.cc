@@ -1,63 +1,35 @@
 #include "all_cases.h"
 #include "short_code.h"
 
-using klotski::ShortCode;
+namespace klotski {
 
-bool ShortCode::fast_mode_available = false;
-bool ShortCode::normal_mode_available = false;
+bool ShortCode::fast_mode_available_ = false;
+bool ShortCode::normal_mode_available_ = false;
 
-namespace std {
-    template<>
-    struct hash<klotski::ShortCode> {
-        std::size_t operator()(const klotski::ShortCode &c) const {
-            return std::hash<uint64_t>()(c.unwrap());
-        }
-    };
-
-    template<>
-    struct equal_to<klotski::ShortCode> {
-        bool operator()(const klotski::ShortCode &c1, const klotski::ShortCode &c2) const {
-            return c1.unwrap() == c2.unwrap();
-        }
-    };
+bool ShortCode::valid() const noexcept {
+    return ShortCode::check(code_);
 }
 
-namespace klotski {
-    bool ShortCode::operator==(const ShortCode &short_code) const noexcept {
-        return this->code == short_code.code;
-    }
-
-    bool ShortCode::operator!=(const ShortCode &short_code) const noexcept {
-        return this->code != short_code.code;
-    }
-
-    std::ostream& operator<<(std::ostream &out, const ShortCode &self) {
-        out << self.to_string() << "(" << self.code << ")"; // short code info
-        return out;
-    }
+ShortCode ShortCode::create(uint32_t short_code) {
+    return ShortCode(short_code);
 }
 
-namespace klotski {
-    bool ShortCode::valid() const noexcept {
-        return ShortCode::check(code);
-    }
+ShortCode ShortCode::unsafe_create(uint32_t short_code) noexcept { // create without check
+    auto tmp = ShortCode(); // init directly
+    tmp.code_ = short_code;
+    return tmp;
+}
 
-    ShortCode ShortCode::create(uint32_t short_code) {
-        return ShortCode(short_code);
+ShortCode::ShortCode(uint32_t short_code) {
+    if (!ShortCode::check(short_code)) { // check input short code
+        throw klotski::ShortCodeException("short code invalid");
     }
+    code_ = short_code;
+}
 
-    ShortCode ShortCode::unsafe_create(uint32_t short_code) noexcept { // create without check
-        auto tmp = ShortCode(); // init directly
-        tmp.code = short_code;
-        return tmp;
-    }
-
-    ShortCode::ShortCode(uint32_t short_code) {
-        if (!ShortCode::check(short_code)) { // check input short code
-            throw klotski::ShortCodeException("short code invalid");
-        }
-        code = short_code;
-    }
+std::ostream& operator<<(std::ostream &out, const ShortCode &self) {
+    out << self.to_string() << "(" << self.code_ << ")"; // short code info
+    return out;
 }
 
 bool ShortCode::check(uint32_t short_code) noexcept {
@@ -65,25 +37,27 @@ bool ShortCode::check(uint32_t short_code) noexcept {
 }
 
 ShortCode::Mode ShortCode::mode() { // ensure speed up enabled and return current mode
-    if (fast_mode_available) {
+    if (fast_mode_available_) {
         return ShortCode::FAST; // fast mode already enabled
     }
-    if (normal_mode_available) {
+    if (normal_mode_available_) {
         return ShortCode::NORMAL; // normal mode already enabled
     }
     speed_up(ShortCode::Mode::NORMAL); // uninitialized -> enable normal mode
-    return ShortCode::Mode::NORMAL; // normal mode enabled
+    return ShortCode::Mode::NORMAL;
 }
 
 void ShortCode::speed_up(ShortCode::Mode mode) {
-    if (fast_mode_available) {
+    if (fast_mode_available_) {
         return; // fast mode already available
     }
     if (mode == ShortCode::FAST) { // build fast mode data
         AllCases::build(); // blocking function
-        fast_mode_available = true;
-    } else if (!normal_mode_available) { // build normal mode data
+        fast_mode_available_ = true;
+    } else if (!normal_mode_available_) { // build normal mode data
         BasicRanges::build(); // blocking function
-        normal_mode_available = true;
+        normal_mode_available_ = true;
     }
 }
+
+} // namespace klotski

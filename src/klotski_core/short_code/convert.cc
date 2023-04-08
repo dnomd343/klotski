@@ -12,26 +12,26 @@ using klotski::CommonCode;
 
 CommonCode ShortCode::to_common_code() const noexcept {
     if (ShortCode::mode() == ShortCode::NORMAL) {
-        return CommonCode::unsafe_create(tiny_decode(code)); // normal mode
+        return CommonCode::unsafe_create(tiny_decode(code_)); // normal mode
     }
-    return CommonCode::unsafe_create(fast_decode(code)); // fast mode
+    return CommonCode::unsafe_create(fast_decode(code_)); // fast mode
 }
 
 /// ------------------------- ShortCode to CommonCode -------------------------
 
 ShortCode::ShortCode(CommonCode &&common_code) noexcept {
     if (ShortCode::mode() == ShortCode::NORMAL) {
-        code = tiny_encode(common_code.unwrap()); // normal mode
+        code_ = tiny_encode(common_code.unwrap()); // normal mode
     } else {
-        code = fast_encode(common_code.unwrap()); // fast mode
+        code_ = fast_encode(common_code.unwrap()); // fast mode
     }
 }
 
 ShortCode::ShortCode(const CommonCode &common_code) noexcept {
     if (ShortCode::mode() == ShortCode::NORMAL) {
-        code = tiny_encode(common_code.unwrap()); // normal mode
+        code_ = tiny_encode(common_code.unwrap()); // normal mode
     } else {
-        code = fast_encode(common_code.unwrap()); // fast mode
+        code_ = fast_encode(common_code.unwrap()); // fast mode
     }
 }
 
