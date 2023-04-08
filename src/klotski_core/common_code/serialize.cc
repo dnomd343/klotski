@@ -5,18 +5,18 @@ using klotski::CommonCodeException;
 
 /// -------------------------- CommonCode to String ---------------------------
 
-std::string CommonCode::to_string(bool shorten) const {
-    return string_encode(code, shorten);
+std::string CommonCode::to_string(bool shorten) const noexcept {
+    return string_encode(code_, shorten);
 }
 
 /// -------------------------- String to CommonCode ---------------------------
 
 CommonCode::CommonCode(std::string &&common_code) {
-    code = string_decode(common_code); // load from string
+    code_ = string_decode(common_code); // load from string
 }
 
 CommonCode::CommonCode(const std::string &common_code) {
-    code = string_decode(common_code); // load from string
+    code_ = string_decode(common_code); // load from string
 }
 
 CommonCode CommonCode::from_string(std::string &&common_code) {
@@ -44,11 +44,11 @@ inline uint8_t last_zero_num(uint32_t bin) { // get last zero number
     return binary_count(bin >> 1);
 }
 
-std::string CommonCode::string_encode(uint64_t common_code, bool shorten) noexcept { // convert uint64_t code to string
-    char result[10]; // max length 9-bits
+std::string CommonCode::string_encode(uint64_t common_code, bool shorten) noexcept { // convert from uint64_t
+    char result[10]; // max length 9-bit
     sprintf(result, "%09lX", common_code);
     if (shorten) { // remove `0` after common code
-        if ((uint32_t)common_code == 0x00'00'00'00) { // low 32-bits are zero
+        if ((uint32_t)common_code == 0x00'00'00'00) { // low 32-bit are zero
             result[1] = '\0'; // only keep first character
             return result;
         }
@@ -57,7 +57,7 @@ std::string CommonCode::string_encode(uint64_t common_code, bool shorten) noexce
     return result; // char* -> std::string
 }
 
-uint64_t CommonCode::string_decode(const std::string &common_code) { // convert from 1 ~ 9 bits string
+uint64_t CommonCode::string_decode(const std::string &common_code) { // convert from (1 ~ 9)-bit string
     /// check string length
     if (common_code.length() > 9 || common_code.empty()) { // check string length
         throw CommonCodeException("common code should length 1 ~ 9");

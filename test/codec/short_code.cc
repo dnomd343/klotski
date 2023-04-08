@@ -34,7 +34,7 @@ TEST(ShortCode, speed_up) {
     std::thread threads[4];
 
     /// speed up to normal mode
-    EXPECT_EQ(BasicRanges::status(), BasicRanges::NO_INIT);
+    EXPECT_EQ(BasicRanges::status(), BasicRanges::NOT_INIT);
     for (auto &t : threads) {
         t = std::thread(ShortCode::speed_up, ShortCode::NORMAL);
     }
@@ -46,7 +46,7 @@ TEST(ShortCode, speed_up) {
     EXPECT_EQ(BasicRanges::status(), BasicRanges::AVAILABLE);
 
     /// speed up to fast mode
-    EXPECT_EQ(AllCases::status(), AllCases::NO_INIT);
+    EXPECT_EQ(AllCases::status(), AllCases::NOT_INIT);
     for (auto &t : threads) {
         t = std::thread(ShortCode::speed_up, ShortCode::FAST);
     }

@@ -31,21 +31,21 @@ CommonCode CommonCode::from_raw_code(const RawCode &raw_code) noexcept {
 }
 
 CommonCode::CommonCode(RawCode &&raw_code) noexcept {
-    code = raw_code.to_common_code().code; // convert from raw code
+    code_ = raw_code.to_common_code().code_; // convert from raw code
 }
 
 CommonCode::CommonCode(const RawCode &raw_code) noexcept {
-    code = raw_code.to_common_code().code; // convert from raw code
+    code_ = raw_code.to_common_code().code_; // convert from raw code
 }
 
 /// ------------------------- ShortCode to CommonCode -------------------------
 
 CommonCode::CommonCode(ShortCode &&short_code) noexcept {
-    code = short_code.to_common_code().code; // convert from short code
+    code_ = short_code.to_common_code().code_; // convert from short code
 }
 
 CommonCode::CommonCode(const ShortCode &short_code) noexcept {
-    code = short_code.to_common_code().code; // convert from short code
+    code_ = short_code.to_common_code().code_; // convert from short code
 }
 
 CommonCode CommonCode::from_short_code(uint32_t short_code) {
