@@ -1,5 +1,6 @@
 #include <thread>
 #include <algorithm>
+#include <unordered_set>
 #include "all_cases.h"
 #include "common_code.h"
 #include "gtest/gtest.h"
@@ -20,6 +21,11 @@ static inline void SHOULD_PANIC(const std::function<void()> &func) {
         panic_flag = true;
     }
     EXPECT_EQ(panic_flag, true);
+}
+
+TEST(CommonCode, hash) {
+    auto tmp = std::unordered_set<CommonCode>{ CommonCode(TEST_CODE) };
+    EXPECT_EQ(tmp.size(), 1);
 }
 
 TEST(CommonCode, validity) {

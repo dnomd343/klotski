@@ -116,3 +116,11 @@ inline bool operator==(const RawCode &r1, const RawCode &r2) noexcept { return r
 inline bool operator!=(const RawCode &r1, const RawCode &r2) noexcept { return r1.unwrap() != r2.unwrap(); }
 
 } // namespace klotski
+
+/// In namespace std, let the RawCode implement the standard hash function.
+template<>
+struct std::hash<klotski::RawCode> {
+    inline std::size_t operator()(const klotski::RawCode &raw_code) const {
+        return static_cast<std::size_t>(raw_code.unwrap());
+    }
+};

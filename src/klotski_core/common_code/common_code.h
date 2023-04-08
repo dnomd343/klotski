@@ -127,3 +127,11 @@ inline bool operator==(const CommonCode &c1, const CommonCode &c2) noexcept { re
 inline bool operator!=(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() != c2.unwrap(); }
 
 } // namespace klotski
+
+/// In namespace std, let the CommonCode implement the standard hash function.
+template<>
+struct std::hash<klotski::CommonCode> {
+    inline std::size_t operator()(const klotski::CommonCode &common_code) const {
+        return static_cast<std::size_t>(common_code.unwrap());
+    }
+};

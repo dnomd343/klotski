@@ -141,3 +141,11 @@ inline bool operator==(const ShortCode &s1, const ShortCode &s2) noexcept { retu
 inline bool operator!=(const ShortCode &s1, const ShortCode &s2) noexcept { return s1.unwrap() != s2.unwrap(); }
 
 } // namespace klotski
+
+/// In namespace std, let the ShortCode implement the standard hash function.
+template<>
+struct std::hash<klotski::ShortCode> {
+    inline std::size_t operator()(const klotski::ShortCode &short_code) const {
+        return static_cast<std::size_t>(short_code.unwrap());
+    }
+};

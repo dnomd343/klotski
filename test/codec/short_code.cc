@@ -1,5 +1,6 @@
 #include <thread>
 #include <algorithm>
+#include <unordered_set>
 #include "all_cases.h"
 #include "short_code.h"
 #include "gtest/gtest.h"
@@ -20,6 +21,11 @@ static inline void SHOULD_PANIC(const std::function<void()> &func) {
         panic_flag = true;
     }
     EXPECT_EQ(panic_flag, true);
+}
+
+TEST(ShortCode, hash) {
+    auto tmp = std::unordered_set<ShortCode>{ ShortCode(TEST_CODE) };
+    EXPECT_EQ(tmp.size(), 1);
 }
 
 TEST(ShortCode, validity) {

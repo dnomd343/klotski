@@ -1,4 +1,5 @@
 #include <thread>
+#include <unordered_set>
 #include "raw_code.h"
 #include "all_cases.h"
 #include "gtest/gtest.h"
@@ -8,6 +9,11 @@ using klotski::AllCases;
 using klotski::CommonCode;
 
 const static uint64_t TEST_CODE = 0x0603'EDF5'CAFF'F5E2;
+
+TEST(RawCode, hash) {
+    auto tmp = std::unordered_set<RawCode>{ RawCode(TEST_CODE) };
+    EXPECT_EQ(tmp.size(), 1);
+}
 
 TEST(RawCode, validity) {
     EXPECT_EQ(RawCode::check(0x0A34'182B'3810'2D21), false); // invalid code
