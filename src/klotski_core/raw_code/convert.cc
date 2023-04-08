@@ -8,17 +8,17 @@ using klotski::RawCodeException;
 /// -------------------------- RawCode to CommonCode --------------------------
 
 CommonCode RawCode::to_common_code() const noexcept {
-    return CommonCode::unsafe_create(RawCode::compact(code));
+    return CommonCode::unsafe_create(RawCode::compact(code_));
 }
 
 /// -------------------------- CommonCode to RawCode --------------------------
 
 RawCode::RawCode(CommonCode &&common_code) noexcept {
-    code = RawCode::extract(common_code.unwrap()); // convert from common code
+    code_ = RawCode::extract(common_code.unwrap()); // convert from common code
 }
 
 RawCode::RawCode(const CommonCode &common_code) noexcept {
-    code = RawCode::extract(common_code.unwrap()); // convert from common code
+    code_ = RawCode::extract(common_code.unwrap()); // convert from common code
 }
 
 RawCode RawCode::from_common_code(uint64_t common_code) {

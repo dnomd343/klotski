@@ -6,37 +6,37 @@ using klotski::RawCode;
 /// ----------------------------- Mirror Convert ------------------------------
 
 RawCode RawCode::to_vertical_mirror() const noexcept {
-    return RawCode::unsafe_create(vertical_mirror(code));
+    return RawCode::unsafe_create(get_vertical_mirror(code_));
 }
 
 RawCode RawCode::to_horizontal_mirror() const noexcept {
-    return RawCode::unsafe_create(horizontal_mirror(code));
+    return RawCode::unsafe_create(get_horizontal_mirror(code_));
 }
 
 /// ------------------------------ Mirror Check -------------------------------
 
 bool RawCode::is_vertical_mirror() const noexcept {
-    return vertical_mirror_check(code);
+    return check_vertical_mirror(code_);
 }
 
 bool RawCode::is_horizontal_mirror() const noexcept {
-    return horizontal_mirror_check(code);
+    return check_horizontal_mirror(code_);
 }
 
 bool RawCode::is_vertical_mirror(RawCode &&raw_code) const noexcept {
-    return raw_code.unwrap() == vertical_mirror(code);
+    return raw_code.unwrap() == get_vertical_mirror(code_);
 }
 
 bool RawCode::is_horizontal_mirror(RawCode &&raw_code) const noexcept {
-    return raw_code.unwrap() == horizontal_mirror(code);
+    return raw_code.unwrap() == get_horizontal_mirror(code_);
 }
 
 bool RawCode::is_vertical_mirror(const RawCode &raw_code) const noexcept {
-    return raw_code.unwrap() == vertical_mirror(code);
+    return raw_code.unwrap() == get_vertical_mirror(code_);
 }
 
 bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const noexcept {
-    return raw_code.unwrap() == horizontal_mirror(code);
+    return raw_code.unwrap() == get_horizontal_mirror(code_);
 }
 
 /// ----------------------------- Basic Functions -----------------------------
@@ -64,14 +64,14 @@ constexpr uint64_t MASK_MIRROR_V3 = 0x0'000'000'FFF'000'000;
 
 inline void vertical_fill(uint64_t &raw_code) {
     uint64_t mask = 0;
-    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case B_2x1:
             case B_2x2:
                 mask |= (uint64_t)0b111 << (addr + 12); // generate fill mask
         }
     }
-    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code | mask) >> addr & 0b111) {
             case B_2x1:
                 raw_code &= ~(uint64_t(~B_2x1 & 0b111) << (addr + 12)); // fill vertical mirror
@@ -84,7 +84,7 @@ inline void vertical_fill(uint64_t &raw_code) {
 }
 
 inline void horizontal_fill(uint64_t &raw_code) {
-    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case B_1x2:
                 raw_code &= ~(uint64_t(~B_1x2 & 0b111) << (addr + 3)); // fill horizontal mirror
@@ -99,7 +99,7 @@ inline void horizontal_fill(uint64_t &raw_code) {
 }
 
 inline void vertical_clear(uint64_t &raw_code) {
-    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case B_2x1:
             case B_2x2:
@@ -109,7 +109,7 @@ inline void vertical_clear(uint64_t &raw_code) {
 }
 
 inline void horizontal_clear(uint64_t &raw_code) {
-    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bits
+    for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case B_1x2:
             case B_2x2:
@@ -118,7 +118,7 @@ inline void horizontal_clear(uint64_t &raw_code) {
     }
 }
 
-uint64_t RawCode::vertical_mirror(uint64_t raw_code) noexcept {
+uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) noexcept {
     vertical_fill(raw_code);
     raw_code = (raw_code & MASK_MIRROR_V3)
         | ((raw_code >> 48) & MASK_MIRROR_V1) | ((raw_code >> 24) & MASK_MIRROR_V2)
@@ -127,7 +127,7 @@ uint64_t RawCode::vertical_mirror(uint64_t raw_code) noexcept {
     return raw_code;
 }
 
-uint64_t RawCode::horizontal_mirror(uint64_t raw_code) noexcept {
+uint64_t RawCode::get_horizontal_mirror(uint64_t raw_code) noexcept {
     horizontal_fill(raw_code);
     raw_code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
         | ((raw_code & MASK_MIRROR_H2) << 3) | ((raw_code & MASK_MIRROR_H1) << 9); // flip raw code
@@ -135,13 +135,13 @@ uint64_t RawCode::horizontal_mirror(uint64_t raw_code) noexcept {
     return raw_code;
 }
 
-bool RawCode::vertical_mirror_check(uint64_t raw_code) noexcept {
+bool RawCode::check_vertical_mirror(uint64_t raw_code) noexcept {
     vertical_fill(raw_code);
     return !(MASK_MIRROR_V1 & ((raw_code >> 48) ^ raw_code))
         && !(MASK_MIRROR_V2 & ((raw_code >> 24) ^ raw_code));
 }
 
-bool RawCode::horizontal_mirror_check(uint64_t raw_code) noexcept {
+bool RawCode::check_horizontal_mirror(uint64_t raw_code) noexcept {
     horizontal_fill(raw_code);
     return !(MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
         && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));

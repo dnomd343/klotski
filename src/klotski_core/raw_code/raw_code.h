@@ -1,14 +1,14 @@
 #pragma once
 
 /// RawCode is an uncompressed coding scheme, which is used for program calculation. It
-/// encodes a `5x4` chessboard as `0 ~ 19`, and uses 3-bits to represent each position,
-/// occupying a total of 60-bits, and stored in a `uint64_t` variable. Among them, the
-/// upper 4-bits are reserved and filled with `0`.
+/// encodes a `5x4` chessboard as `0 ~ 19`, and uses 3-bit to represent each position,
+/// occupying a total of 60-bit, and stored in a `uint64_t` variable. Among them, the
+/// upper 4-bit are reserved and filled with `0`.
 ///
 ///   00 01 02 03
-///   04 05 06 07    fill   20-slots
+///   04 05 06 07    fill   20 slots
 ///   08 09 10 11    0000   (19) (18) (17) (16) ... (03) (02) (01) (00)
-///   12 13 14 15    (4b) + (3b) * 20 => 64-bits
+///   12 13 14 15    (4b) + (3b) * 20 => 64-bit
 ///   16 17 18 19
 ///
 ///   Eg1:
@@ -44,73 +44,75 @@
 #include "common_code.h"
 
 namespace klotski {
-    class CommonCode; // import for convert interface
 
-    class RawCodeException : public std::runtime_error {
-    public:
-        RawCodeException() : std::runtime_error("invalid raw code") {}
-        explicit RawCodeException(const std::string &msg) : std::runtime_error(msg) {}
-        ~RawCodeException() noexcept override = default;
-    };
+class CommonCode;
 
-    class RawCode {
-        uint64_t code;
-        RawCode() = default; // unsafe initialize
+class RawCodeException : public std::runtime_error {
+public:
+    RawCodeException() : std::runtime_error("invalid raw code") {}
+    explicit RawCodeException(const std::string &msg) : std::runtime_error(msg) {}
+    ~RawCodeException() noexcept override = default;
+};
 
-        static inline uint64_t compact(uint64_t raw_code) noexcept; // raw code -> common code
-        static inline uint64_t extract(uint64_t common_code) noexcept; // common code -> raw code
+class RawCode {
+    uint64_t code_;
+    RawCode() = default; // unsafe initialize
 
-        static inline uint64_t vertical_mirror(uint64_t raw_code) noexcept; // to vertical mirror
-        static inline uint64_t horizontal_mirror(uint64_t raw_code) noexcept; // to horizontal mirror
+    static inline uint64_t compact(uint64_t raw_code) noexcept; // raw code -> common code
+    static inline uint64_t extract(uint64_t common_code) noexcept; // common code -> raw code
 
-        static inline bool vertical_mirror_check(uint64_t raw_code) noexcept; // check vertical mirror
-        static inline bool horizontal_mirror_check(uint64_t raw_code) noexcept; // check horizontal mirror
+    static inline uint64_t get_vertical_mirror(uint64_t raw_code) noexcept;
+    static inline uint64_t get_horizontal_mirror(uint64_t raw_code) noexcept;
 
-    public:
-        /// RawCode validity check
-        bool valid() const noexcept;
-        static bool check(uint64_t raw_code) noexcept;
+    static inline bool check_vertical_mirror(uint64_t raw_code) noexcept;
+    static inline bool check_horizontal_mirror(uint64_t raw_code) noexcept;
 
-        /// Operators of RawCode
-        bool operator==(const RawCode &raw_code) const noexcept;
-        bool operator!=(const RawCode &raw_code) const noexcept;
-        constexpr explicit operator uint64_t() const noexcept { return code; }
-        friend std::ostream& operator<<(std::ostream &out, const RawCode &self);
+public:
+    /// Validity check
+    bool valid() const noexcept;
+    static bool check(uint64_t raw_code) noexcept;
 
-        /// Export functions
-        CommonCode to_common_code() const noexcept;
-        constexpr uint64_t unwrap() const noexcept { return code; }
+    /// Operators of RawCode
+    constexpr explicit operator uint64_t() const noexcept { return code_; }
+    friend std::ostream& operator<<(std::ostream &out, const RawCode &self);
 
-        /// RawCode constructors
-        explicit RawCode(uint64_t raw_code);
-        explicit RawCode(CommonCode &&common_code) noexcept;
-        explicit RawCode(const CommonCode &common_code) noexcept;
+    /// Export functions
+    CommonCode to_common_code() const noexcept;
+    constexpr uint64_t unwrap() const noexcept { return code_; }
 
-        /// Static initialization
-        static RawCode create(uint64_t raw_code);
-        static RawCode unsafe_create(uint64_t raw_code) noexcept;
+    /// RawCode constructors
+    explicit RawCode(uint64_t raw_code);
+    explicit RawCode(CommonCode &&common_code) noexcept;
+    explicit RawCode(const CommonCode &common_code) noexcept;
 
-        static RawCode from_common_code(uint64_t common_code);
-        static RawCode from_common_code(CommonCode &&common_code) noexcept;
-        static RawCode from_common_code(std::string &&common_code);
-        static RawCode from_common_code(const CommonCode &common_code) noexcept;
-        static RawCode from_common_code(const std::string &common_code);
+    /// Static initialization
+    static RawCode create(uint64_t raw_code);
+    static RawCode unsafe_create(uint64_t raw_code) noexcept;
 
-        /// Mirror functions
-        RawCode to_vertical_mirror() const noexcept;
-        RawCode to_horizontal_mirror() const noexcept;
+    static RawCode from_common_code(uint64_t common_code);
+    static RawCode from_common_code(CommonCode &&common_code) noexcept;
+    static RawCode from_common_code(std::string &&common_code);
+    static RawCode from_common_code(const CommonCode &common_code) noexcept;
+    static RawCode from_common_code(const std::string &common_code);
 
-        bool is_vertical_mirror() const noexcept; // whether vertically symmetrical
-        bool is_horizontal_mirror() const noexcept; // whether horizontally symmetrical
+    /// Mirror functions
+    RawCode to_vertical_mirror() const noexcept;
+    RawCode to_horizontal_mirror() const noexcept;
 
-        bool is_vertical_mirror(RawCode &&raw_code) const noexcept; // whether vertically symmetric to another
-        bool is_vertical_mirror(const RawCode &raw_code) const noexcept;
-        bool is_horizontal_mirror(RawCode &&raw_code) const noexcept; // whether horizontally symmetric to another
-        bool is_horizontal_mirror(const RawCode &raw_code) const noexcept;
-    };
+    bool is_vertical_mirror() const noexcept; // whether vertically symmetrical
+    bool is_horizontal_mirror() const noexcept; // whether horizontally symmetrical
 
-    inline bool operator==(uint64_t r1, const RawCode &r2) noexcept { return r1 == r2.unwrap(); }
-    inline bool operator!=(uint64_t r1, const RawCode &r2) noexcept { return r1 != r2.unwrap(); }
-    inline bool operator==(const RawCode &r1, uint64_t r2) noexcept { return r1.unwrap() == r2; }
-    inline bool operator!=(const RawCode &r1, uint64_t r2) noexcept { return r1.unwrap() != r2; }
-}
+    bool is_vertical_mirror(RawCode &&raw_code) const noexcept; // whether vertically symmetric to another
+    bool is_vertical_mirror(const RawCode &raw_code) const noexcept;
+    bool is_horizontal_mirror(RawCode &&raw_code) const noexcept; // whether horizontally symmetric to another
+    bool is_horizontal_mirror(const RawCode &raw_code) const noexcept;
+};
+
+inline bool operator==(uint64_t r1, const RawCode &r2) noexcept { return r1 == r2.unwrap(); }
+inline bool operator!=(uint64_t r1, const RawCode &r2) noexcept { return r1 != r2.unwrap(); }
+inline bool operator==(const RawCode &r1, uint64_t r2) noexcept { return r1.unwrap() == r2; }
+inline bool operator!=(const RawCode &r1, uint64_t r2) noexcept { return r1.unwrap() != r2; }
+inline bool operator==(const RawCode &r1, const RawCode &r2) noexcept { return r1.unwrap() == r2.unwrap(); }
+inline bool operator!=(const RawCode &r1, const RawCode &r2) noexcept { return r1.unwrap() != r2.unwrap(); }
+
+} // namespace klotski
