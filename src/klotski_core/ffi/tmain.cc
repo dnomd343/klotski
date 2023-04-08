@@ -11,9 +11,37 @@
 #include "all_cases.h"
 #include "common_code.h"
 
+#include "group.h"
+
+using klotski::Group;
+using klotski::AllCases;
+
+using klotski::RawCode;
+using klotski::CommonCode;
+
 using klotski::Benchmark;
 
 void tmain() {
+
+//    Group::block_num(CommonCode(0x1A9BF0C00));
+//    Group::block_num(RawCode::from_common_code(0x1A9BF0C00));
+
+//    std::cout << std::endl;
+
+//    Group::block_num(CommonCode(0x4FEA13400));
+//    Group::block_num(RawCode::from_common_code(0x4FEA13400));
+
+    for (auto &&common_code : AllCases::release()) {
+        auto s1 = Group::block_num(common_code);
+        auto s2 = Group::block_num(common_code.to_raw_code());
+        if (s1.n_1x1 != s2.n_1x1 || s1.n_1x2 != s2.n_1x2 || s1.n_2x1 != s2.n_2x1) {
+            std::cout << "fuck" << std::endl;
+        }
+    }
+
+
+    return;
+
 //    printf("tmain start\n");
 
 //    std::cout << "warm up: " << Benchmark::warm_up(1000000) << "us" << std::endl;

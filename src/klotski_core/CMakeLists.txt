@@ -100,6 +100,8 @@ include_directories(fast_cal)
 
 include_directories(benchmark)
 
+include_directories(group)
+
 ################################################################################
 
 add_subdirectory(utils)
@@ -114,6 +116,8 @@ add_subdirectory(analyse)
 add_subdirectory(fast_cal)
 
 add_subdirectory(benchmark)
+
+add_subdirectory(group)
 
 ################################################################################
 
@@ -136,6 +140,8 @@ list(APPEND OBJS $<TARGET_OBJECTS:analyse>)
 list(APPEND OBJS $<TARGET_OBJECTS:fast_cal>)
 
 list(APPEND OBJS $<TARGET_OBJECTS:benchmark>)
+
+list(APPEND OBJS $<TARGET_OBJECTS:group>)
 
 ################################################################################
 
