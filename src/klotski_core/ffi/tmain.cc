@@ -26,7 +26,7 @@ void tmain() {
     std::cout << "all cases: " <<
         Benchmark::all_cases() << "ms" << std::endl;
 
-    Benchmark::data_preparation();
+    Benchmark::data_initialize();
 
     std::cout << "raw code check: " <<
         Benchmark::raw_code_check() << "ns" << std::endl;

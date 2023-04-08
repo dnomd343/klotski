@@ -6,7 +6,7 @@ using klotski::Benchmark;
 ///////////////////////////////////////////////////////////////////////////////
 
 void benchmark_preparation() {
-    Benchmark::data_preparation();
+    Benchmark::data_initialize();
 }
 
 double benchmark_warm_up_us(uint64_t count) {
