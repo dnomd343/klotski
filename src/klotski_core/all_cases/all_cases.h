@@ -42,7 +42,7 @@ public:
     static void build();
 
     /// Get current status of AllCases.
-    static Status status();
+    static Status status() noexcept;
 
     /// Blocking access to constructed data.
     static const std::vector<uint32_t> (&fetch())[16];

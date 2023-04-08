@@ -19,7 +19,7 @@ const std::vector<uint32_t>& BasicRanges::fetch() {
     return data_; // return const reference
 }
 
-BasicRanges::Status BasicRanges::status() {
+BasicRanges::Status BasicRanges::status() noexcept {
     if (available_) {
         return AVAILABLE; // data already built
     }

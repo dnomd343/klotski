@@ -18,7 +18,7 @@ const std::vector<uint32_t> (&AllCases::fetch())[16] {
     return data_; // return const reference
 }
 
-AllCases::Status AllCases::status() {
+AllCases::Status AllCases::status() noexcept {
     if (available_) {
         return AVAILABLE; // data already built
     }
