@@ -23,11 +23,11 @@ using klotski::Benchmark;
 
 void tmain() {
 
-    auto r = Group::block_num(123);
+//    auto r = Group::block_num(123);
 
-    std::cout << (int)r.n_1x1 << " " << (int)r.n_1x2 << " " << (int)r.n_2x1 << std::endl;
+//    std::cout << (int)r.n_1x1 << " " << (int)r.n_1x2 << " " << (int)r.n_2x1 << std::endl;
 
-    std::cout << Group::type_id(r) << std::endl;
+//    std::cout << Group::type_id(r) << std::endl;
 
 //    Group::block_num(CommonCode(0x1A9BF0C00));
 //    Group::block_num(RawCode::from_common_code(0x1A9BF0C00));

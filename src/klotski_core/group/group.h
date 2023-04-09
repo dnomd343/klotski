@@ -6,6 +6,8 @@
 
 namespace klotski {
 
+const uint32_t TYPE_ID_LIMIT = 204;
+
 class Group {
 public:
 
@@ -15,9 +17,9 @@ public:
         uint8_t n_2x1 = 0;
     };
 
-//    static uint32_t type_id(const RawCode &raw_code);
+    static uint32_t type_id(const RawCode &raw_code);
     static uint32_t type_id(const block_num_t &block_num);
-//    static uint32_t type_id(const CommonCode &common_code);
+    static uint32_t type_id(const CommonCode &common_code);
 
     static block_num_t block_num(uint32_t type_id);
     static block_num_t block_num(const RawCode &raw_code);

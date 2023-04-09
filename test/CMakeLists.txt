@@ -56,6 +56,20 @@ add_test(NAME core COMMAND test_core)
 
 ################################################################################
 
+#include_directories(../src/klotski_core/core)
+#include_directories(../src/klotski_core/raw_code)
+#include_directories(../src/klotski_core/all_cases)
+#include_directories(../src/klotski_core/common_code)
+include_directories(../src/klotski_core/group)
+
+set(TEST_GROUP_SRC group.cc)
+list(TRANSFORM TEST_GROUP_SRC PREPEND "group/")
+add_executable(test_group ${TEST_GROUP_SRC})
+target_link_libraries(test_group ${TEST_DEPS} md5 absl::flat_hash_map)
+add_test(NAME group COMMAND test_group)
+
+################################################################################
+
 include_directories(../src/klotski_core)
 include_directories(../src/klotski_core/utils)
 

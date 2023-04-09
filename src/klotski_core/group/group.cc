@@ -11,18 +11,24 @@ namespace klotski {
 
 using Common::range_reverse;
 
+uint32_t Group::type_id(const RawCode &raw_code) {
+    return type_id(block_num(raw_code));
+}
+
+uint32_t Group::type_id(const CommonCode &common_code) {
+    return type_id(block_num(common_code));
+}
+
+uint32_t Group::type_id(const block_num_t &block_num) {
+    auto n_x2x = block_num.n_1x2 + block_num.n_2x1;
+    auto flag = (n_x2x << 8) | (block_num.n_2x1 << 4) | block_num.n_1x1;
+    return std::lower_bound(TYPE_ID_INDEX, TYPE_ID_INDEX + 204, flag) - TYPE_ID_INDEX;
+}
+
 Group::block_num_t Group::block_num(uint32_t type_id) {
     auto flag = TYPE_ID_INDEX[type_id];
     uint8_t n_x2x = flag >> 8;
     uint8_t n_2x1 = (flag >> 4) & 0b1111;
-
-//    std::cout << (int)n_x2x << std::endl;
-//    std::cout << (int)n_2x1 << std::endl;
-//    std::cout << flag << std::endl;
-    // 1046 -> 0100 0001 0110
-    //         1024+0016+0006
-    //            4    1    6
-
     return block_num_t {
         .n_1x1 = static_cast<uint8_t>(flag & 0b1111),
         .n_1x2 = static_cast<uint8_t>(n_x2x - n_2x1),
@@ -99,18 +105,7 @@ std::vector<RawCode> Group::group_cases(const RawCode &seed) {
     return result;
 }
 
-uint32_t Group::type_id(const block_num_t &block_num) {
-    auto n_x2x = block_num.n_1x2 + block_num.n_2x1;
-    auto flag = (n_x2x << 8) | (block_num.n_2x1 << 4) | block_num.n_1x1;
 
-    std::cout << flag << std::endl;
-
-//    std::cout <<  << std::endl;
-
-    // search in TYPE_ID_INDEX
-
-    return std::lower_bound(TYPE_ID_INDEX, TYPE_ID_INDEX + 204, flag) - TYPE_ID_INDEX;
-}
 
 
 } // namespace klotski
