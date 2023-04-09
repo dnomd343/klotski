@@ -39,22 +39,29 @@ void tmain() {
 //        }
 //    }
 
-    auto cases = std::vector<RawCode>();
-    auto common_codes = AllCases::release();
-    for (uint64_t i = 0; i < common_codes.size(); i += 293345 * 2) {
-        cases.emplace_back(common_codes[i].to_raw_code());
-    }
-
-    std::cout << "select " << cases.size() << " cases" << std::endl;
+//    auto cases = std::vector<RawCode>();
+//    auto common_codes = AllCases::release();
+//    for (uint64_t i = 0; i < common_codes.size(); i += 293345 * 2) {
+//        cases.emplace_back(common_codes[i].to_raw_code());
+//    }
+//
+//    std::cout << "select " << cases.size() << " cases" << std::endl;
 
     auto start = clock();
 
-    for (auto &&raw_code : cases) {
-        std::cout << Group::demo(raw_code) << std::endl;
-    }
+//    for (auto &&raw_code : cases) {
+//        std::cout << Group::demo(raw_code) << std::endl;
+//    }
 
 //    Group::demo(RawCode::from_common_code(0x1A9BF0C00));
 //    Group::demo(RawCode::from_common_code(0x4FEA13400));
+
+    std::cout << Group::demo(RawCode::from_common_code(0x1A9BF0C00)) << std::endl;
+
+//    auto tmp = RawCode::from_common_code(0x1A9BF0C00);
+//    for (int i = 0; i < 100; ++i) {
+//        Group::demo(tmp);
+//    }
 
     std::cout << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 
@@ -162,7 +169,7 @@ void tmain() {
 
     }
 
-    std::cout << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
+//    std::cout << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 
 //    std::sort(next_size.begin(), next_size.end());
 //    std::cout << next_size[0] << std::endl;

@@ -1,10 +1,6 @@
 #include <queue>
 #include <iostream>
 
-//#include <map>
-//#include <unordered_map>
-//#include <boost/unordered_map.hpp>
-//#include <ankerl/unordered_dense.h>
 #include "absl/container/flat_hash_map.h"
 
 #include "group.h"
@@ -53,55 +49,85 @@ Group::block_num_t Group::block_num(const CommonCode &common_code) {
     return result;
 }
 
-//struct custom_hash_simple {
-//
-//    using is_avalanching = void;
-//
-//    auto operator()(uint64_t const& x) const noexcept -> uint64_t {
-//        return ankerl::unordered_dense::detail::wyhash::hash(static_cast<uint64_t>(x));
-//    }
-//};
-
 uint32_t Group::demo(const RawCode &seed) {
-    struct group_cal_t {
-        uint64_t code;
-        uint64_t mask;
-    };
 
-    std::queue<group_cal_t*> cache;
+//    struct group_cal_t {
+//        uint64_t code;
+//        uint64_t mask;
+//    };
+//    std::queue<group_cal_t*> cache;
+//    std::queue<uint64_t> cache;
+//    std::queue<std::pair<uint64_t, uint64_t>> cache;
+//
+//    absl::flat_hash_map<uint64_t, group_cal_t> cases;
+//    absl::flat_hash_map<uint64_t, uint64_t> cases;
+//    absl::flat_hash_map<uint64_t, std::unique_ptr<group_cal_t>> cases;
 
-//    std::map<uint64_t, group_cal_t> cases;
-//    std::unordered_map<uint64_t, group_cal_t> cases;
-//    boost::unordered_map<uint64_t, group_cal_t> cases;
-//    ankerl::unordered_dense::map<uint64_t, group_cal_t> cases;
-    absl::flat_hash_map<uint64_t, group_cal_t> cases;
+    std::queue<uint64_t> cache;
+    std::queue<uint64_t> cache_;
+    absl::flat_hash_map<uint64_t, uint64_t> cases;
 
     cases.reserve(65535 * 8);
 
-    cache.emplace(&cases.emplace(seed.unwrap(), group_cal_t {
-        .code = seed.unwrap(),
-        .mask = 0,
-    }).first->second);
+//    cache.emplace(&cases.emplace(seed.unwrap(), group_cal_t {
+//        .code = seed.unwrap(),
+//        .mask = 0,
+//    }).first->second);
+//    cases.emplace(seed.unwrap(), 0);
+//    cache.emplace(seed.unwrap());
+//    cache.emplace(seed.unwrap(), 0);
+//    cases.emplace(seed.unwrap(), std::make_unique<group_cal_t>(group_cal_t {
+//        .code = seed.unwrap(),
+//        .mask = 0,
+//    }));
+
+    cases.emplace(seed.unwrap(), 0);
+    cache.emplace(seed.unwrap());
+    cache_.emplace(0);
 
     auto core = Core(
-        [&cases, &cache](auto &&code, auto &&mask) {
+        [&cases, &cache, &cache_](auto &&code, auto &&mask) {
             auto current = cases.find(code);
 
             if (current != cases.end()) { // find existed case
-                current->second.mask |= mask; // update mask info
+
+//                current->second.mask |= mask; // update mask info
+//                current->second |= mask;
+//                current->second->mask |= mask;
+
+                current->second |= mask; // update mask info
                 return;
             }
 
-            cache.emplace(&cases.emplace(code, group_cal_t {
-                .code = code,
-                .mask = mask,
-            }).first->second);
+//            cache.emplace(&cases.emplace(code, group_cal_t {
+//                .code = code,
+//                .mask = mask,
+//            }).first->second);
+//            cases.emplace(code, mask);
+//                cache.emplace(code);
+//                cache.emplace(code, mask);
+//            cases.emplace(code, std::make_unique<group_cal_t>(group_cal_t {
+//                .code = code,
+//                .mask = mask,
+//            }));
+
+            cases.emplace(code, mask);
+            cache.emplace(code);
+            cache_.emplace(mask);
+
         }
     );
 
     while (!cache.empty()) {
-        core.next_cases(cache.front()->code, cache.front()->mask);
+//        core.next_cases(cache.front()->code, cache.front()->mask);
+//        core.next_cases(cache.front(), cases.find(cache.front())->second);
+//        core.next_cases(cache.front().first, cache.front().second);
+//        core.next_cases(cache.front(), cases.find(cache.front())->second->mask);
+//        core.next_cases(cache.front(), cases.find(cache.front())->second);
+        core.next_cases(cache.front(), cache_.front());
+
         cache.pop();
+        cache_.pop();
     }
 
 //    std::cout << cases.size() << std::endl;
