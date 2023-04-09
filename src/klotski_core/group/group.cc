@@ -5,9 +5,55 @@
 #include "common.h"
 #include "absl/container/flat_hash_map.h"
 
+#include "type_id.h"
+
 namespace klotski {
 
 using Common::range_reverse;
+
+Group::block_num_t Group::block_num(uint32_t type_id) {
+
+    // jiang_num (n_x2x)
+    // bing_num  (n_1x1)
+    // style_num (n_2x1)
+
+    auto tids = std::vector<uint32_t>();
+
+    uint32_t count = 0;
+    for (int n_x2x = 0; n_x2x <= 7; ++n_x2x)
+        for (int n_2x1 = 0; n_2x1 <= n_x2x; ++n_2x1)
+            for (int n_1x1 = 0; n_1x1 <= (14 - n_x2x * 2); ++n_1x1) {
+                ++count;
+
+                uint32_t tid = (n_x2x << 8) | (n_2x1 << 4) | n_1x1;
+                tids.emplace_back(tid);
+
+                std::cout << n_x2x << " " << n_1x1 << " " << n_2x1 << "(" << tid << ")" << std::endl;
+            }
+
+//    std::cout << count << std::endl;
+
+//    for (int i = 0; i < tids.size(); ++i) {
+//
+//        printf("% 5d,", tids[i]);
+//
+//        if ((i & 0b111) == 0b111) {
+//            printf("\n");
+//        }
+
+//        std::cout << tid << std::endl;
+//    }
+
+
+//                generate(generate_t { // generate target ranges
+//                        .n1 = 16 - n * 2 - n_1x1, /// space -> 00
+//                        .n2 = n - n_2x1, /// 1x2 -> 01
+//                        .n3 = n_2x1, /// 2x1 -> 10
+//                        .n4 = n_1x1, /// 1x1 -> 11
+//                });
+
+    return Group::block_num_t();
+}
 
 Group::block_num_t Group::block_num(const RawCode &raw_code) {
     block_num_t result;
@@ -77,6 +123,7 @@ std::vector<RawCode> Group::group_cases(const RawCode &seed) {
     }
     return result;
 }
+
 
 
 

@@ -23,6 +23,8 @@ using klotski::Benchmark;
 
 void tmain() {
 
+    Group::block_num(123);
+
 //    Group::block_num(CommonCode(0x1A9BF0C00));
 //    Group::block_num(RawCode::from_common_code(0x1A9BF0C00));
 
@@ -61,12 +63,12 @@ void tmain() {
 //    std::cout << ret[0] << std::endl;
 //    std::cout << ret[1] << std::endl;
 
-    auto tmp = RawCode::from_common_code(0x1A9BF0C00);
-    for (int i = 0; i < 100; ++i) {
-        Group::group_cases(tmp);
-    }
+//    auto tmp = RawCode::from_common_code(0x1A9BF0C00);
+//    for (int i = 0; i < 100; ++i) {
+//        Group::group_cases(tmp);
+//    }
 
-    std::cout << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
+//    std::cout << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 
     return;
 
