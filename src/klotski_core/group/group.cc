@@ -12,47 +12,22 @@ namespace klotski {
 using Common::range_reverse;
 
 Group::block_num_t Group::block_num(uint32_t type_id) {
+    auto flag = TYPE_ID_INDEX[type_id];
+    uint8_t n_x2x = flag >> 8;
+    uint8_t n_2x1 = (flag >> 4) & 0b1111;
 
-    // jiang_num (n_x2x)
-    // bing_num  (n_1x1)
-    // style_num (n_2x1)
+//    std::cout << (int)n_x2x << std::endl;
+//    std::cout << (int)n_2x1 << std::endl;
+//    std::cout << flag << std::endl;
+    // 1046 -> 0100 0001 0110
+    //         1024+0016+0006
+    //            4    1    6
 
-    auto tids = std::vector<uint32_t>();
-
-    uint32_t count = 0;
-    for (int n_x2x = 0; n_x2x <= 7; ++n_x2x)
-        for (int n_2x1 = 0; n_2x1 <= n_x2x; ++n_2x1)
-            for (int n_1x1 = 0; n_1x1 <= (14 - n_x2x * 2); ++n_1x1) {
-                ++count;
-
-                uint32_t tid = (n_x2x << 8) | (n_2x1 << 4) | n_1x1;
-                tids.emplace_back(tid);
-
-                std::cout << n_x2x << " " << n_1x1 << " " << n_2x1 << "(" << tid << ")" << std::endl;
-            }
-
-//    std::cout << count << std::endl;
-
-//    for (int i = 0; i < tids.size(); ++i) {
-//
-//        printf("% 5d,", tids[i]);
-//
-//        if ((i & 0b111) == 0b111) {
-//            printf("\n");
-//        }
-
-//        std::cout << tid << std::endl;
-//    }
-
-
-//                generate(generate_t { // generate target ranges
-//                        .n1 = 16 - n * 2 - n_1x1, /// space -> 00
-//                        .n2 = n - n_2x1, /// 1x2 -> 01
-//                        .n3 = n_2x1, /// 2x1 -> 10
-//                        .n4 = n_1x1, /// 1x1 -> 11
-//                });
-
-    return Group::block_num_t();
+    return block_num_t {
+        .n_1x1 = static_cast<uint8_t>(flag & 0b1111),
+        .n_1x2 = static_cast<uint8_t>(n_x2x - n_2x1),
+        .n_2x1 = n_2x1,
+    };
 }
 
 Group::block_num_t Group::block_num(const RawCode &raw_code) {
@@ -124,7 +99,18 @@ std::vector<RawCode> Group::group_cases(const RawCode &seed) {
     return result;
 }
 
+uint32_t Group::type_id(const block_num_t &block_num) {
+    auto n_x2x = block_num.n_1x2 + block_num.n_2x1;
+    auto flag = (n_x2x << 8) | (block_num.n_2x1 << 4) | block_num.n_1x1;
 
+    std::cout << flag << std::endl;
+
+//    std::cout <<  << std::endl;
+
+    // search in TYPE_ID_INDEX
+
+    return std::lower_bound(TYPE_ID_INDEX, TYPE_ID_INDEX + 204, flag) - TYPE_ID_INDEX;
+}
 
 
 } // namespace klotski

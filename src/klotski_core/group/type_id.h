@@ -2,7 +2,7 @@
 
 namespace klotski {
 
-const uint16_t TYPE_ID[204] = {
+const uint16_t TYPE_ID_INDEX[204] = {
        0,    1,    2,    3,    4,    5,    6,    7,
        8,    9,   10,   11,   12,   13,   14,  256,
      257,  258,  259,  260,  261,  262,  263,  264,
