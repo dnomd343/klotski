@@ -1,4 +1,5 @@
 #include <queue>
+#include <vector>
 #include "core.h"
 #include "group.h"
 #include "common.h"
@@ -46,51 +47,37 @@ Group::block_num_t Group::block_num(const CommonCode &common_code) {
     return result;
 }
 
-uint32_t Group::demo(const RawCode &seed) {
+std::vector<RawCode> Group::group_cases(const RawCode &seed) {
     std::queue<uint64_t> cache;
-
-//    uint32_t index = 0;
-//    std::vector<uint64_t> temp;
-//    temp.reserve(65535 * 8);
-
-    absl::flat_hash_map<uint64_t, uint64_t> cases;
-
-    cases.reserve(65535 * 8);
-
+    absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+    cases.reserve(max_group_size(seed));
     cases.emplace(seed.unwrap(), 0); // without mask
     cache.emplace(seed.unwrap());
 
-//    temp.emplace_back(seed.unwrap());
-
     auto core = Core(
-        [&cases, &cache](auto &&code, auto &&mask) {
+        [&cache, &cases](auto &&code, auto &&mask) { // callback function
             auto current = cases.find(code);
-
             if (current != cases.end()) {
-                current->second |= mask; // update mask info
+                current->second |= mask; // update mask
                 return;
             }
-
             cases.emplace(code, mask);
             cache.emplace(code);
-//            temp.emplace_back(code);
-
         }
     );
-
-    while (!cache.empty()) {
-//    while (index != temp.size()) {
-
+    while (!cache.empty()) { // until BFS without elements
         core.next_cases(cache.front(), cases.find(cache.front())->second);
-//        core.next_cases(temp[index], cases.find(temp[index])->second);
-
-        cache.pop();
-//        ++index;
-
+        cache.pop(); // case dequeue
     }
 
-    return cases.size();
+    auto result = std::vector<RawCode>();
+    result.reserve(cases.size());
+    for (auto &&raw_code : cases) { // export group cases
+        result.emplace_back(RawCode::unsafe_create(raw_code.first));
+    }
+    return result;
 }
+
 
 
 } // namespace klotski
