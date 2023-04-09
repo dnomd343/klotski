@@ -10,9 +10,9 @@ using Common::range_reverse;
 /// static variable initialize
 std::mutex BasicRanges::building_;
 bool BasicRanges::available_ = false;
-std::vector<uint32_t> BasicRanges::data_;
+BasicRanges::basic_ranges_t BasicRanges::data_;
 
-const std::vector<uint32_t>& BasicRanges::fetch() {
+const BasicRanges::basic_ranges_t& BasicRanges::fetch() {
     if (status() != AVAILABLE) {
         build();
     }
@@ -50,7 +50,7 @@ void BasicRanges::build_data() {
     for (int n = 0; n <= 7; ++n) // number of 1x2 and 2x1 block -> 0 ~ 7
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) // number of 2x1 block -> 0 ~ n
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) // number of 1x1 block -> 0 ~ (14 - 2n)
-                generate(generate_t { // generate target ranges
+                generate(data_, generate_t { // generate target ranges
                     .n1 = 16 - n * 2 - n_1x1, /// space -> 00
                     .n2 = n - n_2x1, /// 1x2 -> 01
                     .n3 = n_2x1, /// 2x1 -> 10
@@ -65,7 +65,7 @@ void BasicRanges::build_data() {
 }
 
 /// Generate basic-ranges of specific type.
-void BasicRanges::generate(generate_t info) {
+void BasicRanges::generate(basic_ranges_t &release, generate_t info) {
     constexpr auto MASK_01 = (uint32_t)0b01 << 30;
     constexpr auto MASK_10 = (uint32_t)0b10 << 30;
     constexpr auto MASK_11 = (uint32_t)0b11 << 30;
@@ -88,7 +88,7 @@ void BasicRanges::generate(generate_t info) {
     while (!cache.empty()) { // queue without element -> work complete
         auto current = cache.front();
         if (!current.nx) { // both n1, n2, n3, n4 -> 0
-            data_.emplace_back(current.prefix); // release prefix as basic range
+            release.emplace_back(current.prefix); // release prefix as basic range
             cache.pop();
             continue; // skip current search
         }

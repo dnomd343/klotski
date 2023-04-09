@@ -21,7 +21,54 @@ using klotski::CommonCode;
 
 using klotski::Benchmark;
 
+using klotski::BasicRanges;
+
 void tmain() {
+
+//    std::vector<CommonCode> ok;
+//    for (auto &&c : AllCases::release()) {
+//        if (Group::type_id(c) == 123) {
+//            ok.emplace_back(c);
+//        }
+//    }
+//    std::cout << ok.size() << std::endl;
+
+//    std::cout << Group::all_cases(123).size() << std::endl;
+//    std::vector<CommonCode> err;
+//    auto ret = Group::all_cases(123);
+//    std::cout << ret.size() << std::endl;
+//    err.reserve(ret.size());
+//    for (auto &&r : ret) {
+//        if (Group::type_id(r) != 123) {
+//            std::cout << r << std::endl;
+//        }
+//        err.emplace_back(r);
+//    }
+
+//    uint32_t sum = 0;
+//    for (uint32_t type_id = 0; type_id < 204; ++type_id) {
+//        sum += Group::all_cases(type_id).size();
+//        auto tmp = Group::block_num(type_id);
+//
+//        std::vector<uint32_t> ranges;
+//
+//        BasicRanges::generate(ranges, BasicRanges::generate_t { // generate target ranges
+//            .n1 = 16 - tmp.n_1x1 - (tmp.n_1x2 + tmp.n_2x1) * 2, /// space -> 00
+//            .n2 = tmp.n_1x2, /// 1x2 -> 01
+//            .n3 = tmp.n_2x1, /// 2x1 -> 10
+//            .n4 = tmp.n_1x1, /// 1x1 -> 11
+//        });
+//        sum += ranges.size();
+//    }
+//    std::cout << "sum = " << sum << std::endl;
+
+
+    uint32_t sum = 0;
+    for (uint32_t type_id = 0; type_id < 204; ++type_id) {
+        sum += Group::all_cases(type_id).size();
+    }
+    std::cout << "sum = " << sum << std::endl;
+
 
 //    auto r = Group::block_num(123);
 

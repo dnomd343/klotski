@@ -2,76 +2,59 @@
 #include <vector>
 #include "core.h"
 #include "group.h"
-#include "common.h"
 #include "absl/container/flat_hash_map.h"
-
-#include "type_id.h"
+#include "common.h"
 
 namespace klotski {
 
-using Common::range_reverse;
+using klotski::AllCases;
+using klotski::BasicRanges;
 
-uint32_t Group::type_id(const RawCode &raw_code) {
-    return type_id(block_num(raw_code));
-}
+using klotski::Common::check_range;
+using klotski::Common::range_reverse;
 
-uint32_t Group::type_id(const CommonCode &common_code) {
-    return type_id(block_num(common_code));
-}
+std::vector<CommonCode> Group::all_cases(uint32_t type_id) {
 
-uint32_t Group::type_id(const block_num_t &block_num) {
-    auto n_x2x = block_num.n_1x2 + block_num.n_2x1;
-    auto flag = (n_x2x << 8) | (block_num.n_2x1 << 4) | block_num.n_1x1;
-    return std::lower_bound(TYPE_ID_INDEX, TYPE_ID_INDEX + 204, flag) - TYPE_ID_INDEX;
-}
+    auto tmp = block_num(type_id);
 
-Group::block_num_t Group::block_num(uint32_t type_id) {
-    auto flag = TYPE_ID_INDEX[type_id];
-    uint8_t n_x2x = flag >> 8;
-    uint8_t n_2x1 = (flag >> 4) & 0b1111;
-    return block_num_t {
-        .n_1x1 = static_cast<uint8_t>(flag & 0b1111),
-        .n_1x2 = static_cast<uint8_t>(n_x2x - n_2x1),
-        .n_2x1 = n_2x1,
-    };
-}
+    std::vector<uint32_t> ranges;
 
-Group::block_num_t Group::block_num(const RawCode &raw_code) {
-    block_num_t result;
-    auto tmp = raw_code.unwrap();
-    for (int addr = 0; addr < 20; ++addr, tmp >>= 3) {
-        switch (tmp & 0b111) {
-            case B_1x1:
-                ++result.n_1x1;
-                continue;
-            case B_1x2:
-                ++result.n_1x2;
-                continue;
-            case B_2x1:
-                ++result.n_2x1;
-                continue;
+    BasicRanges::generate(ranges, BasicRanges::generate_t { // generate target ranges
+        .n1 = 16 - tmp.n_1x1 - (tmp.n_1x2 + tmp.n_2x1) * 2, /// space -> 00
+        .n2 = tmp.n_1x2, /// 1x2 -> 01
+        .n3 = tmp.n_2x1, /// 2x1 -> 10
+        .n4 = tmp.n_1x1, /// 1x1 -> 11
+    });
+
+    for (auto &range : ranges) {
+        range = range_reverse(range); // basic ranges reversed
+    }
+
+//    std::cout << ranges.size() << std::endl;
+
+    std::vector<CommonCode> all_cases;
+
+    for (uint64_t head = 0; head < 15; ++head) { // address of 2x2 block
+        /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
+        if ((head & 0b11) == 0b11) {
+            ++head; // skip invalid address
+        }
+
+        /// head(4-bit) + basic-range(32-bit) --check--> valid cases
+        for (auto &&range : ranges) {
+
+            if (!check_range(head, range)) { // case valid
+                all_cases.emplace_back(CommonCode::create(
+
+                        head << 32 | range_reverse(range)
+
+                        ));
+//                range_reverse(range); // release valid cases
+            }
         }
     }
-    return result;
-}
 
-Group::block_num_t Group::block_num(const CommonCode &common_code) {
-    block_num_t result;
-    auto range = range_reverse((uint32_t)common_code.unwrap());
-    for (; range; range >>= 2) {
-        switch (range & 0b11) {
-            case 0b01: /// 1x2 block
-                ++result.n_1x2;
-                continue;
-            case 0b10: /// 2x1 block
-                ++result.n_2x1;
-                continue;
-            case 0b11: /// 1x1 block
-                ++result.n_1x1;
-                continue;
-        }
-    }
-    return result;
+    return all_cases;
 }
 
 std::vector<RawCode> Group::group_cases(const RawCode &seed) {

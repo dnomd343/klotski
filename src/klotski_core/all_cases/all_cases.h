@@ -37,7 +37,7 @@ const uint32_t ALL_CASES_SIZE[16] = {
 
 const uint32_t ALL_CASES_SIZE_SUM = 29334498;
 
-class AllCases : public BasicRanges {
+class AllCases : private BasicRanges {
 public:
     /// Trigger the build process.
     static void build();
@@ -46,7 +46,7 @@ public:
     static Status status() noexcept;
 
     /// Blocking access to constructed data.
-    static const std::vector<uint32_t> (&fetch())[16];
+    static const basic_ranges_t (&fetch())[16];
 
     /// Export all possible common codes.
     static std::vector<CommonCode> release();
@@ -54,9 +54,14 @@ public:
 private:
     static bool available_;
     static std::mutex building_;
-    static std::vector<uint32_t> data_[16];
+    static basic_ranges_t data_[16];
 
     static void build_data();
+
+public:
+    using BasicRanges::NOT_INIT;
+    using BasicRanges::BUILDING;
+    using BasicRanges::AVAILABLE;
 };
 
 } // namespace klotski
