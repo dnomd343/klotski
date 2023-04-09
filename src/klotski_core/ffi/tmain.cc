@@ -56,12 +56,12 @@ void tmain() {
 //    Group::demo(RawCode::from_common_code(0x1A9BF0C00));
 //    Group::demo(RawCode::from_common_code(0x4FEA13400));
 
-    std::cout << Group::demo(RawCode::from_common_code(0x1A9BF0C00)) << std::endl;
+//    std::cout << Group::demo(RawCode::from_common_code(0x1A9BF0C00)) << std::endl;
 
-//    auto tmp = RawCode::from_common_code(0x1A9BF0C00);
-//    for (int i = 0; i < 100; ++i) {
-//        Group::demo(tmp);
-//    }
+    auto tmp = RawCode::from_common_code(0x1A9BF0C00);
+    for (int i = 0; i < 100; ++i) {
+        Group::demo(tmp);
+    }
 
     std::cout << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 

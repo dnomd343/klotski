@@ -1,11 +1,8 @@
 #include <queue>
-#include <iostream>
-
-#include "absl/container/flat_hash_map.h"
-
+#include "core.h"
 #include "group.h"
 #include "common.h"
-#include "core.h"
+#include "absl/container/flat_hash_map.h"
 
 namespace klotski {
 
@@ -50,87 +47,47 @@ Group::block_num_t Group::block_num(const CommonCode &common_code) {
 }
 
 uint32_t Group::demo(const RawCode &seed) {
-
-//    struct group_cal_t {
-//        uint64_t code;
-//        uint64_t mask;
-//    };
-//    std::queue<group_cal_t*> cache;
-//    std::queue<uint64_t> cache;
-//    std::queue<std::pair<uint64_t, uint64_t>> cache;
-//
-//    absl::flat_hash_map<uint64_t, group_cal_t> cases;
-//    absl::flat_hash_map<uint64_t, uint64_t> cases;
-//    absl::flat_hash_map<uint64_t, std::unique_ptr<group_cal_t>> cases;
-
     std::queue<uint64_t> cache;
-    std::queue<uint64_t> cache_;
+
+//    uint32_t index = 0;
+//    std::vector<uint64_t> temp;
+//    temp.reserve(65535 * 8);
+
     absl::flat_hash_map<uint64_t, uint64_t> cases;
 
     cases.reserve(65535 * 8);
 
-//    cache.emplace(&cases.emplace(seed.unwrap(), group_cal_t {
-//        .code = seed.unwrap(),
-//        .mask = 0,
-//    }).first->second);
-//    cases.emplace(seed.unwrap(), 0);
-//    cache.emplace(seed.unwrap());
-//    cache.emplace(seed.unwrap(), 0);
-//    cases.emplace(seed.unwrap(), std::make_unique<group_cal_t>(group_cal_t {
-//        .code = seed.unwrap(),
-//        .mask = 0,
-//    }));
-
-    cases.emplace(seed.unwrap(), 0);
+    cases.emplace(seed.unwrap(), 0); // without mask
     cache.emplace(seed.unwrap());
-    cache_.emplace(0);
+
+//    temp.emplace_back(seed.unwrap());
 
     auto core = Core(
-        [&cases, &cache, &cache_](auto &&code, auto &&mask) {
+        [&cases, &cache](auto &&code, auto &&mask) {
             auto current = cases.find(code);
 
-            if (current != cases.end()) { // find existed case
-
-//                current->second.mask |= mask; // update mask info
-//                current->second |= mask;
-//                current->second->mask |= mask;
-
+            if (current != cases.end()) {
                 current->second |= mask; // update mask info
                 return;
             }
 
-//            cache.emplace(&cases.emplace(code, group_cal_t {
-//                .code = code,
-//                .mask = mask,
-//            }).first->second);
-//            cases.emplace(code, mask);
-//                cache.emplace(code);
-//                cache.emplace(code, mask);
-//            cases.emplace(code, std::make_unique<group_cal_t>(group_cal_t {
-//                .code = code,
-//                .mask = mask,
-//            }));
-
             cases.emplace(code, mask);
             cache.emplace(code);
-            cache_.emplace(mask);
+//            temp.emplace_back(code);
 
         }
     );
 
     while (!cache.empty()) {
-//        core.next_cases(cache.front()->code, cache.front()->mask);
-//        core.next_cases(cache.front(), cases.find(cache.front())->second);
-//        core.next_cases(cache.front().first, cache.front().second);
-//        core.next_cases(cache.front(), cases.find(cache.front())->second->mask);
-//        core.next_cases(cache.front(), cases.find(cache.front())->second);
-        core.next_cases(cache.front(), cache_.front());
+//    while (index != temp.size()) {
+
+        core.next_cases(cache.front(), cases.find(cache.front())->second);
+//        core.next_cases(temp[index], cases.find(temp[index])->second);
 
         cache.pop();
-        cache_.pop();
-    }
+//        ++index;
 
-//    std::cout << cases.size() << std::endl;
+    }
 
     return cases.size();
 }
