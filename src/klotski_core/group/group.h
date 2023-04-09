@@ -18,6 +18,8 @@ public:
     static block_num_t block_num(const RawCode &raw_code);
     static block_num_t block_num(const CommonCode &common_code);
 
+    static uint32_t demo(const RawCode &seed);
+
 };
 
 }

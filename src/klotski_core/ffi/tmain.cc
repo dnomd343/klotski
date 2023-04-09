@@ -31,14 +31,32 @@ void tmain() {
 //    Group::block_num(CommonCode(0x4FEA13400));
 //    Group::block_num(RawCode::from_common_code(0x4FEA13400));
 
-    for (auto &&common_code : AllCases::release()) {
-        auto s1 = Group::block_num(common_code);
-        auto s2 = Group::block_num(common_code.to_raw_code());
-        if (s1.n_1x1 != s2.n_1x1 || s1.n_1x2 != s2.n_1x2 || s1.n_2x1 != s2.n_2x1) {
-            std::cout << "fuck" << std::endl;
-        }
+//    for (auto &&common_code : AllCases::release()) {
+//        auto s1 = Group::block_num(common_code);
+//        auto s2 = Group::block_num(common_code.to_raw_code());
+//        if (s1.n_1x1 != s2.n_1x1 || s1.n_1x2 != s2.n_1x2 || s1.n_2x1 != s2.n_2x1) {
+//            std::cout << "fuck" << std::endl;
+//        }
+//    }
+
+    auto cases = std::vector<RawCode>();
+    auto common_codes = AllCases::release();
+    for (uint64_t i = 0; i < common_codes.size(); i += 293345 * 2) {
+        cases.emplace_back(common_codes[i].to_raw_code());
     }
 
+    std::cout << "select " << cases.size() << " cases" << std::endl;
+
+    auto start = clock();
+
+    for (auto &&raw_code : cases) {
+        std::cout << Group::demo(raw_code) << std::endl;
+    }
+
+//    Group::demo(RawCode::from_common_code(0x1A9BF0C00));
+//    Group::demo(RawCode::from_common_code(0x4FEA13400));
+
+    std::cout << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 
     return;
 
@@ -136,7 +154,7 @@ void tmain() {
 
     std::cout << "start search" << std::endl;
 
-    auto start = clock();
+//    auto start = clock();
 
     for (const auto &c : all_cases) {
 

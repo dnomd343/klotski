@@ -104,6 +104,12 @@ include_directories(group)
 
 ################################################################################
 
+find_package(absl REQUIRED)
+
+find_package(unordered_dense CONFIG REQUIRED)
+
+################################################################################
+
 add_subdirectory(utils)
 add_subdirectory(all_cases)
 
@@ -150,5 +156,8 @@ if (BUILD_DYN)
 else()
     add_library(klotski STATIC ${OBJS})
 endif()
+
+target_link_libraries(klotski absl::flat_hash_map)
+target_link_libraries(klotski unordered_dense::unordered_dense)
 
 ################################################################################
