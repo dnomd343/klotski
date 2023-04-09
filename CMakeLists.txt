@@ -19,6 +19,17 @@ file(
     FOLLOW_SYMLINK_CHAIN
 )
 
+################################################################################
+
+option(BUILD_DYN "build shared klotski core library" OFF)
+if (BUILD_DYN)
+    add_compile_options(-fPIC)
+endif()
+
+set(ABSL_PROPAGATE_CXX_STD ON)
+include_directories(third_party/abseil-cpp)
+add_subdirectory(third_party/abseil-cpp)
+
 add_subdirectory(src)
 
 ################################################################################

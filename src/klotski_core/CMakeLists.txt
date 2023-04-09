@@ -6,13 +6,6 @@ project(klotski-core VERSION 0.1.2 LANGUAGES CXX)
 
 ################################################################################
 
-option(BUILD_DYN "build shared klotski core library" OFF)
-if (BUILD_DYN)
-    add_compile_options(-fPIC)
-endif()
-
-################################################################################
-
 macro(git_tag _tag)
     find_package(Git QUIET)
     if (GIT_FOUND)
@@ -104,10 +97,6 @@ include_directories(group)
 
 ################################################################################
 
-find_package(absl REQUIRED)
-
-################################################################################
-
 add_subdirectory(utils)
 add_subdirectory(all_cases)
 
@@ -151,10 +140,9 @@ list(APPEND OBJS $<TARGET_OBJECTS:group>)
 
 if (BUILD_DYN)
     add_library(klotski SHARED ${OBJS})
+    target_link_libraries(klotski absl::flat_hash_map)
 else()
     add_library(klotski STATIC ${OBJS})
 endif()
-
-target_link_libraries(klotski absl::flat_hash_map)
 
 ################################################################################
