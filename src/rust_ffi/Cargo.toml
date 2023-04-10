@@ -10,4 +10,4 @@ lazy_static = "1.4.0"
 rust-crypto = "0.2.36"
 
 [build-dependencies]
-bindgen = "0.63.0"
+bindgen = "0.64.0"
