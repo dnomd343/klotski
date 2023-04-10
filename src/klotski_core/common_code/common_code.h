@@ -123,6 +123,9 @@ inline bool operator==(uint64_t c1, const CommonCode &c2) noexcept { return c1 =
 inline bool operator!=(uint64_t c1, const CommonCode &c2) noexcept { return c1 != c2.unwrap(); }
 inline bool operator==(const CommonCode &c1, uint64_t c2) noexcept { return c1.unwrap() == c2; }
 inline bool operator!=(const CommonCode &c1, uint64_t c2) noexcept { return c1.unwrap() != c2; }
+
+inline bool operator<(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() < c2.unwrap(); }
+inline bool operator>(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() > c2.unwrap(); }
 inline bool operator==(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() == c2.unwrap(); }
 inline bool operator!=(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() != c2.unwrap(); }
 

@@ -1,7 +1,10 @@
 #include <thread>
+#include <algorithm>
 #include "md5.h"
 #include "group.h"
 #include "gtest/gtest.h"
+
+#include "group/size.h"
 
 using klotski::Group;
 using klotski::AllCases;
@@ -9,6 +12,9 @@ using klotski::CommonCode;
 
 using klotski::TYPE_ID_LIMIT;
 using klotski::ALL_CASES_SIZE_SUM;
+using klotski::GROUP_ALL_CASES_SIZE;
+
+using klotski::TYPE_ID_LIMIT;
 
 const char BLOCK_NUM_MD5[] = "46a7b3af6d039cbe2f7eaebdd196c6a2";
 
@@ -62,10 +68,26 @@ TEST(Group, block_num) {
 }
 
 TEST(Group, all_cases) {
+    std::vector<std::vector<CommonCode>> all_cases;
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        all_cases.emplace_back(Group::all_cases(type_id)); // build test data
+    }
 
-    // TODO: all_cases number
-    // TODO: combine test
-    // TODO: data order
-    // TODO: test every cases (type_id)
+    std::vector<uint64_t> combine_cases;
+    combine_cases.reserve(ALL_CASES_SIZE_SUM);
+    for (uint32_t id = 0; id < TYPE_ID_LIMIT; ++id) {
+        EXPECT_EQ(all_cases[id].size(), GROUP_ALL_CASES_SIZE[id]); // verify cases number
+        for (auto &&common_code : all_cases[id]) {
+            EXPECT_EQ(Group::type_id(common_code), id); // verify type id
+            combine_cases.emplace_back(common_code.unwrap());
+        }
+        std::is_sorted(all_cases[id].begin(), all_cases[id].end()); // verify data order
+    }
+    EXPECT_EQ(combine_cases.size(), ALL_CASES_SIZE_SUM); // verify sum
 
+    auto all_cases_release = AllCases::release();
+    std::stable_sort(combine_cases.begin(), combine_cases.end());
+    for (uint32_t i = 0; i < combine_cases.size(); ++i) {
+        EXPECT_EQ(combine_cases[i], all_cases_release[i]); // verify after combined
+    }
 }

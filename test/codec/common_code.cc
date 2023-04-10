@@ -103,6 +103,9 @@ TEST(CommonCode, operators) {
     EXPECT_NE(TEST_CODE + 1, CommonCode(TEST_CODE)); // uint64_t != CommonCode
     EXPECT_NE(CommonCode(TEST_CODE), TEST_CODE + 1); // CommonCode != uint64_t
     EXPECT_NE(CommonCode(TEST_CODE), CommonCode::unsafe_create(TEST_CODE + 1)); // CommonCode != CommonCode
+
+    EXPECT_LT(CommonCode(TEST_CODE), CommonCode::unsafe_create(TEST_CODE + 1)); // CommonCode < CommonCode
+    EXPECT_GT(CommonCode::unsafe_create(TEST_CODE + 1), CommonCode(TEST_CODE)); // CommonCode > CommonCode
 }
 
 TEST(CommonCode, code_convert) {
