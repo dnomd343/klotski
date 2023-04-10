@@ -5,6 +5,8 @@
 #include "absl/container/flat_hash_map.h"
 #include "common.h"
 
+#include "size.h"
+
 namespace klotski {
 
 using klotski::AllCases;
@@ -27,7 +29,7 @@ std::vector<CommonCode> Group::all_cases(uint32_t type_id) {
     }
 
     std::vector<CommonCode> all_cases;
-    // TODO: all_cases pre-allocated
+    all_cases.reserve(GROUP_ALL_CASES_SIZE[type_id]);
     for (uint64_t head = 0; head < 15; ++head) { // address of 2x2 block
         /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
         if ((head & 0b11) == 0b11) {

@@ -31,22 +31,39 @@ void tmain() {
 //    }
 //    std::cout << "sum = " << sum << std::endl;
 
+//    for (uint32_t type_id = 0; type_id < 204; ++type_id) {
+//
+//        std::vector<uint64_t> codes;
+//        std::vector<uint64_t> codes_;
+//        for (auto &&t : Group::all_cases(type_id)) {
+//            codes.emplace_back(t.unwrap());
+//            codes_.emplace_back(t.unwrap());
+//        }
+//        std::sort(codes.begin(), codes.end());
+//
+//        if (codes != codes_) {
+//            std::cout << type_id << std::endl;
+//        }
+//    }
+
+    std::vector<uint32_t> ret;
+
     for (uint32_t type_id = 0; type_id < 204; ++type_id) {
-
-        std::vector<uint64_t> codes;
-        std::vector<uint64_t> codes_;
-        for (auto &&t : Group::all_cases(type_id)) {
-            codes.emplace_back(t.unwrap());
-            codes_.emplace_back(t.unwrap());
-        }
-        std::sort(codes.begin(), codes.end());
-
-        if (codes != codes_) {
-            std::cout << type_id << std::endl;
-        }
-//        std::cout << (codes == codes_) << std::endl;
-
+//        auto tmp = Group::block_num(type_id);
+//        std::cout << int(tmp.n_2x1 + tmp.n_1x2) << " ";
+//        std::cout << (int)tmp.n_1x1 << " ";
+//        std::cout << (int)tmp.n_1x2 << " ";
+//        std::cout << Group::all_cases(type_id).size() << std::endl;
+        ret.emplace_back(Group::all_cases(type_id).size());
     }
+
+    for (uint32_t i = 0; i < ret.size(); ++i) {
+        printf("%06d, ", ret[i]);
+        if (i % 8 == 7) {
+            printf("\n");
+        }
+    }
+
 
 //    auto cases = std::vector<RawCode>();
 //    auto common_codes = AllCases::release();

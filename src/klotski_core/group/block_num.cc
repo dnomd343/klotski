@@ -70,4 +70,3 @@ Group::block_num_t Group::block_num(const CommonCode &common_code) {
 }
 
 } // namespace klotski
-

@@ -60,3 +60,12 @@ TEST(Group, block_num) {
     auto block_num_md5 = md5(block_num_data.c_str(), block_num_data.size());
     EXPECT_STREQ(block_num_md5.c_str(), BLOCK_NUM_MD5);
 }
+
+TEST(Group, all_cases) {
+
+    // TODO: all_cases number
+    // TODO: combine test
+    // TODO: data order
+    // TODO: test every cases (type_id)
+
+}
