@@ -31,7 +31,12 @@ void tmain() {
 //    auto ret = Group::build_groups(0);
 //    std::cout << ret[0].size() << std::endl;
 
-    Group::build_groups(123);
+//    auto g = Group::build_groups(123);
+//    std::cout << g.size() << std::endl;
+
+    for (uint32_t type_id = 0; type_id < 204; ++type_id) {
+        std::cout << Group::build_groups(type_id).size() << std::endl;
+    }
 
 //    printf("tmain exit\n");
 }
