@@ -6,8 +6,12 @@
 
 #include "group/size.h"
 
+#include "group/seeds.h"
+
 using klotski::Group;
 using klotski::AllCases;
+
+using klotski::RawCode;
 using klotski::ShortCode;
 using klotski::CommonCode;
 
@@ -17,6 +21,8 @@ using klotski::GROUP_ALL_CASES_SIZE;
 
 using klotski::TYPE_ID_LIMIT;
 using klotski::SHORT_CODE_LIMIT;
+
+using klotski::GROUP_SEEDS;
 
 
 const char BLOCK_NUM_MD5[] = "46a7b3af6d039cbe2f7eaebdd196c6a2";
@@ -97,6 +103,28 @@ TEST(Group, all_cases) {
     }
 }
 
+TEST(Group, group_cases) {
+
+    // TODO: using multi-threads
+
+    std::vector<CommonCode> all_cases;
+    all_cases.reserve(ALL_CASES_SIZE_SUM);
+
+    for (auto &&seed : GROUP_SEEDS) {
+        auto group_raw = Group::group_cases(RawCode::from_common_code(seed));
+        std::vector<CommonCode> group(group_raw.begin(), group_raw.end()); // convert as CommonCodes
+        EXPECT_EQ(seed, std::min_element(group.begin(), group.end())->unwrap()); // confirm min seed
+        all_cases.insert(all_cases.end(), group.begin(), group.end()); // archive group cases
+
+        uint32_t type_id = Group::type_id(CommonCode(seed)); // current type id
+        for (auto &&elem : group) {
+            EXPECT_EQ(Group::type_id(elem), type_id); // verify type id of group cases
+        }
+    }
+    std::sort(all_cases.begin(), all_cases.end());
+    EXPECT_EQ(all_cases, AllCases::release()); // verify all released cases
+}
+
 TEST(Group, build_groups) {
     struct group_info_t {
         uint16_t group_id;
@@ -135,7 +163,7 @@ TEST(Group, build_groups) {
 
     // TODO: verify GROUP_SEEDS / GROUP_SEEDS_INDEX / GROUP_SEEDS_INDEX_REV
 
-    char buffer[8];
+    char buffer[9];
     std::string group_info;
     for (auto &&tmp : all_cases) {
         sprintf(buffer, "%d,%d\n", tmp.group_id, tmp.group_index);
