@@ -7,6 +7,8 @@
 
 #include "size.h"
 
+#include "seeds.h"
+
 namespace klotski {
 
 using klotski::AllCases;
