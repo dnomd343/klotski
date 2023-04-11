@@ -2,6 +2,9 @@
 #include <iostream>
 #include <algorithm>
 
+#include <set>
+#include <unordered_set>
+
 #include "klotski.h"
 #include "core.h"
 
@@ -25,7 +28,10 @@ using klotski::BasicRanges;
 void tmain() {
 //    printf("tmain start\n");
 
+//    auto ret = Group::build_groups(0);
+//    std::cout << ret[0].size() << std::endl;
 
+    Group::build_groups(123);
 
 //    printf("tmain exit\n");
 }

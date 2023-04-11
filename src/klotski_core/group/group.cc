@@ -78,4 +78,100 @@ std::vector<RawCode> Group::group_cases(const RawCode &seed) {
     return result;
 }
 
+std::vector<std::vector<CommonCode>> Group::build_groups(uint32_t type_id) {
+    auto all_cases = Group::all_cases(type_id);
+    if (all_cases.empty()) { // match type_id TODO: ??? (7-0-0)
+        return {};
+    }
+
+    std::vector<std::vector<CommonCode>> groups;
+    auto min = std::min_element(all_cases.begin(), all_cases.end());
+    auto first_group = Group::group_cases(min->to_raw_code());
+    groups.emplace_back(first_group.begin(), first_group.end());
+    if (first_group.size() == all_cases.size()) { // only contains one group
+
+//        std::vector<CommonCode> rs(k.begin(), k.end());
+//        std::vector<CommonCode> rs;
+//        rs.reserve(k.size());
+
+//        for (auto &&rr : k) {
+//
+//            std::cout << rr.to_common_code() << std::endl;
+
+//            rs.emplace_back(rr.to_common_code());
+//        }
+
+//        std::sort(rs.begin(), rs.end());
+//
+//        for (auto &&rr : rs) {
+//            std::cout << rr << std::endl;
+//        }
+
+//        std::cout << r[0] << std::endl;
+
+//        std::cout << k[0].to_common_code() << std::endl;
+
+//        return
+
+        return groups;
+    }
+
+
+    // TODO: reuse first_group
+
+
+
+    std::set<CommonCode> cases(all_cases.begin(), all_cases.end());
+
+    for (auto &&tmp : groups[0]) {
+
+//        auto c = tmp.to_common_code();
+
+        cases.erase(tmp);
+
+//        current_group->emplace_back(c);
+
+    }
+
+
+//    std::set<CommonCode> cases;
+
+//    uint32_t index = 0;
+//    for (auto &&tmp : all_cases) {
+//        if
+//    }
+
+//    std::cout << cases.size() << std::endl;
+//    std::cout << all_cases.size() << std::endl;
+
+
+    while (!cases.empty()) {
+        auto ret = Group::group_cases(cases.begin()->to_raw_code());
+
+        groups.emplace_back();
+
+        auto current_group = groups.end() - 1;
+
+        for (auto &&tmp : ret) {
+
+            auto c = tmp.to_common_code();
+
+            cases.erase(c);
+
+            current_group->emplace_back(c);
+
+        }
+
+    }
+
+    std::stable_sort(groups.begin(), groups.end(), [](const std::vector<CommonCode> &c1, const std::vector<CommonCode> &c2) {
+        return c1.size() < c2.size();
+    });
+
+    std::cout << groups.size() << std::endl;
+
+
+    return std::vector<std::vector<CommonCode>>();
+}
+
 } // namespace klotski

@@ -36,6 +36,8 @@ public:
     static std::vector<CommonCode> all_cases(uint32_t type_id);
     static std::vector<RawCode> group_cases(const RawCode &seed);
 
+    static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);
+
 };
 
 inline bool operator==(const Group::block_num_t &b1, const Group::block_num_t &b2) {
