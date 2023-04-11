@@ -8,6 +8,7 @@
 
 using klotski::Group;
 using klotski::AllCases;
+using klotski::ShortCode;
 using klotski::CommonCode;
 
 using klotski::TYPE_ID_LIMIT;
@@ -15,8 +16,12 @@ using klotski::ALL_CASES_SIZE_SUM;
 using klotski::GROUP_ALL_CASES_SIZE;
 
 using klotski::TYPE_ID_LIMIT;
+using klotski::SHORT_CODE_LIMIT;
+
 
 const char BLOCK_NUM_MD5[] = "46a7b3af6d039cbe2f7eaebdd196c6a2";
+
+const char GROUP_INFO_MD5[] = "976bf22530085210e68a6a4e67053506";
 
 TEST(Group, type_id) {
     std::thread threads[16];
@@ -90,4 +95,52 @@ TEST(Group, all_cases) {
     for (uint32_t i = 0; i < combine_cases.size(); ++i) {
         EXPECT_EQ(combine_cases[i], all_cases_release[i]); // verify after combined
     }
+}
+
+TEST(Group, build_groups) {
+    struct group_info_t {
+        uint16_t group_id;
+        uint32_t group_index;
+    };
+    ShortCode::speed_up(ShortCode::FAST);
+    std::vector<group_info_t> all_cases(SHORT_CODE_LIMIT);
+
+    std::vector<uint16_t> group_ids;
+
+    for (uint16_t type_id = 0; type_id < klotski::TYPE_ID_LIMIT; ++type_id) {
+        std::vector<uint32_t> group_sizes;
+        std::vector<CommonCode> group_seeds;
+        auto groups = Group::build_groups(type_id);
+        group_sizes.reserve(groups.size());
+        group_seeds.reserve(groups.size());
+
+        for (uint32_t id = 0; id < groups.size(); ++id) {
+            group_sizes.emplace_back(groups[id].size()); // record size
+            std::sort(groups[id].begin(), groups[id].end()); // sort for group index
+            for (uint32_t index = 0; index < groups[id].size(); ++index) {
+                all_cases[groups[id][index].to_short_code().unwrap()] = {
+                    .group_id = static_cast<uint16_t>(id),
+                    .group_index = index,
+                };
+                EXPECT_EQ(Group::type_id(groups[id][index]), type_id); // verify type id
+            }
+            group_seeds.emplace_back(groups[id][0]); // record seed
+        }
+
+        // TODO: check group_seeds and group_sizes
+
+        // TODO: verify GROUP_OFFSET
+
+    }
+
+    // TODO: verify GROUP_SEEDS / GROUP_SEEDS_INDEX / GROUP_SEEDS_INDEX_REV
+
+    char buffer[8];
+    std::string group_info;
+    for (auto &&tmp : all_cases) {
+        sprintf(buffer, "%d,%d\n", tmp.group_id, tmp.group_index);
+        group_info += buffer;
+    }
+    auto group_info_md5 = md5(group_info.c_str(), group_info.size());
+    EXPECT_STREQ(group_info_md5.c_str(), GROUP_INFO_MD5); // verify all group info
 }
