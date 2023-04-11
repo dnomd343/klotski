@@ -107,7 +107,7 @@ std::vector<std::vector<CommonCode>> Group::build_groups(uint32_t type_id) {
     }
 
     auto compare_func = [](const std::vector<CommonCode> &v1, const std::vector<CommonCode> &v2) {
-        return v1.size() < v2.size(); // sort by vector size
+        return v1.size() > v2.size(); // sort by vector size
     };
     std::stable_sort(groups.begin(), groups.end(), compare_func); // using stable sort for ordered index
     return groups;
