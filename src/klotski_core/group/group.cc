@@ -9,6 +9,8 @@
 
 #include "seeds.h"
 
+#include "index.h"
+
 namespace klotski {
 
 using klotski::AllCases;

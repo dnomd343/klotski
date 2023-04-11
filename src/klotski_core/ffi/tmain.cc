@@ -72,6 +72,7 @@ void tmain() {
 //        std::cout << tmp << std::endl;
 //    }
 
+    std::vector<uint32_t> group_id_index;
     for (uint16_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         auto groups = Group::build_groups(type_id);
         std::map<CommonCode, uint32_t> seeds;
@@ -84,13 +85,23 @@ void tmain() {
 
         for (auto &&tmp: seeds) {
 //        std::cout << tmp.first << " -> " << tmp.second << std::endl;
-            std::cout << tmp.first << std::endl;
+//            std::cout << tmp.first << std::endl;
+//            std::cout << tmp.second << std::endl;
+            group_id_index.emplace_back(tmp.second);
         }
 
         std::cerr << type_id << std::endl;
 
     }
 
+    printf("    ");
+    for (uint32_t i = 0; i < group_id_index.size(); ++i) {
+        printf("%4d, ", group_id_index[i]);
+        if (i % 16 == 15) {
+            printf("\n    ");
+        }
+    }
+    printf("\n");
 
 //    printf("tmain exit\n");
 }
