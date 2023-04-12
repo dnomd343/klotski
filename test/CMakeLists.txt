@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.0)
 ################################################################################
 
 enable_testing()
-
 set(TEST_DEPS gtest gtest_main klotski)
 
 ################################################################################
@@ -18,10 +17,22 @@ unset(CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 include_directories(../third_party/tiny_thread_pool)
 add_library(tiny_pool STATIC ../third_party/tiny_thread_pool/tiny_pool.c)
 
+# TODO: tiny_pool as cpp module
+
 ################################################################################
 
+include_directories(../src/klotski_core)
 include_directories(../src/klotski_core/utils)
 include_directories(../src/klotski_core/all_cases)
+
+include_directories(../src/klotski_core/raw_code)
+include_directories(../src/klotski_core/short_code)
+include_directories(../src/klotski_core/common_code)
+
+include_directories(../src/klotski_core/core)
+include_directories(../src/klotski_core/group)
+
+################################################################################
 
 set(TEST_BASIC_SRC utils.cc all_cases.cc)
 list(TRANSFORM TEST_BASIC_SRC PREPEND "basic/")
@@ -31,22 +42,16 @@ add_test(NAME basic COMMAND test_basic)
 
 ################################################################################
 
-include_directories(../src/klotski_core/raw_code)
-include_directories(../src/klotski_core/short_code)
-include_directories(../src/klotski_core/common_code)
-
-set(TEST_CODEC_SRC short_code.cc raw_code.cc common_code.cc)
-list(TRANSFORM TEST_CODEC_SRC PREPEND "codec/")
+set(TEST_CODEC_SRC
+    codec/short_code.cc
+    codec/raw_code.cc
+    codec/common_code.cc
+)
 add_executable(test_codec ${TEST_CODEC_SRC})
 target_link_libraries(test_codec ${TEST_DEPS})
 add_test(NAME codec COMMAND test_codec)
 
 ################################################################################
-
-include_directories(../src/klotski_core/core)
-include_directories(../src/klotski_core/raw_code)
-include_directories(../src/klotski_core/all_cases)
-include_directories(../src/klotski_core/common_code)
 
 set(TEST_CORE_SRC core.cc)
 list(TRANSFORM TEST_CORE_SRC PREPEND "core/")
@@ -56,22 +61,15 @@ add_test(NAME core COMMAND test_core)
 
 ################################################################################
 
-#include_directories(../src/klotski_core/core)
-#include_directories(../src/klotski_core/raw_code)
-#include_directories(../src/klotski_core/all_cases)
-#include_directories(../src/klotski_core/common_code)
-include_directories(../src/klotski_core/group)
-
-set(TEST_GROUP_SRC group.cc)
-list(TRANSFORM TEST_GROUP_SRC PREPEND "group/")
+set(TEST_GROUP_SRC
+    group/block_num.cc
+    group/group.cc
+)
 add_executable(test_group ${TEST_GROUP_SRC})
 target_link_libraries(test_group ${TEST_DEPS} md5 absl::flat_hash_map)
 add_test(NAME group COMMAND test_group)
 
 ################################################################################
-
-include_directories(../src/klotski_core)
-include_directories(../src/klotski_core/utils)
 
 set(TEST_FFI_SRC metadata.cc codec.cc all_cases.cc)
 list(TRANSFORM TEST_FFI_SRC PREPEND "ffi/")
@@ -84,10 +82,6 @@ add_test(NAME ffi COMMAND test_ffi)
 include_directories(../src/klotski_core)
 add_library(test_global_utils STATIC global/global_utils.cc)
 set(TEST_GLOBAL_DEPS ${TEST_DEPS} test_global_utils tiny_pool)
-
-include_directories(../src/klotski_core/raw_code)
-include_directories(../src/klotski_core/short_code)
-include_directories(../src/klotski_core/common_code)
 
 add_executable(test_codec_global global/short_code.cc global/common_code.cc global/raw_code.cc)
 target_link_libraries(test_codec_global ${TEST_GLOBAL_DEPS})

@@ -7,9 +7,7 @@
 
 #include "size.h"
 
-#include "seeds.h"
-
-#include "index.h"
+#include "group_seeds.h"
 
 namespace klotski {
 
