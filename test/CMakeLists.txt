@@ -57,7 +57,7 @@ add_test(NAME codec COMMAND test_codec)
 
 set(TEST_CORE_SRC core/core.cc)
 add_executable(test_core ${TEST_CORE_SRC})
-target_link_libraries(test_core ${TEST_DEPS})
+target_link_libraries(test_core ${TEST_DEPS} absl::flat_hash_map)
 add_test(NAME core COMMAND test_core)
 
 ################################################################################
