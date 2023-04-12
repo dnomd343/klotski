@@ -15,9 +15,11 @@ uint32_t Group::type_id(const CommonCode &common_code) {
 }
 
 uint32_t Group::type_id(const block_num_t &block_num) {
+    /// flag -> ... 0000  0xxx  0xxx  xxxx
+    ///                  n_x2x n_2x1 n_1x1
     auto n_x2x = block_num.n_1x2 + block_num.n_2x1;
     auto flag = (n_x2x << 8) | (block_num.n_2x1 << 4) | block_num.n_1x1;
-    return std::lower_bound(TYPE_ID_INDEX, TYPE_ID_INDEX + 204, flag) - TYPE_ID_INDEX;
+    return std::lower_bound(TYPE_ID_INDEX, TYPE_ID_INDEX + TYPE_ID_LIMIT, flag) - TYPE_ID_INDEX;
 }
 
 Group::block_num_t Group::block_num(uint32_t type_id) {

@@ -41,6 +41,7 @@ TEST(Group, block_num) {
         for (auto &&range: AllCases::fetch()[head]) {
             auto common_code = CommonCode::unsafe_create(head << 32 | range);
             auto tmp = Group::block_num(common_code);
+            EXPECT_LE(tmp.n_1x2 * 2 + tmp.n_2x1 * 2 + tmp.n_1x1, 14);
             EXPECT_EQ(tmp, Group::block_num(common_code.to_raw_code()));
             sprintf(buffer, "%d,%d,%d\n", tmp.n_1x2 + tmp.n_2x1, tmp.n_1x1, tmp.n_2x1);
             block_num_str[head] += buffer;

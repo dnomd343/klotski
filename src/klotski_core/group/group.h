@@ -6,24 +6,39 @@
 
 namespace klotski {
 
-const uint32_t TYPE_ID_LIMIT = 204;
+const uint32_t TYPE_ID_LIMIT = 203;
 
 class Group {
 /// ---------------------------- block statistics -----------------------------
 public:
+    /// 1. n_1x1 + (n_1x2 + n_2x1) * 2 <= 14
+    /// 2. (n_1x1 != 0) && (n_2x1 != 7)
     struct block_num_t {
-        uint8_t n_1x1 = 0;
-        uint8_t n_1x2 = 0;
-        uint8_t n_2x1 = 0;
+        uint8_t n_1x1 = 0; /// [0, 14]
+        uint8_t n_1x2 = 0; /// [0, 7]
+        uint8_t n_2x1 = 0; /// [0, 7]
     };
 
+    /// Get type_id value (0 ~ 202).
     static uint32_t type_id(const RawCode &raw_code);
     static uint32_t type_id(const block_num_t &block_num);
     static uint32_t type_id(const CommonCode &common_code);
 
+    /// Get the number of klotski blocks.
     static block_num_t block_num(uint32_t type_id);
     static block_num_t block_num(const RawCode &raw_code);
     static block_num_t block_num(const CommonCode &common_code);
+
+/// ----------------------------- cases expansion -----------------------------
+
+    /// Search for all cases of the specified type_id.
+    static std::vector<CommonCode> all_cases(uint32_t type_id);
+
+    /// Search for all derivatives that a case can produce.
+    static std::vector<RawCode> group_cases(const RawCode &seed);
+
+    /// Calculate all groups in the specified type_id.
+    static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);
 
 /// ---------------------------- xxxxxxxxxxxxxxxxx ----------------------------
 
@@ -33,10 +48,7 @@ public:
         return 65535 * 8;
     };
 
-    static std::vector<CommonCode> all_cases(uint32_t type_id);
-    static std::vector<RawCode> group_cases(const RawCode &seed);
 
-    static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);
 
 };
 

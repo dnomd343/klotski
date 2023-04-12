@@ -34,8 +34,10 @@ include_directories(../src/klotski_core/group)
 
 ################################################################################
 
-set(TEST_BASIC_SRC utils.cc all_cases.cc)
-list(TRANSFORM TEST_BASIC_SRC PREPEND "basic/")
+set(TEST_BASIC_SRC
+    basic/utils.cc
+    basic/all_cases.cc
+)
 add_executable(test_basic ${TEST_BASIC_SRC})
 target_link_libraries(test_basic PUBLIC ${TEST_DEPS} md5)
 add_test(NAME basic COMMAND test_basic)
@@ -53,8 +55,7 @@ add_test(NAME codec COMMAND test_codec)
 
 ################################################################################
 
-set(TEST_CORE_SRC core.cc)
-list(TRANSFORM TEST_CORE_SRC PREPEND "core/")
+set(TEST_CORE_SRC core/core.cc)
 add_executable(test_core ${TEST_CORE_SRC})
 target_link_libraries(test_core ${TEST_DEPS})
 add_test(NAME core COMMAND test_core)
@@ -63,7 +64,7 @@ add_test(NAME core COMMAND test_core)
 
 set(TEST_GROUP_SRC
     group/block_num.cc
-    group/group.cc
+    group/build_cases.cc
 )
 add_executable(test_group ${TEST_GROUP_SRC})
 target_link_libraries(test_group ${TEST_DEPS} md5 absl::flat_hash_map)
@@ -71,15 +72,19 @@ add_test(NAME group COMMAND test_group)
 
 ################################################################################
 
-set(TEST_FFI_SRC metadata.cc codec.cc all_cases.cc)
-list(TRANSFORM TEST_FFI_SRC PREPEND "ffi/")
+set(TEST_FFI_SRC
+    ffi/metadata.cc
+    ffi/codec.cc
+    ffi/all_cases.cc
+)
 add_executable(test_ffi ${TEST_FFI_SRC})
 target_link_libraries(test_ffi ${TEST_DEPS})
 add_test(NAME ffi COMMAND test_ffi)
 
 ################################################################################
 
-include_directories(../src/klotski_core)
+# TODO: update cmake configure
+
 add_library(test_global_utils STATIC global/global_utils.cc)
 set(TEST_GLOBAL_DEPS ${TEST_DEPS} test_global_utils tiny_pool)
 
