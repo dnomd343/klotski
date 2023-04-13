@@ -33,17 +33,16 @@ using klotski::TYPE_ID_LIMIT;
 void tmain() {
 //    printf("tmain start\n");
 
-    std::vector<uint32_t> max_group_size;
-    max_group_size.reserve(TYPE_ID_LIMIT);
+    std::vector<uint32_t> type_id_size;
+    type_id_size.reserve(TYPE_ID_LIMIT);
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-//        std::cout << Group::build_groups(type_id)[0].size() << std::endl;
-        max_group_size.emplace_back(Group::build_groups(type_id)[0].size());
+        type_id_size.emplace_back(Group::all_cases(type_id).size());
         std::cerr << type_id << std::endl;
     }
 
-    for (uint32_t i = 0; i < max_group_size.size(); ++i) {
+    for (uint32_t i = 0; i < type_id_size.size(); ++i) {
 
-        printf("%6d, ", max_group_size[i]);
+        printf("%6d, ", type_id_size[i]);
         if (i % 12 == 11) {
             printf("\n");
         }
