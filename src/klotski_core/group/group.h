@@ -41,6 +41,8 @@ public:
     /// Calculate all groups in the specified type_id.
     static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);
 
+    // TODO: refactor build_group -> using GROUP_SEEDS
+
     /// Calculate the specified group using type_id and group_id.
     static std::vector<CommonCode> build_group(uint32_t type_id, uint32_t group_id);
 
@@ -61,6 +63,8 @@ public:
     /// Get the CommonCode according to the group info.
     static CommonCode group_case(const group_info_t &group_info);
 
+    // TODO: group_size
+
 /// -------------------------------- xxxxxxxxxxxxxxxxx --------------------------------
 
     // TODO: update max_group_size in TYPE_ID_MAX_GROUP
@@ -72,6 +76,8 @@ public:
     };
 
 //    static uint32_t max_group_size(const CommonCode &common_code);
+
+    // TODO: group_num
 
 };
 
