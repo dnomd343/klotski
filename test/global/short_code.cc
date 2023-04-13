@@ -19,7 +19,7 @@ std::vector<uint64_t> short_code_check(uint32_t start, uint32_t end) {
 
 void short_code_verify() {
     /// create short code check tasks
-    auto pool = TinyPool(thread_num());
+    auto pool = TinyPool();
     std::vector<std::future<std::vector<uint64_t>>> futures;
     for (const auto &range : range_split(0, klotski::ALL_CASES_SIZE_SUM, 10000)) {
         futures.emplace_back(

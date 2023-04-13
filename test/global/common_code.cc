@@ -18,7 +18,7 @@ std::vector<uint64_t> common_code_search(uint64_t start, uint64_t end) {
 
 TEST(GLOBAL, common_code) {
     /// create common code check tasks
-    auto pool = TinyPool(thread_num());
+    auto pool = TinyPool();
     std::vector<std::future<std::vector<uint64_t>>> futures;
     for (const auto &range : range_split(0, 0x10'0000'0000, 0x10'0000)) {
         futures.emplace_back(
