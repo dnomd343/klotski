@@ -4,6 +4,8 @@
 #include "common_code.h"
 #include "gtest/gtest.h"
 
+#include "tiny_pool.h"
+
 #include "group/type_id.h"
 #include "group/group_seeds.h"
 
@@ -48,22 +50,32 @@ TEST(Group, all_cases) {
 }
 
 TEST(Group, group_cases) {
-
-    // TODO: using multi-threads
-
-    std::vector<CommonCode> all_cases;
-    all_cases.reserve(ALL_CASES_SIZE_SUM);
-
-    for (auto &&seed : GROUP_SEEDS) {
+    auto test = [](CommonCode seed) -> std::vector<CommonCode> {
         auto group_raw = Group::group_cases(RawCode::from_common_code(seed));
         std::vector<CommonCode> group(group_raw.begin(), group_raw.end()); // convert as CommonCodes
         EXPECT_EQ(seed, std::min_element(group.begin(), group.end())->unwrap()); // confirm min seed
-        all_cases.insert(all_cases.end(), group.begin(), group.end()); // archive group cases
 
         uint32_t type_id = Group::type_id(CommonCode(seed)); // current type id
         for (auto &&elem : group) {
             EXPECT_EQ(Group::type_id(elem), type_id); // verify type id of group cases
         }
+        return group;
+    };
+
+    auto pool = TinyPool();
+    std::vector<std::future<std::vector<CommonCode>>> futures;
+    for (auto &&seed : GROUP_SEEDS) {
+        futures.emplace_back(
+            pool.submit(test, CommonCode::unsafe_create(seed))
+        );
+    }
+
+    pool.boot();
+    std::vector<CommonCode> all_cases;
+    all_cases.reserve(ALL_CASES_SIZE_SUM);
+    for (auto &&f : futures) {
+        auto ret = f.get();
+        all_cases.insert(all_cases.end(), ret.begin(), ret.end());
     }
     std::sort(all_cases.begin(), all_cases.end());
     EXPECT_EQ(all_cases, AllCases::release()); // verify all released cases

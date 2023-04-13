@@ -65,7 +65,7 @@ set(TEST_GROUP_SRC
     group/build_cases.cc
 )
 add_executable(test_group ${TEST_GROUP_SRC})
-target_link_libraries(test_group ${TEST_DEPS} md5 absl::flat_hash_map)
+target_link_libraries(test_group ${TEST_DEPS} md5 tiny_pool absl::flat_hash_map)
 add_test(NAME group COMMAND test_group)
 
 #######################################################################################
@@ -90,14 +90,5 @@ set(TEST_CODEC_GLOBAL_SRC
 add_executable(test_codec_global ${TEST_CODEC_GLOBAL_SRC})
 target_link_libraries(test_codec_global ${TEST_DEPS} tiny_pool)
 add_test(NAME codec_global COMMAND test_codec_global)
-
-# TODO: update cmake configure
-
-#add_library(test_global_utils STATIC global/global_utils.cc)
-#set(TEST_GLOBAL_DEPS ${TEST_DEPS} test_global_utils tiny_pool)
-
-#add_executable(test_codec_global global/short_code.cc global/common_code.cc global/raw_code.cc)
-#target_link_libraries(test_codec_global ${TEST_GLOBAL_DEPS})
-#add_test(NAME codec_global COMMAND test_codec_global)
 
 #######################################################################################
