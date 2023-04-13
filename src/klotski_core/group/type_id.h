@@ -47,4 +47,7 @@ const uint32_t TYPE_ID_SIZE[203] = {
       1036,    464,    342,
 };
 
+// TODO: TYPE_ID_MAX_GROUP_SIZE
+// TODO: TYPE_ID_GROUP_NUM
+
 } // namespace klotski

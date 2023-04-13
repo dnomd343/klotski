@@ -9,7 +9,7 @@ namespace klotski {
 const uint32_t TYPE_ID_LIMIT = 203;
 
 class Group {
-/// ---------------------------- block statistics -----------------------------
+/// -------------------------------- block statistics ---------------------------------
 public:
     /// 1. n_1x1 + (n_1x2 + n_2x1) * 2 <= 14
     /// 2. (n_1x1 != 0) && (n_2x1 != 7)
@@ -29,13 +29,14 @@ public:
     static block_num_t block_num(const RawCode &raw_code);
     static block_num_t block_num(const CommonCode &common_code);
 
-/// ----------------------------- cases expansion -----------------------------
+/// --------------------------------- cases expansion ---------------------------------
 
     /// Search for all cases of the specified type_id.
     static std::vector<CommonCode> all_cases(uint32_t type_id);
 
     /// Search for all derivatives that a case can produce.
     static std::vector<RawCode> group_cases(const RawCode &seed);
+    static std::vector<RawCode> group_cases(const CommonCode &seed);
 
     /// Calculate all groups in the specified type_id.
     static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);
@@ -43,15 +44,34 @@ public:
     /// Calculate the specified group using type_id and group_id.
     static std::vector<CommonCode> build_group(uint32_t type_id, uint32_t group_id);
 
-/// ---------------------------- xxxxxxxxxxxxxxxxx ----------------------------
+/// ----------------------------------- group info ------------------------------------
 
+    struct group_info_t {
+        uint16_t type_id;
+        uint16_t group_id;
+        uint32_t group_index;
+    };
+
+    /// Get group info according to RawCode.
+    static group_info_t group_info(const RawCode &raw_code);
+
+    /// Get group info according to CommonCode.
+    static group_info_t group_info(const CommonCode &common_code);
+
+    /// Get the CommonCode according to the group info.
+    static CommonCode group_case(const group_info_t &group_info);
+
+/// -------------------------------- xxxxxxxxxxxxxxxxx --------------------------------
+
+    // TODO: update max_group_size in TYPE_ID_MAX_GROUP
 
 //    static uint32_t max_group_size(uint32_t type_id);
+
     static uint32_t max_group_size(const RawCode &raw_code) {
         return 65535 * 8;
     };
 
-
+//    static uint32_t max_group_size(const CommonCode &common_code);
 
 };
 

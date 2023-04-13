@@ -74,6 +74,11 @@ std::vector<RawCode> Group::group_cases(const RawCode &seed) {
     return result;
 }
 
+// TODO: test this function
+std::vector<RawCode> Group::group_cases(const CommonCode &seed) {
+    return group_cases(RawCode::from_common_code(seed));
+}
+
 std::vector<CommonCode> Group::build_group(uint32_t type_id, uint32_t group_id) {
     uint32_t group_num = 0;
     auto all_cases = Group::all_cases(type_id); // load all cases of type_id
