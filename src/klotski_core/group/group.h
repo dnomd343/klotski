@@ -40,6 +40,9 @@ public:
     /// Calculate all groups in the specified type_id.
     static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);
 
+    /// Calculate the specified group using type_id and group_id.
+    static std::vector<CommonCode> build_group(uint32_t type_id, uint32_t group_id);
+
 /// ---------------------------- xxxxxxxxxxxxxxxxx ----------------------------
 
 

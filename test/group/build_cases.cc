@@ -69,6 +69,10 @@ TEST(Group, group_cases) {
     EXPECT_EQ(all_cases, AllCases::release()); // verify all released cases
 }
 
+TEST(Group, build_group) {
+
+}
+
 TEST(Group, build_groups) {
     struct group_info_t {
         uint16_t group_id;

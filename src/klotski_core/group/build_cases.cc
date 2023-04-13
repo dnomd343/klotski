@@ -74,17 +74,34 @@ std::vector<RawCode> Group::group_cases(const RawCode &seed) {
     return result;
 }
 
+std::vector<CommonCode> Group::build_group(uint32_t type_id, uint32_t group_id) {
+    uint32_t group_num = 0;
+    auto all_cases = Group::all_cases(type_id); // load all cases of type_id
+    std::set<CommonCode> cases(all_cases.begin(), all_cases.end());
+
+    while (!cases.empty()) {
+        if (group_id == group_num) { // found target group
+            auto group = group_cases(cases.begin()->to_raw_code());
+            return {group.begin(), group.end()};
+        }
+        for (auto &&tmp : group_cases(cases.begin()->to_raw_code())) {
+            cases.erase(tmp.to_common_code()); // remove from global union
+        }
+        ++group_num;
+    }
+    return {}; // group_id out of range
+}
+
 std::vector<std::vector<CommonCode>> Group::build_groups(uint32_t type_id) {
     auto all_cases = Group::all_cases(type_id);
     std::vector<std::vector<CommonCode>> groups;
     auto min = std::min_element(all_cases.begin(), all_cases.end()); // search min CommonCode
-    auto first_group = Group::group_cases(min->to_raw_code()); // expand the first group
+    auto first_group = group_cases(min->to_raw_code()); // expand the first group
     groups.emplace_back(first_group.begin(), first_group.end());
     if (first_group.size() == all_cases.size()) { // only contains one group
         return groups;
     }
 
-    // TODO: do not insert the elements in first group
     std::set<CommonCode> cases(all_cases.begin(), all_cases.end());
     for (auto &&tmp : groups[0]) {
         cases.erase(tmp); // remove elements in first group
@@ -92,7 +109,7 @@ std::vector<std::vector<CommonCode>> Group::build_groups(uint32_t type_id) {
     while (!cases.empty()) {
         groups.emplace_back(); // create empty vector
         auto current_group = groups.end() - 1; // insert into latest
-        for (auto &&tmp : Group::group_cases(cases.begin()->to_raw_code())) {
+        for (auto &&tmp : group_cases(cases.begin()->to_raw_code())) {
             auto common_code = tmp.to_common_code();
             current_group->emplace_back(common_code); // insert into current group
             cases.erase(common_code); // remove from global union

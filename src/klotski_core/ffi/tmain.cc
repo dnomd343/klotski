@@ -33,6 +33,18 @@ using klotski::TYPE_ID_LIMIT;
 void tmain() {
 //    printf("tmain start\n");
 
+
+    auto ret = Group::build_group(123, 0);
+
+    std::cout << ret.size() << std::endl;
+
+    std::cout << ret[0] << std::endl;
+    std::cout << ret[1] << std::endl;
+    std::cout << ret[2] << std::endl;
+    std::cout << ret[3] << std::endl;
+
+    return;
+
 //    struct group_info_t {
 //        uint16_t type_id;
 //        uint16_t group_id;
