@@ -35,8 +35,10 @@ public:
     static std::vector<CommonCode> all_cases(uint32_t type_id);
 
     /// Search for all derivatives that a case can produce.
-    static std::vector<RawCode> group_cases(const RawCode &seed);
-    static std::vector<RawCode> group_cases(const CommonCode &seed);
+    static std::vector<RawCode> group_cases(const RawCode &raw_code);
+    static std::vector<RawCode> group_cases(const CommonCode &common_code);
+
+    // TODO: group_seed
 
     /// Calculate all groups in the specified type_id.
     static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);

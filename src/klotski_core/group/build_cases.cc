@@ -43,12 +43,12 @@ std::vector<CommonCode> Group::all_cases(uint32_t type_id) {
     return all_cases;
 }
 
-std::vector<RawCode> Group::group_cases(const RawCode &seed) {
+std::vector<RawCode> Group::group_cases(const RawCode &raw_code) {
     std::queue<uint64_t> cache;
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
-    cases.reserve(max_group_size(seed));
-    cases.emplace(seed.unwrap(), 0); // without mask
-    cache.emplace(seed.unwrap());
+    cases.reserve(max_group_size(raw_code));
+    cases.emplace(raw_code.unwrap(), 0); // without mask
+    cache.emplace(raw_code.unwrap());
 
     auto core = Core(
         [&cache, &cases](auto &&code, auto &&mask) { // callback function
@@ -68,15 +68,15 @@ std::vector<RawCode> Group::group_cases(const RawCode &seed) {
 
     auto result = std::vector<RawCode>();
     result.reserve(cases.size());
-    for (auto &&raw_code : cases) { // export group cases
-        result.emplace_back(RawCode::unsafe_create(raw_code.first));
+    for (auto &&tmp : cases) { // export group cases
+        result.emplace_back(RawCode::unsafe_create(tmp.first));
     }
     return result;
 }
 
 // TODO: test this function
-std::vector<RawCode> Group::group_cases(const CommonCode &seed) {
-    return group_cases(RawCode::from_common_code(seed));
+std::vector<RawCode> Group::group_cases(const CommonCode &common_code) {
+    return group_cases(RawCode::from_common_code(common_code));
 }
 
 std::vector<CommonCode> Group::build_group(uint32_t type_id, uint32_t group_id) {
