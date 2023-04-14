@@ -8,6 +8,46 @@ namespace klotski {
 
 const uint32_t TYPE_ID_LIMIT = 203;
 
+class TypeId {
+public:
+    /// 1. n_1x1 + (n_1x2 + n_2x1) * 2 <= 14
+    /// 2. (n_1x1 != 0) && (n_2x1 != 7)
+    struct block_num_t {
+        uint8_t n_1x1 = 0; /// [0, 14]
+        uint8_t n_1x2 = 0; /// [0, 7]
+        uint8_t n_2x1 = 0; /// [0, 7]
+    };
+    /// n_space = 16 - n_1x1 - (n_1x2 + n_2x1) * 2
+
+private:
+    uint32_t type_id_;
+    static inline uint32_t to_type_id(block_num_t &&block_num) noexcept;
+
+public:
+    explicit TypeId(uint32_t type_id);
+    explicit TypeId(const RawCode &raw_code) noexcept;
+    explicit TypeId(const CommonCode &common_code) noexcept;
+
+    /// Release raw type id value.
+    constexpr uint32_t unwrap() const noexcept { return type_id_; }
+
+    /// Get the number of klotski blocks.
+    block_num_t block_num() const noexcept;
+    static block_num_t block_num(const RawCode &raw_code) noexcept;
+    static block_num_t block_num(const CommonCode &common_code) noexcept;
+};
+
+inline bool operator==(const TypeId &t1, const TypeId &t2) { return t1.unwrap() == t2.unwrap(); }
+inline bool operator!=(const TypeId &t1, const TypeId &t2) { return t1.unwrap() != t2.unwrap(); }
+
+inline bool operator==(const TypeId::block_num_t &b1, const TypeId::block_num_t &b2) {
+    return (b1.n_1x1 == b2.n_1x1) && (b1.n_1x2 == b2.n_1x2) && (b1.n_2x1 == b2.n_2x1);
+}
+
+inline bool operator!=(const TypeId::block_num_t &b1, const TypeId::block_num_t &b2) {
+    return (b1.n_1x1 != b2.n_1x1) || (b1.n_1x2 != b2.n_1x2) || (b1.n_2x1 != b2.n_2x1);
+}
+
 class Group {
 /// -------------------------------- block statistics ---------------------------------
 public:

@@ -4,59 +4,68 @@
 #include "all_cases.h"
 #include "gtest/gtest.h"
 
-using klotski::Group;
+using klotski::TypeId;
+using klotski::RawCode;
 using klotski::AllCases;
 using klotski::CommonCode;
+
 using klotski::TYPE_ID_LIMIT;
+using klotski::ALL_CASES_SIZE;
 
 const char BLOCK_NUM_MD5[] = "46a7b3af6d039cbe2f7eaebdd196c6a2";
 
 TEST(Group, type_id) {
-    std::thread threads[16];
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        EXPECT_EQ(TypeId(type_id).unwrap(), type_id);
+    }
+    try {
+        EXPECT_EQ(TypeId(TYPE_ID_LIMIT).unwrap(), TYPE_ID_LIMIT + 1);
+    } catch (...) {} // should panic
+
     auto test = [](uint64_t head) {
-        for (const auto &range : AllCases::fetch()[head]) {
+        for (auto &&range: AllCases::fetch()[head]) {
             auto common_code = CommonCode::unsafe_create(head << 32 | range);
-            auto type_id = Group::type_id(common_code); // found type id
-            EXPECT_LT(type_id, TYPE_ID_LIMIT);
-            EXPECT_EQ(type_id, Group::type_id(common_code.to_raw_code()));
-            EXPECT_EQ(type_id, Group::type_id(Group::block_num(common_code)));
-            EXPECT_EQ(Group::block_num(type_id), Group::block_num(common_code));
+            auto raw_code = RawCode::from_common_code(common_code);
+
+            auto type_id = TypeId(common_code);
+            EXPECT_EQ(type_id, TypeId(raw_code));
+            EXPECT_LT(type_id.unwrap(), TYPE_ID_LIMIT);
+            EXPECT_EQ(type_id.block_num(), TypeId::block_num(raw_code));
+            EXPECT_EQ(type_id.block_num(), TypeId::block_num(common_code));
         }
     };
-    for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
-        threads[head] = std::thread(test, head);
+
+    std::thread threads[16];
+    for (uint64_t head = 0; head < 16; ++head) {
+        threads[head] = std::thread(test, head); // multi-threads verify
     }
-    for (auto &t : threads) {
-        t.join();
-    }
+    for (auto &t : threads) { t.join(); }
 }
 
 TEST(Group, block_num) {
-    std::thread threads[16];
-    std::string block_num_data;
-    std::string block_num_str[16];
-
-    auto test = [&block_num_str](uint64_t head) {
+    std::string result[16];
+    auto test = [&result](uint64_t head) {
         char buffer[13];
+        result[head].reserve(ALL_CASES_SIZE[head]); // vector pre-allocated
         for (auto &&range: AllCases::fetch()[head]) {
             auto common_code = CommonCode::unsafe_create(head << 32 | range);
-            auto tmp = Group::block_num(common_code);
+            auto tmp = TypeId(common_code).block_num();
             EXPECT_LE(tmp.n_1x2 * 2 + tmp.n_2x1 * 2 + tmp.n_1x1, 14);
-            EXPECT_EQ(tmp, Group::block_num(common_code.to_raw_code()));
             sprintf(buffer, "%d,%d,%d\n", tmp.n_1x2 + tmp.n_2x1, tmp.n_1x1, tmp.n_2x1);
-            block_num_str[head] += buffer;
+            result[head] += buffer;
         }
     };
 
-    for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
-        threads[head] = std::thread(test, head);
+    std::thread threads[16];
+    for (uint64_t head = 0; head < 16; ++head) {
+        threads[head] = std::thread(test, head); // multi-threads verify
     }
-    for (auto &t : threads) {
-        t.join();
+    for (auto &t : threads) { t.join(); }
+
+    std::string block_num_str;
+    for (auto &&tmp : result) {
+        block_num_str += tmp; // combine result
     }
-    for (auto &&tmp : block_num_str) { // combine string
-        block_num_data += tmp;
-    }
-    auto block_num_md5 = md5(block_num_data.c_str(), block_num_data.size());
-    EXPECT_STREQ(block_num_md5.c_str(), BLOCK_NUM_MD5);
+    auto block_num_md5 = md5(block_num_str.c_str(), block_num_str.size());
+    EXPECT_STREQ(block_num_md5.c_str(), BLOCK_NUM_MD5); // verify md5
 }

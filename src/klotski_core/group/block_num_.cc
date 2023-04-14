@@ -1,6 +1,4 @@
-#include <stdexcept>
-#include <algorithm>
-#include "group.h"
+#include <group.h>
 #include "common.h"
 #include "type_id.h"
 
@@ -8,22 +6,15 @@ namespace klotski {
 
 using Common::range_reverse;
 
-TypeId::TypeId(uint32_t type_id) {
-    if (type_id >= TYPE_ID_LIMIT) { // invalid type id
-        throw std::invalid_argument("type id overflow");
-    }
-    type_id_ = type_id;
+uint32_t Group::type_id(const RawCode &raw_code) {
+    return type_id(block_num(raw_code));
 }
 
-TypeId::TypeId(const RawCode &raw_code) noexcept {
-    type_id_ = to_type_id(block_num(raw_code));
+uint32_t Group::type_id(const CommonCode &common_code) {
+    return type_id(block_num(common_code));
 }
 
-TypeId::TypeId(const CommonCode &common_code) noexcept {
-    type_id_ = to_type_id(block_num(common_code));
-}
-
-uint32_t TypeId::to_type_id(block_num_t &&block_num) noexcept {
+uint32_t Group::type_id(const block_num_t &block_num) {
     /// flag -> ... 0000  0xxx  0xxx  xxxx
     ///                  n_x2x n_2x1 n_1x1
     auto n_x2x = block_num.n_1x2 + block_num.n_2x1;
@@ -31,17 +22,18 @@ uint32_t TypeId::to_type_id(block_num_t &&block_num) noexcept {
     return std::lower_bound(TYPE_ID_INDEX, TYPE_ID_INDEX + TYPE_ID_LIMIT, flag) - TYPE_ID_INDEX;
 }
 
-TypeId::block_num_t TypeId::block_num() const noexcept {
-    auto flag = TYPE_ID_INDEX[type_id_];
-    auto n_2x1 = (flag >> 4) & 0b111;
+Group::block_num_t Group::block_num(uint32_t type_id) {
+    auto flag = TYPE_ID_INDEX[type_id];
+    uint8_t n_x2x = flag >> 8;
+    uint8_t n_2x1 = (flag >> 4) & 0b1111;
     return block_num_t {
         .n_1x1 = static_cast<uint8_t>(flag & 0b1111),
-        .n_1x2 = static_cast<uint8_t>((flag >> 8) - n_2x1),
-        .n_2x1 = static_cast<uint8_t>(n_2x1),
+        .n_1x2 = static_cast<uint8_t>(n_x2x - n_2x1),
+        .n_2x1 = n_2x1,
     };
 }
 
-TypeId::block_num_t TypeId::block_num(const RawCode &raw_code) noexcept {
+Group::block_num_t Group::block_num(const RawCode &raw_code) {
     block_num_t result;
     auto tmp = raw_code.unwrap();
     for (int addr = 0; addr < 20; ++addr, tmp >>= 3) {
@@ -60,9 +52,9 @@ TypeId::block_num_t TypeId::block_num(const RawCode &raw_code) noexcept {
     return result;
 }
 
-TypeId::block_num_t TypeId::block_num(const CommonCode &common_code) noexcept {
+Group::block_num_t Group::block_num(const CommonCode &common_code) {
     block_num_t result;
-    auto range = range_reverse(static_cast<uint32_t>(common_code.unwrap()));
+    auto range = range_reverse((uint32_t)common_code.unwrap());
     for (; range; range >>= 2) {
         switch (range & 0b11) {
             case 0b01: /// 1x2 block
