@@ -1,7 +1,7 @@
 #include "common_code.h"
 
 using klotski::CommonCode;
-using klotski::CommonCodeException;
+using klotski::CommonCodeExp;
 
 /// -------------------------- CommonCode to String ---------------------------
 
@@ -60,7 +60,7 @@ std::string CommonCode::string_encode(uint64_t common_code, bool shorten) noexce
 uint64_t CommonCode::string_decode(const std::string &common_code) { // convert from (1 ~ 9)-bit string
     /// check string length
     if (common_code.length() > 9 || common_code.empty()) { // check string length
-        throw CommonCodeException("common code should length 1 ~ 9");
+        throw CommonCodeExp("common code should length 1 ~ 9");
     }
 
     /// check every characters
@@ -74,14 +74,14 @@ uint64_t CommonCode::string_decode(const std::string &common_code) { // convert 
         } else if (bit >= 'a' && bit <= 'f') { // a ~ f
             result |= (bit - 87);
         } else {
-            throw CommonCodeException("common code with invalid character"); // unknown character
+            throw CommonCodeExp("common code with invalid character"); // unknown character
         }
     }
     result <<= (9 - common_code.length()) * 4; // low-bits fill with zero
 
     /// check whether common code is valid
     if (!CommonCode::check(result)) { // check converted common code
-        throw CommonCodeException("common code invalid");
+        throw CommonCodeExp("common code invalid");
     }
     return result;
 }

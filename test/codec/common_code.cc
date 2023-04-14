@@ -17,7 +17,7 @@ static inline void SHOULD_PANIC(const std::function<void()> &func) {
     bool panic_flag = false;
     try {
         func();
-    } catch (klotski::CommonCodeException&) {
+    } catch (klotski::CommonCodeExp &) {
         panic_flag = true;
     }
     EXPECT_EQ(panic_flag, true);

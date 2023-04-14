@@ -63,11 +63,11 @@ namespace klotski {
 class RawCode;
 class ShortCode;
 
-class CommonCodeException : public std::runtime_error {
+class CommonCodeExp : public std::runtime_error {
 public:
-    CommonCodeException() : std::runtime_error("invalid common code") {}
-    explicit CommonCodeException(const std::string &msg) : std::runtime_error(msg) {}
-    ~CommonCodeException() noexcept override = default;
+    CommonCodeExp() : std::runtime_error("invalid common code") {}
+    explicit CommonCodeExp(const std::string &msg) : std::runtime_error(msg) {}
+    ~CommonCodeExp() noexcept override = default;
 };
 
 class CommonCode {

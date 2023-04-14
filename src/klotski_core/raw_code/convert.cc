@@ -3,7 +3,7 @@
 
 using klotski::RawCode;
 using klotski::CommonCode;
-using klotski::RawCodeException;
+using klotski::RawCodeExp;
 
 /// -------------------------- RawCode to CommonCode --------------------------
 

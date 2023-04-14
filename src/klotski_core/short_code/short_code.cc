@@ -22,7 +22,7 @@ ShortCode ShortCode::unsafe_create(uint32_t short_code) noexcept { // create wit
 
 ShortCode::ShortCode(uint32_t short_code) {
     if (!ShortCode::check(short_code)) { // check input short code
-        throw klotski::ShortCodeException("short code invalid");
+        throw klotski::ShortCodeExp("short code invalid");
     }
     code_ = short_code;
 }

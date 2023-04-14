@@ -62,11 +62,11 @@ class CommonCode;
 
 const uint32_t SHORT_CODE_LIMIT = 29334498;
 
-class ShortCodeException : public std::runtime_error {
+class ShortCodeExp : public std::runtime_error {
 public:
-    ShortCodeException() : std::runtime_error("invalid short code") {}
-    explicit ShortCodeException(const std::string &msg) : std::runtime_error(msg) {}
-    ~ShortCodeException() noexcept override = default;
+    ShortCodeExp() : std::runtime_error("invalid short code") {}
+    explicit ShortCodeExp(const std::string &msg) : std::runtime_error(msg) {}
+    ~ShortCodeExp() noexcept override = default;
 };
 
 /// For ShortCode, you must choose at least one mode (NORMAL or FAST) to convert, and

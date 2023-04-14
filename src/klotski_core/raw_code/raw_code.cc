@@ -19,7 +19,7 @@ RawCode RawCode::unsafe_create(uint64_t raw_code) noexcept { // create without c
 
 RawCode::RawCode(uint64_t raw_code) {
     if (!RawCode::check(raw_code)) { // check input raw code
-        throw klotski::RawCodeException("raw code invalid");
+        throw klotski::RawCodeExp("raw code invalid");
     }
     code_ = raw_code;
 }

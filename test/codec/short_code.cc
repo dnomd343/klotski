@@ -20,7 +20,7 @@ static inline void SHOULD_PANIC(const std::function<void()> &func) {
     bool panic_flag = false;
     try {
         func();
-    } catch (klotski::ShortCodeException&) {
+    } catch (klotski::ShortCodeExp &) {
         panic_flag = true;
     }
     EXPECT_EQ(panic_flag, true);

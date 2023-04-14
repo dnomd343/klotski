@@ -2,7 +2,7 @@
 #include "serialize_chars.h"
 
 using klotski::ShortCode;
-using klotski::ShortCodeException;
+using klotski::ShortCodeExp;
 
 /// --------------------------- ShortCode to String ---------------------------
 
@@ -42,7 +42,7 @@ std::string ShortCode::string_encode(uint32_t short_code) noexcept { // encode a
 
 uint32_t ShortCode::string_decode(const std::string &short_code) { // 5-bits string decode
     if (short_code.length() != 5) { // check string length
-        throw ShortCodeException("short code should length 5");
+        throw ShortCodeExp("short code should length 5");
     }
     uint64_t result = 0;
     for (auto bit : short_code) {
@@ -51,15 +51,15 @@ uint32_t ShortCode::string_decode(const std::string &short_code) { // 5-bits str
             bit -= 32; // convert to uppercase
         }
         if (bit < '1' || bit > 'Z') { // invalid characters
-            throw ShortCodeException("short code with invalid character");
+            throw ShortCodeExp("short code with invalid character");
         }
         result += (bit = SHORT_CODE_TABLE_REV[bit - 49]); // table convert
         if (bit == -1) { // invalid character
-            throw ShortCodeException("short code with invalid character");
+            throw ShortCodeExp("short code with invalid character");
         }
     }
     if (!ShortCode::check(result)) { // check converted short code
-        throw ShortCodeException("short code invalid");
+        throw ShortCodeExp("short code invalid");
     }
     return result; // apply convert result
 }

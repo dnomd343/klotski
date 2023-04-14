@@ -21,7 +21,7 @@ CommonCode CommonCode::unsafe_create(uint64_t common_code) noexcept { // create 
 
 CommonCode::CommonCode(uint64_t common_code) {
     if (!CommonCode::check(common_code)) { // check input common code
-        throw klotski::CommonCodeException("common code invalid");
+        throw klotski::CommonCodeExp("common code invalid");
     }
     code_ = common_code;
 }
