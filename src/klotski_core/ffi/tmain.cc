@@ -19,6 +19,7 @@
 #include "group.h"
 
 using klotski::Group;
+using klotski::TypeId;
 using klotski::AllCases;
 
 using klotski::RawCode;
@@ -33,10 +34,16 @@ using klotski::TYPE_ID_LIMIT;
 void tmain() {
 //    printf("tmain start\n");
 
+    auto start = clock();
+
 //    Group::build_group(123, 233);
 
-    auto seed = Group::group_seed(123, 233);
-    std::cout << seed << std::endl;
+    Group::build_groups(TypeId(123));
+
+    std::cerr << (clock() - start) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
+
+//    auto seed = Group::group_seed(123, 233);
+//    std::cout << seed << std::endl;
 
 //    Group::group_info(CommonCode(0x1A9BF0C00));
 

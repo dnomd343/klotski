@@ -89,14 +89,14 @@ public:
 /// --------------------------------- cases expansion ---------------------------------
 
     /// Search for all cases of the specified type_id.
-    static std::vector<CommonCode> all_cases(uint32_t type_id);
+    static std::vector<CommonCode> all_cases(const TypeId &type_id);
 
     /// Search for all derivatives that a case can produce.
     static std::vector<RawCode> group_cases(const RawCode &raw_code);
     static std::vector<RawCode> group_cases(const CommonCode &common_code);
 
     /// Calculate all groups in the specified type_id.
-    static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);
+    static std::vector<std::vector<CommonCode>> build_groups(const TypeId &type_id);
 
     /// Calculate the specified group using type_id and group_id.
     static std::vector<CommonCode> build_group(uint32_t type_id, uint32_t group_id);
@@ -124,13 +124,17 @@ public:
 
     // TODO: update max_group_size in TYPE_ID_MAX_GROUP
 
-//    static uint32_t max_group_size(uint32_t type_id);
-
-    static uint32_t max_group_size(const RawCode &raw_code) {
+    static uint32_t group_max_size(const TypeId &type_id) {
         return 65535 * 8;
-    };
+    }
 
-//    static uint32_t max_group_size(const CommonCode &common_code);
+    static uint32_t group_max_size(const RawCode &raw_code) {
+        return group_max_size(TypeId(raw_code));
+    }
+
+    static uint32_t group_max_size(const CommonCode &common_code) {
+        return group_max_size(TypeId(common_code));
+    }
 
     // TODO: group_num
 

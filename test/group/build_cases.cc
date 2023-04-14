@@ -28,7 +28,7 @@ const char GROUP_INFO_MD5[] = "976bf22530085210e68a6a4e67053506";
 TEST(Group, all_cases) {
     std::vector<std::vector<CommonCode>> all_cases;
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        all_cases.emplace_back(Group::all_cases(type_id)); // build test data
+        all_cases.emplace_back(Group::all_cases(TypeId(type_id))); // build test data
     }
 
     std::vector<uint64_t> combine;
@@ -99,7 +99,7 @@ TEST(Group, build_groups) {
     for (uint16_t type_id = 0; type_id < klotski::TYPE_ID_LIMIT; ++type_id) {
         std::vector<uint32_t> group_sizes;
         std::vector<CommonCode> group_seeds;
-        auto groups = Group::build_groups(type_id);
+        auto groups = Group::build_groups(TypeId(type_id));
         group_sizes.reserve(groups.size());
         group_seeds.reserve(groups.size());
 
