@@ -31,6 +31,14 @@ public:
 
 /// --------------------------------- cases expansion ---------------------------------
 
+    static CommonCode group_seed(const RawCode &raw_code);
+    static CommonCode group_seed(const CommonCode &common_code);
+    static CommonCode group_seed(uint32_t type_id, uint32_t group_id);
+
+    static std::vector<CommonCode> group_seeds(uint32_t type_id);
+
+/// --------------------------------- cases expansion ---------------------------------
+
     /// Search for all cases of the specified type_id.
     static std::vector<CommonCode> all_cases(uint32_t type_id);
 
@@ -38,12 +46,8 @@ public:
     static std::vector<RawCode> group_cases(const RawCode &raw_code);
     static std::vector<RawCode> group_cases(const CommonCode &common_code);
 
-    // TODO: group_seed
-
     /// Calculate all groups in the specified type_id.
     static std::vector<std::vector<CommonCode>> build_groups(uint32_t type_id);
-
-    // TODO: refactor build_group -> using GROUP_SEEDS
 
     /// Calculate the specified group using type_id and group_id.
     static std::vector<CommonCode> build_group(uint32_t type_id, uint32_t group_id);

@@ -36,7 +36,7 @@ Group::group_info_t Group::group_info(const CommonCode &common_code) {
     std::cout << "tmp index: " << tmp_index;
     std::cout << " (" << CommonCode(GROUP_SEEDS[tmp_index]) << ")" << std::endl;
 
-    auto group_id = GROUP_SEEDS_INDEX_[tmp_index];
+    auto group_id = GROUP_SEEDS_INDEX_REV[tmp_index];
     std::cout << "group id: " << group_id << std::endl;
 
     // TODO: function body

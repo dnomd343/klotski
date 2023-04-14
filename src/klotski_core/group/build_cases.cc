@@ -6,6 +6,9 @@
 #include "common_code.h"
 #include "absl/container/flat_hash_map.h"
 
+#include "type_id.h"
+#include "group_seeds.h"
+
 namespace klotski {
 
 using Common::check_range;
@@ -79,21 +82,42 @@ std::vector<RawCode> Group::group_cases(const CommonCode &common_code) {
     return group_cases(RawCode::from_common_code(common_code));
 }
 
-std::vector<CommonCode> Group::build_group(uint32_t type_id, uint32_t group_id) {
-    uint32_t group_num = 0;
-    auto all_cases = Group::all_cases(type_id); // load all cases of type_id
-    std::set<CommonCode> cases(all_cases.begin(), all_cases.end());
 
-    while (!cases.empty()) {
-        if (group_id == group_num) { // found target group
-            auto group = group_cases(cases.begin()->to_raw_code());
-            return {group.begin(), group.end()};
-        }
-        for (auto &&tmp : group_cases(cases.begin()->to_raw_code())) {
-            cases.erase(tmp.to_common_code()); // remove from global union
-        }
-        ++group_num;
-    }
+// TODO: refactor build_group -> using GROUP_SEEDS
+std::vector<CommonCode> Group::build_group(uint32_t type_id, uint32_t group_id) {
+
+    auto offset = TYPE_ID_OFFSET[type_id];
+
+    std::cout << "size: " << TYPE_ID_GROUP_NUM[type_id] << std::endl;
+
+    auto k = GROUP_SEEDS_INDEX[offset + group_id];
+
+    std::cout << "tmp index: " << k << std::endl;
+
+    auto r = k + offset;
+
+    std::cout << "real index: " << r << std::endl;
+
+    auto seed = CommonCode(GROUP_SEEDS[r]);
+
+    std::cout << "seed: " << seed << std::endl;
+
+    std::cout << RawCode(seed) << std::endl;
+
+//    uint32_t group_num = 0;
+//    auto all_cases = Group::all_cases(type_id); // load all cases of type_id
+//    std::set<CommonCode> cases(all_cases.begin(), all_cases.end());
+//
+//    while (!cases.empty()) {
+//        if (group_id == group_num) { // found target group
+//            auto group = group_cases(cases.begin()->to_raw_code());
+//            return {group.begin(), group.end()};
+//        }
+//        for (auto &&tmp : group_cases(cases.begin()->to_raw_code())) {
+//            cases.erase(tmp.to_common_code()); // remove from global union
+//        }
+//        ++group_num;
+//    }
     return {}; // group_id out of range
 }
 

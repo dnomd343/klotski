@@ -33,7 +33,12 @@ using klotski::TYPE_ID_LIMIT;
 void tmain() {
 //    printf("tmain start\n");
 
-    Group::group_info(CommonCode(0x1A9BF0C00));
+//    Group::build_group(123, 233);
+
+    auto seed = Group::group_seed(123, 233);
+    std::cout << seed << std::endl;
+
+//    Group::group_info(CommonCode(0x1A9BF0C00));
 
 //    std::vector<uint32_t> group_num;
 //    group_num.reserve(TYPE_ID_LIMIT);
