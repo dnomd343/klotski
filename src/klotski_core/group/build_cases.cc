@@ -15,7 +15,7 @@ using Common::check_range;
 using Common::range_reverse;
 
 std::vector<CommonCode> Group::all_cases(uint32_t type_id) {
-    auto tmp = block_num(type_id);
+    auto tmp = TypeId(type_id).block_num();
     std::vector<uint32_t> ranges; // basic ranges of type_id
     BasicRanges::generate(ranges, { // generate target ranges
         .n1 = 16 - tmp.n_1x1 - (tmp.n_1x2 + tmp.n_2x1) * 2, /// space -> 00

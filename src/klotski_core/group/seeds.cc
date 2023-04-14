@@ -6,6 +6,8 @@
 
 namespace klotski {
 
+
+
 CommonCode Group::group_seed(uint32_t type_id, uint32_t group_id) {
 
     // TODO: check value
@@ -29,6 +31,25 @@ CommonCode Group::group_seed(uint32_t type_id, uint32_t group_id) {
     std::cout << RawCode(seed) << std::endl;
 
     return seed;
+}
+
+std::vector<CommonCode> Group::group_seeds(const TypeId &type_id) {
+    auto offset = GROUP_SEEDS + TYPE_ID_OFFSET[type_id.unwrap()]; // group id offset
+    return {offset, offset + TYPE_ID_GROUP_NUM[type_id.unwrap()]};
+}
+
+CommonCode Group::group_seed(const RawCode &raw_code) {
+
+
+
+    return CommonCode(0);
+}
+
+CommonCode Group::group_seed(const CommonCode &common_code) {
+
+
+
+    return CommonCode(0);
 }
 
 } // namespace klotski

@@ -16,7 +16,7 @@ Group::group_info_t Group::group_info(const RawCode &raw_code) {
 
 Group::group_info_t Group::group_info(const CommonCode &common_code) {
 
-    auto type_id = Group::type_id(common_code);
+    auto type_id = TypeId(common_code).unwrap();
 
     std::cout << type_id << std::endl;
     std::cout << "group num: " << TYPE_ID_GROUP_NUM[type_id] << std::endl;

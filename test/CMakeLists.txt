@@ -61,7 +61,7 @@ add_test(NAME core COMMAND test_core)
 #######################################################################################
 
 set(TEST_GROUP_SRC
-    group/block_num.cc
+        group/basic_id.cc
     group/build_cases.cc
 )
 add_executable(test_group ${TEST_GROUP_SRC})

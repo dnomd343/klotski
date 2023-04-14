@@ -8,6 +8,8 @@ namespace klotski {
 
 using Common::range_reverse;
 
+/// ----------------------------------------- Type ID -----------------------------------------
+
 TypeId::TypeId(uint32_t type_id) {
     if (type_id >= TYPE_ID_LIMIT) { // invalid type id
         throw std::invalid_argument("type id overflow");
@@ -30,6 +32,8 @@ uint32_t TypeId::to_type_id(block_num_t &&block_num) noexcept {
     auto flag = (n_x2x << 8) | (block_num.n_2x1 << 4) | block_num.n_1x1;
     return std::lower_bound(TYPE_ID_INDEX, TYPE_ID_INDEX + TYPE_ID_LIMIT, flag) - TYPE_ID_INDEX;
 }
+
+/// -------------------------------------- Block Number ---------------------------------------
 
 TypeId::block_num_t TypeId::block_num() const noexcept {
     auto flag = TYPE_ID_INDEX[type_id_];
@@ -77,6 +81,22 @@ TypeId::block_num_t TypeId::block_num(const CommonCode &common_code) noexcept {
         }
     }
     return result;
+}
+
+/// ---------------------------------------- Group ID -----------------------------------------
+
+GroupId::GroupId(uint32_t type_id, uint32_t group_id) : type_id_(type_id) {
+    if (group_id >= TYPE_ID_GROUP_NUM[type_id]) {
+        throw std::invalid_argument("group id overflow");
+    }
+    group_id_ = group_id;
+}
+
+GroupId::GroupId(const TypeId &type_id, uint32_t group_id) : type_id_(type_id) {
+    if (group_id >= TYPE_ID_GROUP_NUM[type_id.unwrap()]) {
+        throw std::invalid_argument("group id overflow");
+    }
+    group_id_ = group_id;
 }
 
 } // namespace klotski

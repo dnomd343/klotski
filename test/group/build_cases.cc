@@ -10,6 +10,7 @@
 #include "group/group_seeds.h"
 
 using klotski::Group;
+using klotski::TypeId;
 using klotski::AllCases;
 
 using klotski::RawCode;
@@ -35,7 +36,7 @@ TEST(Group, all_cases) {
     for (uint32_t id = 0; id < TYPE_ID_LIMIT; ++id) {
         EXPECT_EQ(all_cases[id].size(), TYPE_ID_SIZE[id]); // verify cases number
         for (auto &&common_code : all_cases[id]) {
-            EXPECT_EQ(Group::type_id(common_code), id); // verify type id
+            EXPECT_EQ(TypeId(common_code).unwrap(), id); // verify type id
             combine.emplace_back(common_code.unwrap());
         }
         std::is_sorted(all_cases[id].begin(), all_cases[id].end()); // verify data order
@@ -55,9 +56,9 @@ TEST(Group, group_cases) {
         std::vector<CommonCode> group(group_raw.begin(), group_raw.end()); // convert as CommonCodes
         EXPECT_EQ(seed, std::min_element(group.begin(), group.end())->unwrap()); // confirm min seed
 
-        uint32_t type_id = Group::type_id(CommonCode(seed)); // current type id
+        uint32_t type_id = TypeId(CommonCode(seed)).unwrap(); // current type id
         for (auto &&elem : group) {
-            EXPECT_EQ(Group::type_id(elem), type_id); // verify type id of group cases
+            EXPECT_EQ(TypeId(elem).unwrap(), type_id); // verify type id of group cases
         }
         return group;
     };
@@ -110,7 +111,7 @@ TEST(Group, build_groups) {
                     .group_id = static_cast<uint16_t>(id),
                     .group_index = index,
                 };
-                EXPECT_EQ(Group::type_id(groups[id][index]), type_id); // verify type id
+                EXPECT_EQ(TypeId(groups[id][index]).unwrap(), type_id); // verify type id
             }
             group_seeds.emplace_back(groups[id][0]); // record seed
         }

@@ -8,6 +8,8 @@ namespace klotski {
 
 const uint32_t TYPE_ID_LIMIT = 203;
 
+/// ----------------------------------------- Type ID -----------------------------------------
+
 class TypeId {
 public:
     /// 1. n_1x1 + (n_1x2 + n_2x1) * 2 <= 14
@@ -48,34 +50,41 @@ inline bool operator!=(const TypeId::block_num_t &b1, const TypeId::block_num_t 
     return (b1.n_1x1 != b2.n_1x1) || (b1.n_1x2 != b2.n_1x2) || (b1.n_2x1 != b2.n_2x1);
 }
 
-class Group {
-/// -------------------------------- block statistics ---------------------------------
+/// ---------------------------------------- Group ID -----------------------------------------
+
+class GroupId {
+    TypeId type_id_;
+    uint32_t group_id_;
+
 public:
-    /// 1. n_1x1 + (n_1x2 + n_2x1) * 2 <= 14
-    /// 2. (n_1x1 != 0) && (n_2x1 != 7)
-    struct block_num_t {
-        uint8_t n_1x1 = 0; /// [0, 14]
-        uint8_t n_1x2 = 0; /// [0, 7]
-        uint8_t n_2x1 = 0; /// [0, 7]
-    };
+    GroupId(uint32_t type_id, uint32_t group_id);
+    GroupId(const TypeId &type_id, uint32_t group_id);
 
-    /// Get type_id value (0 ~ 202).
-    static uint32_t type_id(const RawCode &raw_code);
-    static uint32_t type_id(const block_num_t &block_num);
-    static uint32_t type_id(const CommonCode &common_code);
+    /// Release raw type id / group id value.
+    constexpr uint32_t unwrap() const noexcept { return group_id_; }
+    constexpr uint32_t type_id() const noexcept { return type_id_.unwrap(); }
+};
 
-    /// Get the number of klotski blocks.
-    static block_num_t block_num(uint32_t type_id);
-    static block_num_t block_num(const RawCode &raw_code);
-    static block_num_t block_num(const CommonCode &common_code);
+inline bool operator==(const GroupId &g1, const GroupId &g2) {
+    return g1.type_id() == g2.type_id() && g1.unwrap() == g2.unwrap();
+}
 
-/// --------------------------------- cases expansion ---------------------------------
+inline bool operator!=(const GroupId &g1, const GroupId &g2) {
+    return g1.type_id() != g2.type_id() || g1.unwrap() != g2.unwrap();
+}
+
+/// ------------------------------------------ Group ------------------------------------------
+
+class Group {
+public:
+/// ----------------------------------- group seeds -----------------------------------
 
     static CommonCode group_seed(const RawCode &raw_code);
     static CommonCode group_seed(const CommonCode &common_code);
     static CommonCode group_seed(uint32_t type_id, uint32_t group_id);
 
-    static std::vector<CommonCode> group_seeds(uint32_t type_id);
+    /// Get all seeds in the specified type id.
+    static std::vector<CommonCode> group_seeds(const TypeId &type_id);
 
 /// --------------------------------- cases expansion ---------------------------------
 
@@ -126,13 +135,5 @@ public:
     // TODO: group_num
 
 };
-
-inline bool operator==(const Group::block_num_t &b1, const Group::block_num_t &b2) {
-    return (b1.n_1x1 == b2.n_1x1) && (b1.n_1x2 == b2.n_1x2) && (b1.n_2x1 == b2.n_2x1);
-}
-
-inline bool operator!=(const Group::block_num_t &b1, const Group::block_num_t &b2) {
-    return (b1.n_1x1 != b2.n_1x1) || (b1.n_1x2 != b2.n_1x2) || (b1.n_2x1 != b2.n_2x1);
-}
 
 }
