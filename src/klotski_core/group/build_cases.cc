@@ -13,11 +13,7 @@ using Common::check_range;
 using Common::range_reverse;
 
 uint32_t Group::group_size(const GroupId &group_id) {
-    return group_cases(group_seed(group_id)).size();
-}
-
-uint32_t Group::group_size(const RawCode &raw_code) {
-    return group_cases(raw_code).size();
+    return group_size(group_seed(group_id));
 }
 
 uint32_t Group::group_size(const CommonCode &common_code) {
@@ -67,12 +63,35 @@ std::vector<CommonCode> Group::all_cases(const TypeId &type_id) {
     return all_cases;
 }
 
-std::vector<RawCode> Group::group_cases(const RawCode &raw_code) {
-    std::queue<uint64_t> cache;
+uint32_t Group::group_size(const RawCode &raw_code) {
+    std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
     cases.reserve(Group::group_max_size(raw_code));
-    cases.emplace(raw_code.unwrap(), 0); // without mask
-    cache.emplace(raw_code.unwrap());
+    cases.emplace(raw_code.unwrap(), 0b0); // without mask
+
+    auto core = Core(
+        [&cache, &cases](auto &&code, auto &&mask) { // callback function
+            auto current = cases.find(code);
+            if (current != cases.end()) {
+                current->second |= mask; // update mask
+                return;
+            }
+            cases.emplace(code, mask);
+            cache.emplace(code);
+        }
+    );
+    while (!cache.empty()) { // until BFS without elements
+        core.next_cases(cache.front(), cases.find(cache.front())->second);
+        cache.pop(); // case dequeue
+    }
+    return cases.size();
+}
+
+std::vector<RawCode> Group::group_cases(const RawCode &raw_code) {
+    std::queue<uint64_t> cache({raw_code.unwrap()});
+    absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+    cases.reserve(Group::group_max_size(raw_code));
+    cases.emplace(raw_code.unwrap(), 0b0); // without mask
 
     auto core = Core(
         [&cache, &cases](auto &&code, auto &&mask) { // callback function
