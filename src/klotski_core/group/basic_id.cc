@@ -83,28 +83,28 @@ TypeId::block_num_t TypeId::block_num(const CommonCode &common_code) noexcept {
     return result;
 }
 
-/// ---------------------------------------- Group ID -----------------------------------------
+/// ------------------------------------------ Group ------------------------------------------
 
-GroupId::GroupId(uint32_t type_id, uint32_t group_id) : type_id_(type_id) {
+Group::Group(uint32_t type_id, uint32_t group_id) : type_id_(type_id) {
     if (group_id >= TYPE_ID_GROUP_NUM[type_id]) {
         throw std::invalid_argument("group id overflow");
     }
     group_id_ = group_id;
 }
 
-GroupId::GroupId(const TypeId &type_id, uint32_t group_id) : type_id_(type_id) {
+Group::Group(const TypeId &type_id, uint32_t group_id) : type_id_(type_id) {
     if (group_id >= TYPE_ID_GROUP_NUM[type_id.unwrap()]) {
         throw std::invalid_argument("group id overflow");
     }
     group_id_ = group_id;
 }
 
-GroupId::GroupId(const RawCode &raw_code) noexcept : type_id_(TypeId(raw_code)) {
-    group_id_ = group_id(type_id_.unwrap(), GroupId::seed(raw_code));
+Group::Group(const RawCode &raw_code) noexcept : type_id_(TypeId(raw_code)) {
+    group_id_ = group_id(type_id_.unwrap(), Group::seed(raw_code));
 }
 
-GroupId::GroupId(const CommonCode &common_code) noexcept : type_id_(TypeId(common_code)) {
-    group_id_ = group_id(type_id_.unwrap(), GroupId::seed(common_code));
+Group::Group(const CommonCode &common_code) noexcept : type_id_(TypeId(common_code)) {
+    group_id_ = group_id(type_id_.unwrap(), Group::seed(common_code));
 }
 
 } // namespace klotski

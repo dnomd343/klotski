@@ -4,8 +4,8 @@
 #include "common.h"
 #include "type_id.h"
 #include "common_code.h"
-#include "absl/container/flat_hash_map.h"
 #include "absl/container/btree_set.h"
+#include "absl/container/flat_hash_map.h"
 
 namespace klotski {
 
@@ -49,7 +49,7 @@ std::vector<CommonCode> TypeId::cases() const noexcept {
 }
 
 std::vector<std::vector<CommonCode>> TypeId::groups() const noexcept {
-    auto all_cases = cases();
+    auto all_cases = TypeId::cases();
     std::vector<std::vector<CommonCode>> groups;
 
     auto min = std::min_element(all_cases.begin(), all_cases.end()); // search min CommonCode
@@ -78,23 +78,17 @@ std::vector<std::vector<CommonCode>> TypeId::groups() const noexcept {
     return groups;
 }
 
-/// ---------------------------------------- Group ID -----------------------------------------
+/// --------------------------------------- Group Size ----------------------------------------
 
-uint32_t GroupId::size() const noexcept {
+uint32_t Group::size() const noexcept {
     return size(seed());
 }
 
-uint32_t GroupId::size(const CommonCode &common_code) noexcept {
+uint32_t Group::size(const CommonCode &common_code) noexcept {
     return size(common_code.to_raw_code());
 }
 
-std::vector<RawCode> GroupId::cases() const noexcept {
-//    auto cases = Group::cases(seed());
-//    return {cases.begin(), cases.end()};
-    return Group::cases(seed());
-}
-
-uint32_t GroupId::size(const RawCode &raw_code) noexcept {
+uint32_t Group::size(const RawCode &raw_code) noexcept {
     std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
     cases.reserve(TypeId::group_max_size(raw_code));
@@ -118,7 +112,11 @@ uint32_t GroupId::size(const RawCode &raw_code) noexcept {
     return cases.size();
 }
 
-/// ------------------------------------------ Group ------------------------------------------
+/// --------------------------------------- Group Cases ---------------------------------------
+
+std::vector<RawCode> Group::cases() const noexcept {
+    return cases(seed());
+}
 
 std::vector<RawCode> Group::cases(const CommonCode &common_code) noexcept {
     return cases(common_code.to_raw_code());

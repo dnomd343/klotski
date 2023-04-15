@@ -33,22 +33,23 @@ uint32_t TypeId::group_max_size(const CommonCode &common_code) noexcept {
     return TypeId(common_code).group_max_size();
 }
 
-/// ------------------------------------------ Group ------------------------------------------
+/// --------------------------------------- Group Case ----------------------------------------
 
-Group::info_t Group::info(const RawCode &raw_code) {
-
-    // TODO: function body
-    return {};
-}
-
-Group::info_t Group::info(const CommonCode &common_code) {
+GroupCase::info_t GroupCase::encode(const RawCode &raw_code) noexcept {
 
     // TODO: function body
 
     return {};
 }
 
-CommonCode Group::resolve(const GroupId &group_id, uint32_t group_index) {
+GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
+
+    // TODO: function body
+
+    return {};
+}
+
+CommonCode GroupCase::parse(const info_t &info) {
 
     // TODO: check group index
 

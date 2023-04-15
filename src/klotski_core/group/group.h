@@ -59,19 +59,19 @@ public:
     std::vector<std::vector<CommonCode>> groups() const noexcept;
 };
 
-/// ---------------------------------------- Group ID -----------------------------------------
+/// ------------------------------------------ Group ------------------------------------------
 
-class GroupId {
+class Group {
     TypeId type_id_;
     uint32_t group_id_;
 
     static uint32_t group_id(uint32_t type_id, const CommonCode &seed) noexcept;
 
 public:
-    GroupId(uint32_t type_id, uint32_t group_id);
-    GroupId(const TypeId &type_id, uint32_t group_id);
-    explicit GroupId(const RawCode &raw_code) noexcept;
-    explicit GroupId(const CommonCode &common_code) noexcept;
+    Group(uint32_t type_id, uint32_t group_id);
+    Group(const TypeId &type_id, uint32_t group_id);
+    explicit Group(const RawCode &raw_code) noexcept;
+    explicit Group(const CommonCode &common_code) noexcept;
 
     /// Release raw type_id / group_id value.
     constexpr uint32_t unwrap() const noexcept { return group_id_; }
@@ -82,18 +82,20 @@ public:
     static uint32_t size(const RawCode &raw_code) noexcept;
     static uint32_t size(const CommonCode &common_code) noexcept;
 
-    /// Get the minimum CommonCode of the current group.
+    /// Get the minimum CommonCode.
     CommonCode seed() const noexcept;
     static CommonCode seed(const RawCode &raw_code) noexcept;
     static CommonCode seed(const CommonCode &common_code) noexcept;
 
-    /// Calculate the specified group.
+    /// Calculate the current group.
     std::vector<RawCode> cases() const noexcept;
+    static std::vector<RawCode> cases(const RawCode &raw_code) noexcept;
+    static std::vector<RawCode> cases(const CommonCode &common_code) noexcept;
 };
 
-/// ------------------------------------------ Group ------------------------------------------
+/// --------------------------------------- Group Case ----------------------------------------
 
-class Group {
+class GroupCase {
 public:
     struct info_t {
         uint16_t type_id;
@@ -101,16 +103,12 @@ public:
         uint32_t group_index;
     };
 
-    /// Search for all derivatives that a case can produce.
-    static std::vector<RawCode> cases(const RawCode &raw_code) noexcept;
-    static std::vector<RawCode> cases(const CommonCode &common_code) noexcept;
+    /// Get the CommonCode using the group info.
+    static CommonCode parse(const info_t &info);
 
     /// Get group info according to specified case.
-    static info_t info(const RawCode &raw_code);
-    static info_t info(const CommonCode &common_code);
-
-    /// Get the CommonCode according to the group info.
-    static CommonCode resolve(const GroupId &group_id, uint32_t group_index);
+    static info_t encode(const RawCode &raw_code) noexcept;
+    static info_t encode(const CommonCode &common_code) noexcept;
 };
 
 /// ---------------------------------------- Operators ----------------------------------------
@@ -119,24 +117,21 @@ inline bool operator==(const TypeId &t1, const TypeId &t2) {
     return t1.unwrap() == t2.unwrap();
 }
 
-inline bool operator!=(const TypeId &t1, const TypeId &t2) {
-    return t1.unwrap() != t2.unwrap();
-}
-
-inline bool operator==(const GroupId &g1, const GroupId &g2) {
+inline bool operator==(const Group &g1, const Group &g2) {
     return g1.type_id() == g2.type_id() && g1.unwrap() == g2.unwrap();
-}
-
-inline bool operator!=(const GroupId &g1, const GroupId &g2) {
-    return g1.type_id() != g2.type_id() || g1.unwrap() != g2.unwrap();
 }
 
 inline bool operator==(const TypeId::block_num_t &b1, const TypeId::block_num_t &b2) {
     return (b1.n_1x1 == b2.n_1x1) && (b1.n_1x2 == b2.n_1x2) && (b1.n_2x1 == b2.n_2x1);
 }
 
-inline bool operator!=(const TypeId::block_num_t &b1, const TypeId::block_num_t &b2) {
-    return (b1.n_1x1 != b2.n_1x1) || (b1.n_1x2 != b2.n_1x2) || (b1.n_2x1 != b2.n_2x1);
+inline bool operator==(const GroupCase::info_t &i1, const GroupCase::info_t &i2) {
+    return (i1.type_id == i2.type_id) && (i1.group_id == i2.group_id) && (i1.group_index == i2.group_index);
 }
+
+inline bool operator!=(const Group &g1, const Group &g2) { return !(g1 == g2); }
+inline bool operator!=(const TypeId &t1, const TypeId &t2) { return !(t1 == t2); }
+inline bool operator!=(const GroupCase::info_t &i1, const GroupCase::info_t &i2) { return !(i1 == i2); }
+inline bool operator!=(const TypeId::block_num_t &b1, const TypeId::block_num_t &b2) { return !(b1 == b2); }
 
 } // namespace klotski
