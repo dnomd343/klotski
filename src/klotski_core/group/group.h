@@ -79,9 +79,9 @@ class Group {
 public:
 /// ----------------------------------- group seeds -----------------------------------
 
+    static CommonCode group_seed(const GroupId &group_id);
     static CommonCode group_seed(const RawCode &raw_code);
     static CommonCode group_seed(const CommonCode &common_code);
-    static CommonCode group_seed(uint32_t type_id, uint32_t group_id);
 
     /// Get all seeds in the specified type id.
     static std::vector<CommonCode> group_seeds(const TypeId &type_id);
@@ -99,7 +99,7 @@ public:
     static std::vector<std::vector<CommonCode>> build_groups(const TypeId &type_id);
 
     /// Calculate the specified group using type_id and group_id.
-    static std::vector<CommonCode> build_group(uint32_t type_id, uint32_t group_id);
+    static std::vector<RawCode> build_group(const GroupId &group_id);
 
 /// ----------------------------------- group info ------------------------------------
 

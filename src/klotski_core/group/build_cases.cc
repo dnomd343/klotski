@@ -47,12 +47,16 @@ std::vector<CommonCode> Group::all_cases(const TypeId &type_id) {
     return all_cases;
 }
 
-absl::flat_hash_map<uint64_t, uint64_t> expansion(const RawCode &entry) {
+//absl::flat_hash_map<uint64_t, uint64_t> expansion(const RawCode &entry) {
+//
+//}
+
+std::vector<RawCode> Group::group_cases(const RawCode &raw_code) {
     std::queue<uint64_t> cache;
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
-    cases.reserve(Group::group_max_size(entry));
-    cases.emplace(entry.unwrap(), 0); // without mask
-    cache.emplace(entry.unwrap());
+    cases.reserve(Group::group_max_size(raw_code));
+    cases.emplace(raw_code.unwrap(), 0); // without mask
+    cache.emplace(raw_code.unwrap());
 
     auto core = Core(
         [&cache, &cases](auto &&code, auto &&mask) { // callback function
@@ -69,11 +73,7 @@ absl::flat_hash_map<uint64_t, uint64_t> expansion(const RawCode &entry) {
         core.next_cases(cache.front(), cases.find(cache.front())->second);
         cache.pop(); // case dequeue
     }
-    return cases;
-}
 
-std::vector<RawCode> Group::group_cases(const RawCode &raw_code) {
-    auto cases = expansion(raw_code);
     auto result = std::vector<RawCode>();
     result.reserve(cases.size());
     for (auto &&tmp : cases) { // export group cases
@@ -86,27 +86,65 @@ std::vector<RawCode> Group::group_cases(const CommonCode &common_code) {
     return group_cases(RawCode::from_common_code(common_code));
 }
 
+CommonCode Group::group_seed(const RawCode &raw_code) {
+
+//    auto t = expansion(raw_code);
+//
+//    auto k = t.begin();
+//
+//    auto cmp = [](const std::pair<uint64_t, uint64_t> &p1, const std::pair<uint64_t, uint64_t> &p2) {
+//        return RawCode::unsafe_create(p1.first).to_common_code() < RawCode::unsafe_create(p2.first).to_common_code();
+//    };
+//
+//    return std::min_element(t.begin(), t.end(), cmp)->first;
+
+
+    auto cases = group_cases(raw_code);
+    std::vector<CommonCode> group(cases.begin(), cases.end());
+
+    return *std::min_element(group.begin(), group.end());
+
+
+//    std::vector<CommonCode> group;
+//
+//    for (auto &&tmp : expansion(raw_code)) {
+//        group.emplace_back(RawCode::unsafe_create(tmp.first).to_common_code());
+//    }
+//
+//    return *std::min_element(group.begin(), group.end());
+}
+
+CommonCode Group::group_seed(const CommonCode &common_code) {
+
+    return group_seed(common_code.to_raw_code());
+
+}
 
 // TODO: refactor build_group -> using GROUP_SEEDS
-std::vector<CommonCode> Group::build_group(uint32_t type_id, uint32_t group_id) {
+std::vector<RawCode> Group::build_group(const GroupId &group_id) {
 
-    auto offset = TYPE_ID_OFFSET[type_id];
+//    auto offset = TYPE_ID_OFFSET[type_id];
+//
+//    std::cout << "size: " << TYPE_ID_GROUP_NUM[type_id] << std::endl;
+//
+//    auto k = GROUP_SEEDS_INDEX[offset + group_id];
+//
+//    std::cout << "tmp index: " << k << std::endl;
+//
+//    auto r = k + offset;
+//
+//    std::cout << "real index: " << r << std::endl;
+//
+//    auto seed = CommonCode(GROUP_SEEDS[r]);
+//
+//    std::cout << "seed: " << seed << std::endl;
+//
+//    std::cout << RawCode(seed) << std::endl;
 
-    std::cout << "size: " << TYPE_ID_GROUP_NUM[type_id] << std::endl;
+    auto seed = group_seed(group_id);
 
-    auto k = GROUP_SEEDS_INDEX[offset + group_id];
+    return group_cases(seed);
 
-    std::cout << "tmp index: " << k << std::endl;
-
-    auto r = k + offset;
-
-    std::cout << "real index: " << r << std::endl;
-
-    auto seed = CommonCode(GROUP_SEEDS[r]);
-
-    std::cout << "seed: " << seed << std::endl;
-
-    std::cout << RawCode(seed) << std::endl;
 
 //    uint32_t group_num = 0;
 //    auto all_cases = Group::all_cases(type_id); // load all cases of type_id

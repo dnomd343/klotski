@@ -8,15 +8,17 @@ namespace klotski {
 
 
 
-CommonCode Group::group_seed(uint32_t type_id, uint32_t group_id) {
+CommonCode Group::group_seed(const GroupId &group_id) {
 
     // TODO: check value
+
+    auto type_id = group_id.type_id();
 
     auto offset = TYPE_ID_OFFSET[type_id];
 
     std::cout << "size: " << TYPE_ID_GROUP_NUM[type_id] << std::endl;
 
-    auto k = GROUP_SEEDS_INDEX[offset + group_id];
+    auto k = GROUP_SEEDS_INDEX[offset + group_id.unwrap()];
 
     std::cout << "tmp index: " << k << std::endl;
 
@@ -38,18 +40,6 @@ std::vector<CommonCode> Group::group_seeds(const TypeId &type_id) {
     return {offset, offset + TYPE_ID_GROUP_NUM[type_id.unwrap()]};
 }
 
-CommonCode Group::group_seed(const RawCode &raw_code) {
 
-
-
-    return CommonCode(0);
-}
-
-CommonCode Group::group_seed(const CommonCode &common_code) {
-
-
-
-    return CommonCode(0);
-}
 
 } // namespace klotski
