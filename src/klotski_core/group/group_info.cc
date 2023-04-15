@@ -26,7 +26,7 @@ Group::group_info_t Group::group_info(const CommonCode &common_code) {
     uint32_t end = start + TYPE_ID_GROUP_NUM[type_id];
     std::cout << "range: [" << start << ", " << end << ")" << std::endl;
 
-    auto group = Group::group_cases(common_code);
+    auto group = Group::cases(common_code);
     std::vector<CommonCode> g(group.begin(), group.end());
     auto seed = std::min_element(g.begin(), g.end());
     std::cout << "seed: " << *seed << std::endl;

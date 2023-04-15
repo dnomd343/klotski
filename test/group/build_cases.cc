@@ -29,7 +29,7 @@ const char GROUP_INFO_MD5[] = "976bf22530085210e68a6a4e67053506";
 TEST(Group, all_cases) {
     std::array<std::vector<CommonCode>, TYPE_ID_LIMIT> all_cases;
     auto build = [&all_cases](TypeId type_id) {
-        auto cases = Group::all_cases(type_id); // build test data
+        auto cases = type_id.all_cases(); // build test data
         EXPECT_EQ(cases.size(), TYPE_ID_SIZE[type_id.unwrap()]); // verify cases number
         for (auto &&common_code : cases) {
             EXPECT_EQ(TypeId(common_code), type_id); // verify type id
@@ -59,10 +59,10 @@ TEST(Group, all_cases) {
 
 TEST(Group, group_cases) {
     auto build = [](CommonCode seed) -> std::vector<CommonCode> {
-        auto group_raw = Group::group_cases(seed);
+        auto group_raw = Group::cases(seed);
         std::vector<CommonCode> group(group_raw.begin(), group_raw.end()); // convert as CommonCodes
         EXPECT_EQ(seed, std::min_element(group.begin(), group.end())->unwrap()); // confirm min seed
-        EXPECT_EQ(group.size(), Group::group_size(seed)); // verify group size
+        EXPECT_EQ(group.size(), GroupId::size(seed)); // verify group size
 
         uint32_t type_id = TypeId(seed).unwrap(); // current type id
         for (auto &&elem : group) {
@@ -94,7 +94,7 @@ TEST(Group, group_seeds) {
     std::vector<CommonCode> all_seeds;
     all_seeds.reserve(ALL_GROUP_NUM);
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        auto seeds = Group::group_seeds(TypeId(type_id));
+        auto seeds = TypeId(type_id).seeds();
         for (auto &&seed : seeds) {
             EXPECT_EQ(TypeId(seed).unwrap(), type_id); // verify type id of seeds
         }
@@ -103,7 +103,7 @@ TEST(Group, group_seeds) {
         std::vector<CommonCode> sub_seeds;
         sub_seeds.reserve(TYPE_ID_GROUP_NUM[type_id]);
         for (uint32_t group_id = 0; group_id < TYPE_ID_GROUP_NUM[type_id]; ++group_id) {
-            sub_seeds.emplace_back(Group::group_seed(GroupId(type_id, group_id)));
+            sub_seeds.emplace_back(GroupId(type_id, group_id).seed());
         }
         std::sort(seeds.begin(), seeds.end());
         std::sort(sub_seeds.begin(), sub_seeds.end()); // don't verify seeds order for now
@@ -113,8 +113,8 @@ TEST(Group, group_seeds) {
     EXPECT_EQ(all_seeds, group_seeds); // verify group seeds
 
     auto test = [](CommonCode seed) {
-        EXPECT_EQ(Group::group_seed(seed), seed); // verify group seed fetch
-        EXPECT_EQ(Group::group_seed(seed.to_raw_code()), seed);
+        EXPECT_EQ(GroupId::seed(seed), seed); // verify group seed fetch
+        EXPECT_EQ(GroupId::seed(seed.to_raw_code()), seed);
     };
     auto pool = TinyPool();
     for (auto &&seed : GROUP_SEEDS) { // traverse all seeds
@@ -139,8 +139,8 @@ TEST(Group, build_groups) {
             std::sort(group.begin(), group.end());
             std::sort(groups[group_id].begin(), groups[group_id].end());
             EXPECT_EQ(groups[group_id], group); // verify group data
-            EXPECT_EQ(group.size(), Group::group_size(GroupId(type_id, group_id))); // verify group size
-            EXPECT_EQ(*group.begin(), Group::group_seed(GroupId(type_id, group_id))); // verify group seed
+            EXPECT_EQ(group.size(), GroupId(type_id, group_id).size()); // verify group size
+            EXPECT_EQ(*group.begin(), GroupId(type_id, group_id).seed()); // verify group seed
 
             for (uint32_t index = 0; index < group.size(); ++index) {
                 all_cases[group[index].to_short_code().unwrap()] = { // storage group info

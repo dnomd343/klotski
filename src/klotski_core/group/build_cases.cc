@@ -12,28 +12,28 @@ namespace klotski {
 using Common::check_range;
 using Common::range_reverse;
 
-uint32_t Group::group_size(const GroupId &group_id) {
-    return group_size(group_seed(group_id));
+uint32_t GroupId::size() const noexcept {
+    return size(seed());
 }
 
-uint32_t Group::group_size(const CommonCode &common_code) {
-    return group_size(common_code.to_raw_code());
+uint32_t GroupId::size(const CommonCode &common_code) noexcept {
+    return GroupId::size(common_code.to_raw_code());
 }
 
-std::vector<RawCode> Group::group_cases(const CommonCode &common_code) {
-    return group_cases(common_code.to_raw_code());
+std::vector<RawCode> Group::cases(const CommonCode &common_code) noexcept {
+    return cases(common_code.to_raw_code());
 }
 
 std::vector<CommonCode> Group::build_group(const GroupId &group_id) {
-    auto cases = group_cases(group_seed(group_id));
+    auto cases = Group::cases(group_id.seed());
     return {cases.begin(), cases.end()};
 }
 
-std::vector<CommonCode> Group::all_cases(const TypeId &type_id) {
+std::vector<CommonCode> TypeId::all_cases() const noexcept {
     std::vector<uint32_t> ranges; // basic ranges of type_id
-    ranges.reserve(TYPE_ID_SIZE[type_id.unwrap()]); // over-allocation
+    ranges.reserve(TYPE_ID_SIZE[type_id_]); // over-allocation
 
-    auto tmp = type_id.block_num();
+    auto tmp = block_num();
     BasicRanges::generate(ranges, { // generate target ranges
         .n1 = 16 - tmp.n_1x1 - (tmp.n_1x2 + tmp.n_2x1) * 2, /// space -> 00
         .n2 = tmp.n_1x2, /// 1x2 -> 01
@@ -45,7 +45,7 @@ std::vector<CommonCode> Group::all_cases(const TypeId &type_id) {
     }
 
     std::vector<CommonCode> all_cases;
-    all_cases.reserve(TYPE_ID_SIZE[type_id.unwrap()]);
+    all_cases.reserve(TYPE_ID_SIZE[type_id_]);
     for (uint64_t head = 0; head < 15; ++head) { // address of 2x2 block
         /// head -> 0/1/2 / 4/5/6 / 8/9/10 / 12/13/14
         if ((head & 0b11) == 0b11) {
@@ -63,7 +63,7 @@ std::vector<CommonCode> Group::all_cases(const TypeId &type_id) {
     return all_cases;
 }
 
-uint32_t Group::group_size(const RawCode &raw_code) {
+uint32_t GroupId::size(const RawCode &raw_code) noexcept {
     std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
     cases.reserve(Group::group_max_size(raw_code));
@@ -87,7 +87,7 @@ uint32_t Group::group_size(const RawCode &raw_code) {
     return cases.size();
 }
 
-std::vector<RawCode> Group::group_cases(const RawCode &raw_code) {
+std::vector<RawCode> Group::cases(const RawCode &raw_code) noexcept {
     std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
     cases.reserve(Group::group_max_size(raw_code));
@@ -118,11 +118,11 @@ std::vector<RawCode> Group::group_cases(const RawCode &raw_code) {
 }
 
 std::vector<std::vector<CommonCode>> Group::build_groups(const TypeId &type_id) {
-    auto all_cases = Group::all_cases(type_id);
+    auto all_cases = type_id.all_cases();
     std::vector<std::vector<CommonCode>> groups;
 
     auto min = std::min_element(all_cases.begin(), all_cases.end()); // search min CommonCode
-    auto first_group = group_cases(min->to_raw_code()); // expand the first group
+    auto first_group = cases(min->to_raw_code()); // expand the first group
     groups.emplace_back(first_group.begin(), first_group.end());
     if (first_group.size() == all_cases.size()) {
         return groups; // only contains one group
@@ -133,7 +133,7 @@ std::vector<std::vector<CommonCode>> Group::build_groups(const TypeId &type_id) 
         cases.erase(tmp); // remove elements from first group
     }
     while (!cases.empty()) {
-        auto group = group_cases(cases.begin()->to_raw_code());
+        auto group = Group::cases(cases.begin()->to_raw_code());
         groups.emplace_back(group.begin(), group.end()); // release new group
         for (auto &&tmp : *(groups.end() - 1)) {
             cases.erase(tmp); // remove selected cases

@@ -38,6 +38,12 @@ public:
     block_num_t block_num() const noexcept;
     static block_num_t block_num(const RawCode &raw_code) noexcept;
     static block_num_t block_num(const CommonCode &common_code) noexcept;
+
+    /// Get all seeds in the specified type id.
+    std::vector<CommonCode> seeds() const noexcept;
+
+    /// Search for all cases of the specified type_id.
+    std::vector<CommonCode> all_cases() const noexcept;
 };
 
 inline bool operator==(const TypeId &t1, const TypeId &t2) {
@@ -69,6 +75,16 @@ public:
     /// Release raw type id / group id value.
     constexpr uint32_t unwrap() const noexcept { return group_id_; }
     constexpr uint32_t type_id() const noexcept { return type_id_.unwrap(); }
+
+    /// Get the size of the specified group.
+    uint32_t size() const noexcept;
+    static uint32_t size(const RawCode &raw_code) noexcept;
+    static uint32_t size(const CommonCode &common_code) noexcept;
+
+    /// Get the minimum CommonCode of the specified group.
+    CommonCode seed() const noexcept;
+    static CommonCode seed(const RawCode &raw_code) noexcept;
+    static CommonCode seed(const CommonCode &common_code) noexcept;
 };
 
 inline bool operator==(const GroupId &g1, const GroupId &g2) {
@@ -83,35 +99,15 @@ inline bool operator!=(const GroupId &g1, const GroupId &g2) {
 
 class Group {
 public:
-/// ----------------------------------- group seeds -----------------------------------
-
-    /// Get the size of the specified group.
-    static uint32_t group_size(const GroupId &group_id);
-    static uint32_t group_size(const RawCode &raw_code);
-    static uint32_t group_size(const CommonCode &common_code);
-
-    /// Get the minimum CommonCode of the specified group.
-    static CommonCode group_seed(const GroupId &group_id);
-    static CommonCode group_seed(const RawCode &raw_code);
-    static CommonCode group_seed(const CommonCode &common_code);
-
-    /// Get all seeds in the specified type id.
-    static std::vector<CommonCode> group_seeds(const TypeId &type_id);
-
-/// --------------------------------- cases expansion ---------------------------------
-
-    /// Search for all cases of the specified type_id.
-    static std::vector<CommonCode> all_cases(const TypeId &type_id);
-
     /// Search for all derivatives that a case can produce.
-    static std::vector<RawCode> group_cases(const RawCode &raw_code);
-    static std::vector<RawCode> group_cases(const CommonCode &common_code);
+    static std::vector<RawCode> cases(const RawCode &raw_code) noexcept;
+    static std::vector<RawCode> cases(const CommonCode &common_code) noexcept;
+
+    /// Calculate the specified group in the specified group_id.
+    static std::vector<CommonCode> build_group(const GroupId &group_id);
 
     /// Calculate all groups in the specified type_id.
     static std::vector<std::vector<CommonCode>> build_groups(const TypeId &type_id);
-
-    /// Calculate the specified group using type_id and group_id.
-    static std::vector<CommonCode> build_group(const GroupId &group_id);
 
 /// ----------------------------------- group info ------------------------------------
 
