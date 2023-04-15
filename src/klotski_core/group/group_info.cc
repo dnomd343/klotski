@@ -2,8 +2,6 @@
 #include "group.h"
 #include "type_id.h"
 
-#include <iostream>
-
 namespace klotski {
 
 /// --------------------------------------- Group Type ----------------------------------------
@@ -38,11 +36,21 @@ GroupCase::info_t GroupCase::encode(const RawCode &raw_code) noexcept {
     return encode(raw_code.to_common_code());
 }
 
+CommonCode GroupCase::parse(const info_t &info) {
+    auto cases = Group(info.type_id, info.group_id).cases();
+    if (cases.size() <= info.group_index) {
+        throw std::invalid_argument("group index overflow"); // check group index
+    }
+
+    std::vector<CommonCode> group(cases.begin(), cases.end());
+    std::nth_element(group.begin(), group.begin() + info.group_index, group.end());
+    return group[info.group_index]; // located nth as target
+}
+
 GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
+    uint32_t group_index = 0;
     auto cases = Group::cases(common_code);
     std::vector<CommonCode> group(cases.begin(), cases.end());
-
-    uint32_t group_index = 0;
     for (auto &&code: group) {
         if (code < common_code) {
             ++group_index; // locate group index
@@ -56,15 +64,6 @@ GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
         .group_id = static_cast<uint16_t>(group_id(type, seed)),
         .group_index = group_index,
     };
-}
-
-CommonCode GroupCase::parse(const info_t &info) {
-
-    // TODO: check group index
-
-    // TODO: function body
-
-    return CommonCode(0);
 }
 
 } // namespace klotski
