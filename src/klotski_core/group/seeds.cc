@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "group.h"
 #include "type_id.h"
 #include "group_seeds.h"
@@ -6,40 +7,25 @@
 
 namespace klotski {
 
+CommonCode Group::group_seed(const CommonCode &common_code) {
+    return group_seed(common_code.to_raw_code());
+}
 
+CommonCode Group::group_seed(const RawCode &raw_code) {
+    auto cases = group_cases(raw_code);
+    std::vector<CommonCode> group(cases.begin(), cases.end());
+    return *std::min_element(group.begin(), group.end());
+}
 
 CommonCode Group::group_seed(const GroupId &group_id) {
-
-    // TODO: check value
-
-    auto type_id = group_id.type_id();
-
-    auto offset = TYPE_ID_OFFSET[type_id];
-
-    std::cout << "size: " << TYPE_ID_GROUP_NUM[type_id] << std::endl;
-
-    auto k = GROUP_SEEDS_INDEX[offset + group_id.unwrap()];
-
-    std::cout << "tmp index: " << k << std::endl;
-
-    auto r = k + offset;
-
-    std::cout << "real index: " << r << std::endl;
-
-    auto seed = CommonCode(GROUP_SEEDS[r]);
-
-    std::cout << "seed: " << seed << std::endl;
-
-    std::cout << RawCode(seed) << std::endl;
-
-    return seed;
+    auto offset = TYPE_ID_OFFSET[group_id.type_id()]; // type id offset
+    auto index = offset + GROUP_SEEDS_INDEX[offset + group_id.unwrap()];
+    return CommonCode::unsafe_create(GROUP_SEEDS[index]);
 }
 
 std::vector<CommonCode> Group::group_seeds(const TypeId &type_id) {
-    auto offset = GROUP_SEEDS + TYPE_ID_OFFSET[type_id.unwrap()]; // group id offset
+    auto offset = GROUP_SEEDS + TYPE_ID_OFFSET[type_id.unwrap()]; // type id offset
     return {offset, offset + TYPE_ID_GROUP_NUM[type_id.unwrap()]};
 }
-
-
 
 } // namespace klotski

@@ -39,8 +39,13 @@ public:
     static block_num_t block_num(const CommonCode &common_code) noexcept;
 };
 
-inline bool operator==(const TypeId &t1, const TypeId &t2) { return t1.unwrap() == t2.unwrap(); }
-inline bool operator!=(const TypeId &t1, const TypeId &t2) { return t1.unwrap() != t2.unwrap(); }
+inline bool operator==(const TypeId &t1, const TypeId &t2) {
+    return t1.unwrap() == t2.unwrap();
+}
+
+inline bool operator!=(const TypeId &t1, const TypeId &t2) {
+    return t1.unwrap() != t2.unwrap();
+}
 
 inline bool operator==(const TypeId::block_num_t &b1, const TypeId::block_num_t &b2) {
     return (b1.n_1x1 == b2.n_1x1) && (b1.n_1x2 == b2.n_1x2) && (b1.n_2x1 == b2.n_2x1);
@@ -79,6 +84,7 @@ class Group {
 public:
 /// ----------------------------------- group seeds -----------------------------------
 
+    /// Get the minimum CommonCode of the specified group.
     static CommonCode group_seed(const GroupId &group_id);
     static CommonCode group_seed(const RawCode &raw_code);
     static CommonCode group_seed(const CommonCode &common_code);
@@ -99,7 +105,7 @@ public:
     static std::vector<std::vector<CommonCode>> build_groups(const TypeId &type_id);
 
     /// Calculate the specified group using type_id and group_id.
-    static std::vector<RawCode> build_group(const GroupId &group_id);
+    static std::vector<CommonCode> build_group(const GroupId &group_id);
 
 /// ----------------------------------- group info ------------------------------------
 
@@ -109,10 +115,8 @@ public:
         uint32_t group_index;
     };
 
-    /// Get group info according to RawCode.
+    /// Get group info according to specified case.
     static group_info_t group_info(const RawCode &raw_code);
-
-    /// Get group info according to CommonCode.
     static group_info_t group_info(const CommonCode &common_code);
 
     /// Get the CommonCode according to the group info.
