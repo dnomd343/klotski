@@ -12,6 +12,18 @@ namespace klotski {
 using Common::check_range;
 using Common::range_reverse;
 
+uint32_t Group::group_size(const GroupId &group_id) {
+    return group_cases(group_seed(group_id)).size();
+}
+
+uint32_t Group::group_size(const RawCode &raw_code) {
+    return group_cases(raw_code).size();
+}
+
+uint32_t Group::group_size(const CommonCode &common_code) {
+    return group_size(common_code.to_raw_code());
+}
+
 std::vector<RawCode> Group::group_cases(const CommonCode &common_code) {
     return group_cases(common_code.to_raw_code());
 }

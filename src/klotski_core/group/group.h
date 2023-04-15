@@ -7,6 +7,7 @@
 namespace klotski {
 
 const uint32_t TYPE_ID_LIMIT = 203;
+const uint32_t ALL_GROUP_NUM = 25422;
 
 /// ----------------------------------------- Type ID -----------------------------------------
 
@@ -83,6 +84,11 @@ inline bool operator!=(const GroupId &g1, const GroupId &g2) {
 class Group {
 public:
 /// ----------------------------------- group seeds -----------------------------------
+
+    /// Get the size of the specified group.
+    static uint32_t group_size(const GroupId &group_id);
+    static uint32_t group_size(const RawCode &raw_code);
+    static uint32_t group_size(const CommonCode &common_code);
 
     /// Get the minimum CommonCode of the specified group.
     static CommonCode group_seed(const GroupId &group_id);
