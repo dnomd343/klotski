@@ -5,6 +5,11 @@
 #include "short_code.h"
 #include "gtest/gtest.h"
 
+#define SHOULD_PANIC(FUNC) \
+    try { \
+        FUNC; EXPECT_STREQ("should panic", "but no panic"); \
+    } catch (...) {}
+
 using klotski::AllCases;
 using klotski::ShortCode;
 using klotski::CommonCode;
@@ -15,16 +20,6 @@ using klotski::ALL_CASES_SIZE_SUM;
 
 const static uint32_t TEST_CODE = 4091296;
 const static std::string TEST_CODE_STR = "4WVE1";
-
-static inline void SHOULD_PANIC(const std::function<void()> &func) {
-    bool panic_flag = false;
-    try {
-        func();
-    } catch (klotski::ShortCodeExp &) {
-        panic_flag = true;
-    }
-    EXPECT_EQ(panic_flag, true);
-}
 
 TEST(ShortCode, limit) {
     EXPECT_EQ(ALL_CASES_SIZE_SUM, SHORT_CODE_LIMIT);
@@ -38,9 +33,9 @@ TEST(ShortCode, hash) {
 TEST(ShortCode, validity) {
     EXPECT_NE(ShortCode::check(-1), true); // out of short code range
     EXPECT_NE(ShortCode::check(29670987), true); // out of short code range
-    SHOULD_PANIC([](){ ShortCode::from_string("R50EH"); }); // with invalid `0`
-    SHOULD_PANIC([](){ ShortCode::from_string("123456"); }); // length != 5
-    SHOULD_PANIC([](){ ShortCode::from_string("Z9EFV"); }); // out of short code range
+    SHOULD_PANIC(ShortCode::from_string("R50EH")) // with invalid `0`
+    SHOULD_PANIC(ShortCode::from_string("123456")) // length != 5
+    SHOULD_PANIC(ShortCode::from_string("Z9EFV")) // out of short code range
 }
 
 TEST(ShortCode, speed_up) {

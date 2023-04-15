@@ -5,6 +5,11 @@
 #include "common_code.h"
 #include "gtest/gtest.h"
 
+#define SHOULD_PANIC(FUNC) \
+    try { \
+        FUNC; EXPECT_STREQ("should panic", "but no panic"); \
+    } catch (...) {}
+
 using klotski::RawCode;
 using klotski::AllCases;
 using klotski::ShortCode;
@@ -12,16 +17,6 @@ using klotski::CommonCode;
 
 const static uint64_t TEST_CODE = 0x1'A9BF'0C00;
 const static std::string TEST_CODE_STR = "1A9BF0C00";
-
-static inline void SHOULD_PANIC(const std::function<void()> &func) {
-    bool panic_flag = false;
-    try {
-        func();
-    } catch (klotski::CommonCodeExp &) {
-        panic_flag = true;
-    }
-    EXPECT_EQ(panic_flag, true);
-}
 
 TEST(CommonCode, hash) {
     auto tmp = std::unordered_set<CommonCode>{ CommonCode(TEST_CODE) };
@@ -34,8 +29,8 @@ TEST(CommonCode, validity) {
     EXPECT_NE(CommonCode::check(0x1'A9'BF'FC'00), true); // less than 2 space
     EXPECT_NE(CommonCode::check(0x1'A0'BF'0C'01), true); // low bits not fill zero
 
-    SHOULD_PANIC([](){ CommonCode::from_string("0123456789"); }); // length > 9
-    SHOULD_PANIC([](){ CommonCode::from_string("123J432A9"); }); // with invalid `J`
+    SHOULD_PANIC(CommonCode::from_string("0123456789")) // length > 9
+    SHOULD_PANIC(CommonCode::from_string("123J432A9")) // with invalid `J`
 }
 
 TEST(CommonCode, code_verify) { // test all layout
