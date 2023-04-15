@@ -7,46 +7,50 @@
 
 namespace klotski {
 
-Group::group_info_t Group::group_info(const RawCode &raw_code) {
+/// ----------------------------------------- Type ID -----------------------------------------
+
+uint32_t TypeId::group_num() const noexcept {
+    return TYPE_ID_GROUP_NUM[type_id_];
+}
+
+uint32_t TypeId::group_num(const RawCode &raw_code) noexcept {
+    return TypeId(raw_code).group_num();
+}
+
+uint32_t TypeId::group_num(const CommonCode &common_code) noexcept {
+    return TypeId(common_code).group_num();
+}
+
+uint32_t TypeId::group_max_size() const noexcept {
+    return TYPE_ID_GROUP_MAX_SIZE[type_id_];
+}
+
+uint32_t TypeId::group_max_size(const RawCode &raw_code) noexcept {
+    return TypeId(raw_code).group_max_size();
+}
+
+uint32_t TypeId::group_max_size(const CommonCode &common_code) noexcept {
+    return TypeId(common_code).group_max_size();
+}
+
+/// ------------------------------------------ Group ------------------------------------------
+
+Group::info_t Group::info(const RawCode &raw_code) {
+
+    // TODO: function body
+    return {};
+}
+
+Group::info_t Group::info(const CommonCode &common_code) {
 
     // TODO: function body
 
-    return Group::group_info_t();
+    return {};
 }
 
-Group::group_info_t Group::group_info(const CommonCode &common_code) {
+CommonCode Group::resolve(const GroupId &group_id, uint32_t group_index) {
 
-    auto type_id = TypeId(common_code).unwrap();
-
-    std::cout << type_id << std::endl;
-    std::cout << "group num: " << TYPE_ID_GROUP_NUM[type_id] << std::endl;
-    std::cout << "offset: " << TYPE_ID_OFFSET[type_id] << std::endl;
-
-    uint32_t start = TYPE_ID_OFFSET[type_id];
-    uint32_t end = start + TYPE_ID_GROUP_NUM[type_id];
-    std::cout << "range: [" << start << ", " << end << ")" << std::endl;
-
-    auto group = Group::cases(common_code);
-    std::vector<CommonCode> g(group.begin(), group.end());
-    auto seed = std::min_element(g.begin(), g.end());
-    std::cout << "seed: " << *seed << std::endl;
-
-    auto t = std::lower_bound(GROUP_SEEDS + start, GROUP_SEEDS + end, seed->unwrap());
-    auto tmp_index = t - GROUP_SEEDS;
-    std::cout << "tmp index: " << tmp_index;
-    std::cout << " (" << CommonCode(GROUP_SEEDS[tmp_index]) << ")" << std::endl;
-
-    auto group_id = GROUP_SEEDS_INDEX_REV[tmp_index];
-    std::cout << "group id: " << group_id << std::endl;
-
-    // TODO: function body
-
-    return Group::group_info_t();
-}
-
-CommonCode Group::group_case(const Group::group_info_t &group_info) {
-
-    // TODO: check group info
+    // TODO: check group index
 
     // TODO: function body
 

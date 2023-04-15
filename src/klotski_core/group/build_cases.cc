@@ -12,24 +12,9 @@ namespace klotski {
 using Common::check_range;
 using Common::range_reverse;
 
-uint32_t GroupId::size() const noexcept {
-    return size(seed());
-}
+/// ----------------------------------------- Type ID -----------------------------------------
 
-uint32_t GroupId::size(const CommonCode &common_code) noexcept {
-    return GroupId::size(common_code.to_raw_code());
-}
-
-std::vector<RawCode> Group::cases(const CommonCode &common_code) noexcept {
-    return cases(common_code.to_raw_code());
-}
-
-std::vector<CommonCode> Group::build_group(const GroupId &group_id) {
-    auto cases = Group::cases(group_id.seed());
-    return {cases.begin(), cases.end()};
-}
-
-std::vector<CommonCode> TypeId::all_cases() const noexcept {
+std::vector<CommonCode> TypeId::cases() const noexcept {
     std::vector<uint32_t> ranges; // basic ranges of type_id
     ranges.reserve(TYPE_ID_SIZE[type_id_]); // over-allocation
 
@@ -63,10 +48,56 @@ std::vector<CommonCode> TypeId::all_cases() const noexcept {
     return all_cases;
 }
 
+std::vector<std::vector<CommonCode>> TypeId::groups() const noexcept {
+    auto all_cases = cases();
+    std::vector<std::vector<CommonCode>> groups;
+
+    auto min = std::min_element(all_cases.begin(), all_cases.end()); // search min CommonCode
+    auto first_group = Group::cases(min->to_raw_code()); // expand the first group
+    groups.emplace_back(first_group.begin(), first_group.end());
+    if (first_group.size() == all_cases.size()) {
+        return groups; // only contains one group
+    }
+
+    absl::btree_set<CommonCode> cases(all_cases.begin(), all_cases.end());
+    for (auto &&tmp : *groups.begin()) {
+        cases.erase(tmp); // remove elements from first group
+    }
+    while (!cases.empty()) {
+        auto group = Group::cases(cases.begin()->to_raw_code());
+        groups.emplace_back(group.begin(), group.end()); // release new group
+        for (auto &&tmp : *(groups.end() - 1)) {
+            cases.erase(tmp); // remove selected cases
+        }
+    }
+
+    auto cmp_func = [](const std::vector<CommonCode> &v1, const std::vector<CommonCode> &v2) {
+        return v1.size() > v2.size(); // sort by vector size
+    };
+    std::stable_sort(groups.begin(), groups.end(), cmp_func); // using stable sort for ordered index
+    return groups;
+}
+
+/// ---------------------------------------- Group ID -----------------------------------------
+
+uint32_t GroupId::size() const noexcept {
+    return size(seed());
+}
+
+uint32_t GroupId::size(const CommonCode &common_code) noexcept {
+    return size(common_code.to_raw_code());
+}
+
+std::vector<RawCode> GroupId::cases() const noexcept {
+//    auto cases = Group::cases(seed());
+//    return {cases.begin(), cases.end()};
+    return Group::cases(seed());
+}
+
 uint32_t GroupId::size(const RawCode &raw_code) noexcept {
     std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
-    cases.reserve(Group::group_max_size(raw_code));
+    cases.reserve(TypeId::group_max_size(raw_code));
     cases.emplace(raw_code.unwrap(), 0b0); // without mask
 
     auto core = Core(
@@ -87,10 +118,16 @@ uint32_t GroupId::size(const RawCode &raw_code) noexcept {
     return cases.size();
 }
 
+/// ------------------------------------------ Group ------------------------------------------
+
+std::vector<RawCode> Group::cases(const CommonCode &common_code) noexcept {
+    return cases(common_code.to_raw_code());
+}
+
 std::vector<RawCode> Group::cases(const RawCode &raw_code) noexcept {
     std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
-    cases.reserve(Group::group_max_size(raw_code));
+    cases.reserve(TypeId::group_max_size(raw_code));
     cases.emplace(raw_code.unwrap(), 0b0); // without mask
 
     auto core = Core(
@@ -115,36 +152,6 @@ std::vector<RawCode> Group::cases(const RawCode &raw_code) noexcept {
         result.emplace_back(RawCode::unsafe_create(tmp.first));
     }
     return result;
-}
-
-std::vector<std::vector<CommonCode>> Group::build_groups(const TypeId &type_id) {
-    auto all_cases = type_id.all_cases();
-    std::vector<std::vector<CommonCode>> groups;
-
-    auto min = std::min_element(all_cases.begin(), all_cases.end()); // search min CommonCode
-    auto first_group = cases(min->to_raw_code()); // expand the first group
-    groups.emplace_back(first_group.begin(), first_group.end());
-    if (first_group.size() == all_cases.size()) {
-        return groups; // only contains one group
-    }
-
-    absl::btree_set<CommonCode> cases(all_cases.begin(), all_cases.end());
-    for (auto &&tmp : *groups.begin()) {
-        cases.erase(tmp); // remove elements from first group
-    }
-    while (!cases.empty()) {
-        auto group = Group::cases(cases.begin()->to_raw_code());
-        groups.emplace_back(group.begin(), group.end()); // release new group
-        for (auto &&tmp : *(groups.end() - 1)) {
-            cases.erase(tmp); // remove selected cases
-        }
-    }
-
-    auto cmp_func = [](const std::vector<CommonCode> &v1, const std::vector<CommonCode> &v2) {
-        return v1.size() > v2.size(); // sort by vector size
-    };
-    std::stable_sort(groups.begin(), groups.end(), cmp_func); // using stable sort for ordered index
-    return groups;
 }
 
 } // namespace klotski

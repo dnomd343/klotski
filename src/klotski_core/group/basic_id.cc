@@ -18,14 +18,14 @@ TypeId::TypeId(uint32_t type_id) {
 }
 
 TypeId::TypeId(const RawCode &raw_code) noexcept {
-    type_id_ = to_type_id(block_num(raw_code));
+    type_id_ = type_id(block_num(raw_code));
 }
 
 TypeId::TypeId(const CommonCode &common_code) noexcept {
-    type_id_ = to_type_id(block_num(common_code));
+    type_id_ = type_id(block_num(common_code));
 }
 
-uint32_t TypeId::to_type_id(block_num_t &&block_num) noexcept {
+uint32_t TypeId::type_id(block_num_t &&block_num) noexcept { // block_num_t -> type_id
     /// flag -> ... 0000  0xxx  0xxx  xxxx
     ///                  n_x2x n_2x1 n_1x1
     auto n_x2x = block_num.n_1x2 + block_num.n_2x1;
@@ -35,7 +35,7 @@ uint32_t TypeId::to_type_id(block_num_t &&block_num) noexcept {
 
 /// -------------------------------------- Block Number ---------------------------------------
 
-TypeId::block_num_t TypeId::block_num() const noexcept {
+TypeId::block_num_t TypeId::block_num() const noexcept { // type_id -> block_num_t
     auto flag = TYPE_ID_INDEX[type_id_];
     auto n_2x1 = (flag >> 4) & 0b111;
     return block_num_t {
@@ -97,6 +97,14 @@ GroupId::GroupId(const TypeId &type_id, uint32_t group_id) : type_id_(type_id) {
         throw std::invalid_argument("group id overflow");
     }
     group_id_ = group_id;
+}
+
+GroupId::GroupId(const RawCode &raw_code) noexcept : type_id_(TypeId(raw_code)) {
+    group_id_ = group_id(type_id_.unwrap(), GroupId::seed(raw_code));
+}
+
+GroupId::GroupId(const CommonCode &common_code) noexcept : type_id_(TypeId(common_code)) {
+    group_id_ = group_id(type_id_.unwrap(), GroupId::seed(common_code));
 }
 
 } // namespace klotski

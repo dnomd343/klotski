@@ -24,14 +24,14 @@ public:
 
 private:
     uint32_t type_id_;
-    static inline uint32_t to_type_id(block_num_t &&block_num) noexcept;
+    static inline uint32_t type_id(block_num_t &&block_num) noexcept;
 
 public:
     explicit TypeId(uint32_t type_id);
     explicit TypeId(const RawCode &raw_code) noexcept;
     explicit TypeId(const CommonCode &common_code) noexcept;
 
-    /// Release raw type id value.
+    /// Release raw type_id value.
     constexpr uint32_t unwrap() const noexcept { return type_id_; }
 
     /// Get the number of klotski blocks.
@@ -39,12 +39,81 @@ public:
     static block_num_t block_num(const RawCode &raw_code) noexcept;
     static block_num_t block_num(const CommonCode &common_code) noexcept;
 
-    /// Get all seeds in the specified type id.
+    /// Get the number of groups.
+    uint32_t group_num() const noexcept;
+    static uint32_t group_num(const RawCode &raw_code) noexcept;
+    static uint32_t group_num(const CommonCode &common_code) noexcept;
+
+    /// Get the max group size.
+    uint32_t group_max_size() const noexcept;
+    static uint32_t group_max_size(const RawCode &raw_code) noexcept;
+    static uint32_t group_max_size(const CommonCode &common_code) noexcept;
+
+    /// Get all seeds of the current type_id.
     std::vector<CommonCode> seeds() const noexcept;
 
-    /// Search for all cases of the specified type_id.
-    std::vector<CommonCode> all_cases() const noexcept;
+    /// Search for all cases of the current type_id.
+    std::vector<CommonCode> cases() const noexcept;
+
+    /// Calculate all groups of the current type_id.
+    std::vector<std::vector<CommonCode>> groups() const noexcept;
 };
+
+/// ---------------------------------------- Group ID -----------------------------------------
+
+class GroupId {
+    TypeId type_id_;
+    uint32_t group_id_;
+
+    static uint32_t group_id(uint32_t type_id, const CommonCode &seed) noexcept;
+
+public:
+    GroupId(uint32_t type_id, uint32_t group_id);
+    GroupId(const TypeId &type_id, uint32_t group_id);
+    explicit GroupId(const RawCode &raw_code) noexcept;
+    explicit GroupId(const CommonCode &common_code) noexcept;
+
+    /// Release raw type_id / group_id value.
+    constexpr uint32_t unwrap() const noexcept { return group_id_; }
+    constexpr uint32_t type_id() const noexcept { return type_id_.unwrap(); }
+
+    /// Get the size of the current group.
+    uint32_t size() const noexcept;
+    static uint32_t size(const RawCode &raw_code) noexcept;
+    static uint32_t size(const CommonCode &common_code) noexcept;
+
+    /// Get the minimum CommonCode of the current group.
+    CommonCode seed() const noexcept;
+    static CommonCode seed(const RawCode &raw_code) noexcept;
+    static CommonCode seed(const CommonCode &common_code) noexcept;
+
+    /// Calculate the specified group.
+    std::vector<RawCode> cases() const noexcept;
+};
+
+/// ------------------------------------------ Group ------------------------------------------
+
+class Group {
+public:
+    struct info_t {
+        uint16_t type_id;
+        uint16_t group_id;
+        uint32_t group_index;
+    };
+
+    /// Search for all derivatives that a case can produce.
+    static std::vector<RawCode> cases(const RawCode &raw_code) noexcept;
+    static std::vector<RawCode> cases(const CommonCode &common_code) noexcept;
+
+    /// Get group info according to specified case.
+    static info_t info(const RawCode &raw_code);
+    static info_t info(const CommonCode &common_code);
+
+    /// Get the CommonCode according to the group info.
+    static CommonCode resolve(const GroupId &group_id, uint32_t group_index);
+};
+
+/// ---------------------------------------- Operators ----------------------------------------
 
 inline bool operator==(const TypeId &t1, const TypeId &t2) {
     return t1.unwrap() == t2.unwrap();
@@ -52,6 +121,14 @@ inline bool operator==(const TypeId &t1, const TypeId &t2) {
 
 inline bool operator!=(const TypeId &t1, const TypeId &t2) {
     return t1.unwrap() != t2.unwrap();
+}
+
+inline bool operator==(const GroupId &g1, const GroupId &g2) {
+    return g1.type_id() == g2.type_id() && g1.unwrap() == g2.unwrap();
+}
+
+inline bool operator!=(const GroupId &g1, const GroupId &g2) {
+    return g1.type_id() != g2.type_id() || g1.unwrap() != g2.unwrap();
 }
 
 inline bool operator==(const TypeId::block_num_t &b1, const TypeId::block_num_t &b2) {
@@ -62,88 +139,4 @@ inline bool operator!=(const TypeId::block_num_t &b1, const TypeId::block_num_t 
     return (b1.n_1x1 != b2.n_1x1) || (b1.n_1x2 != b2.n_1x2) || (b1.n_2x1 != b2.n_2x1);
 }
 
-/// ---------------------------------------- Group ID -----------------------------------------
-
-class GroupId {
-    TypeId type_id_;
-    uint32_t group_id_;
-
-public:
-    GroupId(uint32_t type_id, uint32_t group_id);
-    GroupId(const TypeId &type_id, uint32_t group_id);
-
-    /// Release raw type id / group id value.
-    constexpr uint32_t unwrap() const noexcept { return group_id_; }
-    constexpr uint32_t type_id() const noexcept { return type_id_.unwrap(); }
-
-    /// Get the size of the specified group.
-    uint32_t size() const noexcept;
-    static uint32_t size(const RawCode &raw_code) noexcept;
-    static uint32_t size(const CommonCode &common_code) noexcept;
-
-    /// Get the minimum CommonCode of the specified group.
-    CommonCode seed() const noexcept;
-    static CommonCode seed(const RawCode &raw_code) noexcept;
-    static CommonCode seed(const CommonCode &common_code) noexcept;
-};
-
-inline bool operator==(const GroupId &g1, const GroupId &g2) {
-    return g1.type_id() == g2.type_id() && g1.unwrap() == g2.unwrap();
-}
-
-inline bool operator!=(const GroupId &g1, const GroupId &g2) {
-    return g1.type_id() != g2.type_id() || g1.unwrap() != g2.unwrap();
-}
-
-/// ------------------------------------------ Group ------------------------------------------
-
-class Group {
-public:
-    /// Search for all derivatives that a case can produce.
-    static std::vector<RawCode> cases(const RawCode &raw_code) noexcept;
-    static std::vector<RawCode> cases(const CommonCode &common_code) noexcept;
-
-    /// Calculate the specified group in the specified group_id.
-    static std::vector<CommonCode> build_group(const GroupId &group_id);
-
-    /// Calculate all groups in the specified type_id.
-    static std::vector<std::vector<CommonCode>> build_groups(const TypeId &type_id);
-
-/// ----------------------------------- group info ------------------------------------
-
-    struct group_info_t {
-        uint16_t type_id;
-        uint16_t group_id;
-        uint32_t group_index;
-    };
-
-    /// Get group info according to specified case.
-    static group_info_t group_info(const RawCode &raw_code);
-    static group_info_t group_info(const CommonCode &common_code);
-
-    /// Get the CommonCode according to the group info.
-    static CommonCode group_case(const group_info_t &group_info);
-
-    // TODO: group_size
-
-/// -------------------------------- xxxxxxxxxxxxxxxxx --------------------------------
-
-    // TODO: update max_group_size in TYPE_ID_MAX_GROUP
-
-    static uint32_t group_max_size(const TypeId &type_id) {
-        return 65535 * 8;
-    }
-
-    static uint32_t group_max_size(const RawCode &raw_code) {
-        return group_max_size(TypeId(raw_code));
-    }
-
-    static uint32_t group_max_size(const CommonCode &common_code) {
-        return group_max_size(TypeId(common_code));
-    }
-
-    // TODO: group_num
-
-};
-
-}
+} // namespace klotski

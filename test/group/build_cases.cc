@@ -29,7 +29,7 @@ const char GROUP_INFO_MD5[] = "976bf22530085210e68a6a4e67053506";
 TEST(Group, all_cases) {
     std::array<std::vector<CommonCode>, TYPE_ID_LIMIT> all_cases;
     auto build = [&all_cases](TypeId type_id) {
-        auto cases = type_id.all_cases(); // build test data
+        auto cases = type_id.cases(); // build test data
         EXPECT_EQ(cases.size(), TYPE_ID_SIZE[type_id.unwrap()]); // verify cases number
         for (auto &&common_code : cases) {
             EXPECT_EQ(TypeId(common_code), type_id); // verify type id

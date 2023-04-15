@@ -85,6 +85,9 @@ TEST(Group, group_id) {
             EXPECT_EQ(GroupId(type_id, TYPE_ID_GROUP_NUM[type_id]).unwrap(), -1);
         } catch (...) {} // should panic
     }
+
+    // TODO: test GroupId(...)
+
 }
 
 TEST(Group, operators) {
