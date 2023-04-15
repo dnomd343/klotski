@@ -12,9 +12,9 @@ namespace klotski {
 using Common::check_range;
 using Common::range_reverse;
 
-/// ----------------------------------------- Type ID -----------------------------------------
+/// --------------------------------------- Group Type ----------------------------------------
 
-std::vector<CommonCode> TypeId::cases() const noexcept {
+std::vector<CommonCode> GroupType::cases() const noexcept {
     std::vector<uint32_t> ranges; // basic ranges of type_id
     ranges.reserve(TYPE_ID_SIZE[type_id_]); // over-allocation
 
@@ -48,8 +48,8 @@ std::vector<CommonCode> TypeId::cases() const noexcept {
     return all_cases;
 }
 
-std::vector<std::vector<CommonCode>> TypeId::groups() const noexcept {
-    auto all_cases = TypeId::cases();
+std::vector<std::vector<CommonCode>> GroupType::groups() const noexcept {
+    auto all_cases = GroupType::cases();
     std::vector<std::vector<CommonCode>> groups;
 
     auto min = std::min_element(all_cases.begin(), all_cases.end()); // search min CommonCode
@@ -91,7 +91,7 @@ uint32_t Group::size(const CommonCode &common_code) noexcept {
 uint32_t Group::size(const RawCode &raw_code) noexcept {
     std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
-    cases.reserve(TypeId::group_max_size(raw_code));
+    cases.reserve(GroupType::max_size(raw_code));
     cases.emplace(raw_code.unwrap(), 0b0); // without mask
 
     auto core = Core(
@@ -125,7 +125,7 @@ std::vector<RawCode> Group::cases(const CommonCode &common_code) noexcept {
 std::vector<RawCode> Group::cases(const RawCode &raw_code) noexcept {
     std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
-    cases.reserve(TypeId::group_max_size(raw_code));
+    cases.reserve(GroupType::max_size(raw_code));
     cases.emplace(raw_code.unwrap(), 0b0); // without mask
 
     auto core = Core(

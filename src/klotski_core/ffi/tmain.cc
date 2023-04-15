@@ -19,8 +19,9 @@
 #include "group.h"
 
 using klotski::Group;
-using klotski::TypeId;
 using klotski::AllCases;
+using klotski::GroupCase;
+using klotski::GroupType;
 
 using klotski::RawCode;
 using klotski::ShortCode;
@@ -34,40 +35,16 @@ using klotski::TYPE_ID_LIMIT;
 void tmain() {
 //    printf("tmain start\n");
 
-    auto start = clock();
+//    auto start = clock();
 
-//    Group::build_group(123, 233);
+//    auto ret = GroupCase::encode(CommonCode(0x1A9BF0C00));
+    auto ret = GroupCase::encode(CommonCode(0x4FEA13400));
 
-    Group::build_groups(TypeId(123));
+    std::cout << "type id: " << ret.type_id << std::endl;
+    std::cout << "group id: " << ret.group_id << std::endl;
+    std::cout << "group index: " << ret.group_index << std::endl;
 
-    std::cerr << (clock() - start) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
-
-//    auto seed = Group::group_seed(123, 233);
-//    std::cout << seed << std::endl;
-
-//    Group::group_info(CommonCode(0x1A9BF0C00));
-
-//    std::vector<uint32_t> group_num;
-//    group_num.reserve(TYPE_ID_LIMIT);
-//    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-//        group_num.emplace_back(Group::build_groups(type_id).size());
-//        std::cerr << type_id << std::endl;
-//    }
-//
-//    uint32_t offset = 0;
-//    std::vector<uint32_t> group_offset;
-//    group_offset.reserve(TYPE_ID_LIMIT);
-//    for (auto &&tmp : group_num) {
-//        group_offset.emplace_back(offset);
-//        offset += tmp;
-//    }
-//
-//    for (uint32_t i = 0; i < group_offset.size(); ++i) {
-//        printf("%5d, ", group_offset[i]);
-//        if (i % 12 == 11) {
-//            printf("\n");
-//        }
-//    }
+//    std::cerr << (clock() - start) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 
 //    printf("tmain exit\n");
 }
