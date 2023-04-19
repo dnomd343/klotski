@@ -52,6 +52,15 @@ TEST(Group, type_id) {
         threads[head] = std::thread(test, head); // multi-threads verify
     }
     for (auto &t : threads) { t.join(); }
+
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        auto tmp = GroupType(type_id);
+        auto common_code = *tmp.cases().begin();
+        EXPECT_EQ(tmp.group_num(), GroupType::group_num(common_code));
+        EXPECT_EQ(tmp.group_num(), GroupType::group_num(common_code.to_raw_code()));
+        EXPECT_EQ(tmp.max_size(), GroupType::max_size(common_code));
+        EXPECT_EQ(tmp.max_size(), GroupType::max_size(common_code.to_raw_code()));
+    }
 }
 
 TEST(Group, block_num) {
@@ -125,9 +134,6 @@ TEST(Group, group_id) {
     pool.boot();
     pool.join();
 }
-
-// TODO: test Group(...).unwrap() == group_id
-// TODO: test Group::size() / Group::seed() / Group::cases()
 
 TEST(Group, operators) {
     EXPECT_EQ(GroupType(0), GroupType(0));

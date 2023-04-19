@@ -8,11 +8,11 @@
 #include "gtest/gtest.h"
 
 using klotski::Group;
-using klotski::TypeId;
-using klotski::GroupId;
-using klotski::AllCases;
+using klotski::GroupCase;
+using klotski::GroupType;
 
 using klotski::RawCode;
+using klotski::AllCases;
 using klotski::ShortCode;
 using klotski::CommonCode;
 
@@ -27,12 +27,12 @@ using klotski::ALL_CASES_SIZE_SUM;
 const char GROUP_INFO_MD5[] = "976bf22530085210e68a6a4e67053506";
 
 TEST(Group, all_cases) {
-    std::array<std::vector<CommonCode>, TYPE_ID_LIMIT> all_cases;
-    auto build = [&all_cases](TypeId type_id) {
+    std::vector<CommonCode> all_cases[TYPE_ID_LIMIT];
+    auto build = [&all_cases](GroupType type_id) {
         auto cases = type_id.cases(); // build test data
         EXPECT_EQ(cases.size(), TYPE_ID_SIZE[type_id.unwrap()]); // verify cases number
         for (auto &&common_code : cases) {
-            EXPECT_EQ(TypeId(common_code), type_id); // verify type id
+            EXPECT_EQ(GroupType(common_code), type_id); // verify type id
         }
         EXPECT_EQ(std::is_sorted(cases.begin(), cases.end()), true); // verify data order
         all_cases[type_id.unwrap()] = cases;
@@ -40,7 +40,7 @@ TEST(Group, all_cases) {
 
     auto pool = TinyPool();
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        pool.submit(build, TypeId(type_id));
+        pool.submit(build, GroupType(type_id));
     }
     pool.boot();
     pool.join(); // wait data build complete
@@ -59,16 +59,18 @@ TEST(Group, all_cases) {
 
 TEST(Group, group_cases) {
     auto build = [](CommonCode seed) -> std::vector<CommonCode> {
-        auto group_raw = Group::cases(seed);
-        std::vector<CommonCode> group(group_raw.begin(), group_raw.end()); // convert as CommonCodes
-        EXPECT_EQ(seed, std::min_element(group.begin(), group.end())->unwrap()); // confirm min seed
-        EXPECT_EQ(group.size(), GroupId::size(seed)); // verify group size
+        auto group = Group(seed);
+        auto tmp = group.cases();
+        std::vector<CommonCode> cases(tmp.begin(), tmp.end()); // convert as CommonCodes
+        EXPECT_EQ(seed, std::min_element(cases.begin(), cases.end())->unwrap()); // confirm min seed
+        EXPECT_EQ(cases.size(), group.size()); // verify group size
+        EXPECT_EQ(seed, group.seed()); // verify group seed
 
-        uint32_t type_id = TypeId(seed).unwrap(); // current type id
-        for (auto &&elem : group) {
-            EXPECT_EQ(TypeId(elem).unwrap(), type_id); // verify type id of group cases
+        uint32_t type_id = GroupType(seed).unwrap(); // current type id
+        for (auto &&elem : cases) {
+            EXPECT_EQ(GroupType(elem).unwrap(), type_id); // verify type id of group cases
         }
-        return group;
+        return cases;
     };
 
     auto pool = TinyPool();
@@ -94,16 +96,16 @@ TEST(Group, group_seeds) {
     std::vector<CommonCode> all_seeds;
     all_seeds.reserve(ALL_GROUP_NUM);
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        auto seeds = TypeId(type_id).seeds();
+        auto seeds = GroupType(type_id).seeds();
         for (auto &&seed : seeds) {
-            EXPECT_EQ(TypeId(seed).unwrap(), type_id); // verify type id of seeds
+            EXPECT_EQ(GroupType(seed).unwrap(), type_id); // verify type id of seeds
         }
         all_seeds.insert(all_seeds.end(), seeds.begin(), seeds.end());
 
         std::vector<CommonCode> sub_seeds;
         sub_seeds.reserve(TYPE_ID_GROUP_NUM[type_id]);
         for (uint32_t group_id = 0; group_id < TYPE_ID_GROUP_NUM[type_id]; ++group_id) {
-            sub_seeds.emplace_back(GroupId(type_id, group_id).seed());
+            sub_seeds.emplace_back(Group(type_id, group_id).seed());
         }
         std::sort(seeds.begin(), seeds.end());
         std::sort(sub_seeds.begin(), sub_seeds.end()); // don't verify seeds order for now
@@ -111,36 +113,31 @@ TEST(Group, group_seeds) {
     }
     std::vector<CommonCode> group_seeds(GROUP_SEEDS, GROUP_SEEDS + ALL_GROUP_NUM);
     EXPECT_EQ(all_seeds, group_seeds); // verify group seeds
-
-    auto test = [](CommonCode seed) {
-        EXPECT_EQ(GroupId::seed(seed), seed); // verify group seed fetch
-        EXPECT_EQ(GroupId::seed(seed.to_raw_code()), seed);
-    };
-    auto pool = TinyPool();
-    for (auto &&seed : GROUP_SEEDS) { // traverse all seeds
-        pool.submit(test, CommonCode::unsafe_create(seed));
-    }
-    pool.boot();
-    pool.join();
 }
 
 TEST(Group, build_groups) {
-    std::vector<Group::group_info_t> all_cases(SHORT_CODE_LIMIT);
+    std::vector<GroupCase::info_t> all_cases(SHORT_CODE_LIMIT);
 
-    auto test = [&all_cases](TypeId type_id) {
-        auto groups = Group::build_groups(type_id);
+    auto test = [&all_cases](GroupType type_id) {
+        auto groups = type_id.groups();
         EXPECT_EQ(groups.size(), TYPE_ID_GROUP_NUM[type_id.unwrap()]); // verify groups num
+        EXPECT_EQ(groups.size(), type_id.group_num()); // verify groups num
 
         std::vector<uint32_t> group_sizes;
         std::map<uint32_t, std::vector<CommonCode>> group_seeds; // <group_size, group_seeds>
 
         for (uint32_t group_id = 0; group_id < groups.size(); ++group_id) {
-            auto group = Group::build_group(GroupId(type_id, group_id));
+            auto tmp = Group(type_id, group_id).cases();
+            std::vector<CommonCode> group(tmp.begin(), tmp.end());
             std::sort(group.begin(), group.end());
             std::sort(groups[group_id].begin(), groups[group_id].end());
-            EXPECT_EQ(groups[group_id], group); // verify group data
-            EXPECT_EQ(group.size(), GroupId(type_id, group_id).size()); // verify group size
-            EXPECT_EQ(*group.begin(), GroupId(type_id, group_id).seed()); // verify group seed
+
+            EXPECT_EQ(groups[group_id], group); // verify group cases
+            EXPECT_EQ(group.size(), Group(type_id, group_id).size()); // verify group size
+            EXPECT_EQ(*group.begin(), Group(type_id, group_id).seed()); // verify group seed
+
+            EXPECT_EQ(Group(*group.begin()).unwrap(), group_id); // build from CommonCode
+            EXPECT_EQ(Group(group.begin()->to_raw_code()).unwrap(), group_id); // build from RawCode
 
             for (uint32_t index = 0; index < group.size(); ++index) {
                 all_cases[group[index].to_short_code().unwrap()] = { // storage group info
@@ -148,7 +145,7 @@ TEST(Group, build_groups) {
                     .group_id = static_cast<uint16_t>(group_id),
                     .group_index = index,
                 };
-                EXPECT_EQ(TypeId(group[index]), type_id); // verify released type id
+                EXPECT_EQ(GroupType(group[index]), type_id); // verify released type id
             }
 
             group_seeds[group.size()].emplace_back(*group.begin()); // storage group seeds
@@ -164,7 +161,7 @@ TEST(Group, build_groups) {
     auto pool = TinyPool();
     ShortCode::speed_up(ShortCode::FAST);
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        pool.submit(test, TypeId(type_id));
+        pool.submit(test, GroupType(type_id));
     }
     pool.boot();
     pool.join();
@@ -179,4 +176,4 @@ TEST(Group, build_groups) {
     EXPECT_STREQ(group_info_md5.c_str(), GROUP_INFO_MD5); // verify all group info
 }
 
-// TODO: verify GROUP_SEEDS_INDEX_REV
+// TODO: verify GROUP_SEEDS_INDEX_REV (group_info)
