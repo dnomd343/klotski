@@ -63,6 +63,7 @@ add_test(NAME core COMMAND test_core)
 set(TEST_GROUP_SRC
     group/basic.cc
     group/advance.cc
+    group/group_info.cc
 )
 add_executable(test_group ${TEST_GROUP_SRC})
 target_link_libraries(test_group ${TEST_DEPS} md5 tiny_pool absl::flat_hash_map)

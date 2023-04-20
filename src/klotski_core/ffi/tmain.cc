@@ -44,17 +44,17 @@ void tmain() {
 //    std::cout << "group id: " << ret.group_id << std::endl;
 //    std::cout << "group index: " << ret.group_index << std::endl;
 
-    std::cout << GroupCase::parse({
-        .type_id = 169,
-        .group_id = 1,
-        .group_index = 7472,
-    }) << std::endl;
-
-    std::cout << GroupCase::parse({
-         .type_id = 164,
-         .group_id = 0,
-         .group_index = 30833,
-    }) << std::endl;
+//    std::cout << GroupCase::parse({
+//        .type_id = 169,
+//        .group_id = 1,
+//        .group_index = 7472,
+//    }) << std::endl;
+//
+//    std::cout << GroupCase::parse({
+//         .type_id = 164,
+//         .group_id = 0,
+//         .group_index = 30833,
+//    }) << std::endl;
 
 //    std::cerr << (clock() - start) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 

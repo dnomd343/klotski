@@ -175,5 +175,3 @@ TEST(Group, build_groups) {
     auto group_info_md5 = md5(group_info_str.c_str(), group_info_str.size());
     EXPECT_STREQ(group_info_md5.c_str(), GROUP_INFO_MD5); // verify all group info
 }
-
-// TODO: verify GROUP_SEEDS_INDEX_REV (group_info)
