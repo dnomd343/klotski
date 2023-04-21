@@ -37,6 +37,8 @@ void tmain() {
 
 //    auto start = clock();
 
+    GroupCase::demo();
+
 //    auto ret = GroupCase::encode(CommonCode(0x1A9BF0C00));
 //    auto ret = GroupCase::encode(CommonCode(0x4FEA13400));
 //

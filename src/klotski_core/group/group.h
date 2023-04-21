@@ -162,6 +162,8 @@ public:
         uint32_t group_index;
     };
 
+    static void demo();
+
     /// Get the CommonCode using the group info.
     static CommonCode parse(const info_t &info);
 
