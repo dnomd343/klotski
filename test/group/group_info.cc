@@ -68,8 +68,7 @@ TEST(Group, group_info) {
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         pool.submit(test, GroupType(type_id));
     }
-    pool.boot();
-    pool.join();
+    pool.boot().join();
 }
 
 // TODO: add group_info FAST mode
