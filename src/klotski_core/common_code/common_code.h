@@ -17,8 +17,9 @@
 /// namely `space`, `1x2`, `2x1`, `1x1`. Each of them is represented by 2-bit,
 /// which are `00` `01` `10` `11`. Arrange them according to their position and
 /// size, and we can get a binary sequence.
-///   2x2 -> # #   |   2x1 -> #   |   1x2 -> # #   |   1x1 -> #
-///          # #   |          #   |                |
+///
+///   ( 2x2 -> # # )  |  ( 2x1 -> # )  |  ( 1x2 -> # # )  |  ( 1x1 -> # )
+///   (        # # )  |  (        # )  |                  |
 
 /// This sequence can have up to 16 blocks, aka 32-bit in length. Therefore, in
 /// order to be compatible with all cases, the length of this part of the code
@@ -52,6 +53,7 @@
 ///                CommonCode = 0x4FEA13400 -> "4FEA134"
 
 #include <string>
+#include <vector>
 #include <cstdint>
 #include <ostream>
 #include <stdexcept>
@@ -62,6 +64,11 @@ namespace klotski {
 
 class RawCode;
 class ShortCode;
+class CommonCode;
+
+typedef std::vector<RawCode> RawCodes;
+typedef std::vector<ShortCode> ShortCodes;
+typedef std::vector<CommonCode> CommonCodes;
 
 class CommonCodeExp : public std::runtime_error {
 public:
@@ -79,8 +86,8 @@ class CommonCode {
 
 public:
     /// Validity check
-    bool valid() const noexcept;
     static bool check(uint64_t common_code) noexcept;
+    bool valid() const noexcept { return check(code_); }
 
     /// Operators of CommonCode
     constexpr explicit operator uint64_t() const noexcept { return code_; }
@@ -101,7 +108,7 @@ public:
     explicit CommonCode(const ShortCode &short_code) noexcept;
     explicit CommonCode(const std::string &common_code);
 
-    /// Static initialization
+    /// CommonCode initializations
     static CommonCode create(uint64_t common_code);
     static CommonCode unsafe_create(uint64_t common_code) noexcept;
 
@@ -117,17 +124,22 @@ public:
     static CommonCode from_short_code(std::string &&short_code);
     static CommonCode from_short_code(const ShortCode &short_code) noexcept;
     static CommonCode from_short_code(const std::string &short_code);
+
+    /// Batch conversions
+    static CommonCodes convert(const RawCodes &raw_codes) noexcept;
+    static CommonCodes convert(const ShortCodes &short_codes) noexcept;
 };
 
+/// Compare implements
 inline bool operator==(uint64_t c1, const CommonCode &c2) noexcept { return c1 == c2.unwrap(); }
-inline bool operator!=(uint64_t c1, const CommonCode &c2) noexcept { return c1 != c2.unwrap(); }
 inline bool operator==(const CommonCode &c1, uint64_t c2) noexcept { return c1.unwrap() == c2; }
-inline bool operator!=(const CommonCode &c1, uint64_t c2) noexcept { return c1.unwrap() != c2; }
+inline bool operator!=(uint64_t c1, const CommonCode &c2) noexcept { return !(c1 == c2); }
+inline bool operator!=(const CommonCode &c1, uint64_t c2) noexcept { return !(c1 == c2); }
 
 inline bool operator<(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() < c2.unwrap(); }
 inline bool operator>(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() > c2.unwrap(); }
 inline bool operator==(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() == c2.unwrap(); }
-inline bool operator!=(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() != c2.unwrap(); }
+inline bool operator!=(const CommonCode &c1, const CommonCode &c2) noexcept { return !(c1 == c2); }
 
 } // namespace klotski
 

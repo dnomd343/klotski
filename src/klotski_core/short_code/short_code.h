@@ -49,6 +49,7 @@
 /// while the latter is almost impossible to complete by the human brain.
 
 #include <string>
+#include <vector>
 #include <cstdint>
 #include <ostream>
 #include <utility>
@@ -58,7 +59,11 @@
 
 namespace klotski {
 
+class ShortCode;
 class CommonCode;
+
+typedef std::vector<ShortCode> ShortCodes;
+typedef std::vector<CommonCode> CommonCodes;
 
 const uint32_t SHORT_CODE_LIMIT = 29334498;
 
@@ -97,8 +102,8 @@ private:
 
 public:
     /// Validity check
-    bool valid() const noexcept;
     static bool check(uint32_t short_code) noexcept;
+    bool valid() const noexcept { return check(code_); }
 
     /// ShortCode convert mode
     static void speed_up(Mode mode); // {} -> {NORMAL} -> {FAST}
@@ -119,7 +124,7 @@ public:
     explicit ShortCode(const std::string &short_code);
     explicit ShortCode(const CommonCode &common_code) noexcept;
 
-    /// Static initialization
+    /// ShortCode initializations
     static ShortCode create(uint32_t short_code);
     static ShortCode unsafe_create(uint32_t short_code) noexcept;
 
@@ -131,14 +136,21 @@ public:
     static ShortCode from_common_code(std::string &&common_code);
     static ShortCode from_common_code(const CommonCode &common_code) noexcept;
     static ShortCode from_common_code(const std::string &common_code);
+
+    /// Batch conversion
+    static ShortCodes convert(const CommonCodes &common_codes) noexcept;
 };
 
+/// Compare implements
 inline bool operator==(uint32_t s1, const ShortCode &s2) noexcept { return s1 == s2.unwrap(); }
-inline bool operator!=(uint32_t s1, const ShortCode &s2) noexcept { return s1 != s2.unwrap(); }
 inline bool operator==(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() == s2; }
-inline bool operator!=(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() != s2; }
+inline bool operator!=(uint32_t s1, const ShortCode &s2) noexcept { return !(s1 == s2); }
+inline bool operator!=(const ShortCode &s1, uint32_t s2) noexcept { return !(s1 == s2); }
+
+inline bool operator<(const ShortCode &s1, const ShortCode &s2) noexcept { return s1.unwrap() < s2.unwrap(); }
+inline bool operator>(const ShortCode &s1, const ShortCode &s2) noexcept { return s1.unwrap() > s2.unwrap(); }
 inline bool operator==(const ShortCode &s1, const ShortCode &s2) noexcept { return s1.unwrap() == s2.unwrap(); }
-inline bool operator!=(const ShortCode &s1, const ShortCode &s2) noexcept { return s1.unwrap() != s2.unwrap(); }
+inline bool operator!=(const ShortCode &s1, const ShortCode &s2) noexcept { return !(s1 == s2); }
 
 } // namespace klotski
 

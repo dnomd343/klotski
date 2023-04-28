@@ -3,10 +3,6 @@
 
 namespace klotski {
 
-bool RawCode::valid() const noexcept {
-    return RawCode::check(code_);
-}
-
 RawCode RawCode::create(uint64_t raw_code) {
     return RawCode(raw_code);
 }
@@ -27,7 +23,7 @@ RawCode::RawCode(uint64_t raw_code) {
 std::ostream& operator<<(std::ostream &out, const RawCode &self) {
     char code[16];
     char dump_map[] = {
-        /// 0x0  1x2  2x1  1x1  2x2  b101 b110 fill
+    /// 0x0  1x2  2x1  1x1  2x2  b101 b110 fill
         '.', '~', '|', '*', '@', '?', '?', '+'
     };
     sprintf(code, "%015lX", self.code_); // code length -> 15

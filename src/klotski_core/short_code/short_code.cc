@@ -6,10 +6,6 @@ namespace klotski {
 bool ShortCode::fast_mode_available_ = false;
 bool ShortCode::normal_mode_available_ = false;
 
-bool ShortCode::valid() const noexcept {
-    return ShortCode::check(code_);
-}
-
 ShortCode ShortCode::create(uint32_t short_code) {
     return ShortCode(short_code);
 }

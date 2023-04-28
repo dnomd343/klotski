@@ -4,6 +4,10 @@ using klotski::RawCode;
 using klotski::ShortCode;
 using klotski::CommonCode;
 
+using klotski::RawCodes;
+using klotski::ShortCode;
+using klotski::CommonCodes;
+
 /// -------------------------- CommonCode to RawCode --------------------------
 
 RawCode CommonCode::to_raw_code() const noexcept {
@@ -66,4 +70,14 @@ CommonCode CommonCode::from_short_code(const ShortCode &short_code) noexcept {
 
 CommonCode CommonCode::from_short_code(const std::string &short_code) {
     return ShortCode(short_code).to_common_code();
+}
+
+/// ---------------------------- Batch conversions ----------------------------
+
+CommonCodes CommonCode::convert(const RawCodes &raw_codes) noexcept {
+    return {raw_codes.begin(), raw_codes.end()};
+}
+
+CommonCodes CommonCode::convert(const ShortCodes &short_codes) noexcept {
+    return {short_codes.begin(), short_codes.end()};
 }

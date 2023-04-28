@@ -6,6 +6,7 @@
 #include "range_prefix_offset.h"
 
 using klotski::ShortCode;
+using klotski::ShortCodes;
 using klotski::CommonCode;
 
 /// ------------------------- ShortCode to CommonCode -------------------------
@@ -55,6 +56,12 @@ ShortCode ShortCode::from_common_code(const CommonCode &common_code) noexcept {
 
 ShortCode ShortCode::from_common_code(const std::string &common_code) {
     return ShortCode(CommonCode(common_code));
+}
+
+/// ---------------------------- Batch conversion -----------------------------
+
+ShortCodes ShortCode::convert(const CommonCodes &common_codes) noexcept {
+    return {common_codes.begin(), common_codes.end()};
 }
 
 /// ----------------------------- Basic Functions -----------------------------

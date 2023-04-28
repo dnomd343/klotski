@@ -2,8 +2,9 @@
 #include "raw_code.h"
 
 using klotski::RawCode;
-using klotski::CommonCode;
 using klotski::RawCodeExp;
+using klotski::CommonCode;
+using klotski::CommonCodes;
 
 /// -------------------------- RawCode to CommonCode --------------------------
 
@@ -41,6 +42,12 @@ RawCode RawCode::from_common_code(const CommonCode &common_code) noexcept {
 
 RawCode RawCode::from_common_code(const std::string &common_code) {
     return RawCode(CommonCode(common_code));
+}
+
+/// ---------------------------- Batch conversion -----------------------------
+
+CommonCodes RawCode::convert(const RawCodes &raw_codes) noexcept {
+    return {raw_codes.begin(), raw_codes.end()};
 }
 
 /// ----------------------------- Basic Functions -----------------------------

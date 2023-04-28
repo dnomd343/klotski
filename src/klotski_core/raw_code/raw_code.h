@@ -38,6 +38,7 @@
 ///     => 0x0E58'FC85'FFEB'C4DB
 
 #include <string>
+#include <vector>
 #include <cstdint>
 #include <ostream>
 #include <stdexcept>
@@ -45,7 +46,11 @@
 
 namespace klotski {
 
+class RawCode;
 class CommonCode;
+
+typedef std::vector<RawCode> RawCodes;
+typedef std::vector<CommonCode> CommonCodes;
 
 class RawCodeExp : public std::runtime_error {
 public:
@@ -69,8 +74,8 @@ class RawCode {
 
 public:
     /// Validity check
-    bool valid() const noexcept;
     static bool check(uint64_t raw_code) noexcept;
+    bool valid() const noexcept { return check(code_); }
 
     /// Operators of RawCode
     constexpr explicit operator uint64_t() const noexcept { return code_; }
@@ -85,7 +90,7 @@ public:
     explicit RawCode(CommonCode &&common_code) noexcept;
     explicit RawCode(const CommonCode &common_code) noexcept;
 
-    /// Static initialization
+    /// RawCode initializations
     static RawCode create(uint64_t raw_code);
     static RawCode unsafe_create(uint64_t raw_code) noexcept;
 
@@ -94,6 +99,9 @@ public:
     static RawCode from_common_code(std::string &&common_code);
     static RawCode from_common_code(const CommonCode &common_code) noexcept;
     static RawCode from_common_code(const std::string &common_code);
+
+    /// Batch conversion
+    static CommonCodes convert(const RawCodes &raw_codes) noexcept;
 
     /// Mirror functions
     RawCode to_vertical_mirror() const noexcept;
@@ -108,12 +116,14 @@ public:
     bool is_horizontal_mirror(const RawCode &raw_code) const noexcept;
 };
 
+/// Compare implements
 inline bool operator==(uint64_t r1, const RawCode &r2) noexcept { return r1 == r2.unwrap(); }
-inline bool operator!=(uint64_t r1, const RawCode &r2) noexcept { return r1 != r2.unwrap(); }
 inline bool operator==(const RawCode &r1, uint64_t r2) noexcept { return r1.unwrap() == r2; }
-inline bool operator!=(const RawCode &r1, uint64_t r2) noexcept { return r1.unwrap() != r2; }
 inline bool operator==(const RawCode &r1, const RawCode &r2) noexcept { return r1.unwrap() == r2.unwrap(); }
-inline bool operator!=(const RawCode &r1, const RawCode &r2) noexcept { return r1.unwrap() != r2.unwrap(); }
+
+inline bool operator!=(uint64_t r1, const RawCode &r2) noexcept { return !(r1 == r2); }
+inline bool operator!=(const RawCode &r1, uint64_t r2) noexcept { return !(r1 == r2); }
+inline bool operator!=(const RawCode &r1, const RawCode &r2) noexcept { return !(r1 == r2); }
 
 } // namespace klotski
 

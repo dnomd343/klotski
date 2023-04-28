@@ -5,10 +5,6 @@ namespace klotski {
 
 using Common::range_reverse;
 
-bool CommonCode::valid() const noexcept {
-    return CommonCode::check(code_);
-}
-
 CommonCode CommonCode::create(uint64_t common_code) {
     return CommonCode(common_code); // create from uint64_t
 }

@@ -41,7 +41,7 @@ bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const noexcept {
 
 /// ----------------------------- Basic Functions -----------------------------
 
-///  MASK_MIRROR_H1   |  MASK_MIRROR_H2
+///   MASK_MIRROR_H1  |   MASK_MIRROR_H2
 ///  111 000 000 000  |  000 111 000 000
 ///  111 000 000 000  |  000 111 000 000
 ///  111 000 000 000  |  000 111 000 000
@@ -51,7 +51,7 @@ bool RawCode::is_horizontal_mirror(const RawCode &raw_code) const noexcept {
 constexpr uint64_t MASK_MIRROR_H1 = 0x0'007'007'007'007'007;
 constexpr uint64_t MASK_MIRROR_H2 = 0x0'038'038'038'038'038;
 
-///  MASK_MIRROR_V1   |  MASK_MIRROR_V2   |  MASK_MIRROR_V3
+///   MASK_MIRROR_V1  |   MASK_MIRROR_V2  |   MASK_MIRROR_V3
 ///  111 111 111 111  |  000 000 000 000  |  000 000 000 000
 ///  000 000 000 000  |  111 111 111 111  |  000 000 000 000
 ///  000 000 000 000  |  000 000 000 000  |  111 111 111 111
