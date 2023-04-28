@@ -50,7 +50,7 @@ void BasicRanges::build_data() {
     for (int n = 0; n <= 7; ++n) // number of 1x2 and 2x1 block -> 0 ~ 7
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) // number of 2x1 block -> 0 ~ n
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) // number of 1x1 block -> 0 ~ (14 - 2n)
-                generate(data_, generate_t { // generate target ranges
+                generate(data_, { // generate target ranges
                     .n1 = 16 - n * 2 - n_1x1, /// space -> 00
                     .n2 = n - n_2x1, /// 1x2 -> 01
                     .n3 = n_2x1, /// 2x1 -> 10
