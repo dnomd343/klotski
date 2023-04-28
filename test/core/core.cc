@@ -4,9 +4,9 @@
 #include "all_cases.h"
 #include "gtest/gtest.h"
 
-using klotski::Group;
 using klotski::RawCode;
 using klotski::AllCases;
+using klotski::GroupType;
 
 using klotski::TYPE_ID_LIMIT;
 
@@ -14,7 +14,7 @@ TEST(Core, next_cases) {
     auto test = [](uint32_t type_id) {
         auto raw_codes = std::unordered_set<uint64_t>();
         raw_codes.reserve(klotski::ALL_CASES_SIZE_SUM);
-        for (auto &&common_code: Group::all_cases(type_id)) { // load all cases in a type
+        for (auto &&common_code: GroupType(type_id).cases()) { // load all cases in a type
             raw_codes.emplace(common_code.to_raw_code().unwrap());
         }
 
