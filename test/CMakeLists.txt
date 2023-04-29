@@ -61,7 +61,9 @@ add_test(NAME codec COMMAND test_codec)
 
 #######################################################################################
 
-set(TEST_CORE_SRC core/core.cc)
+set(TEST_CORE_SRC
+    core/core.cc
+)
 add_executable(test_core ${TEST_CORE_SRC})
 target_link_libraries(test_core ${TEST_DEPS})
 add_test(NAME core COMMAND test_core)
@@ -87,17 +89,5 @@ set(TEST_FFI_SRC
 add_executable(test_ffi ${TEST_FFI_SRC})
 target_link_libraries(test_ffi ${TEST_DEPS})
 add_test(NAME ffi COMMAND test_ffi)
-
-#######################################################################################
-
-set(TEST_CODEC_GLOBAL_SRC
-    global/short_code.cc
-    global/common_code.cc
-    global/raw_code.cc
-)
-
-add_executable(test_codec_global ${TEST_CODEC_GLOBAL_SRC})
-target_link_libraries(test_codec_global ${TEST_DEPS} tiny_pool)
-add_test(NAME codec_global COMMAND test_codec_global)
 
 #######################################################################################
