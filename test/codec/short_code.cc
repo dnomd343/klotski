@@ -44,30 +44,6 @@ TEST(ShortCode, validity) {
     SHOULD_PANIC(ShortCode::from_string("Z9EFV")) // out of short code range
 }
 
-TEST(ShortCode, speed_up) {
-    std::thread threads[4];
-
-    /// speed up to normal mode
-    EXPECT_EQ(BasicRanges::status(), BasicRanges::NOT_INIT);
-    for (auto &t : threads) {
-        t = std::thread(ShortCode::speed_up, ShortCode::NORMAL);
-    }
-    usleep(1000); // wait 1ms -> avoid mutex unlocked
-    EXPECT_EQ(BasicRanges::status(), BasicRanges::BUILDING);
-    for (auto &t : threads) { t.join(); }
-    EXPECT_EQ(BasicRanges::status(), BasicRanges::AVAILABLE);
-
-    /// speed up to fast mode
-    EXPECT_EQ(AllCases::status(), AllCases::NOT_INIT);
-    for (auto &t : threads) {
-        t = std::thread(ShortCode::speed_up, ShortCode::FAST);
-    }
-    usleep(1000); // wait 1ms -> avoid mutex unlocked
-    EXPECT_EQ(AllCases::status(), AllCases::BUILDING);
-    for (auto &t : threads) { t.join(); }
-    EXPECT_EQ(AllCases::status(), AllCases::AVAILABLE);
-}
-
 TEST(ShortCode, DISABLED_global) {
     auto check = [](uint32_t start, uint32_t end) -> std::vector<uint64_t> {
         std::vector<uint64_t> archive;
@@ -99,6 +75,30 @@ TEST(ShortCode, DISABLED_global) {
     for (uint32_t i = 0; i < ALL_CASES_SIZE_SUM; ++i) {
         EXPECT_EQ(all_cases[i], result[i]);
     }
+}
+
+TEST(ShortCode, speed_up) {
+    std::thread threads[4];
+
+    /// speed up to normal mode
+    EXPECT_EQ(BasicRanges::status(), BasicRanges::NOT_INIT);
+    for (auto &t : threads) {
+        t = std::thread(ShortCode::speed_up, ShortCode::NORMAL);
+    }
+    usleep(1000); // wait 1ms -> avoid mutex unlocked
+    EXPECT_EQ(BasicRanges::status(), BasicRanges::BUILDING);
+    for (auto &t : threads) { t.join(); }
+    EXPECT_EQ(BasicRanges::status(), BasicRanges::AVAILABLE);
+
+    /// speed up to fast mode
+    EXPECT_EQ(AllCases::status(), AllCases::NOT_INIT);
+    for (auto &t : threads) {
+        t = std::thread(ShortCode::speed_up, ShortCode::FAST);
+    }
+    usleep(1000); // wait 1ms -> avoid mutex unlocked
+    EXPECT_EQ(AllCases::status(), AllCases::BUILDING);
+    for (auto &t : threads) { t.join(); }
+    EXPECT_EQ(AllCases::status(), AllCases::AVAILABLE);
 }
 
 TEST(ShortCode, code_verify) { // test all layout
