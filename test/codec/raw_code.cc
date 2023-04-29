@@ -1,8 +1,12 @@
+#include <future>
 #include <thread>
 #include <unordered_set>
+#include "common.h"
 #include "raw_code.h"
 #include "all_cases.h"
+#include "tiny_pool.h"
 #include "gtest/gtest.h"
+#include "range_split.h"
 
 #define SHOULD_PANIC(FUNC) \
     try { \
@@ -13,6 +17,8 @@ using klotski::RawCode;
 using klotski::AllCases;
 using klotski::CommonCode;
 using klotski::ALL_CASES_SIZE;
+using klotski::ALL_CASES_SIZE_SUM;
+using klotski::Common::range_reverse;
 
 const static uint64_t TEST_CODE = 0x0603'EDF5'CAFF'F5E2;
 
@@ -200,4 +206,65 @@ TEST(RawCode, horizontal_mirror_global) {
         threads[head] = std::thread(test, head);
     }
     for (auto &t : threads) { t.join(); }
+}
+
+/// NOTE: for RawCode global test
+uint64_t raw_code_convert(uint64_t common_code) { // try to convert as raw code
+    auto code = C_2x2 << (common_code >> 32) * 3;
+    auto range = range_reverse((uint32_t)common_code);
+    for (int addr = 0; range; range >>= 2) {
+        while ((code >> addr) & 0b111 && addr < 60) {
+            addr += 3;
+        }
+        if (addr >= 60) {
+            return 0;
+        }
+        switch (range & 0b11) { // match low 2-bits
+            case 0b01: // 1x2 block
+                code |= C_1x2 << addr;
+                break;
+            case 0b10: // 2x1 block
+                code |= C_2x1 << addr;
+                break;
+            case 0b11: // 1x1 block
+                code |= C_1x1 << addr;
+                break;
+            case 0b00: // space
+                addr += 3;
+        }
+    }
+    return code;
+}
+
+TEST(RawCode, DISABLED_global) {
+    auto search = [](uint64_t start, uint64_t end) -> std::vector<uint64_t> {
+        std::vector<uint64_t> archive;
+        for (uint64_t common_code = start; common_code < end; ++common_code) {
+            if (RawCode::check(raw_code_convert(common_code))) {
+                archive.emplace_back(common_code); // valid layout
+            }
+        }
+        return archive;
+    };
+
+    auto pool = TinyPool();
+    std::vector<std::future<std::vector<uint64_t>>> tasks;
+    for (const auto &range : range_split(0, 0x10'0000'0000, 0x10'0000)) {
+        tasks.emplace_back(
+            pool.submit(search, range.first, range.second)
+        );
+    }
+    pool.boot(); // running tasks
+
+    std::vector<uint64_t> result;
+    for (auto &tmp : tasks) {
+        auto ret = tmp.get(); // release data
+        result.insert(result.end(), ret.begin(), ret.end());
+    }
+    pool.join();
+
+    auto all_cases = AllCases::release();
+    for (uint32_t i = 0; i < ALL_CASES_SIZE_SUM; ++i) {
+        EXPECT_EQ(all_cases[i], result[i]);
+    }
 }

@@ -1,9 +1,12 @@
+#include <future>
 #include <thread>
 #include <algorithm>
 #include <unordered_set>
 #include "all_cases.h"
+#include "tiny_pool.h"
 #include "short_code.h"
 #include "gtest/gtest.h"
+#include "range_split.h"
 
 #define SHOULD_PANIC(FUNC) \
     try { \
@@ -67,6 +70,39 @@ TEST(ShortCode, speed_up) {
         t.join();
     }
     EXPECT_EQ(AllCases::status(), AllCases::AVAILABLE);
+}
+
+TEST(ShortCode, DISABLED_global) {
+    auto check = [](uint32_t start, uint32_t end) -> std::vector<uint64_t> {
+        std::vector<uint64_t> archive;
+        for (uint32_t short_code = start; short_code < end; ++short_code) {
+            auto common_code = ShortCode::unsafe_create(short_code).to_common_code();
+            archive.emplace_back(common_code.unwrap());
+            EXPECT_EQ(common_code.to_short_code().unwrap(), short_code);
+        }
+        return archive;
+    };
+
+    auto pool = TinyPool();
+    std::vector<std::future<std::vector<uint64_t>>> tasks;
+    for (const auto &range : range_split(0, klotski::ALL_CASES_SIZE_SUM, 10000)) {
+        tasks.emplace_back(
+            pool.submit(check, range.first, range.second)
+        );
+    }
+    pool.boot(); // running tasks
+
+    std::vector<uint64_t> result;
+    for (auto &tmp : tasks) {
+        auto ret = tmp.get(); // release data
+        result.insert(result.end(), ret.begin(), ret.end());
+    }
+    pool.join();
+
+    auto all_cases = AllCases::release();
+    for (uint32_t i = 0; i < ALL_CASES_SIZE_SUM; ++i) {
+        EXPECT_EQ(all_cases[i], result[i]);
+    }
 }
 
 TEST(ShortCode, code_verify) { // test all layout

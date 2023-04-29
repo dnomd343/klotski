@@ -1,9 +1,12 @@
+#include <future>
 #include <thread>
 #include <algorithm>
 #include <unordered_set>
 #include "all_cases.h"
+#include "tiny_pool.h"
 #include "common_code.h"
 #include "gtest/gtest.h"
+#include "range_split.h"
 
 #define SHOULD_PANIC(FUNC) \
     try { \
@@ -15,6 +18,7 @@ using klotski::AllCases;
 using klotski::ShortCode;
 using klotski::CommonCode;
 using klotski::ALL_CASES_SIZE;
+using klotski::ALL_CASES_SIZE_SUM;
 
 const static uint64_t TEST_CODE = 0x1'A9BF'0C00;
 const static std::string TEST_CODE_STR = "1A9BF0C00";
@@ -181,4 +185,37 @@ TEST(CommonCode, initializate) {
 
     EXPECT_EQ(CommonCode::from_short_code(short_code_string).unwrap(), TEST_CODE); // l-value
     EXPECT_EQ(CommonCode::from_short_code(short_code.to_string()).unwrap(), TEST_CODE); // r-value
+}
+
+TEST(CommonCode, DISABLED_global) {
+    auto search = [](uint64_t start, uint64_t end) -> std::vector<uint64_t> {
+        std::vector<uint64_t> archive;
+        for (uint64_t common_code = start; common_code < end; ++common_code) {
+            if (CommonCode::check(common_code)) {
+                archive.emplace_back(common_code); // valid common code
+            }
+        }
+        return archive;
+    };
+
+    auto pool = TinyPool();
+    std::vector<std::future<std::vector<uint64_t>>> tasks;
+    for (const auto &range : range_split(0, 0x10'0000'0000, 0x10'0000)) {
+        tasks.emplace_back(
+            pool.submit(search, range.first, range.second)
+        );
+    }
+    pool.boot(); // running tasks
+
+    std::vector<uint64_t> result;
+    for (auto &tmp : tasks) {
+        auto ret = tmp.get(); // release data
+        result.insert(result.end(), ret.begin(), ret.end());
+    }
+    pool.join();
+
+    auto all_cases = AllCases::release();
+    for (uint32_t i = 0; i < ALL_CASES_SIZE_SUM; ++i) {
+        EXPECT_EQ(all_cases[i], result[i]);
+    }
 }
