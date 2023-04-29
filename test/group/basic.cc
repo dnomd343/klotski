@@ -127,12 +127,11 @@ TEST(Group, group_id) {
         EXPECT_EQ(cases, sort(Group::cases(seed.to_raw_code())));
     };
 
-    TinyPool pool;
+    auto pool = TinyPool();
     for (auto &&seed : GROUP_SEEDS) {
         pool.submit(test, CommonCode(seed));
     }
-    pool.boot();
-    pool.join();
+    pool.boot().join();
 }
 
 TEST(Group, operators) {

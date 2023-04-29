@@ -54,9 +54,7 @@ TEST(ShortCode, speed_up) {
     }
     usleep(1000); // wait 1ms -> avoid mutex unlocked
     EXPECT_EQ(BasicRanges::status(), BasicRanges::BUILDING);
-    for (auto &t : threads) {
-        t.join();
-    }
+    for (auto &t : threads) { t.join(); }
     EXPECT_EQ(BasicRanges::status(), BasicRanges::AVAILABLE);
 
     /// speed up to fast mode
@@ -66,9 +64,7 @@ TEST(ShortCode, speed_up) {
     }
     usleep(1000); // wait 1ms -> avoid mutex unlocked
     EXPECT_EQ(AllCases::status(), AllCases::BUILDING);
-    for (auto &t : threads) {
-        t.join();
-    }
+    for (auto &t : threads) { t.join(); }
     EXPECT_EQ(AllCases::status(), AllCases::AVAILABLE);
 }
 

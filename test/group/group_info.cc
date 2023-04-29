@@ -12,7 +12,6 @@ using klotski::Group;
 using klotski::GroupCase;
 using klotski::GroupType;
 using klotski::CommonCode;
-
 using klotski::TYPE_ID_LIMIT;
 
 TEST(Group, group_info_invalid) {
@@ -38,9 +37,7 @@ TEST(Group, group_info_invalid) {
 TEST(Group, group_info) {
     auto test = [](GroupType group_type) {
         for (uint32_t group_id = 0; group_id < group_type.group_num(); ++group_id) {
-            auto tmp = Group(group_type, group_id).cases();
-            std::vector<CommonCode> cases(tmp.begin(), tmp.end());
-
+            auto cases = CommonCode::convert(Group(group_type, group_id).cases());
             auto min = *std::min_element(cases.begin(), cases.end());
             auto max = *std::max_element(cases.begin(), cases.end());
 

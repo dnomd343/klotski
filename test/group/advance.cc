@@ -42,8 +42,7 @@ TEST(Group, all_cases) {
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         pool.submit(build, GroupType(type_id));
     }
-    pool.boot();
-    pool.join(); // wait data build complete
+    pool.boot().join(); // wait data build complete
 
     std::vector<CommonCode> combine;
     combine.reserve(ALL_CASES_SIZE_SUM);
@@ -60,8 +59,7 @@ TEST(Group, all_cases) {
 TEST(Group, group_cases) {
     auto build = [](CommonCode seed) -> std::vector<CommonCode> {
         auto group = Group(seed);
-        auto tmp = group.cases();
-        std::vector<CommonCode> cases(tmp.begin(), tmp.end()); // convert as CommonCodes
+        auto cases = CommonCode::convert(group.cases()); // convert as CommonCodes
         EXPECT_EQ(seed, std::min_element(cases.begin(), cases.end())->unwrap()); // confirm min seed
         EXPECT_EQ(cases.size(), group.size()); // verify group size
         EXPECT_EQ(seed, group.seed()); // verify group seed
@@ -84,8 +82,8 @@ TEST(Group, group_cases) {
     pool.boot();
     std::vector<CommonCode> all_cases;
     all_cases.reserve(ALL_CASES_SIZE_SUM);
-    for (auto &&f : futures) {
-        auto cases = f.get();
+    for (auto &&tmp : futures) {
+        auto cases = tmp.get();
         all_cases.insert(all_cases.end(), cases.begin(), cases.end()); // combine build result
     }
     std::sort(all_cases.begin(), all_cases.end());
@@ -127,8 +125,7 @@ TEST(Group, build_groups) {
         std::map<uint32_t, std::vector<CommonCode>> group_seeds; // <group_size, group_seeds>
 
         for (uint32_t group_id = 0; group_id < groups.size(); ++group_id) {
-            auto tmp = Group(type_id, group_id).cases();
-            std::vector<CommonCode> group(tmp.begin(), tmp.end());
+            auto group = CommonCode::convert(Group(type_id, group_id).cases());
             std::sort(group.begin(), group.end());
             std::sort(groups[group_id].begin(), groups[group_id].end());
 
@@ -163,8 +160,7 @@ TEST(Group, build_groups) {
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         pool.submit(test, GroupType(type_id));
     }
-    pool.boot();
-    pool.join();
+    pool.boot().join();
 
     char buffer[9];
     std::string group_info_str;
