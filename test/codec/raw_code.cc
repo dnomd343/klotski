@@ -4,9 +4,15 @@
 #include "all_cases.h"
 #include "gtest/gtest.h"
 
+#define SHOULD_PANIC(FUNC) \
+    try { \
+        FUNC; EXPECT_STREQ("should panic", "but no panic"); \
+    } catch (klotski::RawCodeExp&) {}
+
 using klotski::RawCode;
 using klotski::AllCases;
 using klotski::CommonCode;
+using klotski::ALL_CASES_SIZE;
 
 const static uint64_t TEST_CODE = 0x0603'EDF5'CAFF'F5E2;
 
@@ -18,24 +24,25 @@ TEST(RawCode, hash) {
 TEST(RawCode, validity) {
     EXPECT_EQ(RawCode::check(0x0A34'182B'3810'2D21), false); // invalid code
     EXPECT_EQ(RawCode::check(0x8603'EDF5'CAFF'F5E2), false); // high 4-bits not zero
+
+    SHOULD_PANIC(RawCode::create(0x0000'0000'0000'0000)) // invalid code
 }
 
 TEST(RawCode, code_verify) { // test all layouts
-    std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
             auto code = (uint64_t)RawCode::from_common_code(head << 32 | range);
             EXPECT_EQ(RawCode::check(code), true); // test static `check` interface
-            auto tmp = RawCode::unsafe_create(code); // test dynamic `valid` interface
-            EXPECT_EQ(tmp.valid(), true);
+            auto tmp = RawCode::unsafe_create(code);
+            EXPECT_EQ(tmp.valid(), true); // test dynamic `valid` interface
         }
     };
+
+    std::thread threads[16];
     for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
         threads[head] = std::thread(test, head);
     }
-    for (auto &t : threads) {
-        t.join();
-    }
+    for (auto &t : threads) { t.join(); }
 }
 
 TEST(RawCode, operators) {
@@ -56,6 +63,27 @@ TEST(RawCode, operators) {
 TEST(RawCode, code_convert) {
     EXPECT_EQ(RawCode(TEST_CODE).to_common_code(), CommonCode::from_raw_code(TEST_CODE));
     EXPECT_EQ(RawCode(TEST_CODE).unwrap(), TEST_CODE);
+}
+
+TEST(RawCode, batch_convert) {
+    auto test = [](uint64_t head) {
+        std::vector<RawCode> raw_codes;
+        std::vector<CommonCode> common_codes;
+        raw_codes.reserve(ALL_CASES_SIZE[head]);
+        common_codes.reserve(ALL_CASES_SIZE[head]);
+
+        for (auto &&range : AllCases::fetch()[head]) {
+            common_codes.emplace_back(head << 32 | range);
+            raw_codes.emplace_back(common_codes.back());
+        }
+        EXPECT_EQ(raw_codes, RawCode::convert(common_codes));
+    };
+
+    std::thread threads[16];
+    for (uint64_t head = 0; head < 16; ++head) {
+        threads[head] = std::thread(test, head);
+    }
+    for (auto &t : threads) { t.join(); }
 }
 
 TEST(RawCode, constructors) {
@@ -124,7 +152,6 @@ TEST(RawCode, horizontal_mirror) {
 }
 
 TEST(RawCode, vertical_mirror_global) {
-    std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
             /// generate code and mirror layout
@@ -140,16 +167,15 @@ TEST(RawCode, vertical_mirror_global) {
             EXPECT_EQ(raw_code_mirror.to_vertical_mirror(), raw_code);
         }
     };
+
+    std::thread threads[16];
     for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
         threads[head] = std::thread(test, head);
     }
-    for (auto &t : threads) {
-        t.join();
-    }
+    for (auto &t : threads) { t.join(); }
 }
 
 TEST(RawCode, horizontal_mirror_global) {
-    std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
             /// generate code and mirror layout
@@ -168,10 +194,10 @@ TEST(RawCode, horizontal_mirror_global) {
             EXPECT_EQ(raw_code_mirror.to_horizontal_mirror(), raw_code);
         }
     };
+
+    std::thread threads[16];
     for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
         threads[head] = std::thread(test, head);
     }
-    for (auto &t : threads) {
-        t.join();
-    }
+    for (auto &t : threads) { t.join(); }
 }

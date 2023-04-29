@@ -8,13 +8,14 @@
 #define SHOULD_PANIC(FUNC) \
     try { \
         FUNC; EXPECT_STREQ("should panic", "but no panic"); \
-    } catch (...) {}
+    } catch (klotski::ShortCodeExp&) {}
 
 using klotski::AllCases;
 using klotski::ShortCode;
 using klotski::CommonCode;
 using klotski::BasicRanges;
 
+using klotski::ALL_CASES_SIZE;
 using klotski::SHORT_CODE_LIMIT;
 using klotski::ALL_CASES_SIZE_SUM;
 
@@ -33,6 +34,8 @@ TEST(ShortCode, hash) {
 TEST(ShortCode, validity) {
     EXPECT_NE(ShortCode::check(-1), true); // out of short code range
     EXPECT_NE(ShortCode::check(29670987), true); // out of short code range
+
+    SHOULD_PANIC(ShortCode::create(SHORT_CODE_LIMIT)) // invalid code
     SHOULD_PANIC(ShortCode::from_string("R50EH")) // with invalid `0`
     SHOULD_PANIC(ShortCode::from_string("123456")) // length != 5
     SHOULD_PANIC(ShortCode::from_string("Z9EFV")) // out of short code range
@@ -67,26 +70,24 @@ TEST(ShortCode, speed_up) {
 }
 
 TEST(ShortCode, code_verify) { // test all layout
-    std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
             auto code = (uint32_t)ShortCode::from_common_code(head << 32 | range);
             EXPECT_EQ(ShortCode::check(code), true); // test static `check` interface
-            auto tmp = ShortCode::unsafe_create(code); // test dynamic `valid` interface
-            EXPECT_EQ(tmp.valid(), true);
+            auto tmp = ShortCode::unsafe_create(code);
+            EXPECT_EQ(tmp.valid(), true); // test dynamic `valid` interface
         }
     };
+
+    std::thread threads[16];
+    ShortCode::speed_up(ShortCode::FAST);
     for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
-        /// NOTE: ensure that short code fast mode enabled
         threads[head] = std::thread(test, head);
     }
-    for (auto &t : threads) {
-        t.join();
-    }
+    for (auto &t : threads) { t.join(); }
 }
 
 TEST(ShortCode, code_string) { // test all string code
-    std::thread threads[16];
     auto test = [](uint64_t head) {
         for (const auto &range : AllCases::fetch()[head]) {
             std::string code_str;
@@ -105,12 +106,12 @@ TEST(ShortCode, code_string) { // test all string code
             EXPECT_EQ(ShortCode::from_string(code_str), short_code); // test lower cases
         }
     };
+
+    std::thread threads[16];
     for (uint64_t head = 0; head < 16; ++head) { // split into 16 threads
         threads[head] = std::thread(test, head);
     }
-    for (auto &t : threads) {
-        t.join();
-    }
+    for (auto &t : threads) { t.join(); }
 }
 
 TEST(ShortCode, operators) {
@@ -126,6 +127,9 @@ TEST(ShortCode, operators) {
     EXPECT_NE(TEST_CODE + 1, ShortCode(TEST_CODE)); // uint32_t != ShortCode
     EXPECT_NE(ShortCode(TEST_CODE), TEST_CODE + 1); // ShortCode != uint32_t
     EXPECT_NE(ShortCode(TEST_CODE), ShortCode::unsafe_create(TEST_CODE + 1)); // ShortCode != ShortCode
+
+    EXPECT_LT(ShortCode(TEST_CODE), ShortCode::unsafe_create(TEST_CODE + 1)); // ShortCode < ShortCode
+    EXPECT_GT(ShortCode::unsafe_create(TEST_CODE + 1), ShortCode(TEST_CODE)); // ShortCode > ShortCode
 }
 
 TEST(ShortCode, code_convert) {
@@ -133,6 +137,28 @@ TEST(ShortCode, code_convert) {
     EXPECT_EQ(ShortCode(ShortCode(TEST_CODE).to_string()), ShortCode(TEST_CODE));
     EXPECT_EQ(ShortCode(TEST_CODE).to_common_code(), CommonCode::from_short_code(TEST_CODE));
     EXPECT_EQ(ShortCode(TEST_CODE).unwrap(), TEST_CODE);
+}
+
+TEST(ShortCode, batch_convert) {
+    auto test = [](uint64_t head) {
+        std::vector<ShortCode> short_codes;
+        std::vector<CommonCode> common_codes;
+        short_codes.reserve(ALL_CASES_SIZE[head]);
+        common_codes.reserve(ALL_CASES_SIZE[head]);
+
+        for (auto &&range : AllCases::fetch()[head]) {
+            common_codes.emplace_back(head << 32 | range);
+            short_codes.emplace_back(common_codes.back());
+        }
+        EXPECT_EQ(short_codes, ShortCode::convert(common_codes));
+    };
+
+    std::thread threads[16];
+    ShortCode::speed_up(ShortCode::FAST);
+    for (uint64_t head = 0; head < 16; ++head) {
+        threads[head] = std::thread(test, head);
+    }
+    for (auto &t : threads) { t.join(); }
 }
 
 TEST(ShortCode, constructors) {
