@@ -86,7 +86,6 @@ public:
 
 private:
     uint32_t code_;
-    ShortCode() = default; // unsafe initialize
 
     static Mode mode();
     static bool fast_mode_available_;
@@ -118,6 +117,7 @@ public:
     constexpr uint32_t unwrap() const noexcept { return code_; }
 
     /// ShortCode constructors
+    ShortCode() = delete;
     explicit ShortCode(uint32_t short_code);
     explicit ShortCode(std::string &&short_code);
     explicit ShortCode(CommonCode &&common_code) noexcept;

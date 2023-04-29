@@ -79,7 +79,6 @@ public:
 
 class CommonCode {
     uint64_t code_;
-    CommonCode() = default; // unsafe initialize
 
     static inline uint64_t string_decode(const std::string &common_code);
     static inline std::string string_encode(uint64_t common_code, bool shorten) noexcept;
@@ -100,6 +99,7 @@ public:
     constexpr uint64_t unwrap() const noexcept { return code_; }
 
     /// CommonCode constructors
+    CommonCode() = delete;
     explicit CommonCode(uint64_t common_code);
     explicit CommonCode(RawCode &&raw_code) noexcept;
     explicit CommonCode(ShortCode &&short_code) noexcept;

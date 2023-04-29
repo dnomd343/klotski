@@ -61,7 +61,6 @@ public:
 
 class RawCode {
     uint64_t code_;
-    RawCode() = default; // unsafe initialize
 
     static inline uint64_t compact(uint64_t raw_code) noexcept; // raw code -> common code
     static inline uint64_t extract(uint64_t common_code) noexcept; // common code -> raw code
@@ -86,6 +85,7 @@ public:
     constexpr uint64_t unwrap() const noexcept { return code_; }
 
     /// RawCode constructors
+    RawCode() = delete;
     explicit RawCode(uint64_t raw_code);
     explicit RawCode(CommonCode &&common_code) noexcept;
     explicit RawCode(const CommonCode &common_code) noexcept;
