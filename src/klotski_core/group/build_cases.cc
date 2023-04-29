@@ -14,7 +14,7 @@ using Common::range_reverse;
 
 /// --------------------------------------- Group Type ----------------------------------------
 
-std::vector<CommonCode> GroupType::cases() const noexcept {
+CommonCodes GroupType::cases() const noexcept {
     std::vector<uint32_t> ranges; // basic ranges of type_id
     ranges.reserve(TYPE_ID_SIZE[type_id_]); // over-allocation
 
@@ -48,9 +48,9 @@ std::vector<CommonCode> GroupType::cases() const noexcept {
     return all_cases;
 }
 
-std::vector<std::vector<CommonCode>> GroupType::groups() const noexcept {
+std::vector<CommonCodes> GroupType::groups() const noexcept {
     auto all_cases = GroupType::cases();
-    std::vector<std::vector<CommonCode>> groups;
+    std::vector<CommonCodes> groups;
 
     auto min = std::min_element(all_cases.begin(), all_cases.end()); // search min CommonCode
     auto first_group = Group::cases(min->to_raw_code()); // expand the first group
@@ -60,18 +60,18 @@ std::vector<std::vector<CommonCode>> GroupType::groups() const noexcept {
     }
 
     absl::btree_set<CommonCode> cases(all_cases.begin(), all_cases.end());
-    for (auto &&tmp : *groups.begin()) {
+    for (auto &&tmp : groups.front()) {
         cases.erase(tmp); // remove elements from first group
     }
     while (!cases.empty()) {
         auto group = Group::cases(cases.begin()->to_raw_code());
         groups.emplace_back(group.begin(), group.end()); // release new group
-        for (auto &&tmp : *(groups.end() - 1)) {
+        for (auto &&tmp : groups.back()) {
             cases.erase(tmp); // remove selected cases
         }
     }
 
-    auto cmp_func = [](const std::vector<CommonCode> &v1, const std::vector<CommonCode> &v2) {
+    auto cmp_func = [](const CommonCodes &v1, const CommonCodes &v2) {
         return v1.size() > v2.size(); // sort by vector size
     };
     std::stable_sort(groups.begin(), groups.end(), cmp_func); // using stable sort for ordered index
@@ -114,15 +114,15 @@ uint32_t Group::size(const RawCode &raw_code) noexcept {
 
 /// --------------------------------------- Group Cases ---------------------------------------
 
-std::vector<RawCode> Group::cases() const noexcept {
+RawCodes Group::cases() const noexcept {
     return cases(seed());
 }
 
-std::vector<RawCode> Group::cases(const CommonCode &common_code) noexcept {
+RawCodes Group::cases(const CommonCode &common_code) noexcept {
     return cases(common_code.to_raw_code());
 }
 
-std::vector<RawCode> Group::cases(const RawCode &raw_code) noexcept {
+RawCodes Group::cases(const RawCode &raw_code) noexcept {
     std::queue<uint64_t> cache({raw_code.unwrap()});
     absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
     cases.reserve(GroupType::max_size(raw_code));

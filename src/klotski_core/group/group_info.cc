@@ -44,17 +44,16 @@ CommonCode GroupCase::parse(const info_t &info) {
         throw std::invalid_argument("group index overflow"); // check group index
     }
 
-    std::vector<CommonCode> group(cases.begin(), cases.end());
+    auto group = CommonCode::convert(cases);
     std::nth_element(group.begin(), group.begin() + info.group_index, group.end());
     return group[info.group_index]; // located nth as target
 }
 
 GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
     uint32_t group_index = 0;
-    auto cases = Group::cases(common_code);
-    std::vector<CommonCode> group(cases.begin(), cases.end());
-    for (auto &&code: group) {
-        if (code < common_code) {
+    auto group = CommonCode::convert(Group::cases(common_code));
+    for (auto &&tmp: group) {
+        if (tmp < common_code) {
             ++group_index; // locate group index
         }
     }

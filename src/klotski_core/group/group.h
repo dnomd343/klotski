@@ -113,7 +113,7 @@ public:
     std::vector<CommonCode> cases() const noexcept;
 
     /// Calculate all groups of the current type_id.
-    std::vector<std::vector<CommonCode>> groups() const noexcept;
+    std::vector<CommonCodes> groups() const noexcept;
 };
 
 /// ------------------------------------------ Group ------------------------------------------
@@ -145,9 +145,9 @@ public:
     static CommonCode seed(const CommonCode &common_code) noexcept;
 
     /// Calculate the current group.
-    std::vector<RawCode> cases() const noexcept;
-    static std::vector<RawCode> cases(const RawCode &raw_code) noexcept;
-    static std::vector<RawCode> cases(const CommonCode &common_code) noexcept;
+    RawCodes cases() const noexcept;
+    static RawCodes cases(const RawCode &raw_code) noexcept;
+    static RawCodes cases(const CommonCode &common_code) noexcept;
 };
 
 /// --------------------------------------- Group Case ----------------------------------------
@@ -177,22 +177,34 @@ public:
 inline bool operator==(const GroupType &t1, const GroupType &t2) {
     return t1.unwrap() == t2.unwrap();
 }
+inline bool operator!=(const GroupType &t1, const GroupType &t2) {
+    return !(t1 == t2);
+}
 
 inline bool operator==(const Group &g1, const Group &g2) {
-    return g1.type_id() == g2.type_id() && g1.unwrap() == g2.unwrap();
+    return g1.type_id() == g2.type_id()
+        && g1.unwrap() == g2.unwrap();
+}
+inline bool operator!=(const Group &g1, const Group &g2) {
+    return !(g1 == g2);
 }
 
 inline bool operator==(const GroupType::block_num_t &b1, const GroupType::block_num_t &b2) {
-    return (b1.n_1x1 == b2.n_1x1) && (b1.n_1x2 == b2.n_1x2) && (b1.n_2x1 == b2.n_2x1);
+    return (b1.n_1x1 == b2.n_1x1)
+        && (b1.n_1x2 == b2.n_1x2)
+        && (b1.n_2x1 == b2.n_2x1);
+}
+inline bool operator!=(const GroupType::block_num_t &b1, const GroupType::block_num_t &b2) {
+    return !(b1 == b2);
 }
 
 inline bool operator==(const GroupCase::info_t &i1, const GroupCase::info_t &i2) {
-    return (i1.type_id == i2.type_id) && (i1.group_id == i2.group_id) && (i1.group_index == i2.group_index);
+    return (i1.type_id == i2.type_id)
+        && (i1.group_id == i2.group_id)
+        && (i1.group_index == i2.group_index);
 }
-
-inline bool operator!=(const Group &g1, const Group &g2) { return !(g1 == g2); }
-inline bool operator!=(const GroupType &t1, const GroupType &t2) { return !(t1 == t2); }
-inline bool operator!=(const GroupCase::info_t &i1, const GroupCase::info_t &i2) { return !(i1 == i2); }
-inline bool operator!=(const GroupType::block_num_t &b1, const GroupType::block_num_t &b2) { return !(b1 == b2); }
+inline bool operator!=(const GroupCase::info_t &i1, const GroupCase::info_t &i2) {
+    return !(i1 == i2);
+}
 
 } // namespace klotski

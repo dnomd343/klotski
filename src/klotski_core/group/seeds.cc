@@ -3,8 +3,6 @@
 #include "type_id.h"
 #include "group_seeds.h"
 
-#include <iostream>
-
 namespace klotski {
 
 std::vector<CommonCode> GroupType::seeds() const noexcept {
@@ -19,8 +17,7 @@ CommonCode Group::seed() const noexcept { // group_id -> seed
 }
 
 CommonCode Group::seed(const RawCode &raw_code) noexcept {
-    auto cases = Group::cases(raw_code);
-    std::vector<CommonCode> group(cases.begin(), cases.end());
+    auto group = CommonCode::convert(Group::cases(raw_code));
     return *std::min_element(group.begin(), group.end());
 }
 
