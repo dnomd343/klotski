@@ -116,6 +116,18 @@ public:
     bool is_horizontal_mirror(const RawCode &raw_code) const noexcept;
 };
 
+/// RawCode create
+inline RawCode RawCode::create(uint64_t raw_code) {
+    return RawCode(raw_code);
+}
+
+/// RawCode create without check
+inline RawCode RawCode::unsafe_create(uint64_t raw_code) noexcept {
+    auto tmp = RawCode(); // init directly
+    tmp.code_ = raw_code;
+    return tmp;
+}
+
 /// Compare implements
 inline bool operator==(uint64_t r1, const RawCode &r2) noexcept { return r1 == r2.unwrap(); }
 inline bool operator==(const RawCode &r1, uint64_t r2) noexcept { return r1.unwrap() == r2; }

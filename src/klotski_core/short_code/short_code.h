@@ -141,6 +141,18 @@ public:
     static ShortCodes convert(const CommonCodes &common_codes) noexcept;
 };
 
+/// ShortCode create
+inline ShortCode ShortCode::create(uint32_t short_code) {
+    return ShortCode(short_code);
+}
+
+/// ShortCode create without check
+inline ShortCode ShortCode::unsafe_create(uint32_t short_code) noexcept {
+    auto tmp = ShortCode(); // init directly
+    tmp.code_ = short_code;
+    return tmp;
+}
+
 /// Compare implements
 inline bool operator==(uint32_t s1, const ShortCode &s2) noexcept { return s1 == s2.unwrap(); }
 inline bool operator==(const ShortCode &s1, uint32_t s2) noexcept { return s1.unwrap() == s2; }

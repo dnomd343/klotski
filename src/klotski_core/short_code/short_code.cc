@@ -6,16 +6,6 @@ namespace klotski {
 bool ShortCode::fast_mode_available_ = false;
 bool ShortCode::normal_mode_available_ = false;
 
-ShortCode ShortCode::create(uint32_t short_code) {
-    return ShortCode(short_code);
-}
-
-ShortCode ShortCode::unsafe_create(uint32_t short_code) noexcept { // create without check
-    auto tmp = ShortCode(); // init directly
-    tmp.code_ = short_code;
-    return tmp;
-}
-
 ShortCode::ShortCode(uint32_t short_code) {
     if (!ShortCode::check(short_code)) { // check input short code
         throw klotski::ShortCodeExp("short code invalid");

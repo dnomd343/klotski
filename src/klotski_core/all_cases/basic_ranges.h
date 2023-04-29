@@ -38,7 +38,7 @@ const uint32_t BASIC_RANGES_SIZE = 7311921;
 class BasicRanges {
 public:
     /// Three basic states, one-way transition.
-    /// {NO_INIT} -> {BUILDING} -> {AVAILABLE}
+    /// {NOT_INIT} -> {BUILDING} -> {AVAILABLE}
     enum Status {
         NOT_INIT,
         BUILDING,

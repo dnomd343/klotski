@@ -3,16 +3,6 @@
 
 namespace klotski {
 
-RawCode RawCode::create(uint64_t raw_code) {
-    return RawCode(raw_code);
-}
-
-RawCode RawCode::unsafe_create(uint64_t raw_code) noexcept { // create without check
-    auto tmp = RawCode(); // init directly
-    tmp.code_ = raw_code;
-    return tmp;
-}
-
 RawCode::RawCode(uint64_t raw_code) {
     if (!RawCode::check(raw_code)) { // check input raw code
         throw klotski::RawCodeExp("raw code invalid");

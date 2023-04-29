@@ -130,6 +130,18 @@ public:
     static CommonCodes convert(const ShortCodes &short_codes) noexcept;
 };
 
+/// CommonCode create
+inline CommonCode CommonCode::create(uint64_t common_code) {
+    return CommonCode(common_code); // create from uint64_t
+}
+
+/// CommonCode create without check
+inline CommonCode CommonCode::unsafe_create(uint64_t common_code) noexcept {
+    auto tmp = CommonCode(); // init directly
+    tmp.code_ = common_code;
+    return tmp;
+}
+
 /// Compare implements
 inline bool operator==(uint64_t c1, const CommonCode &c2) noexcept { return c1 == c2.unwrap(); }
 inline bool operator==(const CommonCode &c1, uint64_t c2) noexcept { return c1.unwrap() == c2; }

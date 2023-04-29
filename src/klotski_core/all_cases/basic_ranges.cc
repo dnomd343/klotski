@@ -70,7 +70,7 @@ void BasicRanges::generate(basic_ranges_t &release, generate_t info) {
     constexpr auto MASK_10 = (uint32_t)0b10 << 30;
     constexpr auto MASK_11 = (uint32_t)0b11 << 30;
 
-    /// nx:  n4       n3       n2       n1
+    /// nx:     n4       n3       n2       n1
     ///      00000000 00000000 00000000 00000000 (32-bit)
     struct build_t {
         uint32_t nx; // (n4, n3, n2, n1)
