@@ -101,7 +101,7 @@ public:
     static RawCode from_common_code(const std::string &common_code);
 
     /// Batch conversion
-    static CommonCodes convert(const RawCodes &raw_codes) noexcept;
+    static RawCodes convert(const CommonCodes &common_codes) noexcept;
 
     /// Mirror functions
     RawCode to_vertical_mirror() const noexcept;
