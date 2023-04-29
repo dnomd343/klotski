@@ -132,14 +132,12 @@ public:
 
 /// CommonCode create
 inline CommonCode CommonCode::create(uint64_t common_code) {
-    return CommonCode(common_code); // create from uint64_t
+    return CommonCode(common_code); // with check
 }
 
 /// CommonCode create without check
 inline CommonCode CommonCode::unsafe_create(uint64_t common_code) noexcept {
-    auto tmp = CommonCode(); // init directly
-    tmp.code_ = common_code;
-    return tmp;
+    return *(CommonCode*)&common_code; // init directly
 }
 
 /// Compare implements

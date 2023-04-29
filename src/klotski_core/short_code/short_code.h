@@ -143,14 +143,12 @@ public:
 
 /// ShortCode create
 inline ShortCode ShortCode::create(uint32_t short_code) {
-    return ShortCode(short_code);
+    return ShortCode(short_code); // with check
 }
 
 /// ShortCode create without check
 inline ShortCode ShortCode::unsafe_create(uint32_t short_code) noexcept {
-    auto tmp = ShortCode(); // init directly
-    tmp.code_ = short_code;
-    return tmp;
+    return *(ShortCode*)&short_code; // init directly
 }
 
 /// Compare implements

@@ -118,14 +118,12 @@ public:
 
 /// RawCode create
 inline RawCode RawCode::create(uint64_t raw_code) {
-    return RawCode(raw_code);
+    return RawCode(raw_code); // with check
 }
 
 /// RawCode create without check
 inline RawCode RawCode::unsafe_create(uint64_t raw_code) noexcept {
-    auto tmp = RawCode(); // init directly
-    tmp.code_ = raw_code;
-    return tmp;
+    return *(RawCode*)&raw_code; // init directly
 }
 
 /// Compare implements
