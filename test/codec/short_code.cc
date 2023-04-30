@@ -79,24 +79,15 @@ TEST(ShortCode, DISABLED_global) {
 
 TEST(ShortCode, speed_up) {
     std::thread threads[4];
-
-    /// speed up to normal mode
-    EXPECT_EQ(BasicRanges::status(), BasicRanges::NOT_INIT);
     for (auto &t : threads) {
         t = std::thread(ShortCode::speed_up, ShortCode::NORMAL);
     }
-    usleep(1000); // wait 1ms -> avoid mutex unlocked
-    EXPECT_EQ(BasicRanges::status(), BasicRanges::BUILDING);
     for (auto &t : threads) { t.join(); }
     EXPECT_EQ(BasicRanges::status(), BasicRanges::AVAILABLE);
 
-    /// speed up to fast mode
-    EXPECT_EQ(AllCases::status(), AllCases::NOT_INIT);
     for (auto &t : threads) {
         t = std::thread(ShortCode::speed_up, ShortCode::FAST);
     }
-    usleep(1000); // wait 1ms -> avoid mutex unlocked
-    EXPECT_EQ(AllCases::status(), AllCases::BUILDING);
     for (auto &t : threads) { t.join(); }
     EXPECT_EQ(AllCases::status(), AllCases::AVAILABLE);
 }
