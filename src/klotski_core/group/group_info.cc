@@ -3,8 +3,6 @@
 #include "group.h"
 #include "type_id.h"
 
-#include <iostream>
-
 namespace klotski {
 
 std::mutex GroupCase::building_;
@@ -42,10 +40,8 @@ uint32_t GroupType::max_size(const CommonCode &common_code) noexcept {
 
 CommonCode GroupCase::parse(const info_t &info) {
     if (available_) {
-        std::cerr << "using fast mode" << std::endl;
         return fast_decode(info);
     }
-    std::cerr << "using tiny mode" << std::endl;
     return tiny_decode(info);
 }
 
@@ -55,10 +51,8 @@ GroupCase::info_t GroupCase::encode(const RawCode &raw_code) noexcept {
 
 GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
     if (available_) {
-        std::cerr << "using fast mode" << std::endl;
         return fast_encode(common_code);
     }
-    std::cerr << "using tiny mode" << std::endl;
     return tiny_encode(common_code);
 }
 
@@ -121,7 +115,6 @@ void GroupCase::speed_up() {
         ShortCode::speed_up(ShortCode::FAST);
         for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
             GroupCase::build_index(GroupType(type_id));
-            std::cerr << type_id << std::endl;
         }
     };
     if (!available_) {
