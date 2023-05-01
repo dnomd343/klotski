@@ -37,26 +37,18 @@ void tmain() {
 
 //    auto start = clock();
 
-    GroupCase::demo();
 
-//    auto ret = GroupCase::encode(CommonCode(0x1A9BF0C00));
-//    auto ret = GroupCase::encode(CommonCode(0x4FEA13400));
-//
-//    std::cout << "type id: " << ret.type_id << std::endl;
-//    std::cout << "group id: " << ret.group_id << std::endl;
-//    std::cout << "group index: " << ret.group_index << std::endl;
+    GroupCase::speed_up();
 
-//    std::cout << GroupCase::parse({
-//        .type_id = 169,
-//        .group_id = 1,
-//        .group_index = 7472,
-//    }) << std::endl;
-//
-//    std::cout << GroupCase::parse({
-//         .type_id = 164,
-//         .group_id = 0,
-//         .group_index = 30833,
-//    }) << std::endl;
+    // 1A9BF0C00 -> 169-1-7472
+    // 4FEA13400 -> 164-0-30833
+    std::cout << GroupCase::parse({169, 1, 7472}) << std::endl;
+    std::cout << GroupCase::parse({164, 0, 30833}) << std::endl;
+    auto i1 = GroupCase::encode(CommonCode(0x1A9BF0C00));
+    auto i2 = GroupCase::encode(CommonCode(0x4FEA13400));
+    std::cout << i1.type_id << "-" << i1.group_id << "-" << i1.group_index << std::endl;
+    std::cout << i2.type_id << "-" << i2.group_id << "-" << i2.group_index << std::endl;
+
 
 //    std::cerr << (clock() - start) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 

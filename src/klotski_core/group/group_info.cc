@@ -1,10 +1,14 @@
 #include <algorithm>
+#include <stdexcept>
 #include "group.h"
 #include "type_id.h"
 
 #include <iostream>
 
 namespace klotski {
+
+std::vector<uint32_t> GroupCase::group_info(SHORT_CODE_LIMIT);
+std::vector<ShortCodes> GroupCase::group_data[TYPE_ID_LIMIT];
 
 /// --------------------------------------- Group Type ----------------------------------------
 
@@ -34,22 +38,33 @@ uint32_t GroupType::max_size(const CommonCode &common_code) noexcept {
 
 /// --------------------------------------- Group Case ----------------------------------------
 
+CommonCode GroupCase::parse(const info_t &info) {
+//    return tiny_decode(info);
+    return fast_decode(info);
+}
+
 GroupCase::info_t GroupCase::encode(const RawCode &raw_code) noexcept {
     return encode(raw_code.to_common_code());
 }
 
-CommonCode GroupCase::parse(const info_t &info) {
+GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
+//    return tiny_encode(common_code);
+    return fast_encode(common_code);
+}
+
+/// ------------------------------------ Group Case Codec -------------------------------------
+
+CommonCode GroupCase::tiny_decode(const info_t &info) {
     auto cases = Group(info.type_id, info.group_id).cases();
     if (cases.size() <= info.group_index) {
         throw std::invalid_argument("group index overflow"); // check group index
     }
-
     auto group = CommonCode::convert(cases);
     std::nth_element(group.begin(), group.begin() + info.group_index, group.end());
     return group[info.group_index]; // located nth as target
 }
 
-GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
+GroupCase::info_t GroupCase::tiny_encode(const CommonCode &common_code) noexcept {
     uint32_t group_index = 0;
     auto group = CommonCode::convert(Group::cases(common_code));
     for (auto &&tmp: group) {
@@ -57,7 +72,6 @@ GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
             ++group_index; // locate group index
         }
     }
-
     GroupType type = GroupType(common_code);
     auto seed = *std::min_element(group.begin(), group.end());
     return {
@@ -67,56 +81,50 @@ GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
     };
 }
 
-/// ------------------------------------- Group Case Fast -------------------------------------
+CommonCode GroupCase::fast_decode(const info_t &info) {
+    if (info.type_id >= TYPE_ID_LIMIT) {
+        throw std::invalid_argument("type id overflow");
+    }
+    if (info.group_id >= TYPE_ID_GROUP_NUM[info.type_id]) {
+        throw std::invalid_argument("group id overflow");
+    }
+    auto &target_group = group_data[info.type_id][info.group_id];
+    if (info.group_index >= target_group.size()) {
+        throw std::invalid_argument("group index overflow");
+    }
+    return target_group[info.group_index].to_common_code();
+}
 
-void GroupCase::demo() {
-    std::cout << "ok" << std::endl;
-
-    // short code -> group_id + group_index
-
-    std::vector<uint32_t> group_info(SHORT_CODE_LIMIT);
-    std::vector<std::vector<ShortCode>> group_data[TYPE_ID_LIMIT];
-
-    ShortCode::speed_up(ShortCode::FAST);
-
-    auto convert = [](const std::vector<RawCode> &raw_codes) -> std::vector<CommonCode> {
-        return {raw_codes.begin(), raw_codes.end()};
+GroupCase::info_t GroupCase::fast_encode(const CommonCode &common_code) noexcept {
+    auto info = group_info[common_code.to_short_code().unwrap()];
+    return {
+        .type_id = static_cast<uint16_t>(GroupType(common_code).unwrap()),
+        .group_id = static_cast<uint16_t>(info >> 20),
+        .group_index = info & 0xFFFFF,
     };
+}
 
+/// ------------------------------------ Group Case Index -------------------------------------
+
+void GroupCase::speed_up() {
+    ShortCode::speed_up(ShortCode::FAST);
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        auto tid = GroupType(type_id);
-
-        group_data[type_id].resize(tid.group_num());
-
-        for (uint32_t group_id = 0; group_id < tid.group_num(); ++group_id) {
-            auto group = Group(tid, group_id);
-
-            auto cases = convert(group.cases());
-            std::sort(cases.begin(), cases.end());
-
-            for (uint32_t group_index = 0; group_index < cases.size(); ++group_index) {
-                auto short_code = cases[group_index].to_short_code();
-                group_info[short_code.unwrap()] = (group_id << 20) | group_index;
-                group_data[type_id][group_id].emplace_back(short_code);
-            }
-        }
+        GroupCase::build_index(GroupType(type_id));
         std::cerr << type_id << std::endl;
     }
+}
 
-
-    std::cout << group_data[169][1][7472].to_common_code() << std::endl;
-    std::cout << group_data[164][0][30833].to_common_code() << std::endl;
-
-    auto src_1 = CommonCode(0x1A9BF0C00);
-    auto tmp_1 = group_info[src_1.to_short_code().unwrap()];
-    std::cout << GroupType(src_1).unwrap() << "-"
-        << (tmp_1 >> 20) << "-" << (tmp_1 & 0xFFFFF) << std::endl;
-
-    auto src_2 = CommonCode(0x4FEA13400);
-    auto tmp_2 = group_info[src_2.to_short_code().unwrap()];
-    std::cout << GroupType(src_2).unwrap() << "-"
-        << (tmp_2 >> 20) << "-" << (tmp_2 & 0xFFFFF) << std::endl;
-
+void GroupCase::build_index(GroupType group_type) noexcept {
+    group_data[group_type.unwrap()].resize(group_type.group_num());
+    for (uint32_t group_id = 0; group_id < group_type.group_num(); ++group_id) {
+        auto cases = CommonCode::convert(Group(group_type, group_id).cases());
+        std::sort(cases.begin(), cases.end());
+        for (uint32_t group_index = 0; group_index < cases.size(); ++group_index) {
+            auto short_code = cases[group_index].to_short_code();
+            group_info[short_code.unwrap()] = (group_id << 20) | group_index;
+            group_data[group_type.unwrap()][group_id].emplace_back(short_code);
+        }
+    }
 }
 
 } // namespace klotski

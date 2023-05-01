@@ -153,8 +153,6 @@ public:
 /// --------------------------------------- Group Case ----------------------------------------
 
 class GroupCase {
-    static uint32_t group_id(GroupType group_type, CommonCode seed) noexcept;
-
 public:
     struct info_t {
         uint16_t type_id;
@@ -162,7 +160,22 @@ public:
         uint32_t group_index;
     };
 
-    static void demo();
+private:
+    static std::vector<uint32_t> group_info;
+    static std::vector<ShortCodes> group_data[TYPE_ID_LIMIT];
+
+    static void build_index(GroupType group_type) noexcept;
+
+    static CommonCode fast_decode(const info_t &info);
+    static CommonCode tiny_decode(const info_t &info);
+    static info_t fast_encode(const CommonCode &common_code) noexcept;
+    static info_t tiny_encode(const CommonCode &common_code) noexcept;
+
+    static uint32_t group_id(GroupType group_type, CommonCode seed) noexcept;
+
+public:
+    /// Build group cases accelerated index.
+    static void speed_up();
 
     /// Get the CommonCode using the group info.
     static CommonCode parse(const info_t &info);
