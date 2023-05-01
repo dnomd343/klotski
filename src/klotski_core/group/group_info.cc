@@ -7,8 +7,10 @@
 
 namespace klotski {
 
-std::vector<uint32_t> GroupCase::group_info(SHORT_CODE_LIMIT);
-std::vector<ShortCodes> GroupCase::group_data[TYPE_ID_LIMIT];
+std::mutex GroupCase::building_;
+bool GroupCase::available_ = false;
+std::vector<uint32_t> GroupCase::group_info_(SHORT_CODE_LIMIT);
+std::vector<ShortCodes> GroupCase::group_data_[TYPE_ID_LIMIT];
 
 /// --------------------------------------- Group Type ----------------------------------------
 
@@ -39,8 +41,12 @@ uint32_t GroupType::max_size(const CommonCode &common_code) noexcept {
 /// --------------------------------------- Group Case ----------------------------------------
 
 CommonCode GroupCase::parse(const info_t &info) {
-//    return tiny_decode(info);
-    return fast_decode(info);
+    if (available_) {
+        std::cerr << "using fast mode" << std::endl;
+        return fast_decode(info);
+    }
+    std::cerr << "using tiny mode" << std::endl;
+    return tiny_decode(info);
 }
 
 GroupCase::info_t GroupCase::encode(const RawCode &raw_code) noexcept {
@@ -48,8 +54,12 @@ GroupCase::info_t GroupCase::encode(const RawCode &raw_code) noexcept {
 }
 
 GroupCase::info_t GroupCase::encode(const CommonCode &common_code) noexcept {
-//    return tiny_encode(common_code);
-    return fast_encode(common_code);
+    if (available_) {
+        std::cerr << "using fast mode" << std::endl;
+        return fast_encode(common_code);
+    }
+    std::cerr << "using tiny mode" << std::endl;
+    return tiny_encode(common_code);
 }
 
 /// ------------------------------------ Group Case Codec -------------------------------------
@@ -88,7 +98,7 @@ CommonCode GroupCase::fast_decode(const info_t &info) {
     if (info.group_id >= TYPE_ID_GROUP_NUM[info.type_id]) {
         throw std::invalid_argument("group id overflow");
     }
-    auto &target_group = group_data[info.type_id][info.group_id];
+    auto &target_group = group_data_[info.type_id][info.group_id];
     if (info.group_index >= target_group.size()) {
         throw std::invalid_argument("group index overflow");
     }
@@ -96,7 +106,7 @@ CommonCode GroupCase::fast_decode(const info_t &info) {
 }
 
 GroupCase::info_t GroupCase::fast_encode(const CommonCode &common_code) noexcept {
-    auto info = group_info[common_code.to_short_code().unwrap()];
+    auto info = group_info_[common_code.to_short_code().unwrap()];
     return {
         .type_id = static_cast<uint16_t>(GroupType(common_code).unwrap()),
         .group_id = static_cast<uint16_t>(info >> 20),
@@ -107,22 +117,33 @@ GroupCase::info_t GroupCase::fast_encode(const CommonCode &common_code) noexcept
 /// ------------------------------------ Group Case Index -------------------------------------
 
 void GroupCase::speed_up() {
-    ShortCode::speed_up(ShortCode::FAST);
-    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        GroupCase::build_index(GroupType(type_id));
-        std::cerr << type_id << std::endl;
+    auto build_data = []() { // build group cases index
+        ShortCode::speed_up(ShortCode::FAST);
+        for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+            GroupCase::build_index(GroupType(type_id));
+            std::cerr << type_id << std::endl;
+        }
+    };
+    if (!available_) {
+        if (building_.try_lock()) { // mutex lock success
+            build_data(); // start build process
+            available_ = true;
+        } else {
+            building_.lock(); // blocking waiting
+        }
+        building_.unlock(); // release mutex
     }
 }
 
 void GroupCase::build_index(GroupType group_type) noexcept {
-    group_data[group_type.unwrap()].resize(group_type.group_num());
+    group_data_[group_type.unwrap()].resize(group_type.group_num());
     for (uint32_t group_id = 0; group_id < group_type.group_num(); ++group_id) {
         auto cases = CommonCode::convert(Group(group_type, group_id).cases());
         std::sort(cases.begin(), cases.end());
         for (uint32_t group_index = 0; group_index < cases.size(); ++group_index) {
             auto short_code = cases[group_index].to_short_code();
-            group_info[short_code.unwrap()] = (group_id << 20) | group_index;
-            group_data[group_type.unwrap()][group_id].emplace_back(short_code);
+            group_info_[short_code.unwrap()] = (group_id << 20) | group_index;
+            group_data_[group_type.unwrap()][group_id].emplace_back(short_code);
         }
     }
 }

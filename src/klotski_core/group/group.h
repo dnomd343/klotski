@@ -57,6 +57,7 @@
 ///     type_id < 203  |  group_id < 2653  |  group_index < 964656
 ///     (8-bit ~ 256)  |  (12-bit ~ 4096)  |   (20-bit ~ 1048576)
 
+#include <mutex>
 #include <cstdint>
 #include "raw_code.h"
 #include "common_code.h"
@@ -161,8 +162,10 @@ public:
     };
 
 private:
-    static std::vector<uint32_t> group_info;
-    static std::vector<ShortCodes> group_data[TYPE_ID_LIMIT];
+    static bool available_;
+    static std::mutex building_;
+    static std::vector<uint32_t> group_info_;
+    static std::vector<ShortCodes> group_data_[TYPE_ID_LIMIT];
 
     static void build_index(GroupType group_type) noexcept;
 

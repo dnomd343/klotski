@@ -37,18 +37,20 @@ void tmain() {
 
 //    auto start = clock();
 
+    auto demo = []() {
+        // 1A9BF0C00 -> 169-1-7472
+        // 4FEA13400 -> 164-0-30833
+        std::cout << GroupCase::parse({169, 1, 7472}) << std::endl;
+        std::cout << GroupCase::parse({164, 0, 30833}) << std::endl;
+        auto i1 = GroupCase::encode(CommonCode(0x1A9BF0C00));
+        auto i2 = GroupCase::encode(CommonCode(0x4FEA13400));
+        std::cout << i1.type_id << "-" << i1.group_id << "-" << i1.group_index << std::endl;
+        std::cout << i2.type_id << "-" << i2.group_id << "-" << i2.group_index << std::endl;
+    };
 
+    demo();
     GroupCase::speed_up();
-
-    // 1A9BF0C00 -> 169-1-7472
-    // 4FEA13400 -> 164-0-30833
-    std::cout << GroupCase::parse({169, 1, 7472}) << std::endl;
-    std::cout << GroupCase::parse({164, 0, 30833}) << std::endl;
-    auto i1 = GroupCase::encode(CommonCode(0x1A9BF0C00));
-    auto i2 = GroupCase::encode(CommonCode(0x4FEA13400));
-    std::cout << i1.type_id << "-" << i1.group_id << "-" << i1.group_index << std::endl;
-    std::cout << i2.type_id << "-" << i2.group_id << "-" << i2.group_index << std::endl;
-
+    demo();
 
 //    std::cerr << (clock() - start) * 1000 / CLOCKS_PER_SEC << "ms" << std::endl;
 
