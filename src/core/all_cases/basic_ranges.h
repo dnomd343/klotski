@@ -37,44 +37,44 @@ namespace klotski {
 /// basic ranges count
     const uint32_t BASIC_RANGES_SIZE = 7311921;
 
-    class BasicRanges {
-    public:
-        /// Three basic states, one-way transition.
-        /// {NOT_INIT} -> {BUILDING} -> {AVAILABLE}
-        enum Status {
-            NOT_INIT,
-            BUILDING,
-            AVAILABLE,
-        };
-        typedef std::vector<uint32_t> basic_ranges_t;
-
-        /// Trigger the build process, from `NOT_INIT` to `BUILDING`.
-        static void build();
-
-        /// Get current status of BasicRanges.
-        static Status status() noexcept;
-
-        /// Blocking access to constructed data.
-        static const basic_ranges_t& fetch();
-
-    private:
-        static bool available_;
-        static std::mutex building_;
-        static basic_ranges_t data_;
-
-        static void build_data();
-
-    public:
-        /// The number of types of blocks.
-        struct generate_t {
-            int n1; // number of `00` -> space
-            int n2; // number of `01` -> 1x2 block
-            int n3; // number of `10` -> 2x1 block
-            int n4; // number of `11` -> 1x1 block
-        };
-
-        /// Generate all basic-ranges of the specified type.
-        static void generate(basic_ranges_t &release, generate_t info);
-    };
+//    class BasicRanges {
+//    public:
+//        /// Three basic states, one-way transition.
+//        /// {NOT_INIT} -> {BUILDING} -> {AVAILABLE}
+//        enum Status {
+//            NOT_INIT,
+//            BUILDING,
+//            AVAILABLE,
+//        };
+//        typedef std::vector<uint32_t> basic_ranges_t;
+//
+//        /// Trigger the build process, from `NOT_INIT` to `BUILDING`.
+//        static void build();
+//
+//        /// Get current status of BasicRanges.
+//        static Status status() noexcept;
+//
+//        /// Blocking access to constructed data.
+//        static const basic_ranges_t& fetch();
+//
+//    private:
+//        static bool available_;
+//        static std::mutex building_;
+//        static basic_ranges_t data_;
+//
+//        static void build_data();
+//
+//    public:
+//        /// The number of types of blocks.
+//        struct generate_t {
+//            int n1; // number of `00` -> space
+//            int n2; // number of `01` -> 1x2 block
+//            int n3; // number of `10` -> 2x1 block
+//            int n4; // number of `11` -> 1x1 block
+//        };
+//
+//        /// Generate all basic-ranges of the specified type.
+//        static void generate(basic_ranges_t &release, generate_t info);
+//    };
 
 } // namespace klotski
