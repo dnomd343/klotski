@@ -1,121 +1,120 @@
 #include <list>
-#include <vector>
 #include <algorithm>
 
-#include "basic_ranges.h"
+#include "reverse.h"
+#include "all_cases.h"
 
-#include <iostream>
+namespace klotski {
+namespace cases {
 
-typedef uint32_t Range;
-typedef std::vector<Range> Ranges;
 typedef std::vector<Range>::iterator RangeIter;
 typedef std::tuple<int, int, int, int> RangeType;
+typedef std::array<RangeType, 204> RangeTypes;
 
-static const auto RangeTypeNum = 204;
-
-static const uint32_t BASIC_RANGES_NUM = 7311921;
-
-class BasicRanges {
-public:
-    static void build_ranges();
-
-    static const Ranges& fetch();
-
-private:
-    static Ranges data_;
-
-    static void spawn_ranges(int, int, int, int);
-};
-
-Ranges BasicRanges::data_;
-
-static Range range_reverse(Range bin) noexcept {
-#if defined(__GNUC__) || defined(__clang__)
-    bin = __builtin_bswap32(bin);
-    // TODO: using `std::byteswap` (c++23)
-#else
-    // FIXME: `_byteswap_ulong` under MSVC
-    bin = ((bin << 16) & 0xFFFF0000) | ((bin >> 16) & 0x0000FFFF);
-    bin = ((bin << 8) & 0xFF00FF00) | ((bin >> 8) & 0x00FF00FF);
-#endif
-    bin = ((bin << 4) & 0xF0F0F0F0) | ((bin >> 4) & 0x0F0F0F0F);
-    return ((bin << 2) & 0xCCCCCCCC) | ((bin >> 2) & 0x33333333);
-}
-
-consteval static std::array<RangeType, RangeTypeNum> basic_types() {
-    std::array<RangeType, RangeTypeNum> data;
-    for (int i = 0, n = 0; n <= 7; ++n) // number of 1x2 and 2x1 block -> 0 ~ 7
-        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) // number of 2x1 block -> 0 ~ n
-            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) // number of 1x1 block -> 0 ~ (14 - 2n)
+/// Calculate all possible basic-ranges permutations.
+consteval static RangeTypes range_types() {
+    RangeTypes data;
+    for (int i = 0, n = 0; n <= 7; ++n) // 1x2 and 2x1 -> 0 ~ 7
+        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) // 2x1 -> 0 ~ n
+            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) // 1x1 -> 0 ~ (14 - 2n)
                 data[i++] = {16 - n * 2 - n_1x1, n - n_2x1, n_2x1, n_1x1};
     return data;
 }
 
-static void combine_sort(RangeIter begin, RangeIter mid, RangeIter end) {
-    Ranges tmp = {begin, mid};
+/// Combine two consecutive sorted arrays into one sorted arrays.
+static void combine_sort(RangeIter begin, RangeIter mid, RangeIter end) noexcept {
+    Ranges tmp = {begin, mid}; // left array backup
     auto p = tmp.begin();
     for (;;) {
-        if (*p < *mid) {
-            *(begin++) = *(p++);
-            if (p == tmp.end())
+        if (*p <= *mid) {
+            *(begin++) = *(p++); // stored in original span
+            if (p == tmp.end()) // left array is consumed
                 return;
-        } else {
-            *(begin++) = *(mid++);
-            if (mid == end) {
-                std::copy(p, tmp.end(), begin);
-                return;
-            }
+            continue;
+        }
+        *(begin++) = *(mid++); // stored in original span
+        if (mid == end) { // right array is consumed
+            std::copy(p, tmp.end(), begin); // left array remaining
+            return;
         }
     }
 }
 
-void BasicRanges::spawn_ranges(int n1, int n2, int n3, int n4) {
+/// Spawn all ranges of specified conditions.
+void BasicRanges::SpawnRanges(Ranges &ranges, int n1, int n2, int n3, int n4) noexcept {
+    auto num = n1 + n2 + n3 + n4;
+    auto offset = (16 - num) << 1; // offset of low bits
+
     std::vector<int> series;
-    auto n = n1 + n2 + n3 + n4;
-    auto offset = (16 - n) << 1;
+    series.reserve(num);
     series.insert(series.end(), n1, 0b00);
     series.insert(series.end(), n2, 0b01);
     series.insert(series.end(), n3, 0b10);
     series.insert(series.end(), n4, 0b11);
 
-    do {
+    do { // full permutation traversal
         uint32_t range = 0;
-        for (auto x : series)
+        for (auto x : series) // store every 2-bit
             (range <<= 2) |= x;
-        data_.emplace_back(range << offset);
+        ranges.emplace_back(range << offset);
     } while (next_permutation(series.begin(), series.end()));
 }
 
-void BasicRanges::build_ranges() {
-    data_.reserve(BASIC_RANGES_NUM);
-    std::list<RangeIter> flags {data_.begin()};
+/// Search and sort all possible basic-ranges permutations.
+void BasicRanges::BuildRanges(Ranges &ranges) {
+    ranges.clear();
+    ranges.reserve(BASIC_RANGES_NUM);
+    std::list<RangeIter> flags {ranges.begin()}; // mark ordered interval
 
-    for (auto &t : basic_types()) {
-        spawn_ranges(std::get<0>(t), std::get<1>(t), std::get<2>(t), std::get<3>(t));
-        flags.emplace_back(data_.end());
+    for (auto &t : range_types()) {
+        SpawnRanges(ranges, std::get<0>(t), std::get<1>(t), std::get<2>(t), std::get<3>(t));
+        flags.emplace_back(ranges.end());
     }
     do {
-        std::list<RangeIter>::iterator begin = flags.begin(), mid, end;
+        decltype(flags.begin()) begin = flags.begin(), mid, end;
         while (++(mid = begin) != flags.end() && ++(end = mid) != flags.end()) {
-            combine_sort(*begin, *mid, *end);
+            combine_sort(*begin, *mid, *end); // merge two ordered interval
             flags.erase(mid);
             begin = end;
         }
-    } while (flags.size() > 2);
+    } while (flags.size() > 2); // merge until only one interval remains
 
-    for (auto &x : data_) {
-        x = range_reverse(x);
+    for (auto &x : ranges) {
+        x = range_reverse(x); // flip every 2-bit
     }
 }
 
-const Ranges& BasicRanges::fetch() {
-    return data_;
-}
-
-void demo() {
-    BasicRanges::build_ranges();
-
-    for (auto x : BasicRanges::fetch()) {
-        printf("%08X\n", x);
+/// Execute the build process and ensure thread safety.
+void BasicRanges::Build() {
+    if (!available_) {
+        if (building_.try_lock()) { // mutex lock success
+            BuildRanges(GetRanges());
+            available_ = true;
+        } else {
+            building_.lock(); // blocking waiting
+        }
+        building_.unlock(); // release mutex
     }
 }
+
+Ranges& BasicRanges::GetRanges() noexcept {
+    static Ranges ranges;
+    return ranges;
+}
+
+BasicRanges& BasicRanges::Instance() noexcept {
+    static BasicRanges instance;
+    return instance;
+}
+
+const Ranges& BasicRanges::Fetch() noexcept {
+    Build();
+    return GetRanges();
+}
+
+bool BasicRanges::IsAvailable() const noexcept {
+    return available_;
+}
+
+} // namespace cases
+} // namespace klotski
