@@ -6,4 +6,6 @@ project(klotski-core VERSION 0.1.2 LANGUAGES CXX)
 
 add_compile_options(-fno-exceptions)
 
+include_directories(utils)
+
 add_executable(${PROJECT_NAME} main.cc all_cases/basic_ranges.cc all_cases/all_cases.cc)

@@ -1,7 +1,15 @@
 #pragma once
 
+#include <cstdint>
+
 namespace klotski {
-namespace cases {
+
+inline int low_zero_num(uint32_t bin) {
+    return __builtin_ctzl(bin);
+
+    // WARN: be aware of serious performance issues
+    // return __builtin_popcount(~(bin ^ -bin)) - 1;
+}
 
 inline uint32_t range_reverse(uint32_t bin) noexcept {
 #if defined(__GNUC__) || defined(__clang__)
@@ -16,5 +24,4 @@ inline uint32_t range_reverse(uint32_t bin) noexcept {
     return ((bin << 2) & 0xCCCCCCCC) | ((bin >> 2) & 0x33333333);
 }
 
-} // namespace cases
 } // namespace klotski

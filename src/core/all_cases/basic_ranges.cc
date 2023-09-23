@@ -1,7 +1,7 @@
 #include <list>
 #include <algorithm>
 
-#include "reverse.h"
+#include "utility.h"
 #include "all_cases.h"
 
 namespace klotski {
@@ -61,7 +61,7 @@ void BasicRanges::SpawnRanges(Ranges &ranges, int n1, int n2, int n3, int n4) no
 }
 
 /// Search and sort all possible basic-ranges permutations.
-void BasicRanges::BuildRanges(Ranges &ranges) {
+void BasicRanges::BuildRanges(Ranges &ranges) noexcept {
     ranges.clear();
     ranges.reserve(BASIC_RANGES_NUM);
     std::list<RangeIter> flags {ranges.begin()}; // mark ordered interval
@@ -85,16 +85,21 @@ void BasicRanges::BuildRanges(Ranges &ranges) {
 }
 
 /// Execute the build process and ensure thread safety.
-void BasicRanges::Build() {
-    if (!available_) {
-        if (building_.try_lock()) { // mutex lock success
-            BuildRanges(GetRanges());
-            available_ = true;
-        } else {
-            building_.lock(); // blocking waiting
-        }
-        building_.unlock(); // release mutex
+void BasicRanges::Build() noexcept {
+    if (available_) {
+        return; // reduce consumption of mutex
     }
+    if (building_.try_lock()) { // mutex lock success
+        if (available_) {
+            building_.unlock();
+            return;
+        }
+        BuildRanges(GetRanges());
+        available_ = true;
+    } else {
+        building_.lock(); // blocking waiting
+    }
+    building_.unlock(); // release mutex
 }
 
 Ranges& BasicRanges::GetRanges() noexcept {
@@ -108,7 +113,7 @@ BasicRanges& BasicRanges::Instance() noexcept {
 }
 
 const Ranges& BasicRanges::Fetch() noexcept {
-    Build();
+    this->Build();
     return GetRanges();
 }
 

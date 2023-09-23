@@ -38,20 +38,31 @@
 #include <mutex>
 #include <vector>
 #include <cstdint>
-
-void demo();
+#include <numeric>
 
 namespace klotski {
 namespace cases {
 
 typedef uint32_t Range;
 typedef std::vector<Range> Ranges;
+typedef std::array<Ranges, 16> AllRanges;
 
-const auto BASIC_RANGES_NUM = 7311921;
+constexpr auto BASIC_RANGES_NUM = 7311921;
+
+constexpr std::array<int, 16> ALL_CASES_NUM {
+    2942906, 2260392, 2942906, 0,
+    2322050, 1876945, 2322050, 0,
+    2322050, 1876945, 2322050, 0,
+    2942906, 2260392, 2942906, 0,
+};
+
+constexpr auto ALL_CASES_NUM_ = std::accumulate(
+    ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0
+);
 
 class BasicRanges {
 public:
-    void Build();
+    void Build() noexcept;
     const Ranges& Fetch() noexcept;
     bool IsAvailable() const noexcept;
 
@@ -68,9 +79,29 @@ private:
 
     BasicRanges() = default;
     static Ranges& GetRanges() noexcept;
-    static void BuildRanges(Ranges &ranges);
-    static void SpawnRanges(Ranges&, int, int, int, int) noexcept;
+    static void BuildRanges(Ranges &ranges) noexcept;
+    static void SpawnRanges(Ranges &ranges, int, int, int, int) noexcept;
 };
+
+class AllCases {
+public:
+
+//    void Build();
+
+    void Build() noexcept;
+    AllRanges& Fetch() noexcept;
+
+    static AllCases& Instance() noexcept;
+
+private:
+    std::mutex building_;
+    bool available_ = false;
+
+    static AllRanges& GetCases() noexcept;
+    static void BuildCases(int head, Ranges &basic_ranges, Ranges &release) noexcept;
+};
+
+void demo();
 
 } // namespace cases
 } // namespace klotski
