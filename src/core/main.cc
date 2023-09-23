@@ -5,14 +5,19 @@
 using klotski::cases::BasicRanges;
 
 int main() {
+
+    BasicRanges::Instance().Build();
+
     auto start = clock();
+
+    demo();
 
 //    std::cout << BasicRanges::Instance().IsAvailable() << std::endl;
 //    BasicRanges::Instance().Build();
 //    std::cout << BasicRanges::Instance().IsAvailable() << std::endl;
-    for (auto x : BasicRanges::Instance().Fetch()) {
-        printf("%08X\n", x);
-    }
+//    for (auto x : BasicRanges::Instance().Fetch()) {
+//        printf("%08X\n", x);
+//    }
 
     std::cerr << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 

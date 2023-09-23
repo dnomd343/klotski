@@ -39,6 +39,8 @@
 #include <vector>
 #include <cstdint>
 
+void demo();
+
 namespace klotski {
 namespace cases {
 
