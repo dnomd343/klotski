@@ -1,7 +1,5 @@
 #include <list>
 #include <algorithm>
-
-#include "utility.h"
 #include "all_cases.h"
 
 namespace klotski {
@@ -9,11 +7,11 @@ namespace cases {
 
 typedef std::vector<Range>::iterator RangeIter;
 typedef std::tuple<int, int, int, int> RangeType;
-typedef std::array<RangeType, 204> RangeTypes;
+typedef std::array<RangeType, 204> RangeTypeUnion;
 
 /// Calculate all possible basic-ranges permutations.
-consteval static RangeTypes range_types() {
-    RangeTypes data;
+consteval static RangeTypeUnion range_types() {
+    RangeTypeUnion data;
     for (int i = 0, n = 0; n <= 7; ++n) // 1x2 and 2x1 -> 0 ~ 7
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) // 2x1 -> 0 ~ n
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) // 1x1 -> 0 ~ (14 - 2n)

@@ -1,7 +1,4 @@
 #include <future>
-#include <iostream>
-
-#include "utility.h"
 #include "all_cases.h"
 
 namespace klotski {
@@ -53,8 +50,9 @@ static int check_range(int head, uint32_t range) noexcept {
 }
 
 /// Build all valid ranges of the specified head.
-void AllCases::BuildCases(int head, const Ranges &basic_ranges, Ranges &release) noexcept {
+void AllCases::BuildCases(int head, Ranges &release) noexcept {
     release.reserve(ALL_CASES_NUM[head]);
+    auto &basic_ranges = BasicRanges::Instance().Fetch();
     for (uint32_t index = 0; index < basic_ranges.size(); ++index) {
         auto offset = check_range(head, basic_ranges[index]);
         if (offset) { // invalid case
@@ -71,7 +69,8 @@ void AllCases::BuildCases(int head, const Ranges &basic_ranges, Ranges &release)
     }
 }
 
-void AllCases::Build() noexcept {
+/// Execute the build process with parallel support and ensure thread safety.
+void AllCases::BuildParallel(Executor &&executor) noexcept {
     if (available_) {
         return; // reduce consumption of mutex
     }
@@ -79,50 +78,32 @@ void AllCases::Build() noexcept {
     if (available_) {
         return; // data is already available
     }
-    auto basic_ranges = BasicRanges::Instance().Fetch();
+    std::vector<std::future<void>> futures;
     for (auto head : case_heads()) {
-        BuildCases(head, basic_ranges, GetCases()[head]);
+        // TODO: using std::move_only_function in C++23
+        //       -> avoid using std::shared_ptr<std::promise<void>>
+        auto promise = std::make_shared<std::promise<void>>();
+        futures.emplace_back(promise->get_future());
+        executor([head, promise = std::move(promise)]() {
+            BuildCases(head, GetCases()[head]);
+            promise->set_value(); // subtask completed notification
+        });
+    }
+    for (auto &x : futures) {
+        x.get(); // wait until all subtasks completed
     }
     available_ = true;
 }
 
-void AllCases::BuildParallel(Executor &&executor) noexcept {
-
-    // TODO: mutex protect
-
-    auto basic_ranges = BasicRanges::Instance().Fetch();
-
-    std::vector<std::future<void>> fs;
-
-    for (auto head : case_heads()) {
-
-        auto p = std::make_shared<std::promise<void>>();
-        fs.emplace_back(p->get_future());
-
-        executor([head, &basic_ranges, p = std::move(p)]() {
-
-            printf("thread %d -> head = %d\n",  std::this_thread::get_id(), head);
-//            std::cout << "thread " << std::thread::id() << " -> head = " << head << std::endl;
-
-            BuildCases(head, basic_ranges, GetCases()[head]);
-
-            p->set_value();
-
-        });
-    }
-
-//    printf("all task running\n");
-
-    for (auto &x : fs) {
-        x.get();
-    }
-
-//    printf("all task complete\n");
-
+/// Execute the build process and ensure thread safety.
+void AllCases::Build() noexcept {
+    BuildParallel([](auto &&func) {
+        func();
+    });
 }
 
-MultiRanges& AllCases::GetCases() noexcept {
-    static MultiRanges cases;
+RangesUnion& AllCases::GetCases() noexcept {
+    static RangesUnion cases;
     return cases;
 }
 
@@ -131,7 +112,7 @@ AllCases& AllCases::Instance() noexcept {
     return instance;
 }
 
-const MultiRanges& AllCases::Fetch() noexcept {
+const RangesUnion& AllCases::Fetch() noexcept {
     this->Build();
     return GetCases();
 }

@@ -35,18 +35,19 @@
 /// not consume too much time, but it can almost double the speed of the case
 /// checking subsequent.
 
+#include <array>
 #include <mutex>
 #include <vector>
 #include <cstdint>
 #include <numeric>
+#include "utility.h"
 
 namespace klotski {
 namespace cases {
 
 typedef uint32_t Range;
 typedef std::vector<Range> Ranges;
-typedef std::array<Ranges, 16> MultiRanges;
-
+typedef std::array<Ranges, 16> RangesUnion;
 typedef std::function<void(std::function<void()>&&)> Executor;
 
 constexpr auto BASIC_RANGES_NUM = 7311921;
@@ -68,11 +69,7 @@ public:
     const Ranges& Fetch() noexcept;
     bool IsAvailable() const noexcept;
 
-    BasicRanges(BasicRanges&&) = delete;
-    BasicRanges(const BasicRanges&) = delete;
-    BasicRanges& operator=(BasicRanges&&) = delete;
-    BasicRanges& operator=(const BasicRanges&) = delete;
-
+    DISALLOW_COPY_AND_ASSIGN(BasicRanges);
     static BasicRanges& Instance() noexcept;
 
 private:
@@ -89,14 +86,10 @@ class AllCases {
 public:
     void Build() noexcept;
     bool IsAvailable() const noexcept;
-    const MultiRanges& Fetch() noexcept;
+    const RangesUnion& Fetch() noexcept;
     void BuildParallel(Executor &&executor) noexcept;
 
-    AllCases(AllCases&&) = delete;
-    AllCases(const AllCases&) = delete;
-    AllCases& operator=(AllCases&&) = delete;
-    AllCases& operator=(const AllCases&) = delete;
-
+    DISALLOW_COPY_AND_ASSIGN(AllCases);
     static AllCases& Instance() noexcept;
 
 private:
@@ -104,8 +97,8 @@ private:
     bool available_ = false;
 
     AllCases() = default;
-    static MultiRanges& GetCases() noexcept;
-    static void BuildCases(int head, const Ranges &basic_ranges, Ranges &release) noexcept;
+    static RangesUnion& GetCases() noexcept;
+    static void BuildCases(int head, Ranges &release) noexcept;
 };
 
 } // namespace cases

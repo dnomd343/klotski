@@ -2,6 +2,12 @@
 
 #include <cstdint>
 
+#define DISALLOW_COPY_AND_ASSIGN(T) \
+    T(T&&) = delete; \
+    T(const T&) = delete; \
+    T& operator=(T&&) = delete; \
+    T& operator=(const T&) = delete;
+
 namespace klotski {
 
 inline int low_zero_num(uint32_t bin) {
