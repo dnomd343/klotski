@@ -3,7 +3,9 @@
 #include <vector>
 #include "gtest/gtest.h"
 #include "all_cases.h"
-#include "md5.h"
+#include "md5sum.h"
+
+using md5::md5sum;
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
@@ -46,7 +48,7 @@ TEST(Cases, basic_ranges_data) {
         asprintf(&tmp, "%08X\n", range);
         basic_ranges_str += tmp;
     }
-    EXPECT_EQ(md5(basic_ranges_str), BASIC_RANGES_MD5);
+    EXPECT_EQ(md5sum(basic_ranges_str), BASIC_RANGES_MD5);
 }
 
 TEST(Cases, all_cases_build) {
@@ -85,5 +87,5 @@ TEST(Cases, all_cases_data) {
             all_cases_str += tmp;
         }
     }
-    EXPECT_EQ(md5(all_cases_str), ALL_CASES_MD5);
+    EXPECT_EQ(md5sum(all_cases_str), ALL_CASES_MD5);
 }

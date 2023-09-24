@@ -6,14 +6,14 @@ include_directories(${KLOTSKI_ROOT_PATH}/third_party/googletest/googletest/inclu
 add_subdirectory(${KLOTSKI_ROOT_PATH}/third_party/googletest googletest EXCLUDE_FROM_ALL)
 
 #unset(CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-include_directories(${KLOTSKI_ROOT_PATH}/third_party/md5)
-add_library(md5 STATIC ${KLOTSKI_ROOT_PATH}/third_party/md5/md5.cpp)
+include_directories(${KLOTSKI_ROOT_PATH}/third_party/md5sum)
+#add_library(md5 STATIC ${KLOTSKI_ROOT_PATH}/third_party/md5/md5.cpp)
+add_subdirectory(${KLOTSKI_ROOT_PATH}/third_party/md5sum md5sum EXCLUDE_FROM_ALL)
 
-set(KLOTSKI_TEST_DEPS klotski-core gtest gtest_main md5)
+set(KLOTSKI_TEST_DEPS klotski-core gtest gtest_main md5sum)
 
 include_directories(${KLOTSKI_ROOT_PATH}/src/core/all_cases)
 include_directories(${KLOTSKI_ROOT_PATH}/src/core/utils)
-
 
 add_executable(test_klotski_cases cases/all_cases.cc)
 target_link_libraries(test_klotski_cases PRIVATE ${KLOTSKI_TEST_DEPS})
