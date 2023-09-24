@@ -8,4 +8,6 @@ add_compile_options(-fno-exceptions)
 
 include_directories(utils)
 
-add_executable(${PROJECT_NAME} main.cc all_cases/basic_ranges.cc all_cases/all_cases.cc)
+add_library(${PROJECT_NAME} all_cases/basic_ranges.cc all_cases/all_cases.cc)
+
+#add_executable(${PROJECT_NAME} main.cc all_cases/basic_ranges.cc all_cases/all_cases.cc)

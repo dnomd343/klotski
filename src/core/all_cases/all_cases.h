@@ -40,6 +40,7 @@
 #include <vector>
 #include <cstdint>
 #include <numeric>
+#include <functional>
 #include "utility.h"
 
 namespace klotski {

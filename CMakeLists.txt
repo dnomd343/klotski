@@ -8,6 +8,8 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
+get_filename_component(KLOTSKI_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
+
 ################################################################################
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
@@ -34,11 +36,11 @@ add_subdirectory(src)
 
 ################################################################################
 
-option(CORE_TEST "build test for klotski core" ON)
+#option(CORE_TEST "build test for klotski core" ON)
 #if (CORE_TEST)
-    include_directories(third_party/googletest/googletest/include)
-    add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
-    add_subdirectory(test)
+#    include_directories(third_party/googletest/googletest/include)
+#    add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
+#    add_subdirectory(test)
 #endif()
 
 ################################################################################

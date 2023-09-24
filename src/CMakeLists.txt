@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 project(klotski-cli LANGUAGES C)
 
 add_subdirectory(core)
+add_subdirectory(core_test)
 
 #add_subdirectory(klotski_core)
 #include_directories(klotski_core)
