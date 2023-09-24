@@ -45,7 +45,9 @@ namespace cases {
 
 typedef uint32_t Range;
 typedef std::vector<Range> Ranges;
-typedef std::array<Ranges, 16> AllRanges;
+typedef std::array<Ranges, 16> MultiRanges;
+
+typedef std::function<void(std::function<void()>&&)> Executor;
 
 constexpr auto BASIC_RANGES_NUM = 7311921;
 
@@ -85,11 +87,15 @@ private:
 
 class AllCases {
 public:
-
-//    void Build();
-
     void Build() noexcept;
-    AllRanges& Fetch() noexcept;
+    bool IsAvailable() const noexcept;
+    const MultiRanges& Fetch() noexcept;
+    void BuildParallel(Executor &&executor) noexcept;
+
+    AllCases(AllCases&&) = delete;
+    AllCases(const AllCases&) = delete;
+    AllCases& operator=(AllCases&&) = delete;
+    AllCases& operator=(const AllCases&) = delete;
 
     static AllCases& Instance() noexcept;
 
@@ -97,11 +103,10 @@ private:
     std::mutex building_;
     bool available_ = false;
 
-    static AllRanges& GetCases() noexcept;
-    static void BuildCases(int head, Ranges &basic_ranges, Ranges &release) noexcept;
+    AllCases() = default;
+    static MultiRanges& GetCases() noexcept;
+    static void BuildCases(int head, const Ranges &basic_ranges, Ranges &release) noexcept;
 };
-
-void demo();
 
 } // namespace cases
 } // namespace klotski

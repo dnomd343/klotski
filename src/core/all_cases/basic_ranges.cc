@@ -89,17 +89,12 @@ void BasicRanges::Build() noexcept {
     if (available_) {
         return; // reduce consumption of mutex
     }
-    if (building_.try_lock()) { // mutex lock success
-        if (available_) {
-            building_.unlock();
-            return;
-        }
-        BuildRanges(GetRanges());
-        available_ = true;
-    } else {
-        building_.lock(); // blocking waiting
+    std::lock_guard<std::mutex> guard(building_);
+    if (available_) {
+        return; // data is already available
     }
-    building_.unlock(); // release mutex
+    BuildRanges(GetRanges());
+    available_ = true;
 }
 
 Ranges& BasicRanges::GetRanges() noexcept {

@@ -1,3 +1,6 @@
+#include <future>
+#include <iostream>
+
 #include "utility.h"
 #include "all_cases.h"
 
@@ -50,7 +53,7 @@ static int check_range(int head, uint32_t range) noexcept {
 }
 
 /// Build all valid ranges of the specified head.
-void AllCases::BuildCases(int head, Ranges &basic_ranges, Ranges &release) noexcept {
+void AllCases::BuildCases(int head, const Ranges &basic_ranges, Ranges &release) noexcept {
     release.reserve(ALL_CASES_NUM[head]);
     for (uint32_t index = 0; index < basic_ranges.size(); ++index) {
         auto offset = check_range(head, basic_ranges[index]);
@@ -69,27 +72,57 @@ void AllCases::BuildCases(int head, Ranges &basic_ranges, Ranges &release) noexc
 }
 
 void AllCases::Build() noexcept {
-    if (available_) { // data already available
-        return;
+    if (available_) {
+        return; // reduce consumption of mutex
     }
-    if (building_.try_lock()) { // mutex lock success
-        if (available_) {
-            building_.unlock();
-            return;
-        }
-        auto basic_ranges = BasicRanges::Instance().Fetch();
-        for (auto head : case_heads()) {
-            BuildCases(head, basic_ranges, GetCases()[head]);
-        }
-        available_ = true;
-    } else {
-        building_.lock(); // blocking waiting
+    std::lock_guard<std::mutex> guard(building_);
+    if (available_) {
+        return; // data is already available
     }
-    building_.unlock(); // release mutex
+    auto basic_ranges = BasicRanges::Instance().Fetch();
+    for (auto head : case_heads()) {
+        BuildCases(head, basic_ranges, GetCases()[head]);
+    }
+    available_ = true;
 }
 
-AllRanges& AllCases::GetCases() noexcept {
-    static std::array<Ranges, 16> cases;
+void AllCases::BuildParallel(Executor &&executor) noexcept {
+
+    // TODO: mutex protect
+
+    auto basic_ranges = BasicRanges::Instance().Fetch();
+
+    std::vector<std::future<void>> fs;
+
+    for (auto head : case_heads()) {
+
+        auto p = std::make_shared<std::promise<void>>();
+        fs.emplace_back(p->get_future());
+
+        executor([head, &basic_ranges, p = std::move(p)]() {
+
+            printf("thread %d -> head = %d\n",  std::this_thread::get_id(), head);
+//            std::cout << "thread " << std::thread::id() << " -> head = " << head << std::endl;
+
+            BuildCases(head, basic_ranges, GetCases()[head]);
+
+            p->set_value();
+
+        });
+    }
+
+//    printf("all task running\n");
+
+    for (auto &x : fs) {
+        x.get();
+    }
+
+//    printf("all task complete\n");
+
+}
+
+MultiRanges& AllCases::GetCases() noexcept {
+    static MultiRanges cases;
     return cases;
 }
 
@@ -98,9 +131,13 @@ AllCases& AllCases::Instance() noexcept {
     return instance;
 }
 
-AllRanges& AllCases::Fetch() noexcept {
+const MultiRanges& AllCases::Fetch() noexcept {
     this->Build();
     return GetCases();
+}
+
+bool AllCases::IsAvailable() const noexcept {
+    return available_;
 }
 
 } // namespace cases
