@@ -1,9 +1,10 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include "gtest/gtest.h"
-#include "all_cases.h"
+
 #include "md5sum.h"
+#include "all_cases.h"
+#include "gtest/gtest.h"
 
 using md5::md5sum;
 
@@ -89,3 +90,5 @@ TEST(Cases, all_cases_data) {
     }
     EXPECT_EQ(md5sum(all_cases_str), ALL_CASES_MD5);
 }
+
+// TODO: test all_cases_parallel_build

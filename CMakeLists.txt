@@ -8,7 +8,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-get_filename_component(KLOTSKI_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
+get_filename_component(KLOTSKI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 
 ################################################################################
 
