@@ -6,8 +6,11 @@ project(klotski-core VERSION 0.1.2 LANGUAGES CXX)
 
 add_compile_options(-fno-exceptions)
 
+#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 include_directories(utils)
+include_directories(all_cases)
 
-add_library(${PROJECT_NAME} all_cases/basic_ranges.cc all_cases/all_cases.cc)
+add_library(${PROJECT_NAME} all_cases/basic_ranges.cc all_cases/all_cases.cc ffi/all_cases.cc)
 
-#add_executable(${PROJECT_NAME} main.cc all_cases/basic_ranges.cc all_cases/all_cases.cc)
+add_executable(${PROJECT_NAME}_cli main.cc all_cases/basic_ranges.cc all_cases/all_cases.cc)

@@ -68,7 +68,7 @@ class BasicRanges {
 public:
     void Build() noexcept;
     const Ranges& Fetch() noexcept;
-    bool IsAvailable() const noexcept;
+    [[nodiscard]] bool IsAvailable() const noexcept;
 
     DISALLOW_COPY_AND_ASSIGN(BasicRanges);
     static BasicRanges& Instance() noexcept;
@@ -86,9 +86,10 @@ private:
 class AllCases {
 public:
     void Build() noexcept;
-    bool IsAvailable() const noexcept;
-    const RangesUnion& Fetch() noexcept;
     void BuildParallel(Executor &&executor) noexcept;
+
+    const RangesUnion& Fetch() noexcept;
+    [[nodiscard]] bool IsAvailable() const noexcept;
 
     DISALLOW_COPY_AND_ASSIGN(AllCases);
     static AllCases& Instance() noexcept;
