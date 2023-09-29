@@ -10,8 +10,11 @@ int main() {
 
     auto start = clock();
 
-    AllCases::Instance().Build();
+//    BasicRanges::Instance().Build();
+
+//    AllCases::Instance().Build();
 //    AllCases::Instance().BuildParallel([](auto f) {f();});
+//    AllCases::Instance().BuildParallelAsync([](auto f) {f();}, []() {});
 
     std::cerr << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 

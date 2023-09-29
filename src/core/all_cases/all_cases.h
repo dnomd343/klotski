@@ -49,6 +49,8 @@ namespace cases {
 typedef uint32_t Range;
 typedef std::vector<Range> Ranges;
 typedef std::array<Ranges, 16> RangesUnion;
+
+typedef std::function<void()> Notifier;
 typedef std::function<void(std::function<void()>&&)> Executor;
 
 constexpr auto BASIC_RANGES_NUM = 7311921;
@@ -87,6 +89,7 @@ class AllCases {
 public:
     void Build() noexcept;
     void BuildParallel(Executor &&executor) noexcept;
+    void BuildParallelAsync(Executor &&executor, Notifier &&callback) noexcept;
 
     const RangesUnion& Fetch() noexcept;
     [[nodiscard]] bool IsAvailable() const noexcept;

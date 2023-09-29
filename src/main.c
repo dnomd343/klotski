@@ -63,11 +63,11 @@ int main() {
 //    sleep(3);
 
 //    printf("build begin\n");
-//    all_cases_parallel_build(executor);
+//    all_cases_build_parallel(executor);
 //    printf("build complete\n");
 
     printf("build begin\n");
-    all_cases_parallel_build_async(executor, callback);
+    all_cases_build_parallel_async(executor, callback);
     printf("build func exited\n");
     printf("build available -> %d\n", is_all_cases_available());
     printf("start sleep 3s\n");

@@ -69,6 +69,37 @@ void AllCases::BuildCases(int head, Ranges &release) noexcept {
     }
 }
 
+/// Execute the build process and ensure thread safety.
+void AllCases::Build() noexcept {
+    BuildParallel([](auto &&func) {
+        func();
+    });
+}
+
+/// Execute the build process in parallel without blocking.
+void AllCases::BuildParallelAsync(Executor &&executor, Notifier &&callback) noexcept {
+    if (available_) {
+        return; // reduce consumption of mutex
+    }
+    building_.lock();
+    if (available_) {
+        building_.unlock();
+        return; // data is already available
+    }
+    auto counter = std::make_shared<std::atomic<int>>(0);
+    auto all_done = std::make_shared<Notifier>(std::move(callback));
+    for (auto head : case_heads()) {
+        executor([this, head, counter, all_done]() {
+            BuildCases(head, GetCases()[head]);
+            if (counter->fetch_add(1) == case_heads().size() - 1) {
+                available_ = true;
+                building_.unlock(); // release building mutex
+                all_done->operator()(); // trigger callback
+            }
+        });
+    }
+}
+
 /// Execute the build process with parallel support and ensure thread safety.
 void AllCases::BuildParallel(Executor &&executor) noexcept {
     if (available_) {
@@ -93,13 +124,6 @@ void AllCases::BuildParallel(Executor &&executor) noexcept {
         x.get(); // wait until all subtasks completed
     }
     available_ = true;
-}
-
-/// Execute the build process and ensure thread safety.
-void AllCases::Build() noexcept {
-    BuildParallel([](auto &&func) {
-        func();
-    });
 }
 
 RangesUnion& AllCases::GetCases() noexcept {
