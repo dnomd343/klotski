@@ -15,6 +15,10 @@
 typedef void (*notifier_t)();
 typedef void (*executor_t)(void (*fn)(void*), void *arg);
 
+typedef uint32_t klotski_u32;
+
+// -------------------------------- klotski all cases ---------------------------------
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -30,7 +34,7 @@ EXTERN void all_cases_prebuild_async(executor_t executor, notifier_t callback);
 
 /// Returns the pre-build status of all_cases without any block, value is 0 if
 /// not completed, non-0 otherwise.
-EXTERN int is_all_cases_prebuild_available();
+EXTERN int all_cases_prebuild_available();
 
 /// Perform the build of all_cases, it is blocking, and will return directly
 /// if completed.
@@ -54,13 +58,19 @@ EXTERN void all_cases_build_parallel_async(executor_t executor, notifier_t callb
 
 /// Returns whether the all_cases is ready, 0 means not completed, non-0 means
 /// the data is ready.
-EXTERN int is_all_cases_available();
+EXTERN int all_cases_available();
 
-//extern const uint32_t ALL_CASES_SIZE;
-//EXTERN_FUNC void export_all_cases(uint64_t *buffer);
+/// Returns the number of all_cases corresponding to head. Head is an integer
+/// between 0 and 15. When head is invalid, a value less than 0 is returned.
+/// Note that when head is `4n-1`, 0 will be returned.
+EXTERN int all_cases_num(int head);
 
-//extern const uint32_t BASIC_RANGES_SIZE;
-//EXTERN_FUNC void export_basic_ranges(uint32_t *buffer);
+/// Returns the starting pointer of all_cases data corresponding to head, the
+/// number of data is obtained by all_cases_num. When head is invalid, a NULL
+/// pointer will be returned. Note that when head is `4n-1`, since the number
+/// is 0, the returned pointer is still a NULL pointer.
+EXTERN const klotski_u32* all_cases_export(int head);
+
 #ifdef __cplusplus
 }
 #endif
