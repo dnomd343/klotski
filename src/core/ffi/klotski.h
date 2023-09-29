@@ -32,8 +32,15 @@ EXTERN void all_cases_prebuild_async(executor_t executor, notifier_t callback);
 /// not completed, non-0 otherwise.
 EXTERN int is_all_cases_prebuild_available();
 
-//EXTERN void all_cases_build();
-//EXTERN int is_all_cases_available();
+EXTERN void all_cases_build();
+
+EXTERN void all_cases_build_async(executor_t executor, notifier_t callback);
+
+EXTERN void all_cases_parallel_build(executor_t executor);
+
+EXTERN void all_cases_parallel_build_async(executor_t executor, notifier_t callback);
+
+EXTERN int is_all_cases_available();
 
 //extern const uint32_t ALL_CASES_SIZE;
 //EXTERN_FUNC void export_all_cases(uint64_t *buffer);
