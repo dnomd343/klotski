@@ -5,6 +5,7 @@
 #include "md5sum.h"
 #include "all_cases.h"
 #include "gtest/gtest.h"
+#include "BS_thread_pool.hpp"
 
 using md5::md5sum;
 
@@ -92,3 +93,32 @@ TEST(Cases, all_cases_data) {
 }
 
 // TODO: test all_cases_parallel_build
+
+TEST(Cases, thread_pool_demo) {
+
+    BasicRanges::Instance().Build();
+
+    BS::thread_pool pool;
+
+    std::cout << pool.get_thread_count() << std::endl;
+
+    auto start = clock();
+    auto start_ = std::chrono::high_resolution_clock::now();
+
+    AllCases::Instance().BuildParallel([&pool](std::function<void()> &&func) {
+//        std::cout << "receive new task" << std::endl;
+        pool.push_task(func);
+    });
+
+//    std::cout << "parallel build complete" << std::endl;
+
+    pool.wait_for_tasks();
+
+    std::cerr << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start_);
+    std::cerr << elapsed.count() / 1000 / 1000 << "ms" << std::endl;
+
+//    std::cout << "pool tasks complete" << std::endl;
+
+}

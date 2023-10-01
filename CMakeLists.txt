@@ -8,7 +8,11 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-get_filename_component(KLOTSKI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
+get_filename_component(KLOTSKI_ROOT ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
+
+set(KLOTSKI_UNIT_TEST ON)
+
+include(third_party/third_party.cmake)
 
 ################################################################################
 
@@ -28,9 +32,6 @@ if (BUILD_DYN)
     add_compile_options(-fPIC)
 endif()
 
-set(ABSL_PROPAGATE_CXX_STD ON)
-include_directories(third_party/abseil-cpp)
-add_subdirectory(third_party/abseil-cpp)
 
 add_subdirectory(src)
 

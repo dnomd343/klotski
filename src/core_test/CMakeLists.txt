@@ -2,14 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_CXX_STANDARD 20)
 
-###############################################################################################
-
-include_directories(${KLOTSKI_ROOT}/third_party/md5sum)
-add_subdirectory(${KLOTSKI_ROOT}/third_party/md5sum md5sum EXCLUDE_FROM_ALL)
-
-include_directories(${KLOTSKI_ROOT}/third_party/googletest/googletest/include)
-add_subdirectory(${KLOTSKI_ROOT}/third_party/googletest googletest EXCLUDE_FROM_ALL)
-
 set(KLOTSKI_TEST_DEPS klotski-core gtest gtest_main md5sum)
 
 ###############################################################################################
