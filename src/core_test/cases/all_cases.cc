@@ -1,13 +1,13 @@
 #include <string>
 #include <vector>
 
-#include "md5sum.h"
+#include "xxhsum.h"
 #include "exposer.h"
 #include "all_cases.h"
 #include "gtest/gtest.h"
 #include "BS_thread_pool.hpp"
 
-using md5::md5sum;
+using xxhash::xxhsum;
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
@@ -18,10 +18,13 @@ using klotski::cases::BASIC_RANGES_NUM;
 
 static const auto TEST_THREAD_NUM = 256;
 
+static const std::string ALL_CASES_XXHASH = "d589c8a45983ebb6";
+static const std::string BASIC_RANGES_XXHASH = "5e7f633b7bd8af37";
+
 /// The efficiency of string hashing is not very high, but there is a memorable
 /// story, and this scheme is still retained here.
-static const std::string ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
-static const std::string BASIC_RANGES_MD5 = "6f385dc171e201089ff96bb010b47212";
+//static const std::string ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
+//static const std::string BASIC_RANGES_MD5 = "6f385dc171e201089ff96bb010b47212";
 
 /// Forcibly modify private variables to reset state.
 PRIVATE_ACCESS(AllCases, available_, bool)
@@ -41,15 +44,7 @@ void all_cases_reset() {
 void basic_ranges_verify() {
     auto &basic_ranges = BasicRanges::Instance().Fetch();
     EXPECT_EQ(basic_ranges.size(), BASIC_RANGES_NUM); // verify basic ranges size
-
-    std::string basic_ranges_str;
-    basic_ranges_str.reserve(BASIC_RANGES_NUM * 9); // 8-bit + '\n'`
-    for (auto range : basic_ranges) {
-        char *tmp = nullptr;
-        asprintf(&tmp, "%08X\n", range);
-        basic_ranges_str += tmp;
-    }
-    EXPECT_EQ(md5sum(basic_ranges_str), BASIC_RANGES_MD5); // verify basic ranges checksum
+    EXPECT_EQ(xxhsum(basic_ranges), BASIC_RANGES_XXHASH); // verify basic ranges checksum
 }
 
 /// Verify that whether all cases data is correct.
@@ -58,22 +53,18 @@ void all_cases_verify() {
     for (int head = 0; head < 16; ++head) {
         EXPECT_EQ(all_cases[head].size(), ALL_CASES_NUM[head]); // verify all cases size
     }
+
     auto all_cases_num = 0;
     std::for_each(all_cases.begin(), all_cases.end(), [&all_cases_num](auto &ranges) {
         all_cases_num += ranges.size();
     });
     EXPECT_EQ(all_cases_num, ALL_CASES_NUM_); // verify all cases global size
 
-    std::string all_cases_str;
-    all_cases_str.reserve(ALL_CASES_NUM_ * 10); // 9-bit + '\n'
+    std::string all_cases_xxh;
     for (uint64_t head = 0; head < 16; ++head) {
-        for (auto range : AllCases::Instance().Fetch()[head]) {
-            char *tmp = nullptr;
-            asprintf(&tmp, "%09llX\n", head << 32 | range);
-            all_cases_str += tmp;
-        }
+        all_cases_xxh += xxhsum(AllCases::Instance().Fetch()[head]);
     }
-    EXPECT_EQ(md5sum(all_cases_str), ALL_CASES_MD5); // verify all cases checksum
+    EXPECT_EQ(xxhsum(all_cases_xxh), ALL_CASES_XXHASH); // verify all cases checksum
 }
 
 TEST(Cases, basic_ranges) {

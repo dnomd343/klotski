@@ -10,3 +10,6 @@
 [submodule "third_party/thread-pool"]
 	path = third_party/thread-pool
 	url = https://github.com/bshoshany/thread-pool.git
+[submodule "third_party/xxHash"]
+	path = third_party/xxHash
+	url = https://github.com/Cyan4973/xxHash.git
