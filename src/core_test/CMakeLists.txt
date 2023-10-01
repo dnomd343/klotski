@@ -6,6 +6,8 @@ set(KLOTSKI_TEST_DEPS klotski-core gtest gtest_main md5sum)
 
 ###############################################################################################
 
+include_directories(utils)
+
 include_directories(${KLOTSKI_ROOT}/src/core/utils)
 include_directories(${KLOTSKI_ROOT}/src/core/all_cases)
 

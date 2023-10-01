@@ -111,7 +111,7 @@ const Ranges& BasicRanges::Fetch() noexcept {
 }
 
 bool BasicRanges::IsAvailable() const noexcept {
-    return available_;
+    return available_; // no mutex required in one-way state
 }
 
 } // namespace cases
