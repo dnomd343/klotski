@@ -13,6 +13,15 @@ namespace klotski {
 inline int low_zero_num(uint32_t bin) {
     return __builtin_ctzl(bin);
 
+    // TODO: using (bin ^ (bin - 1)) when non-builtin
+
+    // WARN: be aware of serious performance issues
+    // return __builtin_popcount(~(bin ^ -bin)) - 1;
+}
+
+inline int low_zero_num(uint64_t bin) {
+    return __builtin_ctzll(bin);
+
     // WARN: be aware of serious performance issues
     // return __builtin_popcount(~(bin ^ -bin)) - 1;
 }
