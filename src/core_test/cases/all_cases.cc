@@ -21,11 +21,6 @@ static const auto TEST_THREAD_NUM = 256;
 static const std::string ALL_CASES_XXHASH = "d589c8a45983ebb6";
 static const std::string BASIC_RANGES_XXHASH = "5e7f633b7bd8af37";
 
-/// The efficiency of string hashing is not very high, but there is a memorable
-/// story, and this scheme is still retained here.
-//static const std::string ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
-//static const std::string BASIC_RANGES_MD5 = "6f385dc171e201089ff96bb010b47212";
-
 /// Forcibly modify private variables to reset state.
 PRIVATE_ACCESS(AllCases, available_, bool)
 PRIVATE_ACCESS(BasicRanges, available_, bool)

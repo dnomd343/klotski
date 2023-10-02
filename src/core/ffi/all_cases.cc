@@ -3,7 +3,6 @@
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
-
 using klotski::cases::ALL_CASES_NUM;
 
 void all_cases_prebuild() {
@@ -11,9 +10,9 @@ void all_cases_prebuild() {
 }
 
 void all_cases_prebuild_async(executor_t executor, notifier_t callback) {
-    executor([](void *cb) {
+    executor([](void *fn) {
         all_cases_prebuild();
-        ((notifier_t)cb)();
+        ((notifier_t)fn)();
     }, (void*)callback);
 }
 
@@ -30,9 +29,9 @@ void all_cases_build() {
 }
 
 void all_cases_build_async(executor_t executor, notifier_t callback) {
-    executor([](void *cb) {
+    executor([](void *fn) {
         all_cases_build();
-        ((notifier_t)cb)();
+        ((notifier_t)fn)();
     }, (void*)callback);
 }
 
@@ -68,7 +67,7 @@ int all_cases_available() {
 }
 
 int all_cases_num(int head) {
-    if (head < 0 || head > 15) {
+    if (head < 0 || head >= (int)ALL_CASES_NUM.size()) {
         return -1;
     }
     return ALL_CASES_NUM[head];
