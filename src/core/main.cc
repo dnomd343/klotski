@@ -30,11 +30,11 @@ int main() {
         }
     }
 
-    std::vector<std::string> common_codes_str;
-    common_codes_str.reserve(klotski::cases::ALL_CASES_NUM_);
-    for (auto x : common_codes) {
-        common_codes_str.emplace_back(CommonCode::string_encode(x, false));
-    }
+//    std::vector<std::string> common_codes_str;
+//    common_codes_str.reserve(klotski::cases::ALL_CASES_NUM_);
+//    for (auto x : common_codes) {
+//        common_codes_str.emplace_back(CommonCode::string_encode(x, false));
+//    }
 
     auto start = clock();
 
@@ -46,9 +46,9 @@ int main() {
 //        std::cout << CommonCode::string_encode(common_code, false) << std::endl;
 //    }
 
-    for (auto &common_code_str : common_codes_str) {
-        CommonCode::string_decode(common_code_str);
-    }
+//    for (auto &common_code_str : common_codes_str) {
+//        CommonCode::string_decode(common_code_str);
+//    }
 
 //    BasicRanges::Instance().Build();
 

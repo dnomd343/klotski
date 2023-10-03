@@ -53,8 +53,9 @@
 ///       @ % %          F       E       A         1         3       4       0       0
 ///                CommonCode = 0x4FEA13400 -> "4FEA134"
 
-#include <vector>
+#include <string>
 #include <cstdint>
+#include <ostream>
 #include <optional>
 
 namespace klotski {
@@ -62,33 +63,22 @@ namespace codec {
 
 class RawCode;
 class ShortCode;
-class CommonCode;
-
-//typedef std::vector<RawCode> RawCodes;
-//typedef std::vector<ShortCode> ShortCodes;
-//typedef std::vector<CommonCode> CommonCodes;
-
 class CommonCode {
 public:
-    /// Validity check
+    explicit operator uint64_t() const noexcept;
     static bool check(uint64_t common_code) noexcept;
+    friend std::ostream& operator<<(std::ostream &out, CommonCode self);
 
-    /// Operators of CommonCode
-    explicit operator uint64_t() const noexcept { return code_; }
-    friend std::ostream& operator<<(std::ostream &out, const CommonCode &self);
+    [[nodiscard]] uint64_t unwrap() const noexcept;
+    [[nodiscard]] RawCode to_raw_code() const noexcept;
+    [[nodiscard]] ShortCode to_short_code() const noexcept;
+    [[nodiscard]] std::string to_string(bool shorten = false) const noexcept;
 
-    /// Export functions
-    RawCode to_raw_code() const noexcept;
-    ShortCode to_short_code() const noexcept;
-    std::string to_string(bool shorten = false) const noexcept;
-    constexpr uint64_t unwrap() const noexcept { return code_; }
-
-    /// CommonCode constructors
+public:
     CommonCode() = delete;
     explicit CommonCode(RawCode raw_code) noexcept;
     explicit CommonCode(ShortCode short_code) noexcept;
 
-    /// CommonCode initializations
     static CommonCode unsafe_create(uint64_t common_code) noexcept;
     static std::optional<CommonCode> create(uint64_t common_code) noexcept;
 
@@ -103,39 +93,58 @@ public:
     static std::optional<CommonCode> from_short_code(std::string &&short_code) noexcept;
     static std::optional<CommonCode> from_short_code(const std::string &short_code) noexcept;
 
-    /// Batch conversions
-//    static CommonCodes convert(const RawCodes &raw_codes) noexcept;
-//    static CommonCodes convert(const ShortCodes &short_codes) noexcept;
-
-    static std::string string_encode(uint64_t common_code, bool shorten) noexcept;
-    static std::optional<uint64_t> string_decode(const std::string &common_code) noexcept;
-
 private:
     uint64_t code_;
-//    static std::string string_encode(uint64_t common_code, bool shorten) noexcept;
-//    static std::optional<uint64_t> string_decode(const std::string &common_code) noexcept;
+    static std::string string_encode(uint64_t common_code) noexcept;
+    static std::string string_encode_shorten(uint64_t common_code) noexcept;
+    static std::optional<uint64_t> string_decode(const std::string &common_code) noexcept;
 };
 
-/// CommonCode create
-//inline CommonCode CommonCode::create(uint64_t common_code) {
-//    return CommonCode(common_code); // with check
-//}
-
-/// CommonCode create without check
-inline CommonCode CommonCode::unsafe_create(uint64_t common_code) noexcept {
-    return *(CommonCode*)&common_code; // init directly
+/// CommonCode compare implements.
+inline bool operator==(uint64_t c1, CommonCode c2) noexcept {
+    return c1 == c2.unwrap();
 }
 
-/// Compare implements
-//inline bool operator==(uint64_t c1, const CommonCode &c2) noexcept { return c1 == c2.unwrap(); }
-//inline bool operator==(const CommonCode &c1, uint64_t c2) noexcept { return c1.unwrap() == c2; }
-//inline bool operator!=(uint64_t c1, const CommonCode &c2) noexcept { return !(c1 == c2); }
-//inline bool operator!=(const CommonCode &c1, uint64_t c2) noexcept { return !(c1 == c2); }
+inline bool operator==(CommonCode c1, CommonCode c2) noexcept {
+    return c1.unwrap() == c2.unwrap();
+}
 
-//inline bool operator<(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() < c2.unwrap(); }
-//inline bool operator>(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() > c2.unwrap(); }
-//inline bool operator==(const CommonCode &c1, const CommonCode &c2) noexcept { return c1.unwrap() == c2.unwrap(); }
-//inline bool operator!=(const CommonCode &c1, const CommonCode &c2) noexcept { return !(c1 == c2); }
+inline bool operator<(CommonCode c1, CommonCode c2) noexcept {
+    return c1.unwrap() < c2.unwrap();
+}
+
+inline bool operator>(CommonCode c1, CommonCode c2) noexcept {
+    return c1.unwrap() > c2.unwrap();
+}
+
+/// Get the original 64-bit code.
+inline uint64_t CommonCode::unwrap() const noexcept {
+    return code_;
+}
+
+/// Implicit conversion to 64-bit code.
+inline CommonCode::operator uint64_t() const noexcept {
+    return code_;
+}
+
+/// CommonCode create without any check.
+inline CommonCode CommonCode::unsafe_create(uint64_t common_code) noexcept {
+    return *reinterpret_cast<CommonCode*>(&common_code); // init directly
+}
+
+/// CommonCode create with valid check.
+inline std::optional<CommonCode> CommonCode::create(uint64_t common_code) noexcept {
+    if (CommonCode::check(common_code)) {
+        return CommonCode::unsafe_create(common_code);
+    }
+    return std::nullopt;
+}
+
+/// Output string encoding of CommonCode.
+inline std::ostream& operator<<(std::ostream &out, CommonCode self) {
+    out << CommonCode::string_encode(self.code_);
+    return out;
+}
 
 } // namespace codec
 } // namespace klotski
