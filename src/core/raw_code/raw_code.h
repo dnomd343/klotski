@@ -1,10 +1,10 @@
 #pragma once
 
-/// RawCode is an uncompressed coding scheme, which is used for program
-/// calculation. It encodes a `5x4` chessboard as 0 ~ 19, and uses 3-bit to
-/// represent each position, occupying a total of 60-bit, and stored in a
-/// `uint64_t` variable. Among them, the upper 4-bit are reserved and filled
-/// with `0`.
+/// RawCode is an uncompressed klotski coding scheme, which is used for program
+/// calculation. It encodes the `5x4` chessboard as 0 ~ 19, and using 3-bit to
+/// represent each position, occupying a total of 60-bit, and store them in a
+/// `uint64_t` variable. In addition, the upper 4-bit of RawCode are reserved
+/// and must filled with `0`.
 ///
 ///   00 01 02 03
 ///   04 05 06 07    fill   20 slots
@@ -12,31 +12,52 @@
 ///   12 13 14 15    (4b) + (3b) * 20 => 64-bit
 ///   16 17 18 19
 
-///   Eg1:
-///     % # # %    2x1 2x2 ... 2x1    010 100 111 010
-///     % # # %    ... ... ... ...    111 111 111 111
-///     @ $ $ @    2x1 1x2 ... 2x1    010 001 111 010
-///     @ & * @    ... 1x1 1x1 ...    111 011 011 111
-///     *     &    1x1 0x0 0x0 1x1    011 000 000 011
+/// As we all know, 3-bit can represent 8 states. The upper-left corner of the
+/// four blocks corresponds to 4 of them, and 2 more states are needed to mark
+/// spaces and fills. The remaining 2 states are reserved for now.
 ///
-///          |  19  18  17  16 |  15  14  13  12 |  11  10  09  08 |  07  06  05  04 |  03  02  01  00
-///     0000 | 011 000 000 011 | 111 011 011 111 | 010 111 001 010 | 111 111 111 111 | 010 111 100 010
-///     0000 |  0110 0000 0011 |  1110 1101 1111 |  0101 1100 1010 |  1111 1111 1111 |  0101 1110 0010
-///        0       6    0    3       E    D    F       5    C    A       F    F    F       5    E    2
-///     => 0x0603'EDF5'CAFF'F5E2
+///   ------------------------------------
+///   | 000 -> space | 100 -> 2x2        |
+///   | 001 -> 1x2   | 101 -> [reserved] |
+///   | 010 -> 2x1   | 110 -> [reserved] |
+///   | 011 -> 1x1   | 111 -> fill       |
+///   ------------------------------------
+///
+/// Here, space is defined as `000` and fill is defined as `111`, which will
+/// facilitate the execution of bit operations of the movement algorithm. Other
+/// block definitions will not affect the efficiency of the algorithm.
 
-///   Eg2:
-///     * @ & %    1x1 1x1 1x1 2x1    011 011 011 010
-///     # # $ %    2x2 ... 2x1 ...    100 111 010 111
-///     # # $ ^    ... ... ... 2x1    111 111 111 010
-///       ~ ~ ^    0x0 1x2 ... ...    000 001 111 111
-///       @ % %    0x0 1x1 1x2 ...    000 011 001 111
-///
-///          |  19  18  17  16 |  15  14  13  12 |  11  10  09  08 |  07  06  05  04 |  03  02  01  00
-///     0000 | 111 001 011 000 | 111 111 001 000 | 010 111 111 111 | 111 010 111 100 | 010 011 011 011
-///     0000 |  1110 0101 1000 |  1111 1100 1000 |  0101 1111 1111 |  1110 1011 1100 |  0100 1101 1011
-///        0       E    5    8       F    C    8       5    F    F       E    B    C       4    D    B
-///     => 0x0E58'FC85'FFEB'C4DB
+/// -------------------------------------------------------------------------------------------------- ///
+///   Eg1:                                                                                             ///
+///     % # # %    2x1 2x2 ... 2x1    010 100 111 010                                                  ///
+///     % # # %    ... ... ... ...    111 111 111 111                                                  ///
+///     @ $ $ @    2x1 1x2 ... 2x1    010 001 111 010                                                  ///
+///     @ & * @    ... 1x1 1x1 ...    111 011 011 111                                                  ///
+///     *     &    1x1 0x0 0x0 1x1    011 000 000 011                                                  ///
+///                                                                                                    ///
+///        |  19  18  17  16 |  15  14  13  12 |  11  10  09  08 |  07  06  05  04 |  03  02  01  00   ///
+///   0000 | 011 000 000 011 | 111 011 011 111 | 010 111 001 010 | 111 111 111 111 | 010 111 100 010   ///
+///   0000 |  0110 0000 0011 |  1110 1101 1111 |  0101 1100 1010 |  1111 1111 1111 |  0101 1110 0010   ///
+///      0       6    0    3       E    D    F       5    C    A       F    F    F       5    E    2   ///
+///                                                                                                    ///
+///   RawCode => 0x0603'EDF5'CAFF'F5E2                                                                 ///
+/// -------------------------------------------------------------------------------------------------- ///
+
+/// -------------------------------------------------------------------------------------------------- ///
+///   Eg2:                                                                                             ///
+///     * @ & %    1x1 1x1 1x1 2x1    011 011 011 010                                                  ///
+///     # # $ %    2x2 ... 2x1 ...    100 111 010 111                                                  ///
+///     # # $ ^    ... ... ... 2x1    111 111 111 010                                                  ///
+///       ~ ~ ^    0x0 1x2 ... ...    000 001 111 111                                                  ///
+///       @ % %    0x0 1x1 1x2 ...    000 011 001 111                                                  ///
+///                                                                                                    ///
+///        |  19  18  17  16 |  15  14  13  12 |  11  10  09  08 |  07  06  05  04 |  03  02  01  00   ///
+///   0000 | 111 001 011 000 | 111 111 001 000 | 010 111 111 111 | 111 010 111 100 | 010 011 011 011   ///
+///   0000 |  1110 0101 1000 |  1111 1100 1000 |  0101 1111 1111 |  1110 1011 1100 |  0100 1101 1011   ///
+///      0       E    5    8       F    C    8       5    F    F       E    B    C       4    D    B   ///
+///                                                                                                    ///
+///   RawCode => 0x0E58'FC85'FFEB'C4DB                                                                 ///
+/// -------------------------------------------------------------------------------------------------- ///
 
 #include <string>
 #include <ostream>
@@ -116,10 +137,10 @@ inline RawCode RawCode::unsafe_create(uint64_t raw_code) noexcept {
 
 /// RawCode create with valid check.
 inline std::optional<RawCode> RawCode::create(uint64_t raw_code) noexcept {
-    if (RawCode::check(raw_code)) {
-        return RawCode::unsafe_create(raw_code);
+    if (!RawCode::check(raw_code)) {
+        return std::nullopt;
     }
-    return std::nullopt;
+    return RawCode::unsafe_create(raw_code);
 }
 
 } // namespace codec
