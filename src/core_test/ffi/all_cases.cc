@@ -25,15 +25,15 @@ PRIVATE_ACCESS(BasicRanges, available_, bool)
 
 /// Reset basic ranges build state, note it is thread-unsafe.
 void basic_ranges_reset() {
-    access_BasicRanges_available_(BasicRanges::Instance()) = false;
+    access_BasicRanges_available_(BasicRanges::instance()) = false;
 }
 
 /// Reset all cases build state, note it is thread-unsafe.
 void all_cases_reset() {
-    access_AllCases_available_(AllCases::Instance()) = false;
+    access_AllCases_available_(AllCases::instance()) = false;
 }
 
-TEST(FFI, all_cases_prebuild) {
+TEST(AllCases, all_cases_prebuild) {
     basic_ranges_reset();
     EXPECT_FALSE(all_cases_prebuild_available());
     all_cases_prebuild();
@@ -42,36 +42,36 @@ TEST(FFI, all_cases_prebuild) {
     EXPECT_TRUE(all_cases_prebuild_available());
 }
 
-TEST(FFI, all_cases_prebuild_async) {
+TEST(AllCases, all_cases_prebuild_async) {
     basic_ranges_reset();
-    static std::atomic_flag chan;
+    static std::atomic_flag flag;
 
-    chan.clear();
+    flag.clear();
     all_cases_prebuild_async([](void (*fn)(void*), void *arg) {
         std::thread worker(fn, arg);
         worker.detach();
-    }, []() {
-        chan.test_and_set();
-        chan.notify_all();
+    }, []() { // callback function
+        flag.test_and_set();
+        flag.notify_all();
     });
     EXPECT_FALSE(all_cases_prebuild_available());
-    chan.wait(false);
+    flag.wait(false);
     EXPECT_TRUE(all_cases_prebuild_available());
 
-    chan.clear();
+    flag.clear();
     all_cases_prebuild_async([](void (*fn)(void*), void *arg) {
         std::thread worker(fn, arg);
         worker.detach();
-    }, []() {
-        chan.test_and_set();
-        chan.notify_all();
+    }, []() { // callback function
+        flag.test_and_set();
+        flag.notify_all();
     });
     EXPECT_TRUE(all_cases_prebuild_available());
-    chan.wait(false);
+    flag.wait(false);
     EXPECT_TRUE(all_cases_prebuild_available());
 }
 
-TEST(FFI, all_cases_build) {
+TEST(AllCases, all_cases_build) {
     all_cases_reset();
     EXPECT_FALSE(all_cases_available());
     all_cases_build();
@@ -80,36 +80,36 @@ TEST(FFI, all_cases_build) {
     EXPECT_TRUE(all_cases_available());
 }
 
-TEST(FFI, all_cases_build_async) {
+TEST(AllCases, all_cases_build_async) {
     all_cases_reset();
-    static std::atomic_flag chan;
+    static std::atomic_flag flag;
 
-    chan.clear();
+    flag.clear();
     all_cases_build_async([](void (*fn)(void*), void *arg) {
         std::thread worker(fn, arg);
         worker.detach();
-    }, []() {
-        chan.test_and_set();
-        chan.notify_all();
+    }, []() { // callback function
+        flag.test_and_set();
+        flag.notify_all();
     });
     EXPECT_FALSE(all_cases_available());
-    chan.wait(false);
+    flag.wait(false);
     EXPECT_TRUE(all_cases_available());
 
-    chan.clear();
+    flag.clear();
     all_cases_build_async([](void (*fn)(void*), void *arg) {
         std::thread worker(fn, arg);
         worker.detach();
-    }, []() {
-        chan.test_and_set();
-        chan.notify_all();
+    }, []() { // callback function
+        flag.test_and_set();
+        flag.notify_all();
     });
     EXPECT_TRUE(all_cases_available());
-    chan.wait(false);
+    flag.wait(false);
     EXPECT_TRUE(all_cases_available());
 }
 
-TEST(FFI, all_cases_build_parallel) {
+TEST(AllCases, all_cases_build_parallel) {
     all_cases_reset();
     EXPECT_FALSE(all_cases_available());
     all_cases_build_parallel([](void (*fn)(void*), void *arg) {
@@ -124,36 +124,36 @@ TEST(FFI, all_cases_build_parallel) {
     EXPECT_TRUE(all_cases_available());
 }
 
-TEST(FFI, all_cases_build_parallel_async) {
+TEST(AllCases, all_cases_build_parallel_async) {
     all_cases_reset();
-    static std::atomic_flag chan;
+    static std::atomic_flag flag;
 
-    chan.clear();
+    flag.clear();
     all_cases_build_parallel_async([](void (*fn)(void*), void *arg) {
         std::thread worker(fn, arg);
         worker.detach();
-    }, []() {
-        chan.test_and_set();
-        chan.notify_all();
+    }, []() { // callback function
+        flag.test_and_set();
+        flag.notify_all();
     });
     EXPECT_FALSE(all_cases_available());
-    chan.wait(false);
+    flag.wait(false);
     EXPECT_TRUE(all_cases_available());
 
-    chan.clear();
+    flag.clear();
     all_cases_build_parallel_async([](void (*fn)(void*), void *arg) {
         std::thread worker(fn, arg);
         worker.detach();
-    }, []() {
-        chan.test_and_set();
-        chan.notify_all();
+    }, []() { // callback function
+        flag.test_and_set();
+        flag.notify_all();
     });
     EXPECT_TRUE(all_cases_available());
-    chan.wait(false);
+    flag.wait(false);
     EXPECT_TRUE(all_cases_available());
 }
 
-TEST(FFI, all_cases_num) {
+TEST(AllCases, all_cases_num) {
     EXPECT_LT(all_cases_num(-2), 0);
     EXPECT_LT(all_cases_num(-1), 0);
     for (int i = 0; i < 15; ++i) {
@@ -163,7 +163,7 @@ TEST(FFI, all_cases_num) {
     EXPECT_LT(all_cases_num(17), 0);
 }
 
-TEST(FFI, all_cases_export) {
+TEST(AllCases, all_cases_export) {
     EXPECT_EQ(all_cases_export(-2), nullptr);
     EXPECT_EQ(all_cases_export(-1), nullptr);
     EXPECT_EQ(all_cases_export(16), nullptr);

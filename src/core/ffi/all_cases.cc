@@ -6,7 +6,7 @@ using klotski::cases::BasicRanges;
 using klotski::cases::ALL_CASES_NUM;
 
 void all_cases_prebuild() {
-    BasicRanges::Instance().Build();
+    BasicRanges::instance().build();
 }
 
 void all_cases_prebuild_async(executor_t executor, notifier_t callback) {
@@ -17,15 +17,11 @@ void all_cases_prebuild_async(executor_t executor, notifier_t callback) {
 }
 
 int all_cases_prebuild_available() {
-    if (BasicRanges::Instance().IsAvailable()) {
-        return KLOTSKI_TRUE;
-    } else {
-        return KLOTSKI_FALSE;
-    }
+    return BasicRanges::instance().is_available() ? KLOTSKI_TRUE : KLOTSKI_FALSE;
 }
 
 void all_cases_build() {
-    AllCases::Instance().Build();
+    AllCases::instance().build();
 }
 
 void all_cases_build_async(executor_t executor, notifier_t callback) {
@@ -37,7 +33,7 @@ void all_cases_build_async(executor_t executor, notifier_t callback) {
 
 void all_cases_build_parallel(executor_t executor) {
     typedef std::function<void()> Runner;
-    AllCases::Instance().BuildParallel([executor](Runner &&runner) {
+    AllCases::instance().build_parallel([executor](Runner &&runner) {
         executor([](void *fn) {
             (*(Runner*)fn)();
             delete (Runner*)fn;
@@ -50,7 +46,7 @@ void all_cases_build_parallel_async(executor_t executor, notifier_t callback) {
     auto all_done = [callback]() {
         callback();
     };
-    AllCases::Instance().BuildParallelAsync([executor](Runner &&runner) {
+    AllCases::instance().build_parallel_async([executor](Runner &&runner) {
         executor([](void *fn) {
             (*(Runner*)fn)();
             delete (Runner*)fn;
@@ -59,11 +55,7 @@ void all_cases_build_parallel_async(executor_t executor, notifier_t callback) {
 }
 
 int all_cases_available() {
-    if (AllCases::Instance().IsAvailable()) {
-        return KLOTSKI_TRUE;
-    } else {
-        return KLOTSKI_FALSE;
-    }
+    return AllCases::instance().is_available() ? KLOTSKI_TRUE : KLOTSKI_FALSE;
 }
 
 int all_cases_num(int head) {
@@ -77,5 +69,5 @@ const klotski_u32* all_cases_export(int head) {
     if (all_cases_num(head) < 0) {
         return nullptr;
     }
-    return AllCases::Instance().Fetch()[head].data();
+    return AllCases::instance().fetch()[head].data();
 }

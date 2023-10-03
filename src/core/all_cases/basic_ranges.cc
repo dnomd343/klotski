@@ -39,7 +39,7 @@ static void combine_sort(RangeIter begin, RangeIter mid, RangeIter end) noexcept
 }
 
 /// Spawn all ranges of specified conditions.
-void BasicRanges::SpawnRanges(Ranges &ranges, int n1, int n2, int n3, int n4) noexcept {
+void BasicRanges::spawn_ranges(Ranges &ranges, int n1, int n2, int n3, int n4) noexcept {
     auto num = n1 + n2 + n3 + n4;
     auto offset = (16 - num) << 1; // offset of low bits
 
@@ -59,13 +59,13 @@ void BasicRanges::SpawnRanges(Ranges &ranges, int n1, int n2, int n3, int n4) no
 }
 
 /// Search and sort all possible basic-ranges permutations.
-void BasicRanges::BuildRanges(Ranges &ranges) noexcept {
+void BasicRanges::build_ranges(Ranges &ranges) noexcept {
     ranges.clear();
     ranges.reserve(BASIC_RANGES_NUM);
     std::list<RangeIter> flags {ranges.begin()}; // mark ordered interval
 
     for (auto &t : range_types()) {
-        SpawnRanges(ranges, std::get<0>(t), std::get<1>(t), std::get<2>(t), std::get<3>(t));
+        spawn_ranges(ranges, std::get<0>(t), std::get<1>(t), std::get<2>(t), std::get<3>(t));
         flags.emplace_back(ranges.end());
     }
     do {
@@ -83,7 +83,7 @@ void BasicRanges::BuildRanges(Ranges &ranges) noexcept {
 }
 
 /// Execute the build process and ensure thread safety.
-void BasicRanges::Build() noexcept {
+void BasicRanges::build() noexcept {
     if (available_) {
         return; // reduce consumption of mutex
     }
@@ -91,27 +91,8 @@ void BasicRanges::Build() noexcept {
     if (available_) {
         return; // data is already available
     }
-    BuildRanges(GetRanges());
+    build_ranges(get_ranges());
     available_ = true;
-}
-
-Ranges& BasicRanges::GetRanges() noexcept {
-    static Ranges ranges;
-    return ranges;
-}
-
-BasicRanges& BasicRanges::Instance() noexcept {
-    static BasicRanges instance;
-    return instance;
-}
-
-const Ranges& BasicRanges::Fetch() noexcept {
-    this->Build();
-    return GetRanges();
-}
-
-bool BasicRanges::IsAvailable() const noexcept {
-    return available_; // no mutex required in one-way state
 }
 
 } // namespace cases

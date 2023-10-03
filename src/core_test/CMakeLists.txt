@@ -11,6 +11,7 @@ include_directories(utils)
 include_directories(${KLOTSKI_ROOT}/src/core/ffi)
 include_directories(${KLOTSKI_ROOT}/src/core/utils)
 include_directories(${KLOTSKI_ROOT}/src/core/all_cases)
+include_directories(${KLOTSKI_ROOT}/src/core/common_code)
 
 ###############################################################################################
 
@@ -31,5 +32,15 @@ set(KLOTSKI_TEST_FFI_SRC
 add_executable(test_klotski_ffi ${KLOTSKI_TEST_FFI_SRC})
 target_link_libraries(test_klotski_ffi PRIVATE ${KLOTSKI_TEST_DEPS})
 add_test(NAME klotski_ffi COMMAND test_klotski_ffi)
+
+###############################################################################################
+
+set(KLOTSKI_TEST_CODEC_SRC
+    codec/common_code.cc
+)
+
+add_executable(test_klotski_codec ${KLOTSKI_TEST_CODEC_SRC})
+target_link_libraries(test_klotski_codec PRIVATE ${KLOTSKI_TEST_DEPS})
+add_test(NAME klotski_codec COMMAND test_klotski_codec)
 
 ###############################################################################################

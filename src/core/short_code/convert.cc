@@ -59,7 +59,7 @@ ShortCode ShortCode::from_common_code(CommonCode common_code) noexcept {
 /// NOTE: ensure that input common code is valid!
 uint32_t ShortCode::fast_encode(uint64_t common_code) noexcept { // common code --> short code
     auto head = common_code >> 32; // head index
-    const auto &ranges = AllCases::Instance().Fetch()[head]; // available ranges
+    const auto &ranges = AllCases::instance().fetch()[head]; // available ranges
     auto offset = std::lower_bound(ranges.begin(), ranges.end(), (uint32_t)common_code) - ranges.begin();
     return ALL_CASES_OFFSET[head] + offset; // release short code
 }
@@ -70,7 +70,7 @@ uint64_t ShortCode::fast_decode(uint32_t short_code) noexcept { // short code --
         ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code
     ) - 1;
     uint64_t head = offset - ALL_CASES_OFFSET; // head index
-    return (head << 32) | AllCases::Instance().Fetch()[head][short_code - *offset]; // release common code
+    return (head << 32) | AllCases::instance().fetch()[head][short_code - *offset]; // release common code
 }
 
 /// NOTE: ensure that input common code is valid!

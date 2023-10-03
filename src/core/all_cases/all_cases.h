@@ -53,6 +53,8 @@ typedef std::array<Ranges, 16> RangesUnion;
 typedef std::function<void()> Notifier;
 typedef std::function<void(std::function<void()>&&)> Executor;
 
+// ----------------------------------------------------------------------------------------- //
+
 constexpr auto BASIC_RANGES_NUM = 7311921;
 
 constexpr std::array<int, 16> ALL_CASES_NUM {
@@ -66,45 +68,89 @@ constexpr auto ALL_CASES_NUM_ = std::accumulate(
     ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0
 );
 
+// ----------------------------------------------------------------------------------------- //
+
 class BasicRanges {
 public:
-    void Build() noexcept;
-    const Ranges& Fetch() noexcept;
-    [[nodiscard]] bool IsAvailable() const noexcept;
+    void build() noexcept;
+    const Ranges& fetch() noexcept;
+    [[nodiscard]] bool is_available() const noexcept;
 
     DISALLOW_COPY_AND_ASSIGN(BasicRanges);
-    static BasicRanges& Instance() noexcept;
+    static BasicRanges& instance() noexcept;
 
 private:
     std::mutex building_;
     bool available_ = false;
 
     BasicRanges() = default;
-    static Ranges& GetRanges() noexcept;
-    static void BuildRanges(Ranges &ranges) noexcept;
-    static void SpawnRanges(Ranges &ranges, int, int, int, int) noexcept;
+    static Ranges& get_ranges() noexcept;
+    static void build_ranges(Ranges &ranges) noexcept;
+    static void spawn_ranges(Ranges &ranges, int, int, int, int) noexcept;
 };
+
+inline BasicRanges& BasicRanges::instance() noexcept {
+    static BasicRanges instance;
+    return instance;
+}
+
+inline Ranges& BasicRanges::get_ranges() noexcept {
+    static Ranges ranges;
+    return ranges;
+}
+
+inline const Ranges& BasicRanges::fetch() noexcept {
+    this->build();
+    return get_ranges();
+}
+
+inline bool BasicRanges::is_available() const noexcept {
+    return available_; // no mutex required in one-way state
+}
+
+// ----------------------------------------------------------------------------------------- //
 
 class AllCases {
 public:
-    void Build() noexcept;
-    void BuildParallel(Executor &&executor) noexcept;
-    void BuildParallelAsync(Executor &&executor, Notifier &&callback) noexcept;
+    void build() noexcept;
+    void build_parallel(Executor &&executor) noexcept;
+    void build_parallel_async(Executor &&executor, Notifier &&callback) noexcept;
 
-    const RangesUnion& Fetch() noexcept;
-    [[nodiscard]] bool IsAvailable() const noexcept;
+    const RangesUnion& fetch() noexcept;
+    [[nodiscard]] bool is_available() const noexcept;
 
     DISALLOW_COPY_AND_ASSIGN(AllCases);
-    static AllCases& Instance() noexcept;
+    static AllCases& instance() noexcept;
 
 private:
     std::mutex building_;
     bool available_ = false;
 
     AllCases() = default;
-    static RangesUnion& GetCases() noexcept;
-    static void BuildCases(int head, Ranges &release) noexcept;
+    static RangesUnion& get_cases() noexcept;
+    static void build_cases(int head, Ranges &release) noexcept;
 };
+
+inline AllCases& AllCases::instance() noexcept {
+    static AllCases instance;
+    return instance;
+}
+
+inline RangesUnion& AllCases::get_cases() noexcept {
+    static RangesUnion cases;
+    return cases;
+}
+
+inline const RangesUnion& AllCases::fetch() noexcept {
+    this->build();
+    return get_cases();
+}
+
+inline bool AllCases::is_available() const noexcept {
+    return available_; // no mutex required in one-way state
+}
+
+// ----------------------------------------------------------------------------------------- //
 
 } // namespace cases
 } // namespace klotski
