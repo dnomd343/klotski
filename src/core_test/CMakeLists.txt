@@ -11,6 +11,9 @@ include_directories(utils)
 include_directories(${KLOTSKI_ROOT}/src/core/ffi)
 include_directories(${KLOTSKI_ROOT}/src/core/utils)
 include_directories(${KLOTSKI_ROOT}/src/core/all_cases)
+
+include_directories(${KLOTSKI_ROOT}/src/core/raw_code)
+include_directories(${KLOTSKI_ROOT}/src/core/short_code)
 include_directories(${KLOTSKI_ROOT}/src/core/common_code)
 
 ###############################################################################################

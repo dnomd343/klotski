@@ -52,6 +52,7 @@ CommonCode CommonCode::from_raw_code(RawCode raw_code) noexcept {
     return raw_code.to_common_code();
 }
 
+// TODO: using `std::optional::transform` in C++23
 std::optional<CommonCode> CommonCode::from_raw_code(uint64_t raw_code) noexcept {
     auto code = RawCode::create(raw_code);
     if (!code.has_value()) {
