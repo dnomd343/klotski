@@ -118,51 +118,7 @@ private:
     static std::optional<uint32_t> string_decode(const std::string &short_code) noexcept;
 };
 
-/// ShortCode compare implements.
-inline bool operator==(uint32_t s1, ShortCode s2) noexcept {
-    return s1 == s2.unwrap();
-}
-
-inline bool operator==(ShortCode s1, ShortCode s2) noexcept {
-    return s1.unwrap() == s2.unwrap();
-}
-
-inline bool operator<(ShortCode s1, ShortCode s2) noexcept {
-    return s1.unwrap() < s2.unwrap();
-}
-
-inline bool operator>(ShortCode s1, ShortCode s2) noexcept {
-    return s1.unwrap() > s2.unwrap();
-}
-
-/// Get the original 32-bit code.
-inline uint32_t ShortCode::unwrap() const noexcept {
-    return code_;
-}
-
-/// Implicit conversion to 32-bit code.
-inline ShortCode::operator uint32_t() const noexcept {
-    return code_;
-}
-
-/// ShortCode create without any check.
-inline ShortCode ShortCode::unsafe_create(uint32_t short_code) noexcept {
-    return *reinterpret_cast<ShortCode*>(&short_code); // init directly
-}
-
-/// ShortCode create with valid check.
-inline std::optional<ShortCode> ShortCode::create(uint32_t short_code) noexcept {
-    if (!ShortCode::check(short_code)) {
-        return std::nullopt;
-    }
-    return ShortCode::unsafe_create(short_code);
-}
-
-/// Output string encoding of ShortCode.
-inline std::ostream& operator<<(std::ostream &out, ShortCode self) {
-    out << ShortCode::string_encode(self.code_);
-    return out;
-}
-
 } // namespace codec
 } // namespace klotski
+
+#include "inline_impl.h"

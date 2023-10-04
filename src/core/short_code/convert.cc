@@ -1,76 +1,31 @@
 #include <algorithm>
-#include "common.h"
 #include "short_code.h"
-#include "common_code.h"
-#include "all_cases.h"
-#include "offset/all_cases_offset.h"
-#include "offset/basic_ranges_offset.h"
-#include "offset/range_prefix_offset.h"
-
-namespace klotski {
-namespace codec {
+#include "offset/basic.h"
+#include "offset/range_prefix.h"
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
 
-/// ------------------------- ShortCode to CommonCode -------------------------
+using klotski::codec::offset::ALL_CASES_OFFSET;
+using klotski::codec::offset::BASIC_RANGES_OFFSET;
+using klotski::codec::offset::RANGE_PREFIX_OFFSET;
 
-//CommonCode ShortCode::to_common_code() const noexcept {
-//    if (ShortCode::mode() == ShortCode::NORMAL) {
-//        return CommonCode::unsafe_create(tiny_decode(code_)); // normal mode
-//    }
-//    return CommonCode::unsafe_create(fast_decode(code_)); // fast mode
-//}
+namespace klotski {
+namespace codec {
 
-/// ------------------------- ShortCode to CommonCode -------------------------
-
-ShortCode::ShortCode(CommonCode common_code) noexcept {
-//    if (ShortCode::mode() == ShortCode::NORMAL) {
-//        code_ = tiny_encode(common_code.unwrap()); // normal mode
-//    } else {
-        code_ = fast_encode(common_code.unwrap()); // fast mode
-//    }
+/// Convert CommonCode to ShortCode based on AllCases data.
+uint32_t ShortCode::fast_encode(uint64_t common_code) noexcept {
+    auto head = common_code >> 32;
+    auto &ranges = AllCases::instance().fetch()[head]; // match available ranges
+    auto target = std::lower_bound(ranges.begin(), ranges.end(), (uint32_t)common_code);
+    return ALL_CASES_OFFSET[head] + (target - ranges.begin());
 }
 
-//ShortCode ShortCode::from_common_code(uint64_t common_code) {
-//    return ShortCode(CommonCode(common_code));
-//}
-
-ShortCode ShortCode::from_common_code(CommonCode common_code) noexcept {
-    return ShortCode(std::forward<CommonCode>(common_code));
-}
-
-//ShortCode ShortCode::from_common_code(std::string &&common_code) {
-//    return ShortCode(std::forward<CommonCode>(
-//        CommonCode(std::forward<std::string>(common_code))
-//    ));
-//}
-
-//ShortCode ShortCode::from_common_code(const CommonCode &common_code) noexcept {
-//    return ShortCode(common_code);
-//}
-
-//ShortCode ShortCode::from_common_code(const std::string &common_code) {
-//    return ShortCode(CommonCode(common_code));
-//}
-
-/// ----------------------------- Basic Functions -----------------------------
-
-/// NOTE: ensure that input common code is valid!
-uint32_t ShortCode::fast_encode(uint64_t common_code) noexcept { // common code --> short code
-    auto head = common_code >> 32; // head index
-    const auto &ranges = AllCases::instance().fetch()[head]; // available ranges
-    auto offset = std::lower_bound(ranges.begin(), ranges.end(), (uint32_t)common_code) - ranges.begin();
-    return ALL_CASES_OFFSET[head] + offset; // release short code
-}
-
-/// NOTE: ensure that input short code is valid!
-uint64_t ShortCode::fast_decode(uint32_t short_code) noexcept { // short code --> common code
-    auto offset = std::upper_bound( // using binary search
-        ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code
-    ) - 1;
-    uint64_t head = offset - ALL_CASES_OFFSET; // head index
-    return (head << 32) | AllCases::instance().fetch()[head][short_code - *offset]; // release common code
+/// Convert ShortCode to CommonCode based on AllCases data.
+uint64_t ShortCode::fast_decode(uint32_t short_code) noexcept {
+    auto offset = std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code) - 1;
+    uint64_t head = offset - ALL_CASES_OFFSET;
+    return (head << 32) | AllCases::instance().fetch()[head][short_code - *offset];
 }
 
 /// NOTE: ensure that input common code is valid!

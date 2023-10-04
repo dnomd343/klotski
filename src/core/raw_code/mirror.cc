@@ -4,35 +4,7 @@
 namespace klotski {
 namespace codec {
 
-/// ----------------------------- Mirror Convert ------------------------------
-
-RawCode RawCode::to_vertical_mirror() const noexcept {
-    return RawCode::unsafe_create(get_vertical_mirror(code_));
-}
-
-RawCode RawCode::to_horizontal_mirror() const noexcept {
-    return RawCode::unsafe_create(get_horizontal_mirror(code_));
-}
-
-/// ------------------------------ Mirror Check -------------------------------
-
-bool RawCode::is_vertical_mirror() const noexcept {
-    return check_vertical_mirror(code_);
-}
-
-bool RawCode::is_horizontal_mirror() const noexcept {
-    return check_horizontal_mirror(code_);
-}
-
-bool RawCode::is_vertical_mirror(RawCode raw_code) const noexcept {
-    return raw_code.unwrap() == get_vertical_mirror(code_);
-}
-
-bool RawCode::is_horizontal_mirror(RawCode raw_code) const noexcept {
-    return raw_code.unwrap() == get_horizontal_mirror(code_);
-}
-
-/// ----------------------------- Basic Functions -----------------------------
+// ----------------------------------------------------------------------------------------- //
 
 ///   MASK_MIRROR_H1  |   MASK_MIRROR_H2
 ///  111 000 000 000  |  000 111 000 000
@@ -55,7 +27,9 @@ constexpr uint64_t MASK_MIRROR_V1 = 0x0'000'000'000'000'FFF;
 constexpr uint64_t MASK_MIRROR_V2 = 0x0'000'000'000'FFF'000;
 constexpr uint64_t MASK_MIRROR_V3 = 0x0'000'000'FFF'000'000;
 
-inline void vertical_fill(uint64_t &raw_code) {
+// ----------------------------------------------------------------------------------------- //
+
+inline static void vertical_fill(uint64_t &raw_code) {
     uint64_t mask = 0;
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
@@ -76,7 +50,7 @@ inline void vertical_fill(uint64_t &raw_code) {
     }
 }
 
-inline void horizontal_fill(uint64_t &raw_code) {
+inline static void horizontal_fill(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case BLOCK_1x2:
@@ -91,7 +65,7 @@ inline void horizontal_fill(uint64_t &raw_code) {
     }
 }
 
-inline void vertical_clear(uint64_t &raw_code) {
+inline static void vertical_clear(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case BLOCK_2x1:
@@ -101,7 +75,7 @@ inline void vertical_clear(uint64_t &raw_code) {
     }
 }
 
-inline void horizontal_clear(uint64_t &raw_code) {
+inline static void horizontal_clear(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case BLOCK_1x2:
@@ -110,6 +84,8 @@ inline void horizontal_clear(uint64_t &raw_code) {
         }
     }
 }
+
+// ----------------------------------------------------------------------------------------- //
 
 uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) noexcept {
     vertical_fill(raw_code);

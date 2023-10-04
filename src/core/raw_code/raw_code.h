@@ -95,53 +95,23 @@ private:
     static uint64_t extract(uint64_t common_code) noexcept;
 
 public:
-    RawCode to_vertical_mirror() const noexcept;
-    RawCode to_horizontal_mirror() const noexcept;
+    [[nodiscard]] RawCode to_vertical_mirror() const noexcept;
+    [[nodiscard]] RawCode to_horizontal_mirror() const noexcept;
 
-    bool is_vertical_mirror() const noexcept;
-    bool is_horizontal_mirror() const noexcept;
-    bool is_vertical_mirror(RawCode raw_code) const noexcept;
-    bool is_horizontal_mirror(RawCode raw_code) const noexcept;
+    [[nodiscard]] bool is_vertical_mirror() const noexcept;
+    [[nodiscard]] bool is_horizontal_mirror() const noexcept;
+    [[nodiscard]] bool is_vertical_mirror(RawCode raw_code) const noexcept;
+    [[nodiscard]] bool is_horizontal_mirror(RawCode raw_code) const noexcept;
 
 private:
-    static inline bool check_vertical_mirror(uint64_t raw_code) noexcept;
-    static inline bool check_horizontal_mirror(uint64_t raw_code) noexcept;
+    static bool check_vertical_mirror(uint64_t raw_code) noexcept;
+    static bool check_horizontal_mirror(uint64_t raw_code) noexcept;
 
-    static inline uint64_t get_vertical_mirror(uint64_t raw_code) noexcept;
-    static inline uint64_t get_horizontal_mirror(uint64_t raw_code) noexcept;
+    static uint64_t get_vertical_mirror(uint64_t raw_code) noexcept;
+    static uint64_t get_horizontal_mirror(uint64_t raw_code) noexcept;
 };
-
-/// RawCode compare implements.
-inline bool operator==(uint64_t r1, RawCode r2) noexcept {
-    return r1 == r2.unwrap();
-}
-
-inline bool operator==(RawCode r1, RawCode r2) noexcept {
-    return r1.unwrap() == r2.unwrap();
-}
-
-/// Get the original 64-bit code.
-inline uint64_t RawCode::unwrap() const noexcept {
-    return code_;
-}
-
-/// Implicit conversion to 64-bit code.
-inline RawCode::operator uint64_t() const noexcept {
-    return code_;
-}
-
-/// RawCode create without any check.
-inline RawCode RawCode::unsafe_create(uint64_t raw_code) noexcept {
-    return *reinterpret_cast<RawCode*>(&raw_code); // init directly
-}
-
-/// RawCode create with valid check.
-inline std::optional<RawCode> RawCode::create(uint64_t raw_code) noexcept {
-    if (!RawCode::check(raw_code)) {
-        return std::nullopt;
-    }
-    return RawCode::unsafe_create(raw_code);
-}
 
 } // namespace codec
 } // namespace klotski
+
+#include "inline_impl.h"

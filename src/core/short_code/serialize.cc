@@ -4,14 +4,6 @@
 namespace klotski {
 namespace codec {
 
-/// --------------------------- ShortCode to String ---------------------------
-
-std::string ShortCode::to_string() const noexcept { // encode as 5-bits string
-    return string_encode(code_);
-}
-
-/// ----------------------------- Basic Functions -----------------------------
-
 std::string ShortCode::string_encode(uint32_t short_code) noexcept { // encode as 5-bits string
     char result[6]; // short code length 5
     result[5] = '\0'; // string ending flag

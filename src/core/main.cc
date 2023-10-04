@@ -1,34 +1,29 @@
 #include <iostream>
+#include "raw_code.h"
+#include "all_cases.h"
+#include "short_code.h"
 #include "common_code.h"
-#include "all_cases/all_cases.h"
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
 
+using klotski::codec::RawCode;
+using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 
 int main() {
 
-//    std::cout << (int)'0' << std::endl;
-//    std::cout << (int)'A' << std::endl;
-//    std::cout << CommonCode::string_encode(0x1A9BF0C00, false) << std::endl;
-//    std::cout << CommonCode::string_encode(0x0'10'00'00'00, false) << std::endl;
-//    return 0;
+//    AllCases::instance().build();
+    BasicRanges::instance().build();
 
-//    printf("%09llX\n", CommonCode::string_decode("1A9BF0C").value());
-//    return 0;
+//    std::vector<uint64_t> common_codes;
+//    common_codes.reserve(klotski::cases::ALL_CASES_NUM_);
 
-//    BasicRanges::Instance().Build();
-    AllCases::Instance().Build();
-
-    std::vector<uint64_t> common_codes;
-    common_codes.reserve(klotski::cases::ALL_CASES_NUM_);
-
-    for (uint64_t head = 0; head < 15; ++head) {
-        for (auto range : AllCases::Instance().Fetch()[head]) {
-            common_codes.emplace_back(head << 32 | range);
-        }
-    }
+//    for (uint64_t head = 0; head < 15; ++head) {
+//        for (auto range : AllCases::instance().fetch()[head]) {
+//            common_codes.emplace_back(head << 32 | range);
+//        }
+//    }
 
 //    std::vector<std::string> common_codes_str;
 //    common_codes_str.reserve(klotski::cases::ALL_CASES_NUM_);
@@ -50,19 +45,12 @@ int main() {
 //        CommonCode::string_decode(common_code_str);
 //    }
 
-//    BasicRanges::Instance().Build();
-
-//    AllCases::Instance().Build();
-//    AllCases::Instance().BuildParallel([](auto f) {f();});
-//    AllCases::Instance().BuildParallelAsync([](auto f) {f();}, []() {});
+//    BasicRanges::instance().build();
+//    AllCases::instance().build();
+//    AllCases::instance().build_parallel([](auto f) {f();});
+//    AllCases::instance().build_parallel_async([](auto f) {f();}, []() {});
 
     std::cerr << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
-
-//    for (uint64_t head = 0; head < 15; ++head) {
-//        for (auto range : AllCases::Instance().Fetch()[head]) {
-//            printf("%09llX\n", head << 32 | range);
-//        }
-//    }
 
     return 0;
 }

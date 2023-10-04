@@ -1,23 +1,25 @@
 #include "all_cases.h"
 #include "short_code.h"
 
+using klotski::cases::AllCases;
+using klotski::cases::BasicRanges;
+
 namespace klotski {
 namespace codec {
 
+/// Check the validity of the original ShortCode.
 bool ShortCode::check(uint32_t short_code) noexcept {
     return short_code < SHORT_CODE_LIMIT; // 0 ~ (SHORT_CODE_LIMIT - 1)
 }
 
-//ShortCode::Mode ShortCode::mode() { // ensure speed up enabled and return current mode
-//    if (fast_mode_available_) {
-//        return ShortCode::FAST; // fast mode already enabled
-//    }
-//    if (normal_mode_available_) {
-//        return ShortCode::NORMAL; // normal mode already enabled
-//    }
-//    speed_up(ShortCode::Mode::NORMAL); // uninitialized -> enable normal mode
-//    return ShortCode::Mode::NORMAL;
-//}
+void ShortCode::speed_up(bool fast_mode) noexcept {
+    if (fast_mode) {
+        AllCases::instance().build();
+    } else {
+        BasicRanges::instance().build();
+    }
+    // FIXME: setting up `fast_available_`
+}
 
 //void ShortCode::speed_up(ShortCode::Mode mode) {
 //    if (fast_mode_available_) {
