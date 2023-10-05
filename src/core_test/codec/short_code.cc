@@ -209,7 +209,6 @@ TEST(ShortCode, DISABLED_global_verify) {
     result.reserve(ALL_CASES_NUM_);
     for (size_t i = 0; i < futures.size(); ++i) {
         auto data = futures[i].get();
-        std::cout << i << std::endl;
         result.insert(result.end(), data.begin(), data.end()); // combine sections
     }
     pool.wait_for_tasks();

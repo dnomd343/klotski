@@ -41,7 +41,7 @@ int main() {
     auto start = clock();
 
     for (uint32_t short_code = 0; short_code < SHORT_CODE_LIMIT; ++short_code) {
-        ShortCode::unsafe_create(short_code).to_common_code(true);
+        ShortCode::unsafe_create(short_code).to_common_code();
     }
 
 //    for (auto common_code : common_codes) {
