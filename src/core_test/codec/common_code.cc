@@ -1,8 +1,8 @@
 #include <algorithm>
 
 #include "sample.h"
-#include "all_cases.h"
 #include "raw_code.h"
+#include "all_cases.h"
 #include "short_code.h"
 #include "common_code.h"
 #include "gtest/gtest.h"
@@ -27,7 +27,7 @@ TEST(CommonCode, validity) {
 }
 
 TEST(CommonCode, operators) {
-    auto common_code = CommonCode::create(TEST_C_CODE).value();
+    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
     std::ostringstream tmp;
     tmp << common_code; // ostream capture
@@ -46,13 +46,32 @@ TEST(CommonCode, operators) {
     EXPECT_GT(CommonCode::unsafe_create(TEST_C_CODE + 1), common_code); // CommonCode > CommonCode
 }
 
+TEST(CommonCode, exporter) {
+    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+    EXPECT_EQ(common_code.unwrap(), TEST_C_CODE);
+    EXPECT_EQ(common_code.to_string(), TEST_C_CODE_STR);
+    EXPECT_EQ(common_code.to_raw_code(), TEST_R_CODE);
+    EXPECT_EQ(common_code.to_short_code(), TEST_S_CODE);
+
+    auto code_shorten = common_code.to_string(true);
+    EXPECT_EQ(CommonCode::from_string(code_shorten), common_code); // l-value
+    EXPECT_EQ(CommonCode::from_string(std::move(code_shorten)), common_code); // r-value
+
+    auto code_normal = common_code.to_string(false);
+    EXPECT_EQ(CommonCode::from_string(code_normal), common_code); // l-value
+    EXPECT_EQ(CommonCode::from_string(std::move(code_normal)), common_code); // r-value
+}
+
 TEST(CommonCode, initializate) {
     auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
     auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
+    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
     // CommonCode(...)
     EXPECT_EQ(CommonCode(raw_code), TEST_C_CODE);
     EXPECT_EQ(CommonCode(short_code), TEST_C_CODE);
+    EXPECT_EQ(CommonCode(common_code), TEST_C_CODE); // l-value
+    EXPECT_EQ(CommonCode(CommonCode(common_code)), TEST_C_CODE); // r-value
 
     // CommonCode::create(uint64_t)
     EXPECT_TRUE(CommonCode::create(TEST_C_CODE).has_value());
@@ -147,23 +166,7 @@ TEST(CommonCode, code_string) {
     pool.wait_for_tasks();
 }
 
-TEST(CommonCode, code_convert) {
-    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
-    EXPECT_EQ(common_code.unwrap(), TEST_C_CODE);
-    EXPECT_EQ(common_code.to_string(), TEST_C_CODE_STR);
-    EXPECT_EQ(common_code.to_raw_code(), TEST_R_CODE);
-    EXPECT_EQ(common_code.to_short_code(), TEST_S_CODE);
-
-    auto code_shorten = common_code.to_string(true);
-    EXPECT_EQ(CommonCode::from_string(code_shorten), common_code); // l-value
-    EXPECT_EQ(CommonCode::from_string(std::move(code_shorten)), common_code); // r-value
-
-    auto code_normal = common_code.to_string(false);
-    EXPECT_EQ(CommonCode::from_string(code_normal), common_code); // l-value
-    EXPECT_EQ(CommonCode::from_string(std::move(code_normal)), common_code); // r-value
-}
-
-TEST(CommonCode, DISABLED_global) {
+TEST(CommonCode, DISABLED_global_verify) {
     std::vector<uint64_t> common_codes;
     common_codes.reserve(ALL_CASES_NUM_);
     for (uint64_t head = 0; head < 16; ++head) {

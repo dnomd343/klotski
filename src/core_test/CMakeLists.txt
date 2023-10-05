@@ -39,6 +39,7 @@ add_test(NAME klotski_ffi COMMAND test_klotski_ffi)
 ###############################################################################################
 
 set(KLOTSKI_TEST_CODEC_SRC
+    codec/short_code.cc
     codec/common_code.cc
 )
 
