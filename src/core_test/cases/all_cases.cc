@@ -62,7 +62,7 @@ void all_cases_verify() {
     EXPECT_EQ(xxhsum(all_cases_xxh), ALL_CASES_XXHASH); // verify all cases checksum
 }
 
-TEST(Cases, basic_ranges) {
+TEST(AllCases, basic_ranges) {
     basic_ranges_reset();
     EXPECT_FALSE(BasicRanges::instance().is_available());
     BasicRanges::instance().build();
@@ -72,7 +72,7 @@ TEST(Cases, basic_ranges) {
     basic_ranges_verify();
 }
 
-TEST(Cases, basic_ranges_mutex) {
+TEST(AllCases, basic_ranges_mutex) {
     basic_ranges_reset();
     BS::thread_pool pool(TEST_THREAD_NUM);
 
@@ -85,7 +85,7 @@ TEST(Cases, basic_ranges_mutex) {
     basic_ranges_verify();
 }
 
-TEST(Cases, all_cases) {
+TEST(AllCases, all_cases) {
     all_cases_reset();
     EXPECT_FALSE(AllCases::instance().is_available());
     AllCases::instance().build();
@@ -95,7 +95,7 @@ TEST(Cases, all_cases) {
     all_cases_verify();
 }
 
-TEST(Cases, all_cases_mutex) {
+TEST(AllCases, all_cases_mutex) {
     all_cases_reset();
     BS::thread_pool pool(TEST_THREAD_NUM);
 
@@ -108,7 +108,7 @@ TEST(Cases, all_cases_mutex) {
     all_cases_verify();
 }
 
-TEST(Cases, all_cases_parallel) {
+TEST(AllCases, all_cases_parallel) {
     all_cases_reset();
     BS::thread_pool executor;
     EXPECT_FALSE(AllCases::instance().is_available());
@@ -123,7 +123,7 @@ TEST(Cases, all_cases_parallel) {
     all_cases_verify();
 }
 
-TEST(Cases, all_cases_parallel_mutex) {
+TEST(AllCases, all_cases_parallel_mutex) {
     all_cases_reset();
     BS::thread_pool executor;
     BS::thread_pool pool(TEST_THREAD_NUM);
@@ -140,7 +140,7 @@ TEST(Cases, all_cases_parallel_mutex) {
     all_cases_verify();
 }
 
-TEST(Cases, all_cases_async) {
+TEST(AllCases, all_cases_async) {
     all_cases_reset();
     std::atomic_flag flag;
     BS::thread_pool executor;
@@ -169,7 +169,7 @@ TEST(Cases, all_cases_async) {
     all_cases_verify();
 }
 
-TEST(Cases, all_cases_async_mutex) {
+TEST(AllCases, all_cases_async_mutex) {
     all_cases_reset();
     BS::thread_pool executor;
     std::atomic<int> callback_num(0);

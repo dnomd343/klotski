@@ -167,14 +167,6 @@ TEST(CommonCode, code_string) {
 }
 
 TEST(CommonCode, DISABLED_global_verify) {
-    std::vector<uint64_t> common_codes;
-    common_codes.reserve(ALL_CASES_NUM_);
-    for (uint64_t head = 0; head < 16; ++head) {
-        for (auto range : AllCases::instance().fetch()[head]) {
-            common_codes.emplace_back(head << 32 | range);
-        }
-    }
-
     BS::thread_pool pool;
     auto futures = pool.parallelize_loop(0x10'0000'0000, [](uint64_t start, uint64_t end) {
         std::vector<uint64_t> archive;
@@ -193,5 +185,5 @@ TEST(CommonCode, DISABLED_global_verify) {
         result.insert(result.end(), data.begin(), data.end()); // combine sections
     }
     pool.wait_for_tasks();
-    EXPECT_EQ(result, common_codes);
+    EXPECT_EQ(result, all_common_codes());
 }

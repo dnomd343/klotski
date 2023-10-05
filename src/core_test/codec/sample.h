@@ -2,6 +2,7 @@
 
 #include <string>
 #include <cstdint>
+#include "all_cases.h"
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -32,5 +33,21 @@ const static std::string TEST_S_CODE_STR_ERR = "ZZZZZZ";
 const static uint64_t TEST_C_CODE_ERR = 0x3'A9BF'0C00;
 const static std::string TEST_C_CODE_STR_ERR = "0123456789";
 #define TEST_C_CODE_STR_ERR_RV std::string(TEST_C_CODE_STR_ERR) // r-value
+
+// ----------------------------------------------------------------------------------------- //
+
+using klotski::cases::AllCases;
+using klotski::cases::ALL_CASES_NUM_;
+
+inline std::vector<uint64_t> all_common_codes() {
+    std::vector<uint64_t> common_codes;
+    common_codes.reserve(ALL_CASES_NUM_);
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (auto range : AllCases::instance().fetch()[head]) {
+            common_codes.emplace_back(head << 32 | range);
+        }
+    }
+    return common_codes;
+}
 
 // ----------------------------------------------------------------------------------------- //

@@ -98,7 +98,7 @@ TEST(ShortCode, initializate) {
     EXPECT_FALSE(ShortCode::from_string(TEST_S_CODE_STR_ERR).has_value());
     EXPECT_EQ(ShortCode::from_string(TEST_S_CODE_STR), TEST_S_CODE);
 
-    // ShortCode::from_string(std::string&&)
+    // ShortCode::from_string(std::string &&)
     EXPECT_TRUE(ShortCode::from_string(TEST_S_CODE_STR_RV).has_value());
     EXPECT_FALSE(ShortCode::from_string(TEST_S_CODE_STR_ERR_RV).has_value());
     EXPECT_EQ(ShortCode::from_string(TEST_S_CODE_STR_RV), TEST_S_CODE);
@@ -116,7 +116,7 @@ TEST(ShortCode, initializate) {
     EXPECT_FALSE(ShortCode::from_common_code(TEST_C_CODE_STR_ERR).has_value());
     EXPECT_EQ(ShortCode::from_common_code(TEST_C_CODE_STR), TEST_S_CODE);
 
-    // ShortCode::from_common_code(std::string&&)
+    // ShortCode::from_common_code(std::string &&)
     EXPECT_TRUE(ShortCode::from_common_code(TEST_C_CODE_STR_RV).has_value());
     EXPECT_FALSE(ShortCode::from_common_code(TEST_C_CODE_STR_ERR_RV).has_value());
     EXPECT_EQ(ShortCode::from_common_code(TEST_C_CODE_STR_RV), TEST_S_CODE);
@@ -156,6 +156,7 @@ TEST(ShortCode, code_verify) {
                 auto code = ShortCode::from_common_code(head << 32 | range);
                 EXPECT_TRUE(code.has_value());
                 EXPECT_TRUE(ShortCode::check(code->unwrap()));
+                EXPECT_EQ(code->to_common_code(), head << 32 | range);
                 archive.emplace_back(code->unwrap());
             }
             if (!archive.empty()) {
@@ -191,14 +192,6 @@ TEST(ShortCode, code_string) {
 }
 
 TEST(ShortCode, DISABLED_global_verify) {
-    std::vector<uint64_t> common_codes;
-    common_codes.reserve(ALL_CASES_NUM_);
-    for (uint64_t head = 0; head < 16; ++head) {
-        for (auto range : AllCases::instance().fetch()[head]) {
-            common_codes.emplace_back(head << 32 | range);
-        }
-    }
-
     all_cases_reset();
     BS::thread_pool pool;
     auto futures = pool.parallelize_loop(SHORT_CODE_LIMIT, [](uint32_t start, uint32_t end) {
@@ -220,5 +213,5 @@ TEST(ShortCode, DISABLED_global_verify) {
         result.insert(result.end(), data.begin(), data.end()); // combine sections
     }
     pool.wait_for_tasks();
-    EXPECT_EQ(result, common_codes);
+    EXPECT_EQ(result, all_common_codes());
 }
