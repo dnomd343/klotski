@@ -23,27 +23,21 @@ RawCode RawCode::from_common_code(CommonCode common_code) noexcept {
 }
 
 std::optional<RawCode> RawCode::from_common_code(uint64_t common_code) noexcept {
-    auto code = CommonCode::create(common_code);
-    if (!code.has_value()) {
-        return std::nullopt; // invalid common code
-    }
-    return code->to_raw_code();
+    return CommonCode::create(common_code).transform([](auto common_code) {
+        return common_code.to_raw_code();
+    });
 }
 
 std::optional<RawCode> RawCode::from_common_code(std::string &&common_code) noexcept {
-    auto code = CommonCode::from_string(std::move(common_code));
-    if (!code.has_value()) {
-        return std::nullopt; // invalid common code
-    }
-    return code->to_raw_code();
+    return CommonCode::from_short_code(std::move(common_code)).transform([](auto common_code) {
+        return common_code.to_raw_code();
+    });
 }
 
 std::optional<RawCode> RawCode::from_common_code(const std::string &common_code) noexcept {
-    auto code = CommonCode::from_string(common_code);
-    if (!code.has_value()) {
-        return std::nullopt; // invalid common code
-    }
-    return code->to_raw_code();
+    return CommonCode::from_string(common_code).transform([](auto common_code) {
+        return common_code.to_raw_code();
+    });
 }
 
 // ----------------------------------------------------------------------------------------- //

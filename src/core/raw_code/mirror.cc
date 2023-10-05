@@ -116,5 +116,7 @@ bool RawCode::check_horizontal_mirror(uint64_t raw_code) noexcept {
         && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));
 }
 
+// ----------------------------------------------------------------------------------------- //
+
 } // namespace codec
 } // namespace klotski

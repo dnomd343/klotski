@@ -18,21 +18,7 @@ void ShortCode::speed_up(bool fast_mode) noexcept {
     } else {
         BasicRanges::instance().build();
     }
-    // FIXME: setting up `fast_available_`
 }
-
-//void ShortCode::speed_up(ShortCode::Mode mode) {
-//    if (fast_mode_available_) {
-//        return; // fast mode already available
-//    }
-//    if (mode == ShortCode::FAST) { // build fast mode data
-//        AllCases::build(); // blocking function
-//        fast_mode_available_ = true;
-//    } else if (!normal_mode_available_) { // build normal mode data
-//        BasicRanges::build(); // blocking function
-//        normal_mode_available_ = true;
-//    }
-//}
 
 } // namespace codec
 } // namespace klotski

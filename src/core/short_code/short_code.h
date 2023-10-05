@@ -106,7 +106,6 @@ public:
 
 private:
     uint32_t code_;
-    static bool fast_available_; // TODO: try to remove it
 
     static uint64_t fast_decode(uint32_t short_code) noexcept;
     static uint32_t fast_encode(uint64_t common_code) noexcept;

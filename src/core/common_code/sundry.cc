@@ -39,11 +39,9 @@ std::optional<CommonCode> CommonCode::from_string(std::string &&common_code) noe
 }
 
 std::optional<CommonCode> CommonCode::from_string(const std::string &common_code) noexcept {
-    auto code = string_decode(common_code);
-    if (!code.has_value()) {
-        return std::nullopt; // invalid string
-    }
-    return CommonCode::unsafe_create(code.value());
+    return string_decode(common_code).transform([](auto code) {
+        return CommonCode::unsafe_create(code);
+    });
 }
 
 // ----------------------------------------------------------------------------------------- //
@@ -52,13 +50,10 @@ CommonCode CommonCode::from_raw_code(RawCode raw_code) noexcept {
     return raw_code.to_common_code();
 }
 
-// TODO: using `std::optional::transform` in C++23
 std::optional<CommonCode> CommonCode::from_raw_code(uint64_t raw_code) noexcept {
-    auto code = RawCode::create(raw_code);
-    if (!code.has_value()) {
-        return std::nullopt; // invalid raw code
-    }
-    return code->to_common_code();
+    return RawCode::create(raw_code).transform([](auto raw_code) {
+        return raw_code.to_common_code();
+    });
 }
 
 // ----------------------------------------------------------------------------------------- //
@@ -68,27 +63,21 @@ CommonCode CommonCode::from_short_code(ShortCode short_code) noexcept {
 }
 
 std::optional<CommonCode> CommonCode::from_short_code(uint32_t short_code) noexcept {
-    auto code = ShortCode::create(short_code);
-    if (!code.has_value()) {
-        return std::nullopt; // invalid short code
-    }
-    return code->to_common_code();
+    return ShortCode::create(short_code).transform([](auto short_code) {
+        return short_code.to_common_code();
+    });
 }
 
 std::optional<CommonCode> CommonCode::from_short_code(std::string &&short_code) noexcept {
-    auto code = ShortCode::from_string(std::move(short_code));
-    if (!code.has_value()) {
-        return std::nullopt; // invalid short code
-    }
-    return code->to_common_code();
+    return ShortCode::from_string(std::move(short_code)).transform([](auto short_code) {
+        return short_code.to_common_code();
+    });
 }
 
 std::optional<CommonCode> CommonCode::from_short_code(const std::string &short_code) noexcept {
-    auto code = ShortCode::from_string(short_code);
-    if (!code.has_value()) {
-        return std::nullopt; // invalid short code
-    }
-    return code->to_common_code();
+    return ShortCode::from_string(short_code).transform([](auto short_code) {
+        return short_code.to_common_code();
+    });
 }
 
 // ----------------------------------------------------------------------------------------- //

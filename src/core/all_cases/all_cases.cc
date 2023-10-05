@@ -88,8 +88,6 @@ void AllCases::build_parallel(Executor &&executor) noexcept {
     }
     std::vector<std::future<void>> futures;
     for (auto head : case_heads()) {
-        // TODO: using std::move_only_function in C++23
-        //       -> avoid using std::shared_ptr<std::promise<void>>
         auto promise = std::make_shared<std::promise<void>>();
         futures.emplace_back(promise->get_future());
         executor([head, promise = std::move(promise)]() {

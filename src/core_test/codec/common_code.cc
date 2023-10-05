@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include "sample.h"
 #include "all_cases.h"
 #include "raw_code.h"
 #include "short_code.h"
@@ -14,9 +15,6 @@ using klotski::codec::CommonCode;
 using klotski::cases::AllCases;
 using klotski::cases::ALL_CASES_NUM_;
 
-const static uint64_t TEST_CODE = 0x1'A9BF'0C00;
-const static std::string TEST_CODE_STR = "1A9BF0C00";
-
 TEST(CommonCode, validity) {
     EXPECT_NE(CommonCode::check(0x3'A9'BF'0C'00), true); // invalid 2x2 block
     EXPECT_NE(CommonCode::check(0x1'D9'BF'0C'00), true); // invalid block range
@@ -29,23 +27,76 @@ TEST(CommonCode, validity) {
 }
 
 TEST(CommonCode, operators) {
-    auto common_code = CommonCode::create(TEST_CODE).value();
+    auto common_code = CommonCode::create(TEST_C_CODE).value();
 
     std::ostringstream tmp;
     tmp << common_code; // ostream capture
-    EXPECT_EQ(tmp.str(), TEST_CODE_STR);
-    EXPECT_EQ((uint64_t)common_code, TEST_CODE); // convert as uint64_t
+    EXPECT_EQ(tmp.str(), TEST_C_CODE_STR);
+    EXPECT_EQ((uint64_t)common_code, TEST_C_CODE); // convert as uint64_t
 
-    EXPECT_EQ(TEST_CODE, common_code); // uint64_t == CommonCode
-    EXPECT_EQ(common_code, TEST_CODE); // CommonCode == uint64_t
+    EXPECT_EQ(TEST_C_CODE, common_code); // uint64_t == CommonCode
+    EXPECT_EQ(common_code, TEST_C_CODE); // CommonCode == uint64_t
     EXPECT_EQ(common_code, common_code); // CommonCode == CommonCode
 
-    EXPECT_NE(TEST_CODE + 1, common_code); // uint64_t != CommonCode
-    EXPECT_NE(common_code, TEST_CODE + 1); // CommonCode != uint64_t
-    EXPECT_NE(common_code, CommonCode::unsafe_create(TEST_CODE + 1)); // CommonCode != CommonCode
+    EXPECT_NE(TEST_C_CODE + 1, common_code); // uint64_t != CommonCode
+    EXPECT_NE(common_code, TEST_C_CODE + 1); // CommonCode != uint64_t
+    EXPECT_NE(common_code, CommonCode::unsafe_create(TEST_C_CODE + 1)); // CommonCode != CommonCode
 
-    EXPECT_LT(common_code, CommonCode::unsafe_create(TEST_CODE + 1)); // CommonCode < CommonCode
-    EXPECT_GT(CommonCode::unsafe_create(TEST_CODE + 1), common_code); // CommonCode > CommonCode
+    EXPECT_LT(common_code, CommonCode::unsafe_create(TEST_C_CODE + 1)); // CommonCode < CommonCode
+    EXPECT_GT(CommonCode::unsafe_create(TEST_C_CODE + 1), common_code); // CommonCode > CommonCode
+}
+
+TEST(CommonCode, initializate) {
+    auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
+    auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
+
+    // CommonCode(...)
+    EXPECT_EQ(CommonCode(raw_code), TEST_C_CODE);
+    EXPECT_EQ(CommonCode(short_code), TEST_C_CODE);
+
+    // CommonCode::create(uint64_t)
+    EXPECT_TRUE(CommonCode::create(TEST_C_CODE).has_value());
+    EXPECT_FALSE(CommonCode::create(TEST_C_CODE_ERR).has_value());
+    EXPECT_EQ(CommonCode::create(TEST_C_CODE), TEST_C_CODE);
+
+    // CommonCode::unsafe_create(uint64_t)
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_C_CODE), TEST_C_CODE);
+
+    // CommonCode::from_string(const std::string &)
+    EXPECT_TRUE(CommonCode::from_string(TEST_C_CODE_STR).has_value());
+    EXPECT_FALSE(CommonCode::from_string(TEST_C_CODE_STR_ERR).has_value());
+    EXPECT_EQ(CommonCode::from_string(TEST_C_CODE_STR), TEST_C_CODE);
+
+    // CommonCode::from_string(std::string &&)
+    EXPECT_TRUE(CommonCode::from_string(TEST_C_CODE_STR_RV).has_value());
+    EXPECT_FALSE(CommonCode::from_string(TEST_C_CODE_STR_ERR_RV).has_value());
+    EXPECT_EQ(CommonCode::from_string(TEST_C_CODE_STR_RV), TEST_C_CODE);
+
+    // CommonCode::from_raw_code(RawCode)
+    EXPECT_EQ(CommonCode::from_raw_code(raw_code), TEST_C_CODE);
+
+    // CommonCode::from_raw_code(uint64_t)
+    EXPECT_TRUE(CommonCode::from_raw_code(TEST_R_CODE).has_value());
+    EXPECT_FALSE(CommonCode::from_raw_code(TEST_R_CODE_ERR).has_value());
+    EXPECT_EQ(CommonCode::from_raw_code(TEST_R_CODE), TEST_C_CODE);
+
+    // CommonCode::from_short_code(ShortCode)
+    EXPECT_EQ(CommonCode::from_short_code(short_code), TEST_C_CODE);
+
+    // CommonCode::from_short_code(uint32_t)
+    EXPECT_TRUE(CommonCode::from_short_code(TEST_S_CODE).has_value());
+    EXPECT_FALSE(CommonCode::from_short_code(TEST_S_CODE_ERR).has_value());
+    EXPECT_EQ(CommonCode::from_short_code(TEST_S_CODE), TEST_C_CODE);
+
+    // CommonCode::from_short_code(const std::string &)
+    EXPECT_TRUE(CommonCode::from_short_code(TEST_S_CODE_STR).has_value());
+    EXPECT_FALSE(CommonCode::from_short_code(TEST_S_CODE_STR_ERR).has_value());
+    EXPECT_EQ(CommonCode::from_short_code(TEST_S_CODE_STR), TEST_C_CODE);
+
+    // CommonCode::from_short_code(std::string &&)
+    EXPECT_TRUE(CommonCode::from_short_code(TEST_S_CODE_STR_RV).has_value());
+    EXPECT_FALSE(CommonCode::from_short_code(TEST_S_CODE_STR_ERR_RV).has_value());
+    EXPECT_EQ(CommonCode::from_short_code(TEST_S_CODE_STR_RV), TEST_C_CODE);
 }
 
 TEST(CommonCode, code_verify) {
@@ -54,7 +105,7 @@ TEST(CommonCode, code_verify) {
         pool.push_task([](uint64_t head) {
             for (auto range : AllCases::instance().fetch()[head]) {
                 auto code = head << 32 | range;
-                EXPECT_TRUE(CommonCode::check(code)); // verify all valid code
+                EXPECT_TRUE(CommonCode::check(code)); // verify all cases
             }
         }, head);
     }
@@ -97,11 +148,11 @@ TEST(CommonCode, code_string) {
 }
 
 TEST(CommonCode, code_convert) {
-    auto common_code = CommonCode::create(TEST_CODE).value();
-    EXPECT_EQ(common_code.unwrap(), TEST_CODE);
-    EXPECT_EQ(common_code.to_string(), TEST_CODE_STR);
-    EXPECT_EQ(common_code.to_raw_code(), RawCode(common_code));
-    EXPECT_EQ(common_code.to_short_code(), ShortCode(common_code));
+    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+    EXPECT_EQ(common_code.unwrap(), TEST_C_CODE);
+    EXPECT_EQ(common_code.to_string(), TEST_C_CODE_STR);
+    EXPECT_EQ(common_code.to_raw_code(), TEST_R_CODE);
+    EXPECT_EQ(common_code.to_short_code(), TEST_S_CODE);
 
     auto code_shorten = common_code.to_string(true);
     EXPECT_EQ(CommonCode::from_string(code_shorten), common_code); // l-value
@@ -110,38 +161,6 @@ TEST(CommonCode, code_convert) {
     auto code_normal = common_code.to_string(false);
     EXPECT_EQ(CommonCode::from_string(code_normal), common_code); // l-value
     EXPECT_EQ(CommonCode::from_string(std::move(code_normal)), common_code); // r-value
-}
-
-TEST(CommonCode, initializate) {
-    EXPECT_TRUE(CommonCode::create(TEST_CODE).has_value());
-    EXPECT_EQ(CommonCode::create(TEST_CODE), TEST_CODE);
-    EXPECT_EQ(CommonCode::unsafe_create(TEST_CODE), TEST_CODE);
-
-    auto common_code = CommonCode::create(TEST_CODE).value();
-    EXPECT_EQ(CommonCode(RawCode(common_code)), TEST_CODE);
-    EXPECT_EQ(CommonCode(ShortCode(common_code)), TEST_CODE);
-
-    EXPECT_TRUE(CommonCode::from_string(TEST_CODE_STR).has_value());
-    EXPECT_EQ(CommonCode::from_string(TEST_CODE_STR), TEST_CODE); // l-value
-    EXPECT_EQ(CommonCode::from_string(std::string(TEST_CODE_STR)), TEST_CODE); // r-value
-
-    auto raw_code = RawCode(common_code);
-    auto raw_code_val = raw_code.unwrap();
-    EXPECT_EQ(CommonCode::from_raw_code(raw_code), TEST_CODE);
-    EXPECT_TRUE(CommonCode::from_raw_code(raw_code_val).has_value());
-    EXPECT_EQ(CommonCode::from_raw_code(raw_code_val), TEST_CODE);
-
-    auto short_code = ShortCode(common_code);
-    auto short_code_val = short_code.unwrap();
-    auto short_code_str = short_code.to_string();
-    EXPECT_TRUE(CommonCode::from_short_code(short_code_val).has_value());
-    EXPECT_TRUE(CommonCode::from_short_code(short_code_str).has_value());
-    EXPECT_TRUE(CommonCode::from_short_code(std::string(short_code_str)).has_value());
-
-    EXPECT_EQ(CommonCode::from_short_code(short_code_val), TEST_CODE);
-    EXPECT_EQ(CommonCode::from_short_code(short_code), TEST_CODE);
-    EXPECT_EQ(CommonCode::from_short_code(short_code_str), TEST_CODE); // l-value
-    EXPECT_EQ(CommonCode::from_short_code(std::string(short_code_str)), TEST_CODE); // r-value
 }
 
 TEST(CommonCode, DISABLED_global) {

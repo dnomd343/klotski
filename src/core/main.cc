@@ -1,4 +1,7 @@
+#include <thread>
 #include <iostream>
+#include <algorithm>
+
 #include "raw_code.h"
 #include "all_cases.h"
 #include "short_code.h"
@@ -11,10 +14,12 @@ using klotski::codec::RawCode;
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 
+using klotski::codec::SHORT_CODE_LIMIT;
+
 int main() {
 
-//    AllCases::instance().build();
-    BasicRanges::instance().build();
+    AllCases::instance().build();
+//    BasicRanges::instance().build();
 
 //    std::vector<uint64_t> common_codes;
 //    common_codes.reserve(klotski::cases::ALL_CASES_NUM_);
@@ -31,7 +36,13 @@ int main() {
 //        common_codes_str.emplace_back(CommonCode::string_encode(x, false));
 //    }
 
+    ShortCode::speed_up(true);
+
     auto start = clock();
+
+    for (uint32_t short_code = 0; short_code < SHORT_CODE_LIMIT; ++short_code) {
+        ShortCode::unsafe_create(short_code).to_common_code(true);
+    }
 
 //    for (auto common_code : common_codes) {
 //        printf("%llX\n", common_code);
