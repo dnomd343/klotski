@@ -128,20 +128,24 @@ TEST(ShortCode, speed_up) {
     BS::thread_pool pool(TEST_THREAD_NUM);
 
     for (auto i = 0; i < TEST_THREAD_NUM; ++i) {
-        pool.push_task(ShortCode::speed_up, false);
+        pool.detach_task([]() {
+            ShortCode::speed_up(false);
+        });
     }
     EXPECT_FALSE(BasicRanges::instance().is_available());
     EXPECT_FALSE(AllCases::instance().is_available());
-    pool.wait_for_tasks();
+    pool.wait();
     EXPECT_TRUE(BasicRanges::instance().is_available());
     EXPECT_FALSE(AllCases::instance().is_available());
 
     for (auto i = 0; i < TEST_THREAD_NUM; ++i) {
-        pool.push_task(ShortCode::speed_up, true);
+        pool.detach_task([]() {
+            ShortCode::speed_up(true);
+        });
     }
     EXPECT_TRUE(BasicRanges::instance().is_available());
     EXPECT_FALSE(AllCases::instance().is_available());
-    pool.wait_for_tasks();
+    pool.wait();
     EXPECT_TRUE(BasicRanges::instance().is_available());
     EXPECT_TRUE(AllCases::instance().is_available());
 }
@@ -149,24 +153,22 @@ TEST(ShortCode, speed_up) {
 TEST(ShortCode, code_verify) {
     BS::thread_pool pool;
     ShortCode::speed_up(true);
-    for (int head = 0; head < 16; ++head) {
-        pool.push_task([](uint64_t head) {
-            std::vector<uint32_t> archive;
-            for (auto range : AllCases::instance().fetch()[head]) {
-                auto code = ShortCode::from_common_code(head << 32 | range);
-                EXPECT_TRUE(code.has_value());
-                EXPECT_TRUE(ShortCode::check(code->unwrap()));
-                EXPECT_EQ(code->to_common_code(), head << 32 | range);
-                archive.emplace_back(code->unwrap());
-            }
-            if (!archive.empty()) {
-                EXPECT_TRUE(std::is_sorted(archive.begin(), archive.end())); // increasingly one by one
-                EXPECT_EQ(archive[archive.size() - 1] - archive[0], archive.size() - 1);
-                EXPECT_EQ(std::accumulate(ALL_CASES_NUM.begin(), ALL_CASES_NUM.begin() + head, 0), archive[0]);
-            }
-        }, head);
-    }
-    pool.wait_for_tasks();
+    pool.detach_sequence(0, 16, [](const uint64_t head) {
+        std::vector<uint32_t> archive;
+        for (auto range : AllCases::instance().fetch()[head]) {
+            auto code = ShortCode::from_common_code(head << 32 | range);
+            EXPECT_TRUE(code.has_value());
+            EXPECT_TRUE(ShortCode::check(code->unwrap()));
+            EXPECT_EQ(code->to_common_code(), head << 32 | range);
+            archive.emplace_back(code->unwrap());
+        }
+        if (!archive.empty()) {
+            EXPECT_TRUE(std::is_sorted(archive.begin(), archive.end())); // increasingly one by one
+            EXPECT_EQ(archive[archive.size() - 1] - archive[0], archive.size() - 1);
+            EXPECT_EQ(std::accumulate(ALL_CASES_NUM.begin(), ALL_CASES_NUM.begin() + head, 0), archive[0]);
+        }
+    });
+    pool.wait();
 }
 
 TEST(ShortCode, code_string) {
@@ -183,18 +185,18 @@ TEST(ShortCode, code_string) {
     };
 
     BS::thread_pool pool;
-    pool.push_loop(SHORT_CODE_LIMIT, [&test_func](uint32_t start, uint32_t end) {
+    pool.detach_blocks((uint32_t)0, SHORT_CODE_LIMIT, [&test_func](uint32_t start, uint32_t end) {
         for (uint32_t short_code = start; short_code < end; ++short_code) {
             test_func(ShortCode::unsafe_create(short_code));
         }
-    }, 0x1000); // split as 4096 pieces
-    pool.wait_for_tasks();
+    });
+    pool.wait();
 }
 
 TEST(ShortCode, DISABLED_global_verify) {
     all_cases_reset();
     BS::thread_pool pool;
-    auto futures = pool.parallelize_loop(SHORT_CODE_LIMIT, [](uint32_t start, uint32_t end) {
+    auto futures = pool.submit_blocks((uint32_t)0, SHORT_CODE_LIMIT, [](uint32_t start, uint32_t end) {
         std::vector<uint64_t> archive;
         archive.reserve(end - start);
         for (uint32_t short_code = start; short_code < end; ++short_code) {
@@ -207,10 +209,10 @@ TEST(ShortCode, DISABLED_global_verify) {
 
     std::vector<uint64_t> result;
     result.reserve(ALL_CASES_NUM_);
-    for (size_t i = 0; i < futures.size(); ++i) {
-        auto data = futures[i].get();
+    for (auto &future : futures) {
+        const auto data = future.get();
         result.insert(result.end(), data.begin(), data.end()); // combine sections
     }
-    pool.wait_for_tasks();
+    pool.wait();
     EXPECT_EQ(result, all_common_codes());
 }

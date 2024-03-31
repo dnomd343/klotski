@@ -62,14 +62,12 @@ TEST(RawCode, code_vertical_mirror) {
     };
 
     BS::thread_pool pool;
-    for (int head = 0; head < 16; ++head) {
-        pool.push_task([&test_func](uint64_t head) {
-            for (auto range : AllCases::instance().fetch()[head]) {
-                test_func(RawCode::from_common_code(head << 32 | range).value());
-            }
-        }, head);
-    }
-    pool.wait_for_tasks();
+    pool.detach_sequence(0, 16, [&test_func](const uint64_t head) {
+        for (const auto range : AllCases::instance().fetch()[head]) {
+            test_func(RawCode::from_common_code(head << 32 | range).value());
+        }
+    });
+    pool.wait();
 }
 
 TEST(RawCode, code_horizontal_mirror) {
@@ -86,14 +84,10 @@ TEST(RawCode, code_horizontal_mirror) {
     };
 
     BS::thread_pool pool;
-    for (int head = 0; head < 16; ++head) {
-        pool.push_task([&test_func](uint64_t head) {
-            for (auto range : AllCases::instance().fetch()[head]) {
-
-                test_func(RawCode::from_common_code(head << 32 | range).value());
-
-            }
-        }, head);
-    }
-    pool.wait_for_tasks();
+    pool.detach_sequence(0, 16, [&test_func](const uint64_t head) {
+        for (const auto range : AllCases::instance().fetch()[head]) {
+            test_func(RawCode::from_common_code(head << 32 | range).value());
+        }
+    });
+    pool.wait();
 }

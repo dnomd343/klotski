@@ -62,6 +62,14 @@ void all_cases_verify() {
     EXPECT_EQ(xxhsum(all_cases_xxh), ALL_CASES_XXHASH); // verify all cases checksum
 }
 
+std::unique_ptr<BS::thread_pool> race_test(int parallel, const std::function<void()> &item) {
+    auto pool = std::make_unique<BS::thread_pool>(parallel);
+    pool->detach_sequence(0, parallel, [&item](const int) {
+        item();
+    });
+    return pool;
+}
+
 TEST(AllCases, basic_ranges) {
     basic_ranges_reset();
     EXPECT_FALSE(BasicRanges::instance().is_available());
@@ -74,13 +82,11 @@ TEST(AllCases, basic_ranges) {
 
 TEST(AllCases, basic_ranges_mutex) {
     basic_ranges_reset();
-    BS::thread_pool pool(TEST_THREAD_NUM);
-
-    for (int i = 0; i < TEST_THREAD_NUM; ++i) {
-        auto _ = pool.submit(&BasicRanges::build, &BasicRanges::instance());
-    }
+    const auto handle = race_test(TEST_THREAD_NUM, []() {
+        BasicRanges::instance().build();
+    });
     EXPECT_FALSE(BasicRanges::instance().is_available());
-    pool.wait_for_tasks();
+    handle->wait();
     EXPECT_TRUE(BasicRanges::instance().is_available());
     basic_ranges_verify();
 }
@@ -97,13 +103,11 @@ TEST(AllCases, all_cases) {
 
 TEST(AllCases, all_cases_mutex) {
     all_cases_reset();
-    BS::thread_pool pool(TEST_THREAD_NUM);
-
-    for (int i = 0; i < TEST_THREAD_NUM; ++i) {
-        auto _ = pool.submit(&AllCases::build, &AllCases::instance());
-    }
+    const auto handle = race_test(TEST_THREAD_NUM, []() {
+        AllCases::instance().build();
+    });
     EXPECT_FALSE(AllCases::instance().is_available());
-    pool.wait_for_tasks();
+    handle->wait();
     EXPECT_TRUE(AllCases::instance().is_available());
     all_cases_verify();
 }
@@ -113,11 +117,11 @@ TEST(AllCases, all_cases_parallel) {
     BS::thread_pool executor;
     EXPECT_FALSE(AllCases::instance().is_available());
     AllCases::instance().build_parallel([&executor](auto &&func) {
-        executor.push_task(func);
+        executor.detach_task(func);
     });
     EXPECT_TRUE(AllCases::instance().is_available());
     AllCases::instance().build_parallel([&executor](auto &&func) {
-        executor.push_task(func);
+        executor.detach_task(func);
     });
     EXPECT_TRUE(AllCases::instance().is_available());
     all_cases_verify();
@@ -126,16 +130,13 @@ TEST(AllCases, all_cases_parallel) {
 TEST(AllCases, all_cases_parallel_mutex) {
     all_cases_reset();
     BS::thread_pool executor;
-    BS::thread_pool pool(TEST_THREAD_NUM);
-
-    for (int i = 0; i < TEST_THREAD_NUM; ++i) {
-        auto _ = pool.submit(&AllCases::build_parallel, &AllCases::instance(), [&executor](auto &&func) {
-            executor.push_task(func);
+    const auto handle = race_test(TEST_THREAD_NUM, [&executor]() {
+        AllCases::instance().build_parallel([&executor](auto &&func) {
+            executor.detach_task(func);
         });
-    }
+    });
     EXPECT_FALSE(AllCases::instance().is_available());
-    pool.wait_for_tasks();
-    executor.wait_for_tasks();
+    handle->wait();
     EXPECT_TRUE(AllCases::instance().is_available());
     all_cases_verify();
 }
@@ -147,7 +148,7 @@ TEST(AllCases, all_cases_async) {
 
     flag.clear();
     AllCases::instance().build_parallel_async([&executor](auto &&func) {
-        executor.push_task(func);
+        executor.detach_task(func);
     }, [&flag]() { // callback function
         flag.test_and_set();
         flag.notify_all();
@@ -158,7 +159,7 @@ TEST(AllCases, all_cases_async) {
 
     flag.clear();
     AllCases::instance().build_parallel_async([&executor](auto &&func) {
-        executor.push_task(func);
+        executor.detach_task(func);
     }, [&flag]() { // callback function
         flag.test_and_set();
         flag.notify_all();
@@ -173,18 +174,16 @@ TEST(AllCases, all_cases_async_mutex) {
     all_cases_reset();
     BS::thread_pool executor;
     std::atomic<int> callback_num(0);
-    BS::thread_pool pool(TEST_THREAD_NUM);
 
-    for (int i = 0; i < TEST_THREAD_NUM; ++i) {
-        auto _ = pool.submit(&AllCases::build_parallel_async, &AllCases::instance(), [&executor](auto &&func) {
-            executor.push_task(func);
+    const auto handle = race_test(TEST_THREAD_NUM, [&executor, &callback_num]() {
+        AllCases::instance().build_parallel_async([&executor](auto &&func) {
+            executor.detach_task(func);
         }, [&callback_num]() {
             callback_num.fetch_add(1);
         });
-    }
+    });
     EXPECT_FALSE(AllCases::instance().is_available());
-    pool.wait_for_tasks();
-    executor.wait_for_tasks();
+    handle->wait();
     EXPECT_TRUE(AllCases::instance().is_available());
     EXPECT_EQ(callback_num.load(), TEST_THREAD_NUM);
     all_cases_verify();

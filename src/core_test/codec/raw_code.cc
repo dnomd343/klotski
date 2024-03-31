@@ -82,17 +82,15 @@ TEST(RawCode, initializate) {
 
 TEST(RawCode, code_verify) {
     BS::thread_pool pool;
-    for (int head = 0; head < 16; ++head) {
-        pool.push_task([](uint64_t head) {
-            for (auto range : AllCases::instance().fetch()[head]) {
-                auto code = RawCode::from_common_code(head << 32 | range);
-                EXPECT_TRUE(code.has_value());
-                EXPECT_TRUE(RawCode::check(code->unwrap()));
-                EXPECT_EQ(code->to_common_code(), head << 32 | range);
-            }
-        }, head);
-    }
-    pool.wait_for_tasks();
+    pool.detach_sequence(0, 16, [](const uint64_t head) {
+        for (const auto range : AllCases::instance().fetch()[head]) {
+            const auto code = RawCode::from_common_code(head << 32 | range);
+            EXPECT_TRUE(code.has_value());
+            EXPECT_TRUE(RawCode::check(code->unwrap()));
+            EXPECT_EQ(code->to_common_code(), head << 32 | range);
+        }
+    });
+    pool.wait();
 }
 
 TEST(RawCode, DISABLED_global_verify) {
@@ -115,7 +113,7 @@ TEST(RawCode, DISABLED_global_verify) {
     };
 
     BS::thread_pool pool;
-    auto futures = pool.parallelize_loop(0x10'0000'0000, [&force_convert](uint64_t start, uint64_t end) {
+    auto futures = pool.submit_blocks(0ULL, 0x10'0000'0000ULL, [&force_convert](uint64_t start, uint64_t end) {
         std::vector<uint64_t> archive;
         for (uint64_t common_code = start; common_code < end; ++common_code) {
             if (RawCode::check(force_convert(common_code))) {
@@ -127,10 +125,9 @@ TEST(RawCode, DISABLED_global_verify) {
 
     std::vector<uint64_t> result;
     result.reserve(ALL_CASES_NUM_);
-    for (size_t i = 0; i < futures.size(); ++i) {
-        auto data = futures[i].get();
+    for (auto &future : futures) {
+        const auto data = future.get();
         result.insert(result.end(), data.begin(), data.end()); // combine sections
     }
-    pool.wait_for_tasks();
     EXPECT_EQ(result, all_common_codes());
 }
