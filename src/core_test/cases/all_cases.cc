@@ -23,8 +23,8 @@ static constexpr std::array<uint64_t, 16> ALL_CASES_XXH3 = {
 };
 
 /// Forcibly modify private variables to reset state.
-PRIVATE_ACCESS(AllCases, available_, bool)
-PRIVATE_ACCESS(BasicRanges, available_, bool)
+FORCIBLY_ACCESS(AllCases, available_, bool)
+FORCIBLY_ACCESS(BasicRanges, available_, bool)
 
 class BR_Test final {
 public:
@@ -36,7 +36,7 @@ public:
 
     /// Reset basic ranges build state, note it is thread-unsafe.
     static void reset() {
-        access_BasicRanges_available_(BasicRanges::instance()) = false;
+        exposer::BasicRanges_available_(BasicRanges::instance()) = false;
     }
 
     /// Verify that whether basic ranges data is correct.
@@ -55,7 +55,7 @@ public:
 
     /// Reset all cases build state, note it is thread-unsafe.
     static void reset() {
-        access_AllCases_available_(AllCases::instance()) = false;
+        exposer::AllCases_available_(AllCases::instance()) = false;
     }
 
     /// Verify that whether all cases data is correct.

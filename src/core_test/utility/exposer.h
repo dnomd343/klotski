@@ -26,8 +26,10 @@ typename ExposerImpl<T, Ptr>::Factory ExposerImpl<T, Ptr>::factory;
 
 } // namespace exposer
 
-#define PRIVATE_ACCESS(Class, Member, Type)                                           \
-    template struct ::exposer::ExposerImpl<decltype(&Class::Member), &Class::Member>; \
-    Type& access_##Class##_##Member(Class &T) {                                       \
-        return T.*exposer::Exposer<Type Class::*>::ptr;                               \
+#define FORCIBLY_ACCESS(Class, Member, Type)                                   \
+    namespace exposer {                                                        \
+        template struct ExposerImpl<decltype(&Class::Member), &Class::Member>; \
+        inline auto& Class##_##Member(Class &T) {                              \
+            return T.*exposer::Exposer<Type Class::*>::ptr;                    \
+        }                                                                      \
     }

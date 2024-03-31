@@ -18,17 +18,17 @@ using klotski::cases::ALL_CASES_NUM;
 static const std::string ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
 
 /// Forcibly modify private variables to reset state.
-PRIVATE_ACCESS(AllCases, available_, bool)
-PRIVATE_ACCESS(BasicRanges, available_, bool)
+FORCIBLY_ACCESS(AllCases, available_, bool)
+FORCIBLY_ACCESS(BasicRanges, available_, bool)
 
 /// Reset basic ranges build state, note it is thread-unsafe.
 void basic_ranges_reset() {
-    access_BasicRanges_available_(BasicRanges::instance()) = false;
+    exposer::BasicRanges_available_(BasicRanges::instance()) = false;
 }
 
 /// Reset all cases build state, note it is thread-unsafe.
 void all_cases_reset() {
-    access_AllCases_available_(AllCases::instance()) = false;
+    exposer::AllCases_available_(AllCases::instance()) = false;
 }
 
 TEST(AllCases, all_cases_prebuild) {
