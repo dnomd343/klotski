@@ -16,6 +16,7 @@ include_directories(${KLOTSKI_ROOT_DIR}/src/core/ffi)
 
 set(KLOTSKI_TEST_CASES_SRC
     cases/all_cases.cc
+    cases/basic_ranges.cc
 )
 
 add_executable(test_klotski_cases ${KLOTSKI_TEST_CASES_SRC})
