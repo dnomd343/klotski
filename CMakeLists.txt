@@ -1,47 +1,37 @@
-cmake_minimum_required(VERSION 3.0)
-
+cmake_minimum_required(VERSION 3.12)
 project(klotski)
 
-if(NOT CMAKE_BUILD_TYPE)
+# ------------------------------------------------------------------------------------ #
+
+option(KLOTSKI_ENABLE_LTO "Enable LTO optimisation of the project." OFF)
+option(KLOTSKI_SHARED_LIB "Build klotski core as a dynamic library." OFF)
+option(KLOTSKI_ENABLE_TESTING "Enable testing of the klotski project." ON)
+option(KLOTSKI_ENABLE_BENCHMARK "Enable benchmark of the klotski project." ON)
+
+# ------------------------------------------------------------------------------------ #
+
+if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+add_compile_options(-Wall -Wextra)
+add_compile_options(-flto)  # TODO: enabled by LTO option
 
-get_filename_component(KLOTSKI_ROOT ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
+get_filename_component(KLOTSKI_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
 
-set(KLOTSKI_UNIT_TEST ON)
+include(third_party/ThirdParty.cmake)
 
-include(third_party/third_party.cmake)
+# ------------------------------------------------------------------------------------ #
 
-################################################################################
+#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
-
-file(
-    COPY ${PROJECT_SOURCE_DIR}/src/klotski_core/klotski.h
-    DESTINATION ${PROJECT_SOURCE_DIR}/bin
-    FOLLOW_SYMLINK_CHAIN
-)
-
-################################################################################
-
-option(BUILD_DYN "build shared klotski core library" OFF)
-if (BUILD_DYN)
-    add_compile_options(-fPIC)
-endif()
-
+#file(
+#    COPY ${PROJECT_SOURCE_DIR}/src/klotski_core/klotski.h
+#    DESTINATION ${PROJECT_SOURCE_DIR}/bin
+#    FOLLOW_SYMLINK_CHAIN
+#)
 
 add_subdirectory(src)
 
-################################################################################
-
-#option(CORE_TEST "build test for klotski core" ON)
-#if (CORE_TEST)
-#    include_directories(third_party/googletest/googletest/include)
-#    add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
-#    add_subdirectory(test)
-#endif()
-
-################################################################################
+# ------------------------------------------------------------------------------------ #
