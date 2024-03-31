@@ -1,13 +1,10 @@
-#include <string>
 #include <vector>
 
-#include "xxhsum.h"
+#include "hash.h"
 #include "exposer.h"
 #include "all_cases.h"
 #include "gtest/gtest.h"
 #include "BS_thread_pool.hpp"
-
-using xxhash::xxhsum;
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
@@ -16,10 +13,16 @@ using klotski::cases::ALL_CASES_NUM;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::cases::BASIC_RANGES_NUM;
 
-static const auto TEST_THREAD_NUM = 256;
+static constexpr int TEST_THREAD_NUM = 256;
 
-static const std::string ALL_CASES_XXHASH = "d589c8a45983ebb6";
-static const std::string BASIC_RANGES_XXHASH = "5e7f633b7bd8af37";
+static constexpr uint64_t BASIC_RANGES_XXH3 = 0x82b040060044e336;
+
+static constexpr std::array<uint64_t, 16> ALL_CASES_XXH3 = {
+    0x71c8ff7a71c93da0, 0x2a5247ee8bfed666, 0xf4efc8fc692d58e2, 0x2d06800538d394c2,
+    0xb3f7cc1b962d6944, 0x7e2792f8ab777faa, 0x4b8e78026cca8a27, 0x2d06800538d394c2,
+    0x8acd688c5ab93c42, 0xedca5101ed81cc77, 0xe8dc9d30c91ce682, 0x2d06800538d394c2,
+    0x2cdf6c14a7ce3e9a, 0xb9dd04a315583f5c, 0x19046e49c44ae90d, 0x2d06800538d394c2,
+};
 
 /// Forcibly modify private variables to reset state.
 PRIVATE_ACCESS(AllCases, available_, bool)
@@ -39,12 +42,12 @@ void all_cases_reset() {
 void basic_ranges_verify() {
     auto &basic_ranges = BasicRanges::instance().fetch();
     EXPECT_EQ(basic_ranges.size(), BASIC_RANGES_NUM); // verify basic ranges size
-    EXPECT_EQ(xxhsum(basic_ranges), BASIC_RANGES_XXHASH); // verify basic ranges checksum
+    EXPECT_EQ(hash::xxh3(basic_ranges), BASIC_RANGES_XXH3); // verify basic ranges checksum
 }
 
 /// Verify that whether all cases data is correct.
 void all_cases_verify() {
-    auto &all_cases = AllCases::instance().fetch();
+    const auto &all_cases = AllCases::instance().fetch();
     for (int head = 0; head < 16; ++head) {
         EXPECT_EQ(all_cases[head].size(), ALL_CASES_NUM[head]); // verify all cases size
     }
@@ -55,11 +58,9 @@ void all_cases_verify() {
     });
     EXPECT_EQ(all_cases_num, ALL_CASES_NUM_); // verify all cases global size
 
-    std::string all_cases_xxh;
     for (uint64_t head = 0; head < 16; ++head) {
-        all_cases_xxh += xxhsum(AllCases::instance().fetch()[head]);
+        EXPECT_EQ(hash::xxh3(all_cases[head]), ALL_CASES_XXH3[head]); // verify all cases checksum
     }
-    EXPECT_EQ(xxhsum(all_cases_xxh), ALL_CASES_XXHASH); // verify all cases checksum
 }
 
 std::unique_ptr<BS::thread_pool> race_test(int parallel, const std::function<void()> &item) {

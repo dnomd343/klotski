@@ -8,7 +8,7 @@ set(KLOTSKI_TEST_DEPS klotski_core
 
 # ------------------------------------------------------------------------------------ #
 
-include_directories(utils)
+include_directories(utility)
 
 include_directories(${KLOTSKI_ROOT_DIR}/src/core/ffi)
 
