@@ -2,13 +2,13 @@
 #include <string>
 #include <thread>
 
-#include "md5sum.h"
+#include "md5.h"
 #include "exposer.h"
 #include "klotski.h"
 #include "all_cases.h"
 #include "gtest/gtest.h"
 
-using md5::md5sum;
+using md5::MD5;
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
@@ -179,5 +179,5 @@ TEST(AllCases, all_cases_export) {
             all_cases_str += tmp;
         }
     }
-    EXPECT_EQ(md5sum(all_cases_str), ALL_CASES_MD5);
+    EXPECT_EQ(MD5::Hash(all_cases_str), ALL_CASES_MD5);
 }

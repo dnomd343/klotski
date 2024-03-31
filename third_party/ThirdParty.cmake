@@ -19,8 +19,8 @@ if (KLOTSKI_ENABLE_TESTING)
   add_library(bs::thread_pool ALIAS thread_pool)
 
   # md5sum implementation
+  set(MD5_ENABLE_LTO OFF)
   add_subdirectory(${KLOTSKI_THIRD_PARTY}/md5sum EXCLUDE_FROM_ALL)
-  target_include_directories(md5sum INTERFACE ${KLOTSKI_THIRD_PARTY}/md5sum)
 
   # google test framework
   add_subdirectory(${KLOTSKI_THIRD_PARTY}/googletest EXCLUDE_FROM_ALL)
