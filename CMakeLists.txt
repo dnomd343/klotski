@@ -15,7 +15,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_compile_options(-Wall -Wextra)
-add_compile_options(-flto)  # TODO: enabled by LTO option
+add_compile_options(-flto=auto)  # TODO: enabled by LTO option
 
 get_filename_component(KLOTSKI_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
 

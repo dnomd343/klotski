@@ -4,7 +4,7 @@ project(core-test LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 
 set(KLOTSKI_TEST_DEPS klotski klotski_core
-        GTest::gtest_main bs::thread_pool md5sum xxHash::xxhash)
+        GTest::gtest_main bs::thread_pool md5sum::md5 xxHash::xxh3)
 
 # ------------------------------------------------------------------------------------ #
 

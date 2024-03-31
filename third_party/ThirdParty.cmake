@@ -26,9 +26,7 @@ if (KLOTSKI_ENABLE_TESTING)
   add_subdirectory(${KLOTSKI_THIRD_PARTY}/googletest EXCLUDE_FROM_ALL)
 
   # xxHash implementation
-  set(BUILD_SHARED_LIBS OFF)
-  set(XXHASH_BUILD_XXHSUM OFF)
-  set(XXHASH_BUILD_ENABLE_INLINE_API ON)
-  add_subdirectory(${KLOTSKI_THIRD_PARTY}/xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
+  add_library(xxhash INTERFACE)
   target_include_directories(xxhash INTERFACE ${KLOTSKI_THIRD_PARTY}/xxHash)
+  add_library(xxHash::xxh3 ALIAS xxhash)
 endif()
