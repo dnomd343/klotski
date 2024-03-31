@@ -3,8 +3,8 @@
 #include "hash.h"
 #include "exposer.h"
 #include "all_cases.h"
+#include "concurrent.h"
 #include "gtest/gtest.h"
-#include "BS_thread_pool.hpp"
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
@@ -12,8 +12,6 @@ using klotski::cases::BasicRanges;
 using klotski::cases::ALL_CASES_NUM;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::cases::BASIC_RANGES_NUM;
-
-static constexpr int TEST_THREAD_NUM = 256;
 
 static constexpr uint64_t BASIC_RANGES_XXH3 = 0x82b040060044e336;
 
@@ -28,164 +26,182 @@ static constexpr std::array<uint64_t, 16> ALL_CASES_XXH3 = {
 PRIVATE_ACCESS(AllCases, available_, bool)
 PRIVATE_ACCESS(BasicRanges, available_, bool)
 
-/// Reset basic ranges build state, note it is thread-unsafe.
-void basic_ranges_reset() {
-    access_BasicRanges_available_(BasicRanges::instance()) = false;
-}
-
-/// Reset all cases build state, note it is thread-unsafe.
-void all_cases_reset() {
-    access_AllCases_available_(AllCases::instance()) = false;
-}
-
-/// Verify that whether basic ranges data is correct.
-void basic_ranges_verify() {
-    auto &basic_ranges = BasicRanges::instance().fetch();
-    EXPECT_EQ(basic_ranges.size(), BASIC_RANGES_NUM); // verify basic ranges size
-    EXPECT_EQ(hash::xxh3(basic_ranges), BASIC_RANGES_XXH3); // verify basic ranges checksum
-}
-
-/// Verify that whether all cases data is correct.
-void all_cases_verify() {
-    const auto &all_cases = AllCases::instance().fetch();
-    for (int head = 0; head < 16; ++head) {
-        EXPECT_EQ(all_cases[head].size(), ALL_CASES_NUM[head]); // verify all cases size
+class BR_Test final {
+public:
+    [[nodiscard]] static bool available() {
+        return BasicRanges::instance().is_available();
     }
 
-    auto all_cases_num = 0;
-    std::for_each(all_cases.begin(), all_cases.end(), [&all_cases_num](auto &ranges) {
-        all_cases_num += ranges.size();
-    });
-    EXPECT_EQ(all_cases_num, ALL_CASES_NUM_); // verify all cases global size
+    // TODO: expect member function
 
-    for (uint64_t head = 0; head < 16; ++head) {
-        EXPECT_EQ(hash::xxh3(all_cases[head]), ALL_CASES_XXH3[head]); // verify all cases checksum
+    /// Reset basic ranges build state, note it is thread-unsafe.
+    static void reset() {
+        access_BasicRanges_available_(BasicRanges::instance()) = false;
     }
-}
 
-std::unique_ptr<BS::thread_pool> race_test(int parallel, const std::function<void()> &item) {
-    auto pool = std::make_unique<BS::thread_pool>(parallel);
-    pool->detach_sequence(0, parallel, [&item](const int) {
-        item();
-    });
-    return pool;
-}
+    /// Verify that whether basic ranges data is correct.
+    static void verify() {
+        const auto &basic_ranges = BasicRanges::instance().fetch();
+        EXPECT_EQ(basic_ranges.size(), BASIC_RANGES_NUM); // verify basic ranges size
+        EXPECT_EQ(hash::xxh3(basic_ranges), BASIC_RANGES_XXH3); // verify basic ranges checksum
+    }
+};
+
+class AC_Test final {
+public:
+    [[nodiscard]] static bool available() {
+        return AllCases::instance().is_available();
+    }
+
+    /// Reset all cases build state, note it is thread-unsafe.
+    static void reset() {
+        access_AllCases_available_(AllCases::instance()) = false;
+    }
+
+    /// Verify that whether all cases data is correct.
+    static void verify() {
+        const auto &all_cases = AllCases::instance().fetch();
+        for (int head = 0; head < 16; ++head) {
+            EXPECT_EQ(all_cases[head].size(), ALL_CASES_NUM[head]); // verify all cases size
+        }
+
+        auto all_cases_num = 0;
+        std::for_each(all_cases.begin(), all_cases.end(), [&all_cases_num](auto &ranges) {
+            all_cases_num += ranges.size();
+        });
+        EXPECT_EQ(all_cases_num, ALL_CASES_NUM_); // verify all cases global size
+
+        for (uint64_t head = 0; head < 16; ++head) {
+            EXPECT_EQ(hash::xxh3(all_cases[head]), ALL_CASES_XXH3[head]); // verify all cases checksum
+        }
+    }
+};
 
 TEST(AllCases, basic_ranges) {
-    basic_ranges_reset();
-    EXPECT_FALSE(BasicRanges::instance().is_available());
+    BR_Test::reset();
+    EXPECT_FALSE(BR_Test::available());
+
     BasicRanges::instance().build();
-    EXPECT_TRUE(BasicRanges::instance().is_available());
+    EXPECT_TRUE(BR_Test::available());
+
     BasicRanges::instance().build();
-    EXPECT_TRUE(BasicRanges::instance().is_available());
-    basic_ranges_verify();
+    EXPECT_TRUE(BR_Test::available());
+    BR_Test::verify();
 }
 
-TEST(AllCases, basic_ranges_mutex) {
-    basic_ranges_reset();
-    const auto handle = race_test(TEST_THREAD_NUM, []() {
+TEST(AllCases, basic_ranges_race) {
+    BR_Test::reset();
+    EXPECT_FALSE(BR_Test::available());
+
+    auto racer = co::Racer([] {
         BasicRanges::instance().build();
     });
-    EXPECT_FALSE(BasicRanges::instance().is_available());
-    handle->wait();
-    EXPECT_TRUE(BasicRanges::instance().is_available());
-    basic_ranges_verify();
+    EXPECT_FALSE(BR_Test::available());
+
+    racer.Join();
+    EXPECT_TRUE(BR_Test::available());
+    BR_Test::verify();
 }
 
 TEST(AllCases, all_cases) {
-    all_cases_reset();
-    EXPECT_FALSE(AllCases::instance().is_available());
+    AC_Test::reset();
+    EXPECT_FALSE(AC_Test::available());
+
     AllCases::instance().build();
-    EXPECT_TRUE(AllCases::instance().is_available());
+    EXPECT_TRUE(AC_Test::available());
+
     AllCases::instance().build();
-    EXPECT_TRUE(AllCases::instance().is_available());
-    all_cases_verify();
+    EXPECT_TRUE(AC_Test::available());
+    AC_Test::verify();
 }
 
-TEST(AllCases, all_cases_mutex) {
-    all_cases_reset();
-    const auto handle = race_test(TEST_THREAD_NUM, []() {
+TEST(AllCases, all_cases_race) {
+    AC_Test::reset();
+    EXPECT_FALSE(AC_Test::available());
+
+    auto racer = co::Racer([] {
         AllCases::instance().build();
     });
-    EXPECT_FALSE(AllCases::instance().is_available());
-    handle->wait();
-    EXPECT_TRUE(AllCases::instance().is_available());
-    all_cases_verify();
+    EXPECT_FALSE(AC_Test::available());
+
+    racer.Join();
+    EXPECT_TRUE(AC_Test::available());
+    AC_Test::verify();
 }
 
 TEST(AllCases, all_cases_parallel) {
-    all_cases_reset();
-    BS::thread_pool executor;
-    EXPECT_FALSE(AllCases::instance().is_available());
-    AllCases::instance().build_parallel([&executor](auto &&func) {
-        executor.detach_task(func);
-    });
-    EXPECT_TRUE(AllCases::instance().is_available());
-    AllCases::instance().build_parallel([&executor](auto &&func) {
-        executor.detach_task(func);
-    });
-    EXPECT_TRUE(AllCases::instance().is_available());
-    all_cases_verify();
+    AC_Test::reset();
+    EXPECT_FALSE(AC_Test::available());
+
+    co::Executor executor;
+    AllCases::instance().build_parallel(executor.Entry());
+    EXPECT_TRUE(AC_Test::available());
+
+    AllCases::instance().build_parallel(executor.Entry());
+    EXPECT_TRUE(AC_Test::available());
+    AC_Test::verify();
 }
 
-TEST(AllCases, all_cases_parallel_mutex) {
-    all_cases_reset();
-    BS::thread_pool executor;
-    const auto handle = race_test(TEST_THREAD_NUM, [&executor]() {
-        AllCases::instance().build_parallel([&executor](auto &&func) {
-            executor.detach_task(func);
-        });
+TEST(AllCases, all_cases_parallel_race) {
+    AC_Test::reset();
+    EXPECT_FALSE(AC_Test::available());
+
+    co::Executor executor;
+    auto racer = co::Racer([&executor] {
+        AllCases::instance().build_parallel(executor.Entry());
     });
-    EXPECT_FALSE(AllCases::instance().is_available());
-    handle->wait();
-    EXPECT_TRUE(AllCases::instance().is_available());
-    all_cases_verify();
+    EXPECT_FALSE(AC_Test::available());
+
+    racer.Join();
+    EXPECT_TRUE(AC_Test::available());
+    AC_Test::verify();
 }
 
 TEST(AllCases, all_cases_async) {
-    all_cases_reset();
+    AC_Test::reset();
+    EXPECT_FALSE(AC_Test::available());
+
+    co::Executor executor;
     std::atomic_flag flag;
-    BS::thread_pool executor;
 
     flag.clear();
-    AllCases::instance().build_parallel_async([&executor](auto &&func) {
-        executor.detach_task(func);
-    }, [&flag]() { // callback function
+    AllCases::instance().build_parallel_async(executor.Entry(), [&flag]() {
         flag.test_and_set();
         flag.notify_all();
     });
-    EXPECT_FALSE(AllCases::instance().is_available());
+    EXPECT_FALSE(AC_Test::available());
+
     flag.wait(false);
-    EXPECT_TRUE(AllCases::instance().is_available());
+    EXPECT_TRUE(AC_Test::available());
 
     flag.clear();
-    AllCases::instance().build_parallel_async([&executor](auto &&func) {
-        executor.detach_task(func);
-    }, [&flag]() { // callback function
+    AllCases::instance().build_parallel_async(executor.Entry(), [&flag]() {
         flag.test_and_set();
         flag.notify_all();
     });
-    EXPECT_TRUE(AllCases::instance().is_available());
+    EXPECT_TRUE(AC_Test::available());
+
     flag.wait(false);
-    EXPECT_TRUE(AllCases::instance().is_available());
-    all_cases_verify();
+    EXPECT_TRUE(AC_Test::available());
+    AC_Test::verify();
 }
 
-TEST(AllCases, all_cases_async_mutex) {
-    all_cases_reset();
-    BS::thread_pool executor;
+TEST(AllCases, all_cases_async_race) {
+    AC_Test::reset();
+    EXPECT_FALSE(AC_Test::available());
+
+    co::Executor executor;
     std::atomic<int> callback_num(0);
 
-    const auto handle = race_test(TEST_THREAD_NUM, [&executor, &callback_num]() {
-        AllCases::instance().build_parallel_async([&executor](auto &&func) {
-            executor.detach_task(func);
-        }, [&callback_num]() {
+    auto racer = co::Racer([&executor, &callback_num] {
+        AllCases::instance().build_parallel_async(executor.Entry(), [&callback_num]() {
             callback_num.fetch_add(1);
         });
     });
-    EXPECT_FALSE(AllCases::instance().is_available());
-    handle->wait();
-    EXPECT_TRUE(AllCases::instance().is_available());
-    EXPECT_EQ(callback_num.load(), TEST_THREAD_NUM);
-    all_cases_verify();
+    EXPECT_FALSE(AC_Test::available());
+
+    racer.Join();
+    EXPECT_TRUE(AC_Test::available());
+    EXPECT_EQ(callback_num.load(), co::Racer::Times);
+    AC_Test::verify();
 }
