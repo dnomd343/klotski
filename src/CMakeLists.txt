@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 add_subdirectory(core)
+add_subdirectory(core_ffi)
 add_subdirectory(core_test)
 
 #project(klotski-cli LANGUAGES C)

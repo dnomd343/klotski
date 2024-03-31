@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(KLOTSKI_CORE_SRC
         all_cases/basic_ranges.cc
         all_cases/all_cases.cc
-        ffi/all_cases.cc
         common_code/common_code.cc
         common_code/serialize.cc
         common_code/sundry.cc
@@ -21,7 +20,8 @@ set(KLOTSKI_CORE_SRC
 )
 add_library(klotski_core STATIC ${KLOTSKI_CORE_SRC})
 target_compile_options(klotski_core PRIVATE -fno-rtti -fno-exceptions)
+target_include_directories(klotski_core PUBLIC utils all_cases raw_code short_code common_code)
 
-target_include_directories(klotski_core PUBLIC
-        utils all_cases
-        raw_code short_code common_code)
+# TODO: just for dev testing
+add_executable(klotski_core_bin main.cc)
+target_link_libraries(klotski_core_bin PRIVATE klotski_core)

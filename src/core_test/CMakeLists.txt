@@ -3,14 +3,12 @@ project(core-test LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(KLOTSKI_TEST_DEPS klotski_core
+set(KLOTSKI_TEST_DEPS klotski klotski_core
         GTest::gtest_main bs::thread_pool md5sum xxHash::xxhash)
 
 # ------------------------------------------------------------------------------------ #
 
 include_directories(utility)
-
-include_directories(${KLOTSKI_ROOT_DIR}/src/core/ffi)
 
 # ------------------------------------------------------------------------------------ #
 
