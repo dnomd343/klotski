@@ -21,6 +21,8 @@ set(KLOTSKI_CORE_SRC
 
         fast_cal/internal/cal_core.cc
         fast_cal/internal/fast_cal.cc
+
+        group/internal/group.cc
 )
 
 add_library(klotski_core STATIC ${KLOTSKI_CORE_SRC})

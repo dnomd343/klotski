@@ -1,4 +1,4 @@
-#pragma once
+/// Klotski Engine by Dnomd343 @2024
 
 /// Group is a concept in klotski. For any valid cases, moving all its blocks
 /// any finite number of times can generate a limited number of layouts, they
@@ -13,7 +13,7 @@
 ///   => n_1x1 + (n_1x2 + n_2x1) * 2 < 14
 ///
 /// Through calculation, it can be known that these three independent variables
-/// can get 204 permutations. However, on a 5x4 chessboard, it's never possible
+/// can get 204 combinations. However, on a 5x4 chessboard, it's never possible
 /// to put seven 2x1 blocks, so there are actually 203 combinations, and they
 /// are numbered from 0 to 202, called `type_id`.
 
@@ -63,3 +63,107 @@
 /// Typically, these three variables are generally recorded in decimal and
 /// displayed in the form of strings. They can facilitate the relationship
 /// between multiple cases.
+
+#pragma once
+
+#include "raw_code/raw_code.h"
+#include "common_code/common_code.h"
+
+static_assert(sizeof(int) == 4);
+
+namespace klotski::cases {
+
+class Group;
+
+// TODO: should we expose block_num_t ?
+
+// TODO: flat_iter for Groups ?
+
+// TODO: should we make sure the thread safe of GroupUnion / Group ?
+
+/// RSC -> block_num_t <-> type_id -> group_num
+///                           |-----> max_size
+
+/// RSC -> seed <-> type_id + group_id -> cases
+
+/// info_t <-> RSC
+
+class GroupUnion {
+public:
+	/// 1. n_1x1 + (n_1x2 + n_2x1) * 2 <= 14
+	/// 2. (n_1x1 != 0) && (n_2x1 != 7)
+	struct block_num_t {
+		uint8_t n_1x1 = 0; /// [0, 14]
+		uint8_t n_1x2 = 0; /// [0, 7]
+		uint8_t n_2x1 = 0; /// [0, 7]
+	};
+	/// n_space = 16 - n_1x1 - (n_1x2 + n_2x1) * 2
+
+	GroupUnion() = delete;
+	// TODO: disallow copy or move
+
+private:
+	// TODO: only store type_id_
+	int type_id_ {};
+
+	// TODO: only allow private build (std::bit_cast directly)
+	explicit GroupUnion(const int type_id) : type_id_(type_id) {}
+
+	// TODO: fast convert from RawCode / CommonCode -> block_num_t
+	static block_num_t block_num(codec::RawCode raw_code);
+	static block_num_t block_num(codec::CommonCode common_code);
+
+	// TODO: should we impl type_id -> block_num ?
+
+	// TODO: convert from block_num -> type_id
+	static int type_id(block_num_t block_num);
+
+public:
+	// TODO: allow convert from RawCode / ShortCode / CommonCode
+	// TODO: GroupUnion will fetch from static singleton (203 instances)
+	static GroupUnion from_raw_code(codec::RawCode raw_code);
+	static GroupUnion from_short_code(codec::RawCode short_code);
+	static GroupUnion from_common_code(codec::CommonCode common_code);
+
+	// TODO: fetch singleton from type_id
+	static std::optional<GroupUnion> from_type_id(int type_id);
+
+	// TODO: get Group from local (init by seed)
+	[[nodiscard]] Group group(int group_id);
+
+	// TODO: GroupUnion do not storage cases (new version)
+};
+
+class Group {
+private:
+	// TODO: Group init by `seed`
+	// TODO: Group will also storage parent's type_id (or maybe not)
+
+	int type_id_;
+	int group_id_; // -> seed / size
+
+	explicit Group(int type_id, int group_id) : type_id_(type_id), group_id_(group_id) {}
+
+	// TODO: add mutex on the build process
+	// bool available_;
+	// std::mutex building_;
+
+public:
+	// TODO: iter all Groups like a flat array ?
+
+	Group() = delete;
+
+	// TODO: maybe define CommonCodes here
+	// TODO: get all cases from current Group
+	const std::vector<codec::CommonCode>& cases();
+
+	// TODO: can we fetch Group directly from here ?
+	// args: type_id & group_id
+
+	// TODO: fetch group size directly
+	[[nodiscard]] uint32_t size() const;
+};
+
+// TODO: fast convert from info_t <--> CommonCode / RawCode
+
+} // namespace klotski::cases
