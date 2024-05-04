@@ -1,12 +1,10 @@
-#include "common.h"
-#include "utility.h"
-#include "raw_code.h"
+#include "utils/common.h"
+#include "utils/utility.h"
+#include "raw_code/raw_code.h"
 
-namespace klotski {
-namespace codec {
+namespace klotski::codec {
 
-/// Convert RawCode to CommonCode.
-uint64_t RawCode::compact(uint64_t raw_code) noexcept {
+uint64_t RawCode::compact(uint64_t raw_code) {
     int unfilled = 16;
     uint64_t head = 0; // 2x2 block address
     uint32_t range = 0;
@@ -34,8 +32,7 @@ uint64_t RawCode::compact(uint64_t raw_code) noexcept {
     return head | (range << (unfilled << 1)); // fill low bits as zero
 }
 
-/// Convert CommonCode to RawCode.
-uint64_t RawCode::extract(uint64_t common_code) noexcept {
+uint64_t RawCode::extract(uint64_t common_code) {
     auto code = K_MASK_2x2 << (common_code >> 32) * 3; // flag for 2x2 block
     auto range = range_reverse((uint32_t)common_code); // reversed range
 
@@ -61,5 +58,4 @@ uint64_t RawCode::extract(uint64_t common_code) noexcept {
     return code;
 }
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec

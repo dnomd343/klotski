@@ -1,18 +1,18 @@
-#include "common.h"
-#include "raw_code.h"
+#include "utils/common.h"
+#include "raw_code/raw_code.h"
 
-namespace klotski {
-namespace codec {
+namespace klotski::codec {
 
-// TODO: only for debug usage.
-std::ostream& operator<<(std::ostream &out, RawCode self) {
+std::ostream& operator<<(std::ostream &out, const RawCode self) {
     char *code;
     asprintf(&code, "%015llX\n", self.code_); // code length -> 15
     out << code;
     free(code);
 
-    ///           0x0  1x2  2x1  1x1  2x2  b101 b110 fill
-    char map[] = {'.', '~', '|', '*', '@', '?', '?', '+'};
+    constexpr char map[] = {
+        //  0x0  1x2  2x1  1x1  2x2  b101 b110 fill
+        '.', '~', '|', '*', '@', '?', '?', '+'
+    };
     for (int addr = 0; addr < 60; addr += 3) {
         out << map[(self.code_ >> addr) & 0b111];
         out << " " << &"\n"[(addr & 0b11) != 0b01];
@@ -20,8 +20,7 @@ std::ostream& operator<<(std::ostream &out, RawCode self) {
     return out;
 }
 
-/// Check the validity of the original RawCode.
-bool RawCode::check(uint64_t raw_code) noexcept {
+bool RawCode::check(uint64_t raw_code) {
     ///     MASK_1x1      |     MASK_1x2      |     MASK_2x1      |     MASK_2x2
     ///  100 000 000 000  |  000 100 000 000  |  000 000 000 000  |  000 100 000 000
     ///  000 000 000 000  |  000 000 000 000  |  100 000 000 000  |  100 100 000 000
@@ -70,5 +69,4 @@ bool RawCode::check(uint64_t raw_code) noexcept {
     return head_num == 1 && space_num >= 2; // one head and at least 2 space
 }
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec

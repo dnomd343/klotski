@@ -11,10 +11,10 @@ set(KLOTSKI_CORE_SRC
         common_code/internal/serialize.cc
         common_code/internal/sundry.cc
 
-        raw_code/raw_code.cc
-        raw_code/convert.cc
-        raw_code/sundry.cc
-        raw_code/mirror.cc
+        raw_code/internal/raw_code.cc
+        raw_code/internal/convert.cc
+        raw_code/internal/sundry.cc
+        raw_code/internal/mirror.cc
 
         short_code/convert.cc
         short_code/serialize.cc

@@ -1,8 +1,7 @@
-#include "common.h"
-#include "raw_code.h"
+#include "utils/common.h"
+#include "raw_code/raw_code.h"
 
-namespace klotski {
-namespace codec {
+namespace klotski::codec {
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -87,7 +86,7 @@ inline static void horizontal_clear(uint64_t &raw_code) {
 
 // ----------------------------------------------------------------------------------------- //
 
-uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) noexcept {
+uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) {
     vertical_fill(raw_code);
     raw_code = (raw_code & MASK_MIRROR_V3)
         | ((raw_code >> 48) & MASK_MIRROR_V1) | ((raw_code >> 24) & MASK_MIRROR_V2)
@@ -96,7 +95,7 @@ uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) noexcept {
     return raw_code;
 }
 
-uint64_t RawCode::get_horizontal_mirror(uint64_t raw_code) noexcept {
+uint64_t RawCode::get_horizontal_mirror(uint64_t raw_code) {
     horizontal_fill(raw_code);
     raw_code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
         | ((raw_code & MASK_MIRROR_H2) << 3) | ((raw_code & MASK_MIRROR_H1) << 9); // flip raw code
@@ -104,13 +103,13 @@ uint64_t RawCode::get_horizontal_mirror(uint64_t raw_code) noexcept {
     return raw_code;
 }
 
-bool RawCode::check_vertical_mirror(uint64_t raw_code) noexcept {
+bool RawCode::check_vertical_mirror(uint64_t raw_code) {
     vertical_fill(raw_code);
     return !(MASK_MIRROR_V1 & ((raw_code >> 48) ^ raw_code))
         && !(MASK_MIRROR_V2 & ((raw_code >> 24) ^ raw_code));
 }
 
-bool RawCode::check_horizontal_mirror(uint64_t raw_code) noexcept {
+bool RawCode::check_horizontal_mirror(uint64_t raw_code) {
     horizontal_fill(raw_code);
     return !(MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
         && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));
@@ -118,5 +117,4 @@ bool RawCode::check_horizontal_mirror(uint64_t raw_code) noexcept {
 
 // ----------------------------------------------------------------------------------------- //
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec

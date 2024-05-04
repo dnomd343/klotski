@@ -1,4 +1,4 @@
-#pragma once
+/// Klotski Engine by Dnomd343 @2024
 
 /// RawCode is an uncompressed klotski coding scheme, which is used for program
 /// calculation. It encodes the `5x4` chessboard as 0 ~ 19, and using 3-bit to
@@ -59,59 +59,125 @@
 ///   RawCode => 0x0E58'FC85'FFEB'C4DB                                                                 ///
 /// -------------------------------------------------------------------------------------------------- ///
 
+#pragma once
+
 #include <string>
 #include <ostream>
 #include <cstdint>
 #include <optional>
 
-namespace klotski {
-namespace codec {
+namespace klotski::codec {
 
 class CommonCode;
+
 class RawCode {
 public:
-    explicit operator uint64_t() const noexcept;
-    static bool check(uint64_t raw_code) noexcept;
+    // ------------------------------------------------------------------------------------- //
+
+    /// Explicit conversion to u64 code.
+    explicit operator uint64_t() const;
+
+    /// Check the validity of the original RawCode.
+    static bool check(uint64_t raw_code);
+
+    // TODO: add macro check here
+    /// Output string encoding of RawCode only for debug.
     friend std::ostream& operator<<(std::ostream &out, RawCode self);
 
-    [[nodiscard]] uint64_t unwrap() const noexcept;
-    [[nodiscard]] CommonCode to_common_code() const noexcept;
+    // ------------------------------------------------------------------------------------- //
 
-public:
+    /// Get the original u64 code.
+    [[nodiscard]] uint64_t unwrap() const;
+
+    /// Convert RawCode to CommonCode.
+    [[nodiscard]] CommonCode to_common_code() const;
+
+    // ------------------------------------------------------------------------------------- //
+
     RawCode() = delete;
-    explicit RawCode(CommonCode common_code) noexcept;
 
-    static RawCode unsafe_create(uint64_t raw_code) noexcept;
-    static std::optional<RawCode> create(uint64_t raw_code) noexcept;
+    /// Construct RawCode from CommonCode.
+    explicit RawCode(CommonCode common_code);
 
-    static RawCode from_common_code(CommonCode common_code) noexcept;
-    static std::optional<RawCode> from_common_code(uint64_t common_code) noexcept;
-    static std::optional<RawCode> from_common_code(std::string &&common_code) noexcept;
-    static std::optional<RawCode> from_common_code(const std::string &common_code) noexcept;
+    /// Create RawCode without any check.
+    static RawCode unsafe_create(uint64_t raw_code);
+
+    /// Create RawCode with validity check.
+    static std::optional<RawCode> create(uint64_t raw_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Create RawCode from CommonCode.
+    static RawCode from_common_code(CommonCode common_code);
+
+    /// Create RawCode from CommonCode in u64.
+    static std::optional<RawCode> from_common_code(uint64_t common_code);
+
+    /// Create RawCode from CommonCode in string form.
+    static std::optional<RawCode> from_common_code(const std::string &common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Compare RawCode with u64 values.
+    friend constexpr auto operator==(const RawCode &lhs, uint64_t rhs);
+    friend constexpr auto operator<=>(const RawCode &lhs, uint64_t rhs);
+
+    /// Compare the original values of two RawCodes.
+    friend constexpr auto operator==(const RawCode &lhs, const RawCode &rhs);
+    friend constexpr auto operator<=>(const RawCode &lhs, const RawCode &rhs);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Calculate vertically symmetrical layout.
+    [[nodiscard]] RawCode to_vertical_mirror() const;
+
+    /// Calculate horizontally symmetrical layout.
+    [[nodiscard]] RawCode to_horizontal_mirror() const;
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Determine whether the layout is vertically symmetrical.
+    [[nodiscard]] bool is_vertical_mirror() const;
+
+    /// Determine whether the layout is horizontally symmetrical.
+    [[nodiscard]] bool is_horizontal_mirror() const;
+
+    /// Determine whether two layouts are vertically symmetrical to each other.
+    [[nodiscard]] bool is_vertical_mirror(RawCode raw_code) const;
+
+    /// Determine whether two layouts are horizontally symmetrical to each other.
+    [[nodiscard]] bool is_horizontal_mirror(RawCode raw_code) const;
+
+    // ------------------------------------------------------------------------------------- //
 
 private:
     uint64_t code_;
-    static uint64_t compact(uint64_t raw_code) noexcept;
-    static uint64_t extract(uint64_t common_code) noexcept;
 
-public:
-    [[nodiscard]] RawCode to_vertical_mirror() const noexcept;
-    [[nodiscard]] RawCode to_horizontal_mirror() const noexcept;
+    // ------------------------------------------------------------------------------------- //
 
-    [[nodiscard]] bool is_vertical_mirror() const noexcept;
-    [[nodiscard]] bool is_horizontal_mirror() const noexcept;
-    [[nodiscard]] bool is_vertical_mirror(RawCode raw_code) const noexcept;
-    [[nodiscard]] bool is_horizontal_mirror(RawCode raw_code) const noexcept;
+    /// Compact RawCode as CommonCode.
+    static uint64_t compact(uint64_t raw_code);
 
-private:
-    static bool check_vertical_mirror(uint64_t raw_code) noexcept;
-    static bool check_horizontal_mirror(uint64_t raw_code) noexcept;
+    /// Extract CommonCode as RawCode.
+    static uint64_t extract(uint64_t common_code);
 
-    static uint64_t get_vertical_mirror(uint64_t raw_code) noexcept;
-    static uint64_t get_horizontal_mirror(uint64_t raw_code) noexcept;
+    // ------------------------------------------------------------------------------------- //
+
+    /// Check whether the layout is vertically symmetrical.
+    static bool check_vertical_mirror(uint64_t raw_code);
+
+    /// Check whether the layout is horizontally symmetrical.
+    static bool check_horizontal_mirror(uint64_t raw_code);
+
+    /// Get the vertically symmetrical layout.
+    static uint64_t get_vertical_mirror(uint64_t raw_code);
+
+    /// Get the horizontally symmetrical layout.
+    static uint64_t get_horizontal_mirror(uint64_t raw_code);
+
+    // ------------------------------------------------------------------------------------- //
 };
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec
 
-#include "inline_impl.h"
+#include "internal/raw_code.inl"
