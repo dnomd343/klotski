@@ -1,7 +1,6 @@
 #include "common_code.h"
 
-namespace klotski {
-namespace codec {
+namespace klotski::codec {
 
 /// Convert a single hexadecimal digit to a character.
 inline static char to_hex_char(uint64_t hex_bit) {
@@ -11,8 +10,7 @@ inline static char to_hex_char(uint64_t hex_bit) {
     return char(hex_bit + 'A' - 10);
 }
 
-/// Serialize CommonCode into a 9-bit length string.
-std::string CommonCode::string_encode(uint64_t common_code) noexcept {
+std::string CommonCode::string_encode(uint64_t common_code) {
     char code_str[9];
     for (int i = 0; i < 9; ++i) {
         code_str[8 - i] = to_hex_char(common_code & 0b1111);
@@ -21,8 +19,7 @@ std::string CommonCode::string_encode(uint64_t common_code) noexcept {
     return std::string{code_str, code_str + 9};
 }
 
-/// Serialize CommonCode into a variable-length string, removing the trailing zero.
-std::string CommonCode::string_encode_shorten(uint64_t common_code) noexcept {
+std::string CommonCode::string_encode_shorten(uint64_t common_code) {
     if (common_code == 0) {
         return "0"; // special case
     }
@@ -40,8 +37,7 @@ std::string CommonCode::string_encode_shorten(uint64_t common_code) noexcept {
     return std::string{code_str, code_str + zero_start};
 }
 
-/// Deserialize CommonCode from string and return std::nullopt on error.
-std::optional<uint64_t> CommonCode::string_decode(const std::string &common_code) noexcept {
+std::optional<uint64_t> CommonCode::string_decode(const std::string &common_code) {
     if (common_code.length() > 9 || common_code.empty()) {
         return std::nullopt; // invalid string length
     }
@@ -60,5 +56,4 @@ std::optional<uint64_t> CommonCode::string_decode(const std::string &common_code
     return result << (36 - common_code.length() * 4); // low-bits fill with zero
 }
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec

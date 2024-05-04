@@ -7,9 +7,9 @@ set(KLOTSKI_CORE_SRC
         all_cases/internal/basic_ranges.cc
         all_cases/internal/all_cases.cc
 
-        common_code/common_code.cc
-        common_code/serialize.cc
-        common_code/sundry.cc
+        common_code/internal/common_code.cc
+        common_code/internal/serialize.cc
+        common_code/internal/sundry.cc
 
         raw_code/raw_code.cc
         raw_code/convert.cc

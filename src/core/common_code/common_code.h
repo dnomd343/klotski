@@ -1,4 +1,4 @@
-#pragma once
+/// Klotski Engine by Dnomd343 @2024
 
 /// CommonCode is a generic klotski encoding that records an valid case using
 /// 36-bit lengths, and stored in a `uint64_t`. Since there is only one `2x2`
@@ -16,8 +16,10 @@
 /// which are `00` `01` `10` `11`. Arrange them according to their position and
 /// size, and we can get a binary sequence.
 ///
-///   ( 2x2 -> # # )  |  ( 2x1 -> # )  |  ( 1x2 -> # # )  |  ( 1x1 -> # )
-///   (        # # )  |  (        # )  |                  |
+///   --------------------------------------------------------
+///   | 2x2 -> # #  |  2x1 -> #  |  1x2 -> # #  |  1x1 -> #  |
+///   |        # #  |         #  |              |            |
+///   --------------------------------------------------------
 
 /// This sequence can have up to 16 blocks, aka 32-bit in length. Therefore, in
 /// order to be compatible with all klotski cases, the length of this part of
@@ -54,54 +56,111 @@
 ///   CommonCode = 0x4FEA13400 -> "4FEA134"                                             ///
 /// ----------------------------------------------------------------------------------- ///
 
+#pragma once
+
 #include <string>
 #include <cstdint>
 #include <ostream>
 #include <optional>
 
-namespace klotski {
-namespace codec {
+namespace klotski::codec {
 
 class RawCode;
 class ShortCode;
+
 class CommonCode {
 public:
-    explicit operator uint64_t() const noexcept;
-    static bool check(uint64_t common_code) noexcept;
+    // ------------------------------------------------------------------------------------- //
+
+    /// Explicit conversion to u64 code.
+    explicit operator uint64_t() const;
+
+    /// Check the validity of the original CommonCode.
+    static bool check(uint64_t common_code);
+
+    // TODO: add macro check here
+    /// Output string encoding of CommonCode only for debug.
     friend std::ostream& operator<<(std::ostream &out, CommonCode self);
 
-    [[nodiscard]] uint64_t unwrap() const noexcept;
-    [[nodiscard]] RawCode to_raw_code() const noexcept;
-    [[nodiscard]] ShortCode to_short_code() const noexcept;
-    [[nodiscard]] std::string to_string(bool shorten = false) const noexcept;
+    // ------------------------------------------------------------------------------------- //
 
-public:
+    /// Get the original u64 code.
+    [[nodiscard]] uint64_t unwrap() const;
+
+    /// Convert CommonCode to RawCode.
+    [[nodiscard]] RawCode to_raw_code() const;
+
+    /// Convert CommonCode to ShortCode.
+    [[nodiscard]] ShortCode to_short_code() const;
+
+    /// Convert CommonCode to string form.
+    [[nodiscard]] std::string to_string(bool shorten = false) const;
+
+    // ------------------------------------------------------------------------------------- //
+
     CommonCode() = delete;
-    explicit CommonCode(RawCode raw_code) noexcept;
-    explicit CommonCode(ShortCode short_code) noexcept;
 
-    static CommonCode unsafe_create(uint64_t common_code) noexcept;
-    static std::optional<CommonCode> create(uint64_t common_code) noexcept;
+    /// Construct CommonCode from RawCode.
+    explicit CommonCode(RawCode raw_code);
 
-    static std::optional<CommonCode> from_string(std::string &&common_code) noexcept;
-    static std::optional<CommonCode> from_string(const std::string &common_code) noexcept;
+    /// Construct CommonCode from ShortCode.
+    explicit CommonCode(ShortCode short_code);
 
-    static CommonCode from_raw_code(RawCode raw_code) noexcept;
-    static std::optional<CommonCode> from_raw_code(uint64_t raw_code) noexcept;
+    /// Create CommonCode without any check.
+    static CommonCode unsafe_create(uint64_t common_code);
 
-    static CommonCode from_short_code(ShortCode short_code) noexcept;
-    static std::optional<CommonCode> from_short_code(uint32_t short_code) noexcept;
-    static std::optional<CommonCode> from_short_code(std::string &&short_code) noexcept;
-    static std::optional<CommonCode> from_short_code(const std::string &short_code) noexcept;
+    /// Create CommonCode with validity check.
+    static std::optional<CommonCode> create(uint64_t common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Create CommonCode from string form.
+    static std::optional<CommonCode> from_string(const std::string &common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Create CommonCode from RawCode.
+    static CommonCode from_raw_code(RawCode raw_code);
+
+    /// Create CommonCode from RawCode in u64.
+    static std::optional<CommonCode> from_raw_code(uint64_t raw_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Create CommonCode from ShortCode.
+    static CommonCode from_short_code(ShortCode short_code);
+
+    /// Create CommonCode from ShortCode in u32.
+    static std::optional<CommonCode> from_short_code(uint32_t short_code);
+
+    /// Create CommonCode from ShortCode in string form.
+    static std::optional<CommonCode> from_short_code(const std::string &short_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Compare CommonCode with u64 values.
+    friend constexpr auto operator==(const CommonCode &c1, uint64_t c2);
+    friend constexpr auto operator<=>(const CommonCode &c1, uint64_t c2);
+
+    /// Compare the original values of two CommonCodes.
+    friend constexpr auto operator==(const CommonCode &c1, const CommonCode &c2);
+    friend constexpr auto operator<=>(const CommonCode &c1, const CommonCode &c2);
+
+    // ------------------------------------------------------------------------------------- //
 
 private:
     uint64_t code_;
-    static std::string string_encode(uint64_t common_code) noexcept;
-    static std::string string_encode_shorten(uint64_t common_code) noexcept;
-    static std::optional<uint64_t> string_decode(const std::string &common_code) noexcept;
+
+    /// Serialize CommonCode into a 9-bit length string.
+    static std::string string_encode(uint64_t common_code);
+
+    /// Serialize CommonCode into a variable-length string, removing the trailing zero.
+    static std::string string_encode_shorten(uint64_t common_code);
+
+    /// Deserialize CommonCode from string and return std::nullopt on error.
+    static std::optional<uint64_t> string_decode(const std::string &common_code);
 };
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec
 
-#include "inline_impl.h"
+#include "internal/common_code.inl"

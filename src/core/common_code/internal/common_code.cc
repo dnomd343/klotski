@@ -1,11 +1,9 @@
 #include "utility.h"
 #include "common_code.h"
 
-namespace klotski {
-namespace codec {
+namespace klotski::codec {
 
-/// Check the validity of the original CommonCode.
-bool CommonCode::check(uint64_t common_code) noexcept {
+bool CommonCode::check(uint64_t common_code) {
     // TODO: optimization of synchronizing all_cases.
 
     ///   M_1x1   |   M_1x2   |   M_2x1   |   M_2x2
@@ -59,5 +57,4 @@ bool CommonCode::check(uint64_t common_code) noexcept {
     }
 }
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec
