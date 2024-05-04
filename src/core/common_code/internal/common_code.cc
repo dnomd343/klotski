@@ -1,9 +1,9 @@
-#include "utility.h"
-#include "common_code.h"
+#include "utils/utility.h"
+#include "common_code/common_code.h"
 
-namespace klotski::codec {
+using klotski::codec::CommonCode;
 
-bool CommonCode::check(uint64_t common_code) {
+bool CommonCode::check(const uint64_t common_code) {
     // TODO: optimization of synchronizing all_cases.
 
     ///   M_1x1   |   M_1x2   |   M_2x1   |   M_2x2
@@ -16,7 +16,7 @@ bool CommonCode::check(uint64_t common_code) {
     constexpr uint32_t M_2x2 = 0b110011;
 
     /// 2x2 address check (high 32-bit)
-    uint32_t head = common_code >> 32;
+    const uint32_t head = common_code >> 32;
     if (head >= 16 || (head & 0b11) == 0b11) { // check 2x2 block address
         return false; // invalid common code
     }
@@ -56,5 +56,3 @@ bool CommonCode::check(uint64_t common_code) {
         }
     }
 }
-
-} // namespace klotski::codec

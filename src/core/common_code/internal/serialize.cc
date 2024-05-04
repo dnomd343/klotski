@@ -1,9 +1,9 @@
-#include "common_code.h"
+#include "common_code/common_code.h"
 
 namespace klotski::codec {
 
 /// Convert a single hexadecimal digit to a character.
-inline static char to_hex_char(uint64_t hex_bit) {
+static char to_hex_char(const uint64_t hex_bit) {
     if (hex_bit < 0xA) {
         return char(hex_bit + '0');
     }

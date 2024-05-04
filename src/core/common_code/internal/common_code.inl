@@ -2,7 +2,44 @@
 
 #include <bit>
 
+#include "raw_code/raw_code.h"
+#include "short_code/short_code.h"
+
 namespace klotski::codec {
+
+// ------------------------------------------------------------------------------------- //
+
+inline CommonCode::CommonCode(const RawCode raw_code) {
+    code_ = raw_code.to_common_code().code_;
+}
+
+inline CommonCode::CommonCode(const ShortCode short_code) {
+    code_ = short_code.to_common_code().code_;
+}
+
+inline CommonCode CommonCode::unsafe_create(const uint64_t common_code) {
+    return std::bit_cast<CommonCode>(common_code); // init directly
+}
+
+inline std::optional<CommonCode> CommonCode::create(const uint64_t common_code) {
+    if (!check(common_code)) {
+        return std::nullopt; // invalid common code
+    }
+    return unsafe_create(common_code);
+}
+
+// ------------------------------------------------------------------------------------- //
+
+inline CommonCode::operator uint64_t() const {
+    return code_;
+}
+
+#ifndef KLSK_NDEBUG
+inline std::ostream& operator<<(std::ostream &out, const CommonCode self) {
+    out << CommonCode::string_encode(self.code_);
+    return out;
+}
+#endif
 
 // ------------------------------------------------------------------------------------- //
 
@@ -10,13 +47,58 @@ inline uint64_t CommonCode::unwrap() const {
     return code_;
 }
 
-inline CommonCode::operator uint64_t() const {
-    return code_;
+inline RawCode CommonCode::to_raw_code() const {
+    return RawCode(*this);
 }
 
-inline std::ostream& operator<<(std::ostream &out, const CommonCode self) {
-    out << CommonCode::string_encode(self.code_);
-    return out;
+inline ShortCode CommonCode::to_short_code() const {
+    return ShortCode(*this);
+}
+
+inline std::string CommonCode::to_string(const bool shorten) const {
+    if (!shorten) {
+        return string_encode(code_); // with full length
+    }
+    return string_encode_shorten(code_); // without trailing zero
+}
+
+// ------------------------------------------------------------------------------------- //
+
+inline std::optional<CommonCode> CommonCode::from_string(const std::string &common_code) {
+    return string_decode(common_code).transform(unsafe_create);
+}
+
+// ------------------------------------------------------------------------------------- //
+
+inline CommonCode CommonCode::from_raw_code(const RawCode raw_code) {
+    return raw_code.to_common_code();
+}
+
+inline std::optional<CommonCode> CommonCode::from_raw_code(const uint64_t raw_code) {
+    const auto convert = [](const RawCode code) {
+        return code.to_common_code();
+    };
+    return RawCode::create(raw_code).transform(convert);
+}
+
+// ------------------------------------------------------------------------------------- //
+
+inline CommonCode CommonCode::from_short_code(const ShortCode short_code) {
+    return short_code.to_common_code();
+}
+
+inline std::optional<CommonCode> CommonCode::from_short_code(const uint32_t short_code) {
+    const auto convert = [](const ShortCode code) {
+        return code.to_common_code();
+    };
+    return ShortCode::create(short_code).transform(convert);
+}
+
+inline std::optional<CommonCode> CommonCode::from_short_code(const std::string &short_code) {
+    const auto convert = [](const ShortCode code) {
+        return code.to_common_code();
+    };
+    return ShortCode::from_string(short_code).transform(convert);
 }
 
 // ------------------------------------------------------------------------------------- //
@@ -35,35 +117,6 @@ constexpr auto operator==(const CommonCode &lhs, const CommonCode &rhs) {
 
 constexpr auto operator<=>(const CommonCode &lhs, const CommonCode &rhs) {
     return lhs.code_ <=> rhs.code_;
-}
-
-// ------------------------------------------------------------------------------------- //
-
-inline CommonCode CommonCode::unsafe_create(const uint64_t common_code) {
-    return std::bit_cast<CommonCode>(common_code); // init directly
-}
-
-inline std::optional<CommonCode> CommonCode::create(const uint64_t common_code) {
-    if (!check(common_code)) {
-        return std::nullopt; // invalid common code
-    }
-    return unsafe_create(common_code);
-}
-
-// ------------------------------------------------------------------------------------- //
-
-inline std::string CommonCode::to_string(const bool shorten) const {
-    if (!shorten) {
-        return string_encode(code_); // with full length
-    }
-    return string_encode_shorten(code_); // without trailing zero
-}
-
-inline std::optional<CommonCode> CommonCode::from_string(const std::string &common_code) {
-    auto construct = [](const uint64_t code) {
-        return unsafe_create(code);
-    };
-    return string_decode(common_code).transform(construct);
 }
 
 // ------------------------------------------------------------------------------------- //

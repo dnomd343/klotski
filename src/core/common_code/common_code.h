@@ -72,15 +72,32 @@ class CommonCode {
 public:
     // ------------------------------------------------------------------------------------- //
 
+    CommonCode() = delete;
+
+    /// Construct CommonCode from RawCode.
+    explicit CommonCode(RawCode raw_code);
+
+    /// Construct CommonCode from ShortCode.
+    explicit CommonCode(ShortCode short_code);
+
+    /// Create CommonCode without any check.
+    static CommonCode unsafe_create(uint64_t common_code);
+
+    /// Create CommonCode with validity check.
+    static std::optional<CommonCode> create(uint64_t common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
     /// Explicit conversion to u64 code.
     explicit operator uint64_t() const;
 
     /// Check the validity of the original CommonCode.
     static bool check(uint64_t common_code);
 
-    // TODO: add macro check here
+#ifndef KLSK_NDEBUG
     /// Output string encoding of CommonCode only for debug.
     friend std::ostream& operator<<(std::ostream &out, CommonCode self);
+#endif
 
     // ------------------------------------------------------------------------------------- //
 
@@ -95,22 +112,6 @@ public:
 
     /// Convert CommonCode to string form.
     [[nodiscard]] std::string to_string(bool shorten = false) const;
-
-    // ------------------------------------------------------------------------------------- //
-
-    CommonCode() = delete;
-
-    /// Construct CommonCode from RawCode.
-    explicit CommonCode(RawCode raw_code);
-
-    /// Construct CommonCode from ShortCode.
-    explicit CommonCode(ShortCode short_code);
-
-    /// Create CommonCode without any check.
-    static CommonCode unsafe_create(uint64_t common_code);
-
-    /// Create CommonCode with validity check.
-    static std::optional<CommonCode> create(uint64_t common_code);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -138,7 +139,7 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Compare CommonCode with u64 values.
+    /// Compare CommonCode with u64 value.
     friend constexpr auto operator==(const CommonCode &lhs, uint64_t rhs);
     friend constexpr auto operator<=>(const CommonCode &lhs, uint64_t rhs);
 
@@ -153,13 +154,13 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Serialize CommonCode into a 9-bit length string.
+    /// Serialize CommonCode into 9-bit length string.
     static std::string string_encode(uint64_t common_code);
 
-    /// Serialize CommonCode into a variable-length string, removing the trailing zero.
+    /// Serialize CommonCode into a variable-length string without trailing zero.
     static std::string string_encode_shorten(uint64_t common_code);
 
-    /// Deserialize CommonCode from string and return std::nullopt on error.
+    /// Deserialize CommonCode from string and return nullopt on error.
     static std::optional<uint64_t> string_decode(const std::string &common_code);
 
     // ------------------------------------------------------------------------------------- //
