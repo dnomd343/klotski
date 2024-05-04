@@ -18,6 +18,9 @@ set(KLOTSKI_CORE_SRC
         short_code/internal/serialize.cc
 
         core/internal/core.cc
+
+        fast_cal/internal/cal_core.cc
+        fast_cal/internal/fast_cal.cc
 )
 
 add_library(klotski_core STATIC ${KLOTSKI_CORE_SRC})
