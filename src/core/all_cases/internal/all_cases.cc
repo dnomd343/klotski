@@ -1,6 +1,6 @@
 #include <future>
 
-#include "all_cases.h"
+#include "all_cases/all_cases.h"
 
 namespace klotski::cases {
 
@@ -49,8 +49,7 @@ static int check_range(const int head, uint32_t range) noexcept {
     return 0; // pass check
 }
 
-/// Build all valid ranges of the specified head.
-void AllCases::build_cases(const int head, Ranges &release) noexcept {
+void AllCases::build_cases(const int head, Ranges &release) {
     release.clear();
     release.reserve(ALL_CASES_NUM[head]);
     auto &basic_ranges = BasicRanges::instance().fetch();
@@ -70,15 +69,13 @@ void AllCases::build_cases(const int head, Ranges &release) noexcept {
     }
 }
 
-/// Execute the build process and ensure thread safety.
-void AllCases::build() noexcept {
+void AllCases::build() {
     build_parallel([](auto &&func) {
         func();
     });
 }
 
-/// Execute the build process with parallel support and ensure thread safety.
-void AllCases::build_parallel(Executor &&executor) noexcept {
+void AllCases::build_parallel(Executor &&executor) {
     if (available_) {
         return; // reduce consumption of mutex
     }
@@ -101,8 +98,7 @@ void AllCases::build_parallel(Executor &&executor) noexcept {
     available_ = true;
 }
 
-/// Execute the build process in parallel without blocking.
-void AllCases::build_parallel_async(Executor &&executor, Notifier &&callback) noexcept {
+void AllCases::build_parallel_async(Executor &&executor, Notifier &&callback) {
     if (available_) {
         callback();
         return; // reduce consumption of mutex

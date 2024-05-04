@@ -1,4 +1,4 @@
-#pragma once
+/// Klotski Engine by Dnomd343 @2024
 
 /// Based on the requirements of valid klotski, the 2x2 block that must exist
 /// and only one, witch will occupy 4 empty slots, and the remaining 16 slots
@@ -35,6 +35,8 @@
 /// not consume too much time, but it can almost double the speed of the case
 /// checking subsequent.
 
+#pragma once
+
 #include <array>
 #include <mutex>
 #include <vector>
@@ -42,11 +44,11 @@
 #include <numeric>
 #include <functional>
 
-#include "utility.h"
+#include "utils/utility.h"
 
 namespace klotski::cases {
 
-// ----------------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------- //
 
 typedef uint32_t Range;
 typedef std::vector<Range> Ranges;
@@ -55,7 +57,7 @@ typedef std::array<Ranges, 16> RangesUnion;
 typedef std::function<void()> Notifier;
 typedef std::function<void(std::function<void()>&&)> Executor;
 
-// ----------------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------- //
 
 constexpr auto BASIC_RANGES_NUM = 7311921;
 
@@ -66,56 +68,75 @@ constexpr std::array ALL_CASES_NUM {
     2942906, 2260392, 2942906, 0,
 };
 
+// TODO: move to short_code namespace (also `numeric` header)
 constexpr auto ALL_CASES_NUM_ = std::accumulate(
-    ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0
-);
+    ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0);
 
-// ----------------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------- //
 
 class BasicRanges {
 public:
-    void build() noexcept;
-    const Ranges& fetch() noexcept;
-    [[nodiscard]] bool is_available() const noexcept;
+    /// Execute the build process and ensure thread safety.
+    void build();
 
-    MARK_INSTANCE(BasicRanges);
-    static BasicRanges& instance() noexcept;
+    /// Get the basic-ranges and make sure the result is available.
+    const Ranges& fetch();
+
+    /// Determine whether the basic-ranges data is available.
+    [[nodiscard]] bool is_available() const;
 
 private:
-    std::mutex building_;
     bool available_ = false;
+    std::mutex building_ {};
 
-    BasicRanges() = default;
-    static Ranges& get_ranges() noexcept;
-    static void build_ranges(Ranges &ranges) noexcept;
-    static void spawn_ranges(Ranges &ranges, int, int, int, int) noexcept;
+    /// Get static singleton variable.
+    static Ranges& get_ranges();
+
+    /// Search and sort all possible basic-ranges permutations.
+    static void build_ranges(Ranges &ranges);
+
+    /// Spawn all range permutations of specified conditions.
+    static void spawn_ranges(Ranges &ranges, int, int, int, int);
+
+    KLSK_INSTANCE(BasicRanges)
 };
 
-// ----------------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------- //
 
 class AllCases {
 public:
-    void build() noexcept;
-    void build_parallel(Executor &&executor) noexcept;
-    void build_parallel_async(Executor &&executor, Notifier &&callback) noexcept;
+    /// Execute the build process and ensure thread safety.
+    void build();
 
-    const RangesUnion& fetch() noexcept;
-    [[nodiscard]] bool is_available() const noexcept;
+    /// TODO: remove this interface
+    /// Execute the build process with parallel support and ensure thread safety.
+    void build_parallel(Executor &&executor);
 
-    MARK_INSTANCE(AllCases);
-    static AllCases& instance() noexcept;
+    /// Execute the build process in parallel without blocking.
+    void build_parallel_async(Executor &&executor, Notifier &&callback);
+
+    /// Get all-cases and make sure the result is available.
+    const RangesUnion& fetch();
+
+    /// Determine whether the all-cases data is available.
+    [[nodiscard]] bool is_available() const;
 
 private:
-    std::mutex building_;
     bool available_ = false;
+    std::mutex building_ {};
 
-    AllCases() = default;
-    static RangesUnion& get_cases() noexcept;
-    static void build_cases(int head, Ranges &release) noexcept;
+    /// Get static singleton variable.
+    static RangesUnion& get_cases();
+
+    /// Build all valid ranges of the specified head.
+    static void build_cases(int head, Ranges &release);
+
+    KLSK_INSTANCE(AllCases)
 };
 
-// ----------------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------- //
 
 } // namespace klotski::cases
 
-#include "inline_impl.inl"
+#include "internal/basic_ranges.inl"
+#include "internal/all_cases.inl"

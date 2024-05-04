@@ -1,7 +1,7 @@
 #include <list>
 #include <algorithm>
 
-#include "all_cases.h"
+#include "all_cases/all_cases.h"
 
 namespace klotski::cases {
 
@@ -38,8 +38,7 @@ static void combine_sort(RangeIter begin, RangeIter mid, RangeIter end) noexcept
     }
 }
 
-/// Spawn all ranges of specified conditions.
-void BasicRanges::spawn_ranges(Ranges &ranges, int n1, int n2, int n3, int n4) noexcept {
+void BasicRanges::spawn_ranges(Ranges &ranges, const int n1, const int n2, const int n3, const int n4) {
     auto num = n1 + n2 + n3 + n4;
     auto offset = (16 - num) << 1; // offset of low bits
 
@@ -58,8 +57,7 @@ void BasicRanges::spawn_ranges(Ranges &ranges, int n1, int n2, int n3, int n4) n
     } while (next_permutation(series.begin(), series.end()));
 }
 
-/// Search and sort all possible basic-ranges permutations.
-void BasicRanges::build_ranges(Ranges &ranges) noexcept {
+void BasicRanges::build_ranges(Ranges &ranges) {
     ranges.clear();
     ranges.reserve(BASIC_RANGES_NUM);
     std::list<RangeIter> flags {ranges.begin()}; // mark ordered interval
@@ -82,8 +80,7 @@ void BasicRanges::build_ranges(Ranges &ranges) noexcept {
     }
 }
 
-/// Execute the build process and ensure thread safety.
-void BasicRanges::build() noexcept {
+void BasicRanges::build() {
     if (available_) {
         return; // reduce consumption of mutex
     }
