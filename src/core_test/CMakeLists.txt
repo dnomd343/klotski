@@ -10,6 +10,13 @@ set(KLOTSKI_TEST_DEPS klotski klotski_core
 
 include_directories(utility)
 
+# TODO: just pass compile for now
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core/utils)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core/raw_code)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core/all_cases)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core/short_code)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core/common_code)
+
 # ------------------------------------------------------------------------------------ #
 
 set(KLOTSKI_TEST_CASES_SRC

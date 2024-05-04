@@ -1,11 +1,13 @@
 #include <thread>
 #include <iostream>
-#include <algorithm>
 
-#include "raw_code.h"
-#include "all_cases.h"
-#include "short_code.h"
-#include "common_code.h"
+#include "core/core.h"
+#include "raw_code/raw_code.h"
+#include "all_cases/all_cases.h"
+#include "short_code/short_code.h"
+#include "common_code/common_code.h"
+
+using klotski::core::Core;
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
@@ -17,9 +19,14 @@ using klotski::codec::CommonCode;
 using klotski::codec::SHORT_CODE_LIMIT;
 
 int main() {
+    const auto start = clock();
 
-    AllCases::instance().build();
-//    BasicRanges::instance().build();
+    auto core = Core([](const uint64_t code, uint64_t) {
+        std::cout << RawCode::unsafe_create(code);
+        std::cout << std::endl;
+    });
+
+    core.next_cases(RawCode::from_common_code(0x1A9BF0C00).value().unwrap(), 0x0);
 
 //    std::vector<uint64_t> common_codes;
 //    common_codes.reserve(klotski::cases::ALL_CASES_NUM_);
@@ -36,13 +43,11 @@ int main() {
 //        common_codes_str.emplace_back(CommonCode::string_encode(x, false));
 //    }
 
-    ShortCode::speed_up(true);
-
-    auto start = clock();
-
-    for (uint32_t short_code = 0; short_code < SHORT_CODE_LIMIT; ++short_code) {
-        ShortCode::unsafe_create(short_code).to_common_code();
-    }
+    // ShortCode::speed_up(true);
+    //
+    // for (uint32_t short_code = 0; short_code < SHORT_CODE_LIMIT; ++short_code) {
+    //     ShortCode::unsafe_create(short_code).to_common_code();
+    // }
 
 //    for (auto common_code : common_codes) {
 //        printf("%llX\n", common_code);
@@ -55,11 +60,6 @@ int main() {
 //    for (auto &common_code_str : common_codes_str) {
 //        CommonCode::string_decode(common_code_str);
 //    }
-
-//    BasicRanges::instance().build();
-//    AllCases::instance().build();
-//    AllCases::instance().build_parallel([](auto f) {f();});
-//    AllCases::instance().build_parallel_async([](auto f) {f();}, []() {});
 
     std::cerr << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 

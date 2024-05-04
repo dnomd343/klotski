@@ -16,18 +16,13 @@ set(KLOTSKI_CORE_SRC
 
         short_code/internal/convert.cc
         short_code/internal/serialize.cc
+
+        core/internal/core.cc
 )
 
 add_library(klotski_core STATIC ${KLOTSKI_CORE_SRC})
 target_compile_options(klotski_core PRIVATE -fno-rtti -fno-exceptions)
-target_include_directories(klotski_core PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/utils  # TODO: remove item
-        ${CMAKE_CURRENT_SOURCE_DIR}/all_cases  # TODO: remove item
-        ${CMAKE_CURRENT_SOURCE_DIR}/raw_code  # TODO: remove item
-        ${CMAKE_CURRENT_SOURCE_DIR}/short_code  # TODO: remove item
-        ${CMAKE_CURRENT_SOURCE_DIR}/common_code  # TODO: remove item
-)
+target_include_directories(klotski_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # TODO: just for dev testing
 add_executable(klotski_core_bin main.cc)
