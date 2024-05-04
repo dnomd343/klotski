@@ -1,9 +1,9 @@
 #include <list>
 #include <algorithm>
+
 #include "all_cases.h"
 
-namespace klotski {
-namespace cases {
+namespace klotski::cases {
 
 typedef std::vector<Range>::iterator RangeIter;
 typedef std::tuple<int, int, int, int> RangeType;
@@ -52,7 +52,7 @@ void BasicRanges::spawn_ranges(Ranges &ranges, int n1, int n2, int n3, int n4) n
 
     do { // full permutation traversal
         uint32_t range = 0;
-        for (auto x : series) // store every 2-bit
+        for (const auto x : series) // store every 2-bit
             (range <<= 2) |= x;
         ranges.emplace_back(range << offset);
     } while (next_permutation(series.begin(), series.end()));
@@ -87,7 +87,7 @@ void BasicRanges::build() noexcept {
     if (available_) {
         return; // reduce consumption of mutex
     }
-    std::lock_guard<std::mutex> guard(building_);
+    std::lock_guard guard(building_);
     if (available_) {
         return; // data is already available
     }
@@ -95,5 +95,4 @@ void BasicRanges::build() noexcept {
     available_ = true;
 }
 
-} // namespace cases
-} // namespace klotski
+} // namespace klotski::cases

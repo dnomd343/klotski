@@ -1,7 +1,6 @@
 #pragma once
 
-namespace klotski {
-namespace cases {
+namespace klotski::cases {
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -47,5 +46,4 @@ inline bool AllCases::is_available() const noexcept {
 
 // ----------------------------------------------------------------------------------------- //
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec

@@ -1,8 +1,8 @@
 #include <future>
+
 #include "all_cases.h"
 
-namespace klotski {
-namespace cases {
+namespace klotski::cases {
 
 /// Calculate all possible klotski heads.
 consteval static std::array<int, 12> case_heads() {
@@ -16,7 +16,7 @@ consteval static std::array<int, 12> case_heads() {
 }
 
 /// Check whether the combination of head and range is valid.
-static int check_range(int head, uint32_t range) noexcept {
+static int check_range(const int head, uint32_t range) noexcept {
     constexpr uint32_t M_1x1 = 0b00000001;
     constexpr uint32_t M_1x2 = 0b00000011;
     constexpr uint32_t M_2x1 = 0b00010001;
@@ -24,7 +24,7 @@ static int check_range(int head, uint32_t range) noexcept {
 
     uint32_t flags = M_2x2 << head; // fill 2x2 block
     for (int addr = 0, offset = 1; range; range >>= 2, ++offset) { // traverse every 2-bit
-        auto num = low_zero_num(~flags);
+        const auto num = low_zero_num(~flags);
         addr += num; // next unfilled block
         flags >>= num;
         switch (range & 0b11) {
@@ -50,7 +50,7 @@ static int check_range(int head, uint32_t range) noexcept {
 }
 
 /// Build all valid ranges of the specified head.
-void AllCases::build_cases(int head, Ranges &release) noexcept {
+void AllCases::build_cases(const int head, Ranges &release) noexcept {
     release.clear();
     release.reserve(ALL_CASES_NUM[head]);
     auto &basic_ranges = BasicRanges::instance().fetch();
@@ -127,5 +127,4 @@ void AllCases::build_parallel_async(Executor &&executor, Notifier &&callback) no
     }
 }
 
-} // namespace cases
-} // namespace klotski
+} // namespace klotski::cases

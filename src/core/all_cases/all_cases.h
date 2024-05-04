@@ -41,10 +41,12 @@
 #include <cstdint>
 #include <numeric>
 #include <functional>
+
 #include "utility.h"
 
-namespace klotski {
-namespace cases {
+namespace klotski::cases {
+
+// ----------------------------------------------------------------------------------------- //
 
 typedef uint32_t Range;
 typedef std::vector<Range> Ranges;
@@ -57,7 +59,7 @@ typedef std::function<void(std::function<void()>&&)> Executor;
 
 constexpr auto BASIC_RANGES_NUM = 7311921;
 
-constexpr std::array<int, 16> ALL_CASES_NUM {
+constexpr std::array ALL_CASES_NUM {
     2942906, 2260392, 2942906, 0,
     2322050, 1876945, 2322050, 0,
     2322050, 1876945, 2322050, 0,
@@ -76,7 +78,7 @@ public:
     const Ranges& fetch() noexcept;
     [[nodiscard]] bool is_available() const noexcept;
 
-    DISALLOW_COPY_AND_ASSIGN(BasicRanges);
+    MARK_INSTANCE(BasicRanges);
     static BasicRanges& instance() noexcept;
 
 private:
@@ -100,7 +102,7 @@ public:
     const RangesUnion& fetch() noexcept;
     [[nodiscard]] bool is_available() const noexcept;
 
-    DISALLOW_COPY_AND_ASSIGN(AllCases);
+    MARK_INSTANCE(AllCases);
     static AllCases& instance() noexcept;
 
 private:
@@ -114,7 +116,6 @@ private:
 
 // ----------------------------------------------------------------------------------------- //
 
-} // namespace cases
-} // namespace klotski
+} // namespace klotski::cases
 
-#include "inline_impl.h"
+#include "inline_impl.inl"

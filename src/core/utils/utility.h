@@ -2,15 +2,15 @@
 
 #include <cstdint>
 
-#define DISALLOW_COPY_AND_ASSIGN(T) \
-    T(T&&) = delete; \
-    T(const T&) = delete; \
-    T& operator=(T&&) = delete; \
-    T& operator=(const T&) = delete;
+#define MARK_INSTANCE(T)            \
+    T(T &&) = delete;               \
+    T(const T &) = delete;          \
+    T& operator=(T &&) = delete;    \
+    T& operator=(const T &) = delete;
 
 namespace klotski {
 
-inline int low_zero_num(uint32_t bin) {
+inline int low_zero_num(const uint32_t bin) {
     return __builtin_ctzl(bin);
 
     // TODO: using (bin ^ (bin - 1)) when non-builtin
@@ -19,14 +19,14 @@ inline int low_zero_num(uint32_t bin) {
     // return __builtin_popcount(~(bin ^ -bin)) - 1;
 }
 
-inline int low_zero_num(uint64_t bin) {
+inline int low_zero_num(const uint64_t bin) {
     return __builtin_ctzll(bin);
 
     // WARN: be aware of serious performance issues
     // return __builtin_popcount(~(bin ^ -bin)) - 1;
 }
 
-inline uint32_t range_reverse(uint32_t bin) noexcept {
+inline uint32_t range_reverse(uint32_t bin) {
 #if defined(__GNUC__) || defined(__clang__)
     bin = __builtin_bswap32(bin);
     // TODO: using `std::byteswap` (c++23)
