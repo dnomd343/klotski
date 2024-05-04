@@ -139,17 +139,19 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Compare CommonCode with u64 values.
-    friend constexpr auto operator==(const CommonCode &c1, uint64_t c2);
-    friend constexpr auto operator<=>(const CommonCode &c1, uint64_t c2);
+    friend constexpr auto operator==(const CommonCode &lhs, uint64_t rhs);
+    friend constexpr auto operator<=>(const CommonCode &lhs, uint64_t rhs);
 
     /// Compare the original values of two CommonCodes.
-    friend constexpr auto operator==(const CommonCode &c1, const CommonCode &c2);
-    friend constexpr auto operator<=>(const CommonCode &c1, const CommonCode &c2);
+    friend constexpr auto operator==(const CommonCode &lhs, const CommonCode &rhs);
+    friend constexpr auto operator<=>(const CommonCode &lhs, const CommonCode &rhs);
 
     // ------------------------------------------------------------------------------------- //
 
 private:
     uint64_t code_;
+
+    // ------------------------------------------------------------------------------------- //
 
     /// Serialize CommonCode into a 9-bit length string.
     static std::string string_encode(uint64_t common_code);
@@ -159,6 +161,8 @@ private:
 
     /// Deserialize CommonCode from string and return std::nullopt on error.
     static std::optional<uint64_t> string_decode(const std::string &common_code);
+
+    // ------------------------------------------------------------------------------------- //
 };
 
 } // namespace klotski::codec

@@ -21,20 +21,20 @@ inline std::ostream& operator<<(std::ostream &out, const CommonCode self) {
 
 // ------------------------------------------------------------------------------------- //
 
-constexpr auto operator==(const CommonCode &c1, const uint64_t c2) {
-    return c1.code_ == c2;
+constexpr auto operator==(const CommonCode &lhs, const uint64_t rhs) {
+    return lhs.code_ == rhs;
 }
 
-constexpr auto operator<=>(const CommonCode &c1, const uint64_t c2) {
-    return c1.code_ <=> c2;
+constexpr auto operator<=>(const CommonCode &lhs, const uint64_t rhs) {
+    return lhs.code_ <=> rhs;
 }
 
-constexpr auto operator==(const CommonCode &c1, const CommonCode &c2) {
-    return c1.code_ == c2.code_;
+constexpr auto operator==(const CommonCode &lhs, const CommonCode &rhs) {
+    return lhs.code_ == rhs.code_;
 }
 
-constexpr auto operator<=>(const CommonCode &c1, const CommonCode &c2) {
-    return c1.code_ <=> c2.code_;
+constexpr auto operator<=>(const CommonCode &lhs, const CommonCode &rhs) {
+    return lhs.code_ <=> rhs.code_;
 }
 
 // ------------------------------------------------------------------------------------- //
