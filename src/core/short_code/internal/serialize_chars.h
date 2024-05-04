@@ -17,10 +17,9 @@
 
 #include <cstdint>
 
-namespace klotski {
-namespace codec {
+namespace klotski::codec {
 
-const int8_t SHORT_CODE_TABLE[32] = {
+constexpr int8_t SHORT_CODE_TABLE[32] {
     '1', '2', '3', '4', '5', '6', '7', '8', '9', // skip `0`
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', // skip `I`
     'J', 'K', // skip `L`
@@ -28,8 +27,7 @@ const int8_t SHORT_CODE_TABLE[32] = {
     'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 };
 
-/// `1`(49) ~ `Z`(90)
-const int8_t SHORT_CODE_TABLE_REV[42] = {
+constexpr int8_t SHORT_CODE_TABLE_REV[42] {
      0,  1,  2,  3,  4,  5,  6,  7,  8,     // `1`(49) ~ `9`(57)
     -1, -1, -1, -1, -1, -1, -1,             // `:`(58) ~ `@`(64)
      9, 10, 11, 12, 13, 14, 15, 16, -1, 17, // `A`(65) ~ `J`(74)
@@ -37,5 +35,4 @@ const int8_t SHORT_CODE_TABLE_REV[42] = {
     26, 27, 28, 29, 30, 31,                 // `U`(85) ~ `Z`(90)
 };
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec

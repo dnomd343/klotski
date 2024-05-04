@@ -7,12 +7,10 @@
 
 #include <cstdint>
 
-namespace klotski {
-namespace codec {
-namespace offset {
+namespace klotski::codec::offset {
 
 // TODO: using std::array
-const uint32_t RANGE_PREFIX_OFFSET[16][4096] = {{
+constexpr uint32_t RANGE_PREFIX_OFFSET[16][4096] = {{
 #include "range_prefix/offset_0x0.inc"
 }, {
 #include "range_prefix/offset_0x1.inc"
@@ -46,6 +44,4 @@ const uint32_t RANGE_PREFIX_OFFSET[16][4096] = {{
 /// --------------- 0xF ---------------
 }};
 
-} // namespace offset
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec::offset

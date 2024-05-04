@@ -2,16 +2,14 @@
 
 #include <cstdint>
 
-namespace klotski {
-namespace codec {
-namespace offset {
+namespace klotski::codec::offset {
 
 /// This is the head index, the offset [0, 29334498) in all cases is obtained
 /// according to the `head` (0 ~ 15). In other words, the short code range can
 /// be obtained according to the position of the 2x2 block.
 
 // TODO: using std::array
-const uint32_t ALL_CASES_OFFSET[16] = {
+constexpr uint32_t ALL_CASES_OFFSET[16] {
            0,  2942906,  5203298,  8146204,
      8146204, 10468254, 12345199, 14667249,
     14667249, 16989299, 18866244, 21188294,
@@ -23,7 +21,7 @@ const uint32_t ALL_CASES_OFFSET[16] = {
 /// 32-bit `range`.
 
 // TODO: using std::array
-const uint32_t BASIC_RANGES_OFFSET[4096] = {
+constexpr uint32_t BASIC_RANGES_OFFSET[4096] {
           0,   18272,   24960,   31648,   49920,   56608,   59056,   61504,
       68192,   74880,   77328,   79776,   86464,  104736,  111424,  118112,
      136384,  143072,  145520,  147968,  154656,  157104,  158000,  158896,
@@ -538,6 +536,4 @@ const uint32_t BASIC_RANGES_OFFSET[4096] = {
     7253514, 7259861, 7261646, 7263431, 7268677, 7286266, 7291512, 7296758,
 };
 
-} // namespace offset
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec::offset

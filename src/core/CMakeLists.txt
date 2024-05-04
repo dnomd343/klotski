@@ -16,10 +16,8 @@ set(KLOTSKI_CORE_SRC
         raw_code/internal/sundry.cc
         raw_code/internal/mirror.cc
 
-        short_code/convert.cc
-        short_code/serialize.cc
-        short_code/short_code.cc
-        short_code/sundry.cc
+        short_code/internal/convert.cc
+        short_code/internal/serialize.cc
 )
 
 add_library(klotski_core STATIC ${KLOTSKI_CORE_SRC})

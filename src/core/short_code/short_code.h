@@ -1,4 +1,4 @@
-#pragma once
+/// Klotski Engine by Dnomd343 @2024
 
 /// ShortCode is a high-compression encoding scheme based on CommonCode. Since
 /// there are a total of 29334498 valid klotski cases, arrange then from small
@@ -66,58 +66,119 @@
 ///            => "AXCZN"                                                                        ///
 /// -------------------------------------------------------------------------------------------- ///
 
+#pragma once
+
 #include <string>
 #include <cstdint>
 #include <ostream>
 #include <optional>
-#include "all_cases.h"
 
-namespace klotski {
-namespace codec {
+#include "all_cases/all_cases.h"
+
+namespace klotski::codec {
 
 constexpr uint32_t SHORT_CODE_LIMIT = cases::ALL_CASES_NUM_;
 
 class CommonCode;
+
 class ShortCode {
 public:
-    explicit operator uint32_t() const noexcept;
-    static bool check(uint32_t short_code) noexcept;
-    static void speed_up(bool fast_mode = false) noexcept;
-    friend std::ostream& operator<<(std::ostream &out, ShortCode self);
+    // ------------------------------------------------------------------------------------- //
 
-    [[nodiscard]] uint32_t unwrap() const noexcept;
-    [[nodiscard]] std::string to_string() const noexcept;
-    [[nodiscard]] CommonCode to_common_code() const noexcept;
-
-public:
     ShortCode() = delete;
-    explicit ShortCode(CommonCode common_code) noexcept;
 
-    static ShortCode unsafe_create(uint32_t short_code) noexcept;
-    static std::optional<ShortCode> create(uint32_t short_code) noexcept;
+    /// Construct ShortCode from CommonCode.
+    explicit ShortCode(CommonCode common_code);
 
-    static std::optional<ShortCode> from_string(std::string &&short_code) noexcept;
-    static std::optional<ShortCode> from_string(const std::string &short_code) noexcept;
+    /// Create ShortCode without any check.
+    static ShortCode unsafe_create(uint32_t short_code);
 
-    static ShortCode from_common_code(CommonCode common_code) noexcept;
-    static std::optional<ShortCode> from_common_code(uint64_t common_code) noexcept;
-    static std::optional<ShortCode> from_common_code(std::string &&common_code) noexcept;
-    static std::optional<ShortCode> from_common_code(const std::string &common_code) noexcept;
+    /// Create ShortCode with validity check.
+    static std::optional<ShortCode> create(uint32_t short_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Explicit conversion to u32 code.
+    explicit operator uint32_t() const;
+
+    /// Check the validity of the original ShortCode.
+    static bool check(uint32_t short_code);
+
+    /// Build the conversion index for ShortCode.
+    static void speed_up(bool fast_mode = false);
+
+#ifndef KLSK_NDEBUG
+    /// Output string encoding of ShortCode only for debug.
+    friend std::ostream& operator<<(std::ostream &out, ShortCode self);
+#endif
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Get the original u32 code.
+    [[nodiscard]] uint32_t unwrap() const;
+
+    /// Convert ShortCode to string form.
+    [[nodiscard]] std::string to_string() const;
+
+    /// Convert ShortCode to CommonCode.
+    [[nodiscard]] CommonCode to_common_code() const;
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Create ShortCode from string form.
+    static std::optional<ShortCode> from_string(const std::string &short_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Create ShortCode from CommonCode.
+    static ShortCode from_common_code(CommonCode common_code);
+
+    /// Create ShortCode from CommonCode in u64.
+    static std::optional<ShortCode> from_common_code(uint64_t common_code);
+
+    /// Create ShortCode from CommonCode in string form.
+    static std::optional<ShortCode> from_common_code(const std::string &common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Compare ShortCode with u32 value.
+    friend constexpr auto operator==(const ShortCode &lhs, uint32_t rhs);
+    friend constexpr auto operator<=>(const ShortCode &lhs, uint32_t rhs);
+
+    /// Compare the original values of two ShortCodes.
+    friend constexpr auto operator==(const ShortCode &lhs, const ShortCode &rhs);
+    friend constexpr auto operator<=>(const ShortCode &lhs, const ShortCode &rhs);
+
+    // ------------------------------------------------------------------------------------- //
 
 private:
     uint32_t code_;
 
-    static uint64_t fast_decode(uint32_t short_code) noexcept;
-    static uint32_t fast_encode(uint64_t common_code) noexcept;
+    // ------------------------------------------------------------------------------------- //
 
-    static uint64_t tiny_decode(uint32_t short_code) noexcept;
-    static uint32_t tiny_encode(uint64_t common_code) noexcept;
+    /// Convert ShortCode to CommonCode based on AllCases data.
+    static uint64_t fast_decode(uint32_t short_code);
 
-    static std::string string_encode(uint32_t short_code) noexcept;
-    static std::optional<uint32_t> string_decode(const std::string &short_code) noexcept;
+    /// Convert CommonCode to ShortCode based on AllCases data.
+    static uint32_t fast_encode(uint64_t common_code);
+
+    /// Convert ShortCode to CommonCode based on BasicRanges data.
+    static uint64_t tiny_decode(uint32_t short_code);
+
+    /// Convert CommonCode to ShortCode based on BasicRanges data.
+    static uint32_t tiny_encode(uint64_t common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Serialize ShortCode into 5-bit length string.
+    static std::string string_encode(uint32_t short_code);
+
+    /// Deserialize ShortCode from string and return nullopt on error.
+    static std::optional<uint32_t> string_decode(const std::string &short_code);
+
+    // ------------------------------------------------------------------------------------- //
 };
 
-} // namespace codec
-} // namespace klotski
+} // namespace klotski::codec
 
-#include "inline_impl.h"
+#include "internal/short_code.inl"

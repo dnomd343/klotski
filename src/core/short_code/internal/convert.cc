@@ -1,17 +1,16 @@
 #include <algorithm>
-#include "short_code.h"
+
 #include "offset/basic.h"
 #include "offset/range_prefix.h"
+#include "short_code/short_code.h"
 
 using klotski::cases::AllCases;
+using klotski::codec::ShortCode;
 using klotski::cases::BasicRanges;
 
 using klotski::codec::offset::ALL_CASES_OFFSET;
 using klotski::codec::offset::BASIC_RANGES_OFFSET;
 using klotski::codec::offset::RANGE_PREFIX_OFFSET;
-
-namespace klotski {
-namespace codec {
 
 /// FIXME: temporarily used to implement tidy conversion
 static uint32_t check_range(uint32_t head, uint32_t range) noexcept {
@@ -52,23 +51,20 @@ static uint32_t check_range(uint32_t head, uint32_t range) noexcept {
     return 0; // pass check
 }
 
-/// Convert CommonCode to ShortCode based on AllCases data.
-uint32_t ShortCode::fast_encode(uint64_t common_code) noexcept {
+uint32_t ShortCode::fast_encode(uint64_t common_code) {
     auto head = common_code >> 32;
     auto &ranges = AllCases::instance().fetch()[head]; // match available ranges
     auto target = std::lower_bound(ranges.begin(), ranges.end(), (uint32_t)common_code);
     return ALL_CASES_OFFSET[head] + (target - ranges.begin());
 }
 
-/// Convert ShortCode to CommonCode based on AllCases data.
-uint64_t ShortCode::fast_decode(uint32_t short_code) noexcept {
+uint64_t ShortCode::fast_decode(uint32_t short_code) {
     auto offset = std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code) - 1;
     uint64_t head = offset - ALL_CASES_OFFSET;
     return (head << 32) | AllCases::instance().fetch()[head][short_code - *offset];
 }
 
-/// Convert CommonCode to ShortCode based on BasicRanges data.
-uint32_t ShortCode::tiny_encode(uint64_t common_code) noexcept {
+uint32_t ShortCode::tiny_encode(uint64_t common_code) {
     uint32_t head = common_code >> 32;
     uint32_t prefix = (common_code >> 20) & 0xFFF;
 
@@ -93,8 +89,7 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) noexcept {
     return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
 }
 
-/// NOTE: ensure that input short code is valid!
-uint64_t ShortCode::tiny_decode(uint32_t short_code) noexcept { // short code --> common code
+uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common code
     auto offset = std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code) - 1;
     auto head = offset - ALL_CASES_OFFSET; // head index
     short_code -= *offset;
@@ -118,6 +113,3 @@ uint64_t ShortCode::tiny_decode(uint32_t short_code) noexcept { // short code --
     }
     return (uint64_t)head << 32 | range_reverse(basic_ranges[index]);
 }
-
-} // namespace codec
-} // namespace klotski
