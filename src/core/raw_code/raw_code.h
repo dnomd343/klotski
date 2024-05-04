@@ -74,26 +74,6 @@ class RawCode {
 public:
     // ------------------------------------------------------------------------------------- //
 
-    /// Explicit conversion to u64 code.
-    explicit operator uint64_t() const;
-
-    /// Check the validity of the original RawCode.
-    static bool check(uint64_t raw_code);
-
-    // TODO: add macro check here
-    /// Output string encoding of RawCode only for debug.
-    friend std::ostream& operator<<(std::ostream &out, RawCode self);
-
-    // ------------------------------------------------------------------------------------- //
-
-    /// Get the original u64 code.
-    [[nodiscard]] uint64_t unwrap() const;
-
-    /// Convert RawCode to CommonCode.
-    [[nodiscard]] CommonCode to_common_code() const;
-
-    // ------------------------------------------------------------------------------------- //
-
     RawCode() = delete;
 
     /// Construct RawCode from CommonCode.
@@ -104,6 +84,27 @@ public:
 
     /// Create RawCode with validity check.
     static std::optional<RawCode> create(uint64_t raw_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Explicit conversion to u64 code.
+    explicit operator uint64_t() const;
+
+    /// Check the validity of the original RawCode.
+    static bool check(uint64_t raw_code);
+
+#ifndef KLSK_NDEBUG
+    /// Output string encoding of RawCode only for debug.
+    friend std::ostream& operator<<(std::ostream &out, RawCode self);
+#endif
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Get the original u64 code.
+    [[nodiscard]] uint64_t unwrap() const;
+
+    /// Convert RawCode to CommonCode.
+    [[nodiscard]] CommonCode to_common_code() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -118,23 +119,11 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Compare RawCode with u64 values.
-    friend constexpr auto operator==(const RawCode &lhs, uint64_t rhs);
-    friend constexpr auto operator<=>(const RawCode &lhs, uint64_t rhs);
-
-    /// Compare the original values of two RawCodes.
-    friend constexpr auto operator==(const RawCode &lhs, const RawCode &rhs);
-    friend constexpr auto operator<=>(const RawCode &lhs, const RawCode &rhs);
-
-    // ------------------------------------------------------------------------------------- //
-
     /// Calculate vertically symmetrical layout.
     [[nodiscard]] RawCode to_vertical_mirror() const;
 
     /// Calculate horizontally symmetrical layout.
     [[nodiscard]] RawCode to_horizontal_mirror() const;
-
-    // ------------------------------------------------------------------------------------- //
 
     /// Determine whether the layout is vertically symmetrical.
     [[nodiscard]] bool is_vertical_mirror() const;
@@ -147,6 +136,16 @@ public:
 
     /// Determine whether two layouts are horizontally symmetrical to each other.
     [[nodiscard]] bool is_horizontal_mirror(RawCode raw_code) const;
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Compare RawCode with u64 value.
+    friend constexpr auto operator==(const RawCode &lhs, uint64_t rhs);
+    friend constexpr auto operator<=>(const RawCode &lhs, uint64_t rhs);
+
+    /// Compare the original values of two RawCodes.
+    friend constexpr auto operator==(const RawCode &lhs, const RawCode &rhs);
+    friend constexpr auto operator<=>(const RawCode &lhs, const RawCode &rhs);
 
     // ------------------------------------------------------------------------------------- //
 

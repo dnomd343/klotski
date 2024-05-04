@@ -2,7 +2,7 @@
 #include "utils/utility.h"
 #include "raw_code/raw_code.h"
 
-namespace klotski::codec {
+using klotski::codec::RawCode;
 
 uint64_t RawCode::compact(uint64_t raw_code) {
     int unfilled = 16;
@@ -57,5 +57,3 @@ uint64_t RawCode::extract(uint64_t common_code) {
     }
     return code;
 }
-
-} // namespace klotski::codec

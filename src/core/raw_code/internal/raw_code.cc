@@ -1,16 +1,17 @@
 #include "utils/common.h"
 #include "raw_code/raw_code.h"
 
-namespace klotski::codec {
+using klotski::codec::RawCode;
 
-std::ostream& operator<<(std::ostream &out, const RawCode self) {
+#ifndef KLSK_NDEBUG
+std::ostream& klotski::codec::operator<<(std::ostream &out, const RawCode self) {
     char *code;
     asprintf(&code, "%015llX\n", self.code_); // code length -> 15
     out << code;
     free(code);
 
     constexpr char map[] = {
-        //  0x0  1x2  2x1  1x1  2x2  b101 b110 fill
+    //  0x0  1x2  2x1  1x1  2x2  b101 b110 fill
         '.', '~', '|', '*', '@', '?', '?', '+'
     };
     for (int addr = 0; addr < 60; addr += 3) {
@@ -19,6 +20,7 @@ std::ostream& operator<<(std::ostream &out, const RawCode self) {
     }
     return out;
 }
+#endif
 
 bool RawCode::check(uint64_t raw_code) {
     ///     MASK_1x1      |     MASK_1x2      |     MASK_2x1      |     MASK_2x2
@@ -68,5 +70,3 @@ bool RawCode::check(uint64_t raw_code) {
     }
     return head_num == 1 && space_num >= 2; // one head and at least 2 space
 }
-
-} // namespace klotski::codec

@@ -12,7 +12,6 @@ set(KLOTSKI_CORE_SRC
 
         raw_code/internal/raw_code.cc
         raw_code/internal/convert.cc
-        raw_code/internal/sundry.cc
         raw_code/internal/mirror.cc
 
         short_code/internal/convert.cc

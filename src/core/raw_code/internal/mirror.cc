@@ -1,9 +1,7 @@
 #include "utils/common.h"
 #include "raw_code/raw_code.h"
 
-namespace klotski::codec {
-
-// ----------------------------------------------------------------------------------------- //
+using klotski::codec::RawCode;
 
 ///   MASK_MIRROR_H1  |   MASK_MIRROR_H2
 ///  111 000 000 000  |  000 111 000 000
@@ -26,9 +24,7 @@ constexpr uint64_t MASK_MIRROR_V1 = 0x0'000'000'000'000'FFF;
 constexpr uint64_t MASK_MIRROR_V2 = 0x0'000'000'000'FFF'000;
 constexpr uint64_t MASK_MIRROR_V3 = 0x0'000'000'FFF'000'000;
 
-// ----------------------------------------------------------------------------------------- //
-
-inline static void vertical_fill(uint64_t &raw_code) {
+static void vertical_fill(uint64_t &raw_code) {
     uint64_t mask = 0;
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
@@ -49,7 +45,7 @@ inline static void vertical_fill(uint64_t &raw_code) {
     }
 }
 
-inline static void horizontal_fill(uint64_t &raw_code) {
+static void horizontal_fill(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case BLOCK_1x2:
@@ -64,7 +60,7 @@ inline static void horizontal_fill(uint64_t &raw_code) {
     }
 }
 
-inline static void vertical_clear(uint64_t &raw_code) {
+static void vertical_clear(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case BLOCK_2x1:
@@ -74,7 +70,7 @@ inline static void vertical_clear(uint64_t &raw_code) {
     }
 }
 
-inline static void horizontal_clear(uint64_t &raw_code) {
+static void horizontal_clear(uint64_t &raw_code) {
     for (int addr = 0; addr < 60; addr += 3) { // traverse every 3-bit
         switch ((raw_code >> addr) & 0b111) {
             case BLOCK_1x2:
@@ -83,8 +79,6 @@ inline static void horizontal_clear(uint64_t &raw_code) {
         }
     }
 }
-
-// ----------------------------------------------------------------------------------------- //
 
 uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) {
     vertical_fill(raw_code);
@@ -114,7 +108,3 @@ bool RawCode::check_horizontal_mirror(uint64_t raw_code) {
     return !(MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
         && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));
 }
-
-// ----------------------------------------------------------------------------------------- //
-
-} // namespace klotski::codec
