@@ -48,59 +48,28 @@ std::vector<uint64_t> common_code_samples(uint64_t num) {
 
 }
 
-// std::vector<uint64_t> select_codes(uint64_t num) {
-//     auto codes = all_common_codes();
-//
-//     // return {codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411]};
-//     // std::array<uint64_t, 140> samples = {
-//     std::vector<uint64_t> samples = {
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
-//     };
-//
-//     return {samples.begin(), samples.begin() + num};
-// }
+std::vector<uint32_t> short_code_samples(uint64_t num) {
+
+    uint32_t part_size = klotski::codec::SHORT_CODE_LIMIT / num;
+
+    // uint64_t offset = 0;
+    uint32_t offset = part_size / 2;
+
+    std::vector<uint32_t> result;
+
+    for (uint32_t i = 0; i < num; ++i) {
+        uint32_t index = i * part_size + offset;
+        //     // std::cout << "index = " << index << std::endl;
+
+        // uint64_t kk[] {343, 666, 114514, 35324, 123454, 76453, 93411};
+        // uint64_t index = kk[i % 7];
+
+        result.emplace_back(index);
+    }
+
+    return result;
+
+}
 
 std::vector<std::string> str_common_codes(uint64_t num, bool shorten) {
     // auto src = select_codes(num);
@@ -111,6 +80,20 @@ std::vector<std::string> str_common_codes(uint64_t num, bool shorten) {
     codes.reserve(src.size());
     for (auto x : src) {
         codes.emplace_back(klotski::codec::CommonCode::unsafe_create(x).to_string(shorten));
+    }
+
+    return codes;
+}
+
+std::vector<std::string> str_short_codes(uint64_t num) {
+
+    auto src = short_code_samples(num);
+
+    std::vector<std::string> codes;
+
+    codes.reserve(src.size());
+    for (auto x : src) {
+        codes.emplace_back(klotski::codec::ShortCode::unsafe_create(x).to_string());
     }
 
     return codes;
@@ -174,10 +157,48 @@ static void CommonCodeDeserializeShorten(benchmark::State &state) {
 
 }
 
-BENCHMARK(CommonCodeSerialize)->Range(8, 256);
-BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
-BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
-BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
+static void ShortCodeSerialize(benchmark::State &state) {
+    std::vector<uint32_t> samples = short_code_samples(state.range(0));
+
+    for (auto _ : state) {
+
+        for (const auto code : samples) {
+            volatile auto ret = klotski::codec::ShortCode::string_encode(code);
+        }
+
+    }
+
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+
+}
+
+static void ShortCodeDeserialize(benchmark::State &state) {
+
+    const auto tmp = str_short_codes(state.range(0));
+
+    const std::vector<std::string_view> samples {tmp.begin(), tmp.end()};
+
+    for (auto _ : state) {
+
+        for (const auto code : samples) {
+
+            volatile auto ret = klotski::codec::ShortCode::string_decode(code);
+
+        }
+
+    }
+
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+
+}
+
+// BENCHMARK(CommonCodeSerialize)->Range(8, 256);
+// BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
+// BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
+// BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
+
+BENCHMARK(ShortCodeSerialize)->Range(8, 256);
+BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
 
 // static void CommonCodeDecode(benchmark::State &state) {
 //     const auto tmp = str_common_codes(state.range(0));

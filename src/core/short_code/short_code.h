@@ -174,7 +174,7 @@ private:
     static std::string string_encode(uint32_t short_code);
 
     /// Deserialize ShortCode from string and return nullopt on error.
-    static std::optional<uint32_t> string_decode(const std::string &short_code);
+    static std::optional<uint32_t> string_decode(std::string_view short_code);
 
     // ------------------------------------------------------------------------------------- //
 };
