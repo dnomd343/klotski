@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "core/core.h"
+#include "group/group.h"
 #include "raw_code/raw_code.h"
 #include "fast_cal/fast_cal.h"
 #include "all_cases/all_cases.h"
@@ -16,6 +17,7 @@ using klotski::cases::BasicRanges;
 using klotski::codec::RawCode;
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
+using klotski::cases::GroupUnion;
 
 using klotski::codec::SHORT_CODE_LIMIT;
 
@@ -29,7 +31,7 @@ int main() {
     // core.next_cases(RawCode::from_common_code(0x1A9BF0C00).value().unwrap(), 0x0);
 
     // auto cal = FastCal(RawCode::from_common_code(0x1A9BF0C00).value());
-    auto cal = FastCal(RawCode::from_common_code("25EEF04").value());
+    // auto cal = FastCal(RawCode::from_common_code("25EEF04").value());
 
     // auto ret = cal.solve();
     //
@@ -37,13 +39,13 @@ int main() {
     //     std::cout << kk.to_common_code() << "," << kk.to_common_code().to_short_code() << std::endl;
     // }
 
-    for (const auto solve : cal.solve_multi()) {
-        for (const auto raw_code : cal.backtrack(solve)) {
-            const auto common_code = raw_code.to_common_code();
-            std::cout << common_code << "/" << common_code.to_short_code() << std::endl;
-        }
-        std::cout << "----" << std::endl;
-    }
+    // for (const auto solve : cal.solve_multi()) {
+    //     for (const auto raw_code : cal.backtrack(solve)) {
+    //         const auto common_code = raw_code.to_common_code();
+    //         std::cout << common_code << "/" << common_code.to_short_code() << std::endl;
+    //     }
+    //     std::cout << "----" << std::endl;
+    // }
 
     std::cerr << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 

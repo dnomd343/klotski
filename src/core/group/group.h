@@ -23,21 +23,21 @@
 /// can also be reversed to get the number of blocks, which are one by one
 /// corresponding.
 ///
-///     flag  =>  |       0xxx      |   0xxx  |   xxxx   |
-///   (12-bit)    | (n_1x2 + n_2x1) | (n_2x1) |  (n_1x1) |
+///     flag  =>  |       xxx       |   xxx   |   xxxx   |
+///   (10-bit)    | (n_1x2 + n_2x1) | (n_2x1) |  (n_1x1) |
 ///               |     (0 ~ 7)     | (0 ~ 7) | (0 ~ 14) |
 ///
-///     flag  =>  ((n_1x2 + n_2x1) << 8) | (n_2x1 << 4) | (n_1x1)
+///     flag  =>  ((n_1x2 + n_2x1) << 7) | (n_2x1 << 3) | (n_1x1)
 ///
 /// Using the table lookup method, the `type_id` of any case can be obtained
-/// within O(1), which is encapsulated in `GroupType`.
+/// within O(1), which is encapsulated in `GroupUnion`.
 
 /// Since the `type_id` cannot change when moving, all cases belonging to the
 /// same `type_id` must be divided into different groups (of course there may
 /// be only one). For a group, list the CommonCodes of all its cases, the
 /// smallest of which is called the group's `seed`. List all the groups under
 /// the same `type_id`, and arrange them from large to small, and arrange the
-/// groups of the same size from small to large according to the `seed`, and
+/// groups of the same size from small to large according to the `seed`, then
 /// start numbering from 0 to get the `group_id`.
 
 /// All cases of the same group will have the same `type_id` and `group_id`,
@@ -51,14 +51,14 @@
 ///
 ///       Eg1: 1A9BF0C00 -> `169-1-7472`
 ///       Eg2: 4FEA13400 -> `164-0-30833`
-///
+
 /// The range of `type_id` is [0, 203), the maximum `group_id` is 2652 (there
-/// are 2653 groups when `type_id` is 164), the maximum `case_id` is 964655
-/// (there are 964656 cases when `type_id` is 58 and `group_id` is 0).
-/// Therefore, these three numbers meet the following range requirements.
+/// are 2653 groups when `type_id = 164`), the maximum `case_id` is 964655
+/// (there are 964656 cases when `type_id = 58` & `group_id = 0`). Therefore,
+/// these three numbers meet the following range requirements.
 ///
-///     type_id < 203  |  group_id < 2653  |   case_id < 964656
-///     (8-bit ~ 256)  |  (12-bit ~ 4096)  |  (20-bit ~ 1048576)
+///   | type_id: [0, 203) | group_id: [0, 2653) | case_id: [0, 964656) |
+///   |   (8-bit ~ 256)   |   (12-bit ~ 4096)   |  (20-bit ~ 1048576)  |
 ///
 /// Typically, these three variables are generally recorded in decimal and
 /// displayed in the form of strings. They can facilitate the relationship
@@ -67,103 +67,117 @@
 #pragma once
 
 #include "raw_code/raw_code.h"
+#include "short_code/short_code.h"
 #include "common_code/common_code.h"
-
-static_assert(sizeof(int) == 4);
 
 namespace klotski::cases {
 
 class Group;
 
-// TODO: should we expose block_num_t ?
-
-// TODO: flat_iter for Groups ?
-
-// TODO: should we make sure the thread safe of GroupUnion / Group ?
-
-/// RSC -> block_num_t <-> type_id -> group_num
-///                           |-----> max_size
-
-/// RSC -> seed <-> type_id + group_id -> cases
-
-/// info_t <-> RSC
-
 class GroupUnion {
 public:
-	/// 1. n_1x1 + (n_1x2 + n_2x1) * 2 <= 14
-	/// 2. (n_1x1 != 0) && (n_2x1 != 7)
-	struct block_num_t {
-		uint8_t n_1x1 = 0; /// [0, 14]
-		uint8_t n_1x2 = 0; /// [0, 7]
-		uint8_t n_2x1 = 0; /// [0, 7]
-	};
-	/// n_space = 16 - n_1x1 - (n_1x2 + n_2x1) * 2
-
 	GroupUnion() = delete;
-	// TODO: disallow copy or move
+
+	// ------------------------------------------------------------------------------------- //
+
+	/// Get the original type id.
+	[[nodiscard]] int type_id() const;
+
+	/// Get the number of cases contained.
+	[[nodiscard]] uint32_t size() const;
+
+	/// Get the number of groups contained.
+	[[nodiscard]] uint32_t group_num() const;
+
+	/// Get the upper limit of the group size.
+	[[nodiscard]] uint32_t max_group_size() const;
+
+	/// Get all group instances under the current type id.
+	[[nodiscard]] std::vector<Group> groups() const;
+
+	/// Get the group instance with the specified group id.
+	[[nodiscard]] std::optional<Group> group(int group_id) const;
+
+	// ------------------------------------------------------------------------------------- //
+
+	/// Create GroupUnion from type id.
+	static std::optional<GroupUnion> from_id(int type_id);
+
+	/// Create GroupUnion from RawCode.
+	static GroupUnion from_raw_code(codec::RawCode raw_code);
+
+	/// Create GroupUnion from ShortCode.
+	static GroupUnion from_short_code(codec::RawCode short_code);
+
+	/// Create GroupUnion from CommonCode.
+	static GroupUnion from_common_code(codec::CommonCode common_code);
+
+	// ------------------------------------------------------------------------------------- //
 
 private:
-	// TODO: only store type_id_
 	int type_id_ {};
 
 	// TODO: only allow private build (std::bit_cast directly)
-	explicit GroupUnion(const int type_id) : type_id_(type_id) {}
-
-	// TODO: fast convert from RawCode / CommonCode -> block_num_t
-	static block_num_t block_num(codec::RawCode raw_code);
-	static block_num_t block_num(codec::CommonCode common_code);
-
-	// TODO: should we impl type_id -> block_num ?
-
-	// TODO: convert from block_num -> type_id
-	static int type_id(block_num_t block_num);
-
-public:
-	// TODO: allow convert from RawCode / ShortCode / CommonCode
-	// TODO: GroupUnion will fetch from static singleton (203 instances)
-	static GroupUnion from_raw_code(codec::RawCode raw_code);
-	static GroupUnion from_short_code(codec::RawCode short_code);
-	static GroupUnion from_common_code(codec::CommonCode common_code);
-
-	// TODO: fetch singleton from type_id
-	static std::optional<GroupUnion> from_type_id(int type_id);
-
-	// TODO: get Group from local (init by seed)
-	[[nodiscard]] Group group(int group_id);
-
-	// TODO: GroupUnion do not storage cases (new version)
+	// explicit GroupUnion(const int type_id) : type_id_(type_id) {}
 };
 
 class Group {
-private:
-	// TODO: Group init by `seed`
-	// TODO: Group will also storage parent's type_id (or maybe not)
-
-	int type_id_;
-	int group_id_; // -> seed / size
-
-	explicit Group(int type_id, int group_id) : type_id_(type_id), group_id_(group_id) {}
-
-	// TODO: add mutex on the build process
-	// bool available_;
-	// std::mutex building_;
-
 public:
-	// TODO: iter all Groups like a flat array ?
-
 	Group() = delete;
+
+	// TODO: fetch group size directly
+	[[nodiscard]] uint32_t size() const;
+
+	void build();
 
 	// TODO: maybe define CommonCodes here
 	// TODO: get all cases from current Group
 	const std::vector<codec::CommonCode>& cases();
 
-	// TODO: can we fetch Group directly from here ?
-	// args: type_id & group_id
+	static Group from_raw_code(codec::RawCode raw_code);
+	static Group from_common_code(codec::CommonCode common_code);
 
-	// TODO: fetch group size directly
-	[[nodiscard]] uint32_t size() const;
+private:
+	int type_id_;
+	int group_id_;
+
+	// TODO: only allow cast from struct directly.
+	// explicit Group(int type_id, int group_id) : type_id_(type_id), group_id_(group_id) {}
+
+	// TODO: mutex only in inner impl class.
+	// bool available_;
+	// std::mutex building_;
 };
 
-// TODO: fast convert from info_t <--> CommonCode / RawCode
+class GroupCase {
+public:
+	struct info_t {
+		uint16_t type_id; // TODO: int or uint ?
+		uint16_t group_id;
+		uint32_t group_index;
+	};
+
+	// TODO: mark as instance.
+
+	/// Build group cases accelerated index.
+	static void speed_up();
+
+	/// Get the CommonCode using the group info.
+	static codec::CommonCode parse(const info_t &info);
+
+	/// Get group info according to specified case.
+	static info_t encode(const codec::RawCode &raw_code);
+	static info_t encode(const codec::CommonCode &common_code);
+
+private:
+	static bool available_;
+	static std::mutex building_;
+
+	static codec::CommonCode fast_decode(const info_t &info);
+	static codec::CommonCode tiny_decode(const info_t &info);
+
+	static info_t fast_encode(const codec::CommonCode &common_code);
+	static info_t tiny_encode(const codec::CommonCode &common_code);
+};
 
 } // namespace klotski::cases
