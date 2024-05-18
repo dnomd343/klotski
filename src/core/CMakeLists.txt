@@ -26,7 +26,7 @@ set(KLOTSKI_CORE_SRC
 )
 
 add_library(klotski_core STATIC ${KLOTSKI_CORE_SRC})
-target_compile_options(klotski_core PRIVATE -fno-rtti -fno-exceptions)
+target_compile_options(klotski_core PRIVATE -fno-rtti -fno-exceptions)  # option for `-fvisibility=hidden`
 target_include_directories(klotski_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(klotski::core ALIAS klotski_core)
 

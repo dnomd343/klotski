@@ -161,7 +161,7 @@ private:
     static std::string string_encode_shorten(uint64_t common_code);
 
     /// Deserialize CommonCode from string and return nullopt on error.
-    static std::optional<uint64_t> string_decode(const std::string &common_code);
+    static std::optional<uint64_t> string_decode(std::string_view common_code);
 
     // ------------------------------------------------------------------------------------- //
 };

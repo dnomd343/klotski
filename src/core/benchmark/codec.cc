@@ -1,85 +1,210 @@
 #include <iostream>
 
-#include "benchmark/benchmark.h"
-
-#include "all_cases/all_cases.h"
+#include <benchmark/benchmark.h>
 
 #define private public
-#include <group/group.h>
-
+#include "group/group.h"
+#include "all_cases/all_cases.h"
 #include "common_code/common_code.h"
+#undef private
 
 using klotski::cases::AllCases;
+using klotski::codec::CommonCode;
 
+/// Build all valid CommonCodes.
 static std::vector<uint64_t> all_common_codes() {
-    std::vector<uint64_t> all_codes;
-
+    std::vector<uint64_t> codes;
     for (uint64_t head = 0; head < 16; ++head) {
         for (const auto range : AllCases::instance().fetch()[head]) {
-            all_codes.emplace_back(head << 32 | range);
+            codes.emplace_back(head << 32 | range);
         }
     }
-
-    return all_codes;
+    std::cout << "do cal complete" << std::endl;
+    return codes;
 }
 
-static std::vector<uint64_t> select_codes() {
-    auto codes = all_common_codes();
+std::vector<uint64_t> common_code_samples(uint64_t num) {
 
-    return {codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411]};
+    static auto codes = all_common_codes();
+
+    uint64_t part_size = codes.size() / num;
+
+    // uint64_t offset = 0;
+    uint64_t offset = part_size / 2;
+
+    std::vector<uint64_t> result;
+
+    for (uint64_t i = 0; i < num; ++i) {
+        uint64_t index = i * part_size + offset;
+    //     // std::cout << "index = " << index << std::endl;
+
+        // uint64_t kk[] {343, 666, 114514, 35324, 123454, 76453, 93411};
+        // uint64_t index = kk[i % 7];
+
+        result.emplace_back(codes[index]);
+    }
+
+    return result;
+
 }
 
-std::vector<uint64_t> samples {
-    0x00000303F,
-    0x0000071F0,
-    0x003339C40,
-    0x000804340,
-    0x0034C6D00,
-    0x00230E0F0,
-    0x002F371C0,
-};
+// std::vector<uint64_t> select_codes(uint64_t num) {
+//     auto codes = all_common_codes();
+//
+//     // return {codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411]};
+//     // std::array<uint64_t, 140> samples = {
+//     std::vector<uint64_t> samples = {
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//         codes[343], codes[666], codes[114514], codes[35324], codes[123454], codes[76453], codes[93411],
+//     };
+//
+//     return {samples.begin(), samples.begin() + num};
+// }
 
-static void Demo(benchmark::State &state) {
+std::vector<std::string> str_common_codes(uint64_t num, bool shorten) {
+    // auto src = select_codes(num);
+    auto src = common_code_samples(num);
 
-    // auto samples = select_codes();
-    //
-    // for (auto code : samples) {
-    //     auto c = klotski::codec::CommonCode::create(code).value();
-    //     std::cout << c << std::endl;
-    // }
-    // std::cout << std::endl;
+    std::vector<std::string> codes;
 
-    // samples.clear();
-    // samples = select_codes();
-    // samples.emplace_back(0x00000303F);
-    // samples.emplace_back(0x0000071F0);
-    // samples.emplace_back(0x003339C40);
-    // samples.emplace_back(0x000804340);
-    // samples.emplace_back(0x0034C6D00);
-    // samples.emplace_back(0x00230E0F0);
-    // samples.emplace_back(0x002F371C0);
+    codes.reserve(src.size());
+    for (auto x : src) {
+        codes.emplace_back(klotski::codec::CommonCode::unsafe_create(x).to_string(shorten));
+    }
+
+    return codes;
+}
+
+static void CommonCodeSerialize(benchmark::State &state) {
+
+    // common_code_samples(8);
+
+    auto samples = common_code_samples(state.range(0));
 
     for (auto _ : state) {
 
         for (auto code : samples) {
-            // auto volatile holder = klotski::codec::CommonCode::string_encode(code);
-            // auto volatile holder_1 = code + 213;
-            // auto volatile holder_2 = code + 123;
-            // auto volatile holder_3 = code + 233;
-            // auto volatile holder_4 = code + 412;
-            // auto volatile holder_5 = code + 896;
-            // auto volatile holder_6 = code + 154;
-            // auto volatile holder_7 = code + 124;
 
-            auto ret = klotski::codec::CommonCode::string_encode(code);
-            // auto volatile str_1 = ret[0];
-            // auto volatile str_2 = ret[1];
-            // auto volatile str_3 = ret[2];
+            volatile auto ret = klotski::codec::CommonCode::string_encode(code);
         }
 
     }
+
+    state.SetItemsProcessed(state.iterations() * state.range(0));
 }
 
-BENCHMARK(Demo);
+static void CommonCodeDeserialize(benchmark::State &state) {
+    const auto tmp = str_common_codes(state.range(0), false);
+    const std::vector<std::string_view> samples {tmp.begin(), tmp.end()};
+
+    for (auto _ : state) {
+        for (const auto code : samples) {
+            benchmark::DoNotOptimize(CommonCode::string_decode(code));
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+
+}
+
+static void CommonCodeSerializeShorten(benchmark::State &state) {
+
+    // auto samples = select_codes(state.range(0));
+    auto samples = common_code_samples(state.range(0));
+
+    for (auto _ : state) {
+        for (auto code : samples) {
+            volatile auto ret = klotski::codec::CommonCode::string_encode_shorten(code);
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+
+}
+
+static void CommonCodeDeserializeShorten(benchmark::State &state) {
+    const auto tmp = str_common_codes(state.range(0), true);
+    const std::vector<std::string_view> samples {tmp.begin(), tmp.end()};
+
+    for (auto _ : state) {
+        for (const auto code : samples) {
+            benchmark::DoNotOptimize(CommonCode::string_decode(code));
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+
+}
+
+BENCHMARK(CommonCodeSerialize)->Range(8, 256);
+BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
+BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
+BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
+
+// static void CommonCodeDecode(benchmark::State &state) {
+//     const auto tmp = str_common_codes(state.range(0));
+//     const std::vector<std::string_view> samples {tmp.begin(), tmp.end()};
+//
+//     for (auto _ : state) {
+//         for (const auto code : samples) {
+//             benchmark::DoNotOptimize(CommonCode::string_decode(code));
+//         }
+//     }
+//     state.SetBytesProcessed(int64_t(state.iterations()) *
+//                           int64_t(state.range(0)));
+//
+//     state.SetComplexityN(state.range(0));
+//
+// }
+
+// BENCHMARK(CommonCodeStrEncode)->Range(8, 256);
+// BENCHMARK(CommonCodeSStrEncode)->Range(8, 256)
+//   ->ComputeStatistics("ratio", [](const std::vector<double> &v) -> double {
+//     return (*std::begin(v)) / (*std::end(v));
+//   }, benchmark::StatisticUnit::kPercentage);
+
+// BENCHMARK(CommonCodeSStrEncode)->Range(8, 256)->Unit(benchmark::kMillisecond);
+
+// BENCHMARK(CommonCodeDeserialize)->RangeMultiplier(8)->Range(1, 256);
+// BENCHMARK(CommonCodeDeserialize)->Name("Demo")->RangeMultiplier(8)->Range(1, 256);
+// BENCHMARK(CommonCodeDeserialize)->RangeMultiplier(2)->Range(1, 256)->Complexity(benchmark::oN);
 
 BENCHMARK_MAIN();
