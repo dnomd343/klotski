@@ -11,7 +11,12 @@ if (KLSK_C_FFI)
 endif()
 
 if (KLSK_PYTHON_FFI)
-    pybind11_add_module(klotski_py py_ffi/demo.cc)
+    pybind11_add_module(klotski_py
+            py_ffi/binder.cc
+            py_ffi/codec/short_code.cc
+            py_ffi/codec/common_codec.cc
+    )
+    target_include_directories(klotski_py PRIVATE py_ffi/include)
     target_link_libraries(klotski_py PRIVATE klotski::core)
     set_target_properties(klotski_py PROPERTIES OUTPUT_NAME klotski)
 endif()
