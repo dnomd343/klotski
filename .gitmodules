@@ -16,3 +16,6 @@
 [submodule "third_party/xxHash"]
 	path = third_party/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
+[submodule "third_party/pybind11"]
+	path = third_party/pybind11
+	url = https://github.com/pybind/pybind11.git

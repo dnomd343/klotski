@@ -3,7 +3,7 @@ project(core-test LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(KLOTSKI_TEST_DEPS klotski klotski_core
+set(KLSK_TEST_DEPS klotski_c klotski_core
         GTest::gtest_main bs::thread_pool md5sum::md5 xxHash::xxh3)
 
 # ------------------------------------------------------------------------------------ #
@@ -25,7 +25,7 @@ set(KLOTSKI_TEST_CASES_SRC
 )
 
 add_executable(test_klotski_cases ${KLOTSKI_TEST_CASES_SRC})
-target_link_libraries(test_klotski_cases PRIVATE ${KLOTSKI_TEST_DEPS})
+target_link_libraries(test_klotski_cases PRIVATE ${KLSK_TEST_DEPS})
 add_test(NAME klotski_cases COMMAND test_klotski_cases)
 
 # ------------------------------------------------------------------------------------ #
@@ -35,7 +35,7 @@ set(KLOTSKI_TEST_FFI_SRC
 )
 
 add_executable(test_klotski_ffi ${KLOTSKI_TEST_FFI_SRC})
-target_link_libraries(test_klotski_ffi PRIVATE ${KLOTSKI_TEST_DEPS})
+target_link_libraries(test_klotski_ffi PRIVATE ${KLSK_TEST_DEPS})
 add_test(NAME klotski_ffi COMMAND test_klotski_ffi)
 
 # ------------------------------------------------------------------------------------ #
@@ -48,7 +48,7 @@ set(KLOTSKI_TEST_CODEC_SRC
 )
 
 add_executable(test_klotski_codec ${KLOTSKI_TEST_CODEC_SRC})
-target_link_libraries(test_klotski_codec PRIVATE ${KLOTSKI_TEST_DEPS})
+target_link_libraries(test_klotski_codec PRIVATE ${KLSK_TEST_DEPS})
 add_test(NAME klotski_codec COMMAND test_klotski_codec)
 
 # ------------------------------------------------------------------------------------ #

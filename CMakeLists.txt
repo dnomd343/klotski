@@ -3,10 +3,13 @@ project(klotski)
 
 # ------------------------------------------------------------------------------------ #
 
-option(KLOTSKI_ENABLE_LTO "Enable LTO optimisation of the project." OFF)
-option(KLOTSKI_SHARED_LIB "Build klotski core as a dynamic library." OFF)
-option(KLOTSKI_ENABLE_TESTING "Enable testing of the klotski project." ON)
-option(KLOTSKI_ENABLE_BENCHMARK "Enable benchmark of the klotski project." ON)
+option(KLSK_ENABLE_LTO "Enable LTO optimisation of the project." OFF)
+option(KLSK_SHARED_LIB "Build klotski core as a dynamic library." OFF)
+option(KLSK_ENABLE_TESTING "Enable testing of the klotski project." ON)
+option(KLSK_ENABLE_BENCHMARK "Enable benchmark of the klotski project." ON)
+
+option(KLSK_C_FFI "" ON)
+option(KLSK_PYTHON_FFI "" ON)
 
 # ------------------------------------------------------------------------------------ #
 
@@ -17,7 +20,7 @@ endif()
 add_compile_options(-Wall -Wextra)
 add_compile_options(-flto=auto)  # TODO: enabled by LTO option
 
-get_filename_component(KLOTSKI_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
+get_filename_component(KLSK_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
 
 include(third_party/ThirdParty.cmake)
 
