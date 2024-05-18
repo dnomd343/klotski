@@ -73,7 +73,7 @@ inline CommonCode ShortCode::to_common_code() const {
 
 // ----------------------------------------------------------------------------------------- //
 
-inline std::optional<ShortCode> ShortCode::from_string(const std::string &short_code) {
+inline std::optional<ShortCode> ShortCode::from_string(const std::string_view short_code) {
     return string_decode(short_code).transform(unsafe_create);
 }
 
@@ -90,7 +90,7 @@ inline std::optional<ShortCode> ShortCode::from_common_code(const uint64_t commo
     return CommonCode::create(common_code).transform(convert);
 }
 
-inline std::optional<ShortCode> ShortCode::from_common_code(const std::string &common_code) {
+inline std::optional<ShortCode> ShortCode::from_common_code(const std::string_view common_code) {
     const auto convert = [](const CommonCode code) {
         return code.to_short_code();
     };

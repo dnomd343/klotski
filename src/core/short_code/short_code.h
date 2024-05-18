@@ -126,7 +126,7 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Create ShortCode from string form.
-    static std::optional<ShortCode> from_string(const std::string &short_code);
+    static std::optional<ShortCode> from_string(std::string_view short_code);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -137,7 +137,7 @@ public:
     static std::optional<ShortCode> from_common_code(uint64_t common_code);
 
     /// Create ShortCode from CommonCode in string form.
-    static std::optional<ShortCode> from_common_code(const std::string &common_code);
+    static std::optional<ShortCode> from_common_code(std::string_view common_code);
 
     // ------------------------------------------------------------------------------------- //
 

@@ -115,7 +115,7 @@ public:
     static std::optional<RawCode> from_common_code(uint64_t common_code);
 
     /// Create RawCode from CommonCode in string form.
-    static std::optional<RawCode> from_common_code(const std::string &common_code);
+    static std::optional<RawCode> from_common_code(std::string_view common_code);
 
     // ------------------------------------------------------------------------------------- //
 

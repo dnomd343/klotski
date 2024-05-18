@@ -64,7 +64,7 @@ inline std::string CommonCode::to_string(const bool shorten) const {
 
 // ------------------------------------------------------------------------------------- //
 
-inline std::optional<CommonCode> CommonCode::from_string(const std::string &common_code) {
+inline std::optional<CommonCode> CommonCode::from_string(const std::string_view common_code) {
     return string_decode(common_code).transform(unsafe_create);
 }
 
@@ -94,7 +94,7 @@ inline std::optional<CommonCode> CommonCode::from_short_code(const uint32_t shor
     return ShortCode::create(short_code).transform(convert);
 }
 
-inline std::optional<CommonCode> CommonCode::from_short_code(const std::string &short_code) {
+inline std::optional<CommonCode> CommonCode::from_short_code(const std::string_view short_code) {
     const auto convert = [](const ShortCode code) {
         return code.to_common_code();
     };

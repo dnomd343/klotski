@@ -50,7 +50,7 @@ inline std::optional<RawCode> RawCode::from_common_code(const uint64_t common_co
     return CommonCode::create(common_code).transform(convert);
 }
 
-inline std::optional<RawCode> RawCode::from_common_code(const std::string &common_code) {
+inline std::optional<RawCode> RawCode::from_common_code(const std::string_view common_code) {
     const auto convert = [](const CommonCode code) {
         return code.to_raw_code();
     };
