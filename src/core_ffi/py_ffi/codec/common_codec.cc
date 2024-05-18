@@ -17,8 +17,8 @@ uint64_t PyCommonCode::value() const {
     return code_.unwrap();
 }
 
-std::string PyCommonCode::string(const bool shorten) const {
-    return code_.to_string(shorten);
+std::string PyCommonCode::string() const {
+    return code_.to_string(true);
 }
 
 PyShortCode PyCommonCode::short_code() const {
@@ -32,14 +32,13 @@ bool PyCommonCode::check(const uint64_t code) {
 }
 
 bool PyCommonCode::check(const std::string_view code) {
-    // TODO: using `std::string_view` in from_string
-    return CommonCode::from_string(std::string {code}).has_value();
+    return CommonCode::from_string(code).has_value();
 }
 
 // ----------------------------------------------------------------------------------------- //
 
 std::string PyCommonCode::str(const PyCommonCode code) {
-    return code.string(false);
+    return code.code_.to_string();
 }
 
 std::string PyCommonCode::repr(const PyCommonCode code) {
@@ -60,8 +59,7 @@ static CommonCode convert(const uint64_t code) {
 }
 
 static CommonCode convert(const std::string_view code) {
-    // TODO: using `std::string_view` in from_string
-    if (const auto str = CommonCode::from_string(std::string {code})) {
+    if (const auto str = CommonCode::from_string(code)) {
         return str.value();
     }
     throw PyCodecExp(std::format("invalid common code -> `{}`", code));

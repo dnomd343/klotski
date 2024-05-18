@@ -28,8 +28,7 @@ bool PyShortCode::check(const uint32_t code) {
 }
 
 bool PyShortCode::check(const std::string_view code) {
-    // TODO: using `std::string_view` in from_string
-    return ShortCode::from_string(std::string {code}).has_value();
+    return ShortCode::from_string(code).has_value();
 }
 
 void PyShortCode::speed_up(const bool fast_mode) {
@@ -39,12 +38,11 @@ void PyShortCode::speed_up(const bool fast_mode) {
 // ----------------------------------------------------------------------------------------- //
 
 std::string PyShortCode::str(const PyShortCode code) {
-    return std::bit_cast<ShortCode>(code).to_string();
+    return code.code_.to_string();
 }
 
 std::string PyShortCode::repr(const PyShortCode code) {
-    const auto str = code.code_.to_string();
-    return std::format("<klotski.ShortCode {} @{}>", code.value(), str);
+    return std::format("<klotski.ShortCode {} @{}>", code.value(), str(code));
 }
 
 // ----------------------------------------------------------------------------------------- //
@@ -61,8 +59,7 @@ static ShortCode convert(const uint32_t code) {
 }
 
 static ShortCode convert(const std::string_view code) {
-    // TODO: using `std::string_view` in from_string
-    if (const auto str = ShortCode::from_string(std::string {code})) {
+    if (const auto str = ShortCode::from_string(code)) {
         return str.value();
     }
     throw PyCodecExp(std::format("invalid short code -> `{}`", code));
