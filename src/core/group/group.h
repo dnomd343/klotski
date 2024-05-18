@@ -72,8 +72,12 @@
 
 namespace klotski::cases {
 
+constexpr uint32_t TYPE_ID_LIMIT = 203;
+constexpr uint32_t ALL_GROUP_NUM = 25422;
+
 class Group;
 
+// TODO: add constexpr
 class GroupUnion {
 public:
 	GroupUnion() = delete;
@@ -81,7 +85,15 @@ public:
 	// ------------------------------------------------------------------------------------- //
 
 	/// Get the original type id.
-	[[nodiscard]] int type_id() const;
+	[[nodiscard]] uint32_t unwrap() const;
+
+	/// Create GroupUnion without any check.
+	static GroupUnion unsafe_create(uint32_t type_id);
+
+	/// Create GroupUnion with validity check.
+	static std::optional<GroupUnion> create(uint32_t type_id);
+
+	// ------------------------------------------------------------------------------------- //
 
 	/// Get the number of cases contained.
 	[[nodiscard]] uint32_t size() const;
@@ -96,18 +108,15 @@ public:
 	[[nodiscard]] std::vector<Group> groups() const;
 
 	/// Get the group instance with the specified group id.
-	[[nodiscard]] std::optional<Group> group(int group_id) const;
+	[[nodiscard]] std::optional<Group> group(uint32_t group_id) const;
 
 	// ------------------------------------------------------------------------------------- //
-
-	/// Create GroupUnion from type id.
-	static std::optional<GroupUnion> from_id(int type_id);
 
 	/// Create GroupUnion from RawCode.
 	static GroupUnion from_raw_code(codec::RawCode raw_code);
 
 	/// Create GroupUnion from ShortCode.
-	static GroupUnion from_short_code(codec::RawCode short_code);
+	static GroupUnion from_short_code(codec::ShortCode short_code);
 
 	/// Create GroupUnion from CommonCode.
 	static GroupUnion from_common_code(codec::CommonCode common_code);
@@ -115,15 +124,31 @@ public:
 	// ------------------------------------------------------------------------------------- //
 
 private:
-	int type_id_ {};
+	uint32_t type_id_ {};
 
-	// TODO: only allow private build (std::bit_cast directly)
-	// explicit GroupUnion(const int type_id) : type_id_(type_id) {}
+	// ------------------------------------------------------------------------------------- //
+
+	/// Get the type id of RawCode.
+	static uint32_t type_id(codec::RawCode raw_code);
+
+	/// Get the type id of CommonCode.
+	static uint32_t type_id(codec::CommonCode common_code);
+
+	// ------------------------------------------------------------------------------------- //
 };
+
+typedef std::vector<codec::RawCode> RawCodes;
+typedef std::vector<codec::CommonCode> CommonCodes;
 
 class Group {
 public:
 	Group() = delete;
+
+	/// Create Group without any check.
+	static Group unsafe_create(uint32_t type_id, uint32_t group_id);
+
+	/// Create Group with validity check.
+	static std::optional<Group> create(uint32_t type_id, uint32_t group_id);
 
 	// TODO: fetch group size directly
 	[[nodiscard]] uint32_t size() const;
@@ -132,27 +157,20 @@ public:
 
 	// TODO: maybe define CommonCodes here
 	// TODO: get all cases from current Group
-	const std::vector<codec::CommonCode>& cases();
+	const CommonCodes& cases();
 
 	static Group from_raw_code(codec::RawCode raw_code);
 	static Group from_common_code(codec::CommonCode common_code);
 
 private:
-	int type_id_;
-	int group_id_;
-
-	// TODO: only allow cast from struct directly.
-	// explicit Group(int type_id, int group_id) : type_id_(type_id), group_id_(group_id) {}
-
-	// TODO: mutex only in inner impl class.
-	// bool available_;
-	// std::mutex building_;
+	uint32_t type_id_;
+	uint32_t group_id_;
 };
 
 class GroupCase {
 public:
 	struct info_t {
-		uint16_t type_id; // TODO: int or uint ?
+		uint16_t type_id;
 		uint16_t group_id;
 		uint32_t group_index;
 	};
@@ -181,3 +199,5 @@ private:
 };
 
 } // namespace klotski::cases
+
+#include "internal/group.inl"

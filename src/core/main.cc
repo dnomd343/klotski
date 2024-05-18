@@ -24,6 +24,11 @@ using klotski::codec::SHORT_CODE_LIMIT;
 int main() {
     const auto start = clock();
 
+    auto kk = GroupUnion::create(123).value();
+    std::cout << kk.size() << std::endl;
+    std::cout << kk.group_num() << std::endl;
+    std::cout << kk.max_group_size() << std::endl;
+
     // auto core = Core([](const uint64_t code, uint64_t) {
     //     std::cout << RawCode::unsafe_create(code);
     //     std::cout << std::endl;
