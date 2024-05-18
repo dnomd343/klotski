@@ -33,3 +33,7 @@ add_library(klotski::core ALIAS klotski_core)
 # TODO: just for dev testing
 add_executable(klotski_core_bin main.cc)
 target_link_libraries(klotski_core_bin PRIVATE klotski_core)
+
+add_executable(codec_benchmark benchmark/codec.cc)
+target_compile_options(codec_benchmark PRIVATE -fno-rtti -fno-exceptions)
+target_link_libraries(codec_benchmark PRIVATE klotski::core benchmark::benchmark_main)
