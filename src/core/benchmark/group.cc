@@ -44,6 +44,17 @@ std::vector<uint64_t> common_code_samples(uint64_t num) {
 
 }
 
+std::vector<uint64_t> raw_code_samples(uint64_t num) {
+
+    auto codes = common_code_samples(num);
+
+    for (auto &code : codes) {
+        code = klotski::codec::CommonCode::unsafe_create(code).to_raw_code().unwrap();
+    }
+
+    return codes;
+}
+
 static void CommonCodeToTypeId(benchmark::State &state) {
 
     auto samples = common_code_samples(state.range(0));
@@ -61,6 +72,29 @@ static void CommonCodeToTypeId(benchmark::State &state) {
 
 }
 
-BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+static void RawCodeToTypeId(benchmark::State &state) {
+
+    auto samples = raw_code_samples(state.range(0));
+
+    // for (auto code : samples) {
+    //     if (klotski::codec::RawCode::check(code) == false) {
+    //         std::cout << "error" << std::endl;
+    //     }
+    // }
+
+    for (auto _ : state) {
+
+        for (auto code : samples) {
+            volatile auto ret = klotski::cases::raw_code_to_type_id(code);
+        }
+
+    }
+
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+
+}
+
+// BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
 BENCHMARK_MAIN();
