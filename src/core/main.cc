@@ -25,7 +25,37 @@ using klotski::codec::SHORT_CODE_LIMIT;
 int main() {
     const auto start = clock();
 
-    std::cout << std::format("{:09X}", 0x1A9BF0C00) << std::endl;
+    // std::cout << klotski::cases::common_code_to_type_id(0x1A9BF0C00) << std::endl;
+
+    // uint32_t demo = 0b101001110110;
+    //                 010110001001
+    //                 01001000100
+
+    // 00 -> 1 | 0 -> 0
+    // 01 -> 1 | 1 -> 1
+    // 10 -> 0 | 0 -> 0
+    // 11 -> 0 | 1 -> 0
+
+    // uint32_t ret = ((~demo >> 1) & demo) & 0x55555555;
+    //
+    // std::cout << ret << std::endl;
+    // std::cout << std::popcount(ret) << std::endl;
+
+    uint32_t range = 0xA9BF0C00; // n_01 = 1 / n_10 = 4 / n_11 = 4
+
+    // 10 10 10 01 10 11 11 11 00 00 11 00 00 00 00 00
+    //  0  0  0  1  0  0  0  0  1  1  0  1  1  1  1  1
+    //  0  0  0  1  0  1  1  1  0  0  1  0  0  0  0  0
+    //  0  0  0  1  0  0  0  0  0  0  0  0  0  0  0  0
+
+    uint32_t k_01 = (~range >> 1) & range & 0x55555555;
+    uint32_t k_10 = (range >> 1) & ~range & 0x55555555;
+    uint32_t k_11 = (range >> 1) & range & 0x55555555;
+
+    // std::cout << k_01 << std::endl;
+    std::cout << std::popcount(k_01) << std::endl;
+    std::cout << std::popcount(k_10) << std::endl;
+    std::cout << std::popcount(k_11) << std::endl;
 
     // auto kk = GroupUnion::create(123).value();
     // std::cout << kk.size() << std::endl;

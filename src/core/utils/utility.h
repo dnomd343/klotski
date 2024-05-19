@@ -16,6 +16,8 @@
             return ins;                   \
         }
 
+#define KLSK_INLINE __attribute__((always_inline))
+
 namespace klotski {
 
 /// Get the number of consecutive `0` in the low bits.

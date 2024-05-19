@@ -75,6 +75,9 @@ namespace klotski::cases {
 constexpr uint32_t TYPE_ID_LIMIT = 203;
 constexpr uint32_t ALL_GROUP_NUM = 25422;
 
+uint32_t common_code_to_type_id(uint64_t common_code);
+uint32_t raw_code_to_type_id(uint64_t raw_code);
+
 class Group;
 
 // TODO: add constexpr
