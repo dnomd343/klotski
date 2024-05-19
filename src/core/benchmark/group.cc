@@ -94,7 +94,7 @@ static void RawCodeToTypeId(benchmark::State &state) {
 
 }
 
-// BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
 BENCHMARK_MAIN();
