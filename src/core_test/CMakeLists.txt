@@ -65,6 +65,7 @@ add_test(NAME klotski_core COMMAND test_klotski_core)
 
 set(KLSK_TEST_GROUP_TMP_SRC
     group_tmp/group_union.cc
+    group_tmp/group_extend.cc
 )
 
 add_executable(test_klotski_group_tmp ${KLSK_TEST_GROUP_TMP_SRC})

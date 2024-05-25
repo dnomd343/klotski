@@ -94,7 +94,24 @@ static void RawCodeToTypeId(benchmark::State &state) {
 
 }
 
-BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
-BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+static void GroupExtend(benchmark::State &state) {
+
+    auto src = klotski::codec::RawCode::from_common_code(0x1A9BF0C00)->unwrap();
+
+    for (auto _ : state) {
+
+        volatile auto ret = klotski::cases::group_extend_from_seed(src);
+
+        // std::cout << ret.size() << std::endl;
+    }
+
+    // state.SetItemsProcessed(state.iterations());
+
+}
+
+// BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+// BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+
+BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_MAIN();
