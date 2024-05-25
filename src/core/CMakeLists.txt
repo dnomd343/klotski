@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(KLOTSKI_CORE_SRC
         all_cases/internal/basic_ranges.cc
         all_cases/internal/all_cases.cc
-        all_cases/internal/derive.cc
+#        all_cases/internal/derive.cc
 
         common_code/internal/common_code.cc
         common_code/internal/serialize.cc

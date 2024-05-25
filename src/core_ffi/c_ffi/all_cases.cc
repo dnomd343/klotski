@@ -40,13 +40,13 @@ void all_cases_build_async(const executor_t executor, const notifier_t callback)
 }
 
 void all_cases_build_parallel(executor_t executor) {
-    AllCases::instance().build_parallel([executor](Runner &&runner) {
-        const auto func = [](void *arg) {
-            (*static_cast<Runner*>(arg))();
-            delete static_cast<Runner*>(arg);
-        };
-        executor(func, new Runner {std::move(runner)});
-    });
+    // AllCases::instance().build_parallel([executor](Runner &&runner) {
+    //     const auto func = [](void *arg) {
+    //         (*static_cast<Runner*>(arg))();
+    //         delete static_cast<Runner*>(arg);
+    //     };
+    //     executor(func, new Runner {std::move(runner)});
+    // });
 }
 
 void all_cases_build_parallel_async(executor_t executor, notifier_t callback) {

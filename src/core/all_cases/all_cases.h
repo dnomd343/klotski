@@ -106,7 +106,7 @@ public:
 
     /// TODO: remove this interface
     /// Execute the build process with parallel support and ensure thread safety.
-    void build_parallel(Executor &&executor);
+    // void build_parallel(Executor &&executor);
 
     /// Execute the build process in parallel without blocking.
     void build_parallel_async(Executor &&executor, Notifier &&callback);
@@ -126,20 +126,6 @@ private:
 
     KLSK_INSTANCE(AllCases)
 };
-
-inline const std::vector<uint32_t>& get_reversed() {
-    static auto value = []() {
-        std::vector<uint32_t> ranges {BasicRanges::instance().fetch()};
-        for (auto &x : ranges) {
-            x = range_reverse(x);
-        }
-        return ranges;
-    }();
-    return value;
-}
-
-void global_derive(const std::vector<uint32_t> &range, std::vector<uint32_t> &output, int head);
-void global_derive_pro(const std::vector<uint32_t> &range, const std::vector<uint32_t> &reversed, std::vector<uint32_t> &output, int head);
 
 // ------------------------------------------------------------------------------------- //
 

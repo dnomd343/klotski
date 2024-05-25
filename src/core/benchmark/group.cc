@@ -7,6 +7,7 @@
 
 #include <ranges/ranges.h>
 
+#include "../../../third_party/thread-pool/include/BS_thread_pool.hpp"
 #include "all_cases/all_cases.h"
 #undef private
 
@@ -175,12 +176,25 @@ static void OriginBasicRanges(benchmark::State &state) {
 static void OriginAllCases(benchmark::State &state) {
 
     klotski::cases::BasicRanges::instance().build();
-    klotski::cases::get_reversed();
+    // klotski::cases::get_reversed();
+
+    // BS::thread_pool pool {4};
 
     for (auto _ : state) {
         auto &pp = klotski::cases::AllCases::instance();
         pp.available_ = false;
         pp.build();
+
+        // pp.build_parallel_async([](auto func) {func();}, []() {
+        //     // std::cout << "hello" << std::endl;
+        // });
+
+        // pp.build_parallel_async([&pool](auto func) {
+        //     pool.submit_task(func);
+        // }, [] {});
+        //
+        // pool.wait();
+
     }
 
 }

@@ -12,6 +12,8 @@
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
+#include "../../third_party/thread-pool/include/BS_thread_pool.hpp"
+
 using klotski::core::Core;
 
 using klotski::cases::AllCases;
@@ -25,35 +27,21 @@ using klotski::cases::GroupUnion;
 using klotski::codec::SHORT_CODE_LIMIT;
 
 int main() {
-    const auto start = clock();
+    // const auto start = clock();
 
-    auto &basic_ranges = klotski::cases::BasicRanges::instance().fetch();
+    const auto start = std::chrono::system_clock::now();
 
-    klotski::cases::Ranges flip {basic_ranges};
-    for (auto &x : flip) {
-        x = klotski::range_reverse(x);
-    }
+    BS::thread_pool pool {};
 
-    klotski::cases::Ranges results;
-    results.reserve(klotski::cases::ALL_CASES_NUM_);
+    klotski::cases::BasicRanges::instance().build();
 
-    klotski::cases::derive_demo(basic_ranges, flip, results, 0);
-    klotski::cases::derive_demo(basic_ranges, flip, results, 1);
-    klotski::cases::derive_demo(basic_ranges, flip, results, 2);
+    klotski::cases::AllCases::instance().build_parallel_async([&pool](auto func) {
+        pool.submit_task(func);
+    }, [] {});
 
-    klotski::cases::derive_demo(basic_ranges, flip, results, 4);
-    klotski::cases::derive_demo(basic_ranges, flip, results, 5);
-    klotski::cases::derive_demo(basic_ranges, flip, results, 6);
+    pool.wait();
 
-    klotski::cases::derive_demo(basic_ranges, flip, results, 8);
-    klotski::cases::derive_demo(basic_ranges, flip, results, 9);
-    klotski::cases::derive_demo(basic_ranges, flip, results, 10);
-
-    klotski::cases::derive_demo(basic_ranges, flip, results, 12);
-    klotski::cases::derive_demo(basic_ranges, flip, results, 13);
-    klotski::cases::derive_demo(basic_ranges, flip, results, 14);
-
-    // std::cout << results.size() << " vs " << klotski::cases::ALL_CASES_NUM_ << std::endl;
+    std::cerr << std::chrono::system_clock::now() - start << std::endl;
 
     // auto raw_code = RawCode::from_common_code(0x1A9BF0C00)->unwrap();
     // auto ret = klotski::cases::group_extend_from_seed(raw_code);
@@ -92,7 +80,7 @@ int main() {
     //     std::cout << "----" << std::endl;
     // }
 
-    std::cerr << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
+    // std::cerr << ((clock() - start) * 1000 / CLOCKS_PER_SEC) << "ms" << std::endl;
 
     return 0;
 }
