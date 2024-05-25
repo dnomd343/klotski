@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <thread>
 #include <iostream>
 #include <format>
@@ -25,10 +26,36 @@ using klotski::codec::SHORT_CODE_LIMIT;
 int main() {
     const auto start = clock();
 
-    auto raw_code = RawCode::from_common_code(0x1A9BF0C00)->unwrap();
-    auto ret = klotski::cases::group_extend_from_seed(raw_code);
+    klotski::cases::spawn_ranges(2, 1, 4, 4);
 
-    std::cout << ret.size() << std::endl;
+    // std::vector<int> series {1, 2, 3, 4};
+
+    // do { // full permutation traversal
+    //
+    //     for (auto s : series) {
+    //         std::cout << s << " ";
+    //     }
+    //     std::cout << std::endl;
+    //
+    // } while (std::next_permutation(series.begin(), series.end()));
+
+    // std::array a{'a', 'b', 'c'};
+    // do {
+    //     for (auto x : a) {
+    //         std::cout << x;
+    //     }
+    //     std::cout << std::endl;
+    // }
+    // while (std::ranges::next_permutation(a).found);
+
+    // auto raw_code = RawCode::from_common_code(0x1A9BF0C00)->unwrap();
+    // auto ret = klotski::cases::group_extend_from_seed(raw_code);
+    //
+    // std::cout << ret.size() << std::endl;
+
+    // 1 A9BF0C00 -> 10 10 10 01 10 11 11 11 00 00 11 000000
+    // auto ret = klotski::cases::spawn_ranges(2, 1, 4, 4);
+    // std::cout << ret.size() << std::endl;
 
     // auto kk = GroupUnion::create(123).value();
     // std::cout << kk.size() << std::endl;

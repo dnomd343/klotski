@@ -109,9 +109,73 @@ static void GroupExtend(benchmark::State &state) {
 
 }
 
+// static void FilterFromAllCases(benchmark::State &state) {
+//
+//     klotski::cases::AllCases::instance().build();
+//
+//     for (auto _ : state) {
+//         for (uint64_t head = 0; head < 16; ++head) {
+//
+//             for (const auto range : AllCases::instance().fetch()[head]) {
+//                 uint64_t common_code = head << 32 | range;
+//
+//                 volatile auto ret = klotski::cases::common_code_to_type_id(common_code);
+//
+//             }
+//
+//         }
+//     }
+//
+// }
+
+static std::vector<std::tuple<int, int, int, int>> target_nums() {
+
+    std::vector<std::tuple<int, int, int, int>> results;
+
+    for (int n = 0; n <= 7; ++n) {
+        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) {
+            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) {
+                results.emplace_back(16 - n*2 - n_1x1, n - n_2x1, n_2x1, n_1x1);
+            }
+        }
+    }
+
+    results.resize(203);
+    return results;
+}
+
+static void SpawnRanges(benchmark::State &state) {
+
+    auto nums = target_nums();
+
+    // std::cout << nums.size() << std::endl;
+    //
+    // for (auto [n1, n2, n3, n4] : nums) {
+    //     if (n1 == 2 && n2 == 1 && n3 == 4 && n4 == 4) {
+    //
+    //         std::cout << "ok" << std::endl;
+    //
+    //     }
+    // }
+
+    for (auto _ : state) {
+
+        // klotski::cases::spawn_ranges(2, 1, 4, 4);
+
+        for (auto [n1, n2, n3, n4] : nums) {
+            klotski::cases::spawn_ranges(n1, n2, n3, n4);
+        }
+    }
+
+}
+
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
-BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
+// BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
+
+// BENCHMARK(FilterFromAllCases)->Unit(benchmark::kMillisecond);
+
+BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_MAIN();

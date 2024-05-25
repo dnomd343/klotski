@@ -20,3 +20,43 @@ TEST(Group, group_extend) {
     auto hash_ret = hash::xxh3(codes.data(), codes.size() * sizeof(uint64_t));
     EXPECT_EQ(hash_ret, 0x91BD28A749312A6D);
 }
+
+static std::vector<std::tuple<int, int, int, int>> target_nums() {
+
+    std::vector<std::tuple<int, int, int, int>> results;
+
+    for (int n = 0; n <= 7; ++n) {
+        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) {
+            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) {
+                results.emplace_back(16 - n*2 - n_1x1, n - n_2x1, n_2x1, n_1x1);
+            }
+        }
+    }
+
+    // results.resize(203);
+    return results;
+}
+
+TEST(Group, ranges) {
+    // auto ret = klotski::cases::spawn_ranges(2, 1, 4, 4);
+    //
+    // EXPECT_EQ(ret.size(), 34650);
+    //
+    // auto hash_ret = hash::xxh3(ret.data(), ret.size() * 4);
+    // EXPECT_EQ(hash_ret, 0xF6F87606E4205EAF);
+
+    std::vector<uint32_t> ranges;
+    for (auto [n1, n2, n3, n4] : target_nums()) {
+
+        auto kk = klotski::cases::spawn_ranges(n1, n2, n3, n4);
+
+        ranges.insert(ranges.end(), kk.begin(), kk.end());
+    }
+
+    EXPECT_EQ(ranges.size(), 7311921);
+
+    auto hash_ret = hash::xxh3(ranges.data(), ranges.size() * 4);
+
+    EXPECT_EQ(hash_ret, 0xA1E247B01D5A9545);
+
+}
