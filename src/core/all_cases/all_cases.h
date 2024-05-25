@@ -58,7 +58,7 @@ typedef std::function<void(std::function<void()>&&)> Executor;
 
 // ------------------------------------------------------------------------------------- //
 
-constexpr auto BASIC_RANGES_NUM = 7311921;
+constexpr auto BASIC_RANGES_NUM = 7311885;
 
 constexpr std::array ALL_CASES_NUM {
     2942906, 2260392, 2942906, 0,
@@ -123,9 +123,6 @@ private:
 
     /// Get static singleton variable.
     static RangesUnion& get_cases();
-
-    /// Build all valid ranges of the specified head.
-    static void build_cases(int head, Ranges &release);
 
     KLSK_INSTANCE(AllCases)
 };

@@ -25,7 +25,7 @@ set(KLOTSKI_CORE_SRC
         group/internal/group.cc
 
         ranges/internal/ranges.cc
-        ranges/internal/head.cc
+        ranges/internal/derive.cc
 )
 
 add_library(klotski_core STATIC ${KLOTSKI_CORE_SRC})

@@ -16,7 +16,7 @@ using klotski::cases::AllCases;
 static std::vector<uint64_t> all_common_codes() {
     std::vector<uint64_t> codes;
     for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto range : AllCases::instance().fetch()[head].ranges_) {
+        for (const auto range : AllCases::instance().fetch()[head]) {
             codes.emplace_back(head << 32 | range);
         }
     }
@@ -159,7 +159,7 @@ static void SpawnRanges(benchmark::State &state) {
         kk.reserve(7311921);
 
         for (auto [n, n_2x1, n_1x1] : nums) {
-            kk.spawn_more(n, n_2x1, n_1x1);
+            kk.spawn(n, n_2x1, n_1x1);
         }
     }
 
@@ -172,6 +172,35 @@ static void OriginBasicRanges(benchmark::State &state) {
     }
 }
 
+static void OriginAllCases(benchmark::State &state) {
+
+    klotski::cases::BasicRanges::instance().build();
+
+    for (auto _ : state) {
+        auto &pp = klotski::cases::AllCases::instance();
+        pp.available_ = false;
+        pp.build();
+    }
+
+}
+
+static void RangesDerive(benchmark::State &state) {
+
+    auto &basic_ranges = klotski::cases::BasicRanges::instance().fetch();
+
+    klotski::cases::Ranges results;
+    results.reserve(klotski::cases::ALL_CASES_NUM[5]);
+
+    for (auto _ : state) {
+
+        results.clear();
+        basic_ranges.derive(5, results);
+
+    }
+
+    // std::cout << results.size() << " vs " << klotski::cases::ALL_CASES_NUM[5] << std::endl;
+}
+
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
@@ -181,6 +210,10 @@ static void OriginBasicRanges(benchmark::State &state) {
 
 // BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
+// BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
+
+// BENCHMARK(OriginAllCases)->Unit(benchmark::kMillisecond);
+
+BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_MAIN();

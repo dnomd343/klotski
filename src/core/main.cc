@@ -27,14 +27,6 @@ using klotski::codec::SHORT_CODE_LIMIT;
 int main() {
     const auto start = clock();
 
-    // auto kk = klotski::cases::RangesDemo();
-    //
-    // for (auto x : kk) {
-    //     std::cout << x << std::endl;
-    // }
-
-    // klotski::cases::spawn_ranges(2, 1, 4, 4);
-
     // auto raw_code = RawCode::from_common_code(0x1A9BF0C00)->unwrap();
     // auto ret = klotski::cases::group_extend_from_seed(raw_code);
     //

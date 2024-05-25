@@ -39,7 +39,7 @@ protected:
         EXPECT_EQ(all_cases_num, ALL_CASES_NUM_); // verify all cases global size
 
         for (int head = 0; head < 16; ++head) {
-            EXPECT_EQ(hash::xxh3(all_cases[head].ranges_), ALL_CASES_XXH3[head]); // verify all cases checksum
+            EXPECT_EQ(hash::xxh3(all_cases[head]), ALL_CASES_XXH3[head]); // verify all cases checksum
         }
     }
 };

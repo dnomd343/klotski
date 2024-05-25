@@ -8,14 +8,16 @@ using klotski::cases::Ranges;
 using klotski::cases::BasicRanges;
 
 typedef std::tuple<int, int, int> RangeType;
-typedef std::array<RangeType, 204> RangeTypeUnion;
+typedef std::array<RangeType, 203> RangeTypeUnion;
 
 /// Generate all possible basic-ranges permutations.
 consteval static RangeTypeUnion range_types() {
     RangeTypeUnion data;
     for (int i = 0, n = 0; n <= 7; ++n) { // 1x2 + 2x1 -> 0 ~ 7
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // 2x1 -> 0 ~ n
-            // TODO: skip n == 7 && n_2x1 == 7
+            if (n == 7 && n_2x1 == 7) {
+                break;
+            }
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // 1x1 -> 0 ~ (14 - 2n)
                 data[i++] = {n, n_2x1, n_1x1};
             }
@@ -48,7 +50,7 @@ void BasicRanges::build_ranges(Ranges &ranges) {
 
     std::list flags { ranges.begin() };
     for (auto [n, n_2x1, n_1x1] : range_types()) {
-        ranges.spawn_more(n, n_2x1, n_1x1);
+        ranges.spawn(n, n_2x1, n_1x1);
         flags.emplace_back(ranges.end()); // mark ordered interval
     }
 
@@ -61,5 +63,7 @@ void BasicRanges::build_ranges(Ranges &ranges) {
         }
     } while (flags.size() > 2); // merge until only one interval remains
 
-    ranges.reverse(); // flip every 2-bit
+    for (auto &x : ranges) {
+        x = range_reverse(x); // flip every 2-bit
+    }
 }

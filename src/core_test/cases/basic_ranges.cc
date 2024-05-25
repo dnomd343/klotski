@@ -1,7 +1,7 @@
 #include "hash.h"
 #include "helper.h"
 
-static constexpr uint64_t BASIC_RANGES_XXH3 = 0x82b040060044e336;
+static constexpr uint64_t BASIC_RANGES_XXH3 = 0x2ced674494fe904d;
 
 class BasicRangesTest : public testing::Test, public Concurrent {
 protected:
@@ -24,12 +24,12 @@ protected:
     static void Verify() {
         const auto &basic_ranges = BasicRanges::instance().fetch();
         EXPECT_EQ(basic_ranges.size(), BASIC_RANGES_NUM); // verify basic ranges size
-        EXPECT_EQ(hash::xxh3(basic_ranges.ranges_), BASIC_RANGES_XXH3); // verify basic ranges checksum
+        EXPECT_EQ(hash::xxh3(basic_ranges), BASIC_RANGES_XXH3); // verify basic ranges checksum
     }
 };
 
 TEST_FF(BasicRanges, constant) {
-    EXPECT_EQ(BASIC_RANGES_NUM, 7311921);
+    EXPECT_EQ(BASIC_RANGES_NUM, 7311885);
 }
 
 TEST_FF(BasicRanges, basic_ranges) {

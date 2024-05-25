@@ -2,11 +2,14 @@
 
 #include "all_cases/all_cases.h"
 
+using klotski::cases::Ranges;
 using klotski::cases::AllCases;
+using klotski::cases::BasicRanges;
+using klotski::cases::ALL_CASES_NUM;
 
-/// Calculate all possible klotski heads.
-consteval static std::array<int, 12> case_heads() {
-    std::array<int, 12> heads = {};
+/// Generate all possible klotski heads.
+consteval static std::array<int, 12> heads() {
+    std::array<int, 12> heads {};
     for (int i = 0, head = 0; head < 15; ++head) {
         if (head % 4 != 3) {
             heads[i++] = head;
@@ -15,10 +18,11 @@ consteval static std::array<int, 12> case_heads() {
     return heads;
 }
 
-void AllCases::build_cases(const int head, Ranges &release) {
+/// Build all valid ranges of the specified head.
+static void build_cases(const int head, Ranges &release) {
     release.clear();
     release.reserve(ALL_CASES_NUM[head]);
-    BasicRanges::instance().fetch().with_head(head, release);
+    BasicRanges::instance().fetch().derive(head, release);
 }
 
 void AllCases::build() {
@@ -36,7 +40,7 @@ void AllCases::build_parallel(Executor &&executor) {
         return; // data is already available
     }
     std::vector<std::future<void>> futures;
-    for (auto head : case_heads()) {
+    for (auto head : heads()) {
         auto promise = std::make_shared<std::promise<void>>();
         futures.emplace_back(promise->get_future());
         executor([head, promise = std::move(promise)]() {
@@ -63,10 +67,10 @@ void AllCases::build_parallel_async(Executor &&executor, Notifier &&callback) {
     }
     auto counter = std::make_shared<std::atomic<int>>(0);
     auto all_done = std::make_shared<Notifier>(std::move(callback));
-    for (auto head : case_heads()) {
+    for (auto head : heads()) {
         executor([this, head, counter, all_done]() {
             build_cases(head, get_cases()[head]);
-            if (counter->fetch_add(1) == case_heads().size() - 1) { // all tasks done
+            if (counter->fetch_add(1) == heads().size() - 1) { // all tasks done
                 available_ = true;
                 building_.unlock(); // release building mutex
                 all_done->operator()(); // trigger callback

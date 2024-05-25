@@ -18,6 +18,8 @@
 
 #define KLSK_INLINE __attribute__((always_inline))
 
+#define KLSK_ASSUME(expr) __builtin_assume(expr)
+
 namespace klotski {
 
 /// Get the number of consecutive `0` in the low bits.
