@@ -24,7 +24,7 @@ protected:
     static void Verify() {
         const auto &basic_ranges = BasicRanges::instance().fetch();
         EXPECT_EQ(basic_ranges.size(), BASIC_RANGES_NUM); // verify basic ranges size
-        EXPECT_EQ(hash::xxh3(basic_ranges), BASIC_RANGES_XXH3); // verify basic ranges checksum
+        EXPECT_EQ(hash::xxh3(basic_ranges.ranges_), BASIC_RANGES_XXH3); // verify basic ranges checksum
     }
 };
 

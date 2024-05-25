@@ -1,6 +1,7 @@
 #include <hash.h>
 #include <group/group.h>
 #include <gtest/gtest.h>
+#include <ranges/ranges.h>
 #include <__format/format_functions.h>
 
 TEST(Group, group_extend) {
@@ -45,32 +46,36 @@ TEST(Group, ranges) {
     // auto hash_ret = hash::xxh3(ret.data(), ret.size() * 4);
     // EXPECT_EQ(hash_ret, 0xF6F87606E4205EAF);
 
-    std::vector<uint32_t> ranges;
+    klotski::cases::Ranges kk {};
+
+    // std::vector<uint32_t> ranges;
     for (auto [n, n_2x1, n_1x1] : target_nums()) {
+
+        kk.spawn_more(n, n_2x1, n_1x1);
 
         // auto kk = klotski::cases::spawn_ranges(n, n_2x1, n_1x1);
 
         // ranges.insert(ranges.end(), kk.begin(), kk.end());
     }
 
-    EXPECT_EQ(ranges.size(), 7311921);
+    EXPECT_EQ(kk.ranges_.size(), 7311921);
 
-    auto hash_ret = hash::xxh3(ranges.data(), ranges.size() * 4);
+    auto hash_ret = hash::xxh3(kk.ranges_);
 
     EXPECT_EQ(hash_ret, 0xA1E247B01D5A9545);
 
 }
 
 TEST(Group, basic_ranges) {
-    auto ret = klotski::cases::basic_ranges();
+    // auto ret = klotski::cases::basic_ranges();
     // std::cout << ret.size() << std::endl;
 
-    EXPECT_EQ(ret.size(), 7311921);
+    // EXPECT_EQ(ret.size(), 7311921);
 
-    auto hash_ret = hash::xxh3(ret);
+    // auto hash_ret = hash::xxh3(ret);
     // std::cout << std::format("{:X}", hash_ret) << std::endl;
 
     // EXPECT_EQ(hash_ret, 0xA1E247B01D5A9545); // no sorted
     // EXPECT_EQ(hash_ret, 0x00A926AB1121230D); // no reversed
-    EXPECT_EQ(hash_ret, 0x82B040060044E336);
+    // EXPECT_EQ(hash_ret, 0x82B040060044E336);
 }

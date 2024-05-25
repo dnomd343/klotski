@@ -2,6 +2,7 @@
 #include <thread>
 #include <iostream>
 #include <format>
+#include <ranges/ranges.h>
 
 #include "core/core.h"
 #include "group/group.h"
@@ -26,42 +27,13 @@ using klotski::codec::SHORT_CODE_LIMIT;
 int main() {
     const auto start = clock();
 
-    // klotski::cases::spawn_ranges(2, 1, 4, 4);
-
-    std::vector<uint32_t> r1 {1, 4, 5, 9, 0, 2, 3, 6, 7, 8};
-    auto begin = r1.begin();
-    auto mid = r1.begin() + 4;
-    auto end = r1.end();
-
-    std::vector<uint32_t> results;
-    results.resize(end - begin);
-    std::merge(begin, mid, mid, end, results.begin());
-    std::copy(results.begin(), results.end(), begin);
-
-    for (auto x : r1) {
-        std::cout << x << " ";
-    }
-    std::cout << std::endl;
-
-    // std::vector<int> series {1, 2, 3, 4};
-
-    // do { // full permutation traversal
+    // auto kk = klotski::cases::RangesDemo();
     //
-    //     for (auto s : series) {
-    //         std::cout << s << " ";
-    //     }
-    //     std::cout << std::endl;
-    //
-    // } while (std::next_permutation(series.begin(), series.end()));
-
-    // std::array a{'a', 'b', 'c'};
-    // do {
-    //     for (auto x : a) {
-    //         std::cout << x;
-    //     }
-    //     std::cout << std::endl;
+    // for (auto x : kk) {
+    //     std::cout << x << std::endl;
     // }
-    // while (std::ranges::next_permutation(a).found);
+
+    // klotski::cases::spawn_ranges(2, 1, 4, 4);
 
     // auto raw_code = RawCode::from_common_code(0x1A9BF0C00)->unwrap();
     // auto ret = klotski::cases::group_extend_from_seed(raw_code);

@@ -4,6 +4,9 @@
 
 #define private public
 #include "group/group.h"
+
+#include <ranges/ranges.h>
+
 #include "all_cases/all_cases.h"
 #undef private
 
@@ -13,7 +16,7 @@ using klotski::cases::AllCases;
 static std::vector<uint64_t> all_common_codes() {
     std::vector<uint64_t> codes;
     for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto range : AllCases::instance().fetch()[head]) {
+        for (const auto range : AllCases::instance().fetch()[head].ranges_) {
             codes.emplace_back(head << 32 | range);
         }
     }
@@ -151,17 +154,13 @@ static void SpawnRanges(benchmark::State &state) {
     auto nums = target_nums();
 
     for (auto _ : state) {
+
+        klotski::cases::Ranges kk {};
+        kk.reserve(7311921);
+
         for (auto [n, n_2x1, n_1x1] : nums) {
-            // klotski::cases::spawn_ranges(n, n_2x1, n_1x1);
+            kk.spawn_more(n, n_2x1, n_1x1);
         }
-    }
-
-}
-
-static void BasicRanges(benchmark::State &state) {
-
-    for (auto _ : state) {
-        klotski::cases::basic_ranges();
     }
 
 }
@@ -182,8 +181,6 @@ static void OriginBasicRanges(benchmark::State &state) {
 
 // BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(BasicRanges)->Unit(benchmark::kMillisecond);
-
-// BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
+BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_MAIN();

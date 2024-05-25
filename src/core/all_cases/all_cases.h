@@ -45,13 +45,12 @@
 #include <functional>
 
 #include "utils/utility.h"
+#include "ranges/ranges.h"
 
 namespace klotski::cases {
 
 // ------------------------------------------------------------------------------------- //
 
-typedef uint32_t Range;
-typedef std::vector<Range> Ranges;
 typedef std::array<Ranges, 16> RangesUnion;
 
 typedef std::function<void()> Notifier;
@@ -94,9 +93,6 @@ private:
 
     /// Search and sort all possible basic-ranges permutations.
     static void build_ranges(Ranges &ranges);
-
-    /// Spawn all range permutations of specified conditions.
-    static void spawn_ranges(Ranges &ranges, int, int, int, int);
 
     KLSK_INSTANCE(BasicRanges)
 };
