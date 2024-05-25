@@ -1,9 +1,11 @@
 #include <iostream>
 
 #include <benchmark/benchmark.h>
-#include <group/group.h>
 
+#define private public
+#include "group/group.h"
 #include "all_cases/all_cases.h"
+#undef private
 
 using klotski::cases::AllCases;
 
@@ -128,14 +130,14 @@ static void GroupExtend(benchmark::State &state) {
 //
 // }
 
-static std::vector<std::tuple<int, int, int, int>> target_nums() {
+static std::vector<std::tuple<int, int, int>> target_nums() {
 
-    std::vector<std::tuple<int, int, int, int>> results;
+    std::vector<std::tuple<int, int, int>> results;
 
     for (int n = 0; n <= 7; ++n) {
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) {
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) {
-                results.emplace_back(16 - n*2 - n_1x1, n - n_2x1, n_2x1, n_1x1);
+                results.emplace_back(n, n_2x1, n_1x1);
             }
         }
     }
@@ -148,25 +150,27 @@ static void SpawnRanges(benchmark::State &state) {
 
     auto nums = target_nums();
 
-    // std::cout << nums.size() << std::endl;
-    //
-    // for (auto [n1, n2, n3, n4] : nums) {
-    //     if (n1 == 2 && n2 == 1 && n3 == 4 && n4 == 4) {
-    //
-    //         std::cout << "ok" << std::endl;
-    //
-    //     }
-    // }
-
     for (auto _ : state) {
-
-        // klotski::cases::spawn_ranges(2, 1, 4, 4);
-
-        for (auto [n1, n2, n3, n4] : nums) {
-            klotski::cases::spawn_ranges(n1, n2, n3, n4);
+        for (auto [n, n_2x1, n_1x1] : nums) {
+            // klotski::cases::spawn_ranges(n, n_2x1, n_1x1);
         }
     }
 
+}
+
+static void BasicRanges(benchmark::State &state) {
+
+    for (auto _ : state) {
+        klotski::cases::basic_ranges();
+    }
+
+}
+
+static void OriginBasicRanges(benchmark::State &state) {
+    for (auto _ : state) {
+        auto &kk = klotski::cases::BasicRanges::instance();
+        kk.build_ranges(kk.get_ranges());
+    }
 }
 
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
@@ -176,6 +180,10 @@ static void SpawnRanges(benchmark::State &state) {
 
 // BENCHMARK(FilterFromAllCases)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
+// BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
+
+BENCHMARK(BasicRanges)->Unit(benchmark::kMillisecond);
+
+// BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_MAIN();

@@ -26,7 +26,22 @@ using klotski::codec::SHORT_CODE_LIMIT;
 int main() {
     const auto start = clock();
 
-    klotski::cases::spawn_ranges(2, 1, 4, 4);
+    // klotski::cases::spawn_ranges(2, 1, 4, 4);
+
+    std::vector<uint32_t> r1 {1, 4, 5, 9, 0, 2, 3, 6, 7, 8};
+    auto begin = r1.begin();
+    auto mid = r1.begin() + 4;
+    auto end = r1.end();
+
+    std::vector<uint32_t> results;
+    results.resize(end - begin);
+    std::merge(begin, mid, mid, end, results.begin());
+    std::copy(results.begin(), results.end(), begin);
+
+    for (auto x : r1) {
+        std::cout << x << " ";
+    }
+    std::cout << std::endl;
 
     // std::vector<int> series {1, 2, 3, 4};
 

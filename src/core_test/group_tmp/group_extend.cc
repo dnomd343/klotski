@@ -21,14 +21,14 @@ TEST(Group, group_extend) {
     EXPECT_EQ(hash_ret, 0x91BD28A749312A6D);
 }
 
-static std::vector<std::tuple<int, int, int, int>> target_nums() {
+static std::vector<std::tuple<int, int, int>> target_nums() {
 
-    std::vector<std::tuple<int, int, int, int>> results;
+    std::vector<std::tuple<int, int, int>> results;
 
     for (int n = 0; n <= 7; ++n) {
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) {
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) {
-                results.emplace_back(16 - n*2 - n_1x1, n - n_2x1, n_2x1, n_1x1);
+                results.emplace_back(n, n_2x1, n_1x1);
             }
         }
     }
@@ -46,11 +46,11 @@ TEST(Group, ranges) {
     // EXPECT_EQ(hash_ret, 0xF6F87606E4205EAF);
 
     std::vector<uint32_t> ranges;
-    for (auto [n1, n2, n3, n4] : target_nums()) {
+    for (auto [n, n_2x1, n_1x1] : target_nums()) {
 
-        auto kk = klotski::cases::spawn_ranges(n1, n2, n3, n4);
+        // auto kk = klotski::cases::spawn_ranges(n, n_2x1, n_1x1);
 
-        ranges.insert(ranges.end(), kk.begin(), kk.end());
+        // ranges.insert(ranges.end(), kk.begin(), kk.end());
     }
 
     EXPECT_EQ(ranges.size(), 7311921);
@@ -59,4 +59,18 @@ TEST(Group, ranges) {
 
     EXPECT_EQ(hash_ret, 0xA1E247B01D5A9545);
 
+}
+
+TEST(Group, basic_ranges) {
+    auto ret = klotski::cases::basic_ranges();
+    // std::cout << ret.size() << std::endl;
+
+    EXPECT_EQ(ret.size(), 7311921);
+
+    auto hash_ret = hash::xxh3(ret);
+    // std::cout << std::format("{:X}", hash_ret) << std::endl;
+
+    // EXPECT_EQ(hash_ret, 0xA1E247B01D5A9545); // no sorted
+    // EXPECT_EQ(hash_ret, 0x00A926AB1121230D); // no reversed
+    EXPECT_EQ(hash_ret, 0x82B040060044E336);
 }

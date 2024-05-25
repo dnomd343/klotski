@@ -63,7 +63,7 @@ std::vector<uint64_t> klotski::cases::group_extend_from_seed(uint64_t raw_code) 
 }
 
 template<int N>
-static std::vector<uint32_t> demo(int n_10, int n_11) {
+static void demo(std::vector<uint32_t> &ranges, int n_10, int n_11) {
 
     constexpr auto num = 16 - N;
     constexpr auto offset = (16 - num) << 1; // offset of low bits
@@ -73,23 +73,11 @@ static std::vector<uint32_t> demo(int n_10, int n_11) {
 
     std::array<int, num> series {};
 
-    // for (int k = 0; k < n_00; ++k) {
-    //     series[k] = 0b00;
-    // }
-    // for (int k = n_00; k < n_00 + n_01; ++k) {
-    //     series[k] = 0b01;
-    // }
-
     auto kk = std::fill_n(series.begin() + n_00, n_01, 0b01);
     auto pp = std::fill_n(kk, n_10, 0b10);
     std::fill_n(pp, n_11, 0b11);
 
-    // for (auto x : series) {
-    //     std::cout << x << " ";
-    // }
-    // std::cout << std::endl;
-
-    std::vector<uint32_t> ranges;
+    // std::vector<uint32_t> ranges;
 
     do {
         uint32_t range = 0;
@@ -98,59 +86,109 @@ static std::vector<uint32_t> demo(int n_10, int n_11) {
         ranges.emplace_back(range << offset);
     } while (std::ranges::next_permutation(series).found);
 
-    return ranges;
+    // return ranges;
 }
 
-std::vector<uint32_t> klotski::cases::spawn_ranges(int n_00, int n_01, int n_10, int n_11) {
+void klotski::cases::spawn_ranges(std::vector<uint32_t> &ranges, int n, int n_2x1, int n_1x1) {
 
-    auto n = n_01 + n_10;
-
-    switch (n) {
-        case 0: return demo<0>(n_10, n_11);
-        case 1: return demo<1>(n_10, n_11);
-        case 2: return demo<2>(n_10, n_11);
-        case 3: return demo<3>(n_10, n_11);
-        case 4: return demo<4>(n_10, n_11);
-        case 5: return demo<5>(n_10, n_11);
-        case 6: return demo<6>(n_10, n_11);
-        case 7: return demo<7>(n_10, n_11);
-        default: return {};
-    }
-
-    // return demo<5>(n_10, n_11);
-
-    // auto num = n_00 + n_01 + n_10 + n_11;
-    // auto offset = (16 - num) << 1; // offset of low bits
-
-    // std::vector<int> series;
-    // series.reserve(num);
-    // series.insert(series.end(), n_00, 0b00);
-    // series.insert(series.end(), n_01, 0b01);
-    // series.insert(series.end(), n_10, 0b10);
-    // series.insert(series.end(), n_11, 0b11);
-
-    // std::array<int, 11> series {
-    //     0b00, 0b00,
-    //     0b01,
-    //     0b10, 0b10, 0b10, 0b10,
-    //     0b11, 0b11, 0b11, 0b11,
-    // };
+    // auto n = n_01 + n_2x1;
 
     // std::vector<uint32_t> ranges;
 
-    // do { // full permutation traversal
-    //     uint32_t range = 0;
-    //     for (const auto x : series) // store every 2-bit
-    //         (range <<= 2) |= x;
-    //     ranges.emplace_back(range << offset);
-    // } while (std::next_permutation(series.begin(), series.end()));
+    switch (n) {
+        case 0: return demo<0>(ranges, n_2x1, n_1x1);
+        case 1: return demo<1>(ranges, n_2x1, n_1x1);
+        case 2: return demo<2>(ranges, n_2x1, n_1x1);
+        case 3: return demo<3>(ranges, n_2x1, n_1x1);
+        case 4: return demo<4>(ranges, n_2x1, n_1x1);
+        case 5: return demo<5>(ranges, n_2x1, n_1x1);
+        case 6: return demo<6>(ranges, n_2x1, n_1x1);
+        case 7: return demo<7>(ranges, n_2x1, n_1x1);
+        default: return;
+    }
 
-    // do {
-    //     uint32_t range = 0;
-    //     for (const auto x : series) // store every 2-bit
-    //         (range <<= 2) |= x;
-    //     ranges.emplace_back(range << offset);
-    // } while (std::ranges::next_permutation(series).found);
+}
 
-    // return ranges;
+consteval std::array<std::tuple<int, int, int>, 204> target_nums() {
+    std::array<std::tuple<int, int, int>, 204> results;
+    for (int i = 0, n = 0; n <= 7; ++n) {
+        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) {
+            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) {
+                results[i++] = {n, n_2x1, n_1x1};
+            }
+        }
+    }
+    return results;
+}
+
+using RangeIter = std::vector<uint32_t>::iterator;
+
+static void combine_sort(RangeIter begin, RangeIter mid, RangeIter end) noexcept {
+
+    // std::inplace_merge(begin, mid, end);
+    // return;
+
+    // std::vector<uint32_t> results;
+    // results.resize(end - begin);
+    // std::merge(begin, mid, mid, end, results.begin());
+    // std::copy(results.begin(), results.end(), begin);
+    // return;
+
+    std::vector<uint32_t> tmp = {begin, mid}; // left array backup
+    auto p = tmp.begin();
+    for (;;) {
+        if (*p <= *mid) {
+            *(begin++) = *(p++); // stored in original span
+            if (p == tmp.end()) // left array is consumed
+                return;
+            continue;
+        }
+        *(begin++) = *(mid++); // stored in original span
+        if (mid == end) { // right array is consumed
+            std::copy(p, tmp.end(), begin); // left array remaining
+            return;
+        }
+    }
+}
+
+std::vector<uint32_t> klotski::cases::basic_ranges() {
+
+    std::vector<uint32_t> results;
+    results.reserve(7311921);
+
+    std::list<std::vector<uint32_t>::iterator> flags {results.begin()}; // mark ordered interval
+
+    for (auto [n, n_2x1, n_1x1] : target_nums()) {
+
+        spawn_ranges(results, n, n_2x1, n_1x1);
+
+        flags.emplace_back(results.end());
+
+        // auto sub_ranges = spawn_ranges(results, n, n_2x1, n_1x1);
+
+        // results.insert(results.end(), sub_ranges.begin(), sub_ranges.end());
+    }
+
+    // std::ranges::sort(results.begin(), results.end());
+    // std::ranges::stable_sort(results.begin(), results.end());
+
+    do {
+        decltype(flags.begin()) begin = flags.begin(), mid, end;
+        while (++(mid = begin) != flags.end() && ++(end = mid) != flags.end()) {
+            combine_sort(*begin, *mid, *end); // merge two ordered interval
+            flags.erase(mid);
+            begin = end;
+        }
+    } while (flags.size() > 2); // merge until only one interval remains
+
+    for (auto &x : results) {
+        x = range_reverse(x);
+    }
+
+    return results;
+
+    // std::vector<uint32_t> kk;
+    // kk.reserve(7311921);
+    // std::ranges::transform(results.begin(), results.end(), kk.begin(), range_reverse);
+    // return kk;
 }

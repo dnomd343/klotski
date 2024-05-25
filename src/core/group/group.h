@@ -80,7 +80,9 @@ uint32_t raw_code_to_type_id(uint64_t raw_code);
 
 std::vector<uint64_t> group_extend_from_seed(uint64_t raw_code);
 
-std::vector<uint32_t> spawn_ranges(int n_00, int n_01, int n_10, int n_11);
+void spawn_ranges(std::vector<uint32_t> &ranges, int n, int n_2x1, int n_1x1);
+
+std::vector<uint32_t> basic_ranges();
 
 class Group;
 
