@@ -39,8 +39,13 @@ void Ranges::derive(const int head, Ranges &output) const {
             /// ( xx xx xx ) xx xx xx ... [reversed range]
             ///         +1   00 00 00 ...     (delta)
             tmp += range_reverse((*this)[index]) & ~(tmp - 1);
-            while (range_reverse((*this)[++index]) < tmp) {} // located next range
-            --index;
+
+            // TODO: overflow here in some type_id
+            // TODO:   -> tmp > range[-1]
+            // TODO: maybe using binary search here
+
+            // while (range_reverse((*this)[++index]) < tmp) {} // located next range
+            // --index;
             continue;
         }
         output.emplace_back(range_reverse((*this)[index])); // release valid case

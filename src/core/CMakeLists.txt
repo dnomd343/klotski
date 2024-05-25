@@ -22,6 +22,7 @@ set(KLOTSKI_CORE_SRC
         fast_cal/internal/cal_core.cc
         fast_cal/internal/fast_cal.cc
 
+        group/internal/group_union.cc
         group/internal/group.cc
 
         ranges/internal/ranges.cc

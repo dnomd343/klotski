@@ -14,4 +14,7 @@ public:
     void derive(int head, Ranges &output) const;
 };
 
+// TODO: add RangesUnion here
+// TODO: -> spawn from Ranges / export std::vector<CommonCode>
+
 } // namespace klotski::cases

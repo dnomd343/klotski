@@ -75,10 +75,10 @@ namespace klotski::cases {
 constexpr uint32_t TYPE_ID_LIMIT = 203;
 constexpr uint32_t ALL_GROUP_NUM = 25422;
 
-uint32_t common_code_to_type_id(uint64_t common_code);
-uint32_t raw_code_to_type_id(uint64_t raw_code);
+// uint32_t common_code_to_type_id(uint64_t common_code);
+// uint32_t raw_code_to_type_id(uint64_t raw_code);
 
-std::vector<uint64_t> group_extend_from_seed(uint64_t raw_code);
+// std::vector<uint64_t> group_extend_from_seed(uint64_t raw_code);
 
 class Group;
 
@@ -108,6 +108,8 @@ public:
 
 	/// Get the upper limit of the group size.
 	[[nodiscard]] uint32_t max_group_size() const;
+
+	[[nodiscard]] RangesUnion cases() const;
 
 	/// Get all group instances under the current type id.
 	[[nodiscard]] std::vector<Group> groups() const;
@@ -155,14 +157,9 @@ public:
 	/// Create Group with validity check.
 	static std::optional<Group> create(uint32_t type_id, uint32_t group_id);
 
-	// TODO: fetch group size directly
 	[[nodiscard]] uint32_t size() const;
 
-	void build();
-
-	// TODO: maybe define CommonCodes here
-	// TODO: get all cases from current Group
-	const CommonCodes& cases();
+	[[nodiscard]] RangesUnion cases() const;
 
 	static Group from_raw_code(codec::RawCode raw_code);
 	static Group from_common_code(codec::CommonCode common_code);
@@ -170,6 +167,10 @@ public:
 private:
 	uint32_t type_id_;
 	uint32_t group_id_;
+
+	[[nodiscard]] uint32_t flat_id() const;
+
+	static std::vector<uint64_t> extend(codec::RawCode raw_code);
 };
 
 class GroupCase {
@@ -197,12 +198,9 @@ private:
 	static std::mutex building_;
 
 	static codec::CommonCode fast_decode(const info_t &info);
-	static codec::CommonCode tiny_decode(const info_t &info);
-
 	static info_t fast_encode(const codec::CommonCode &common_code);
-	static info_t tiny_encode(const codec::CommonCode &common_code);
 };
 
 } // namespace klotski::cases
 
-#include "internal/group.inl"
+#include "internal/group_union.inl"

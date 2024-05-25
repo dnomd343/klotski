@@ -22,6 +22,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core/common_code)
 set(KLSK_TEST_CASES_SRC
     cases/all_cases.cc
     cases/basic_ranges.cc
+    cases/group_union.cc
 )
 
 add_executable(test_klotski_cases ${KLSK_TEST_CASES_SRC})

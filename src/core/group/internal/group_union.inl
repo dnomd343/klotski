@@ -93,11 +93,19 @@ inline uint32_t GroupUnion::max_group_size() const {
 }
 
 inline std::vector<Group> GroupUnion::groups() const {
-	return {};
+
+	std::vector<Group> groups;
+
+	groups.reserve(group_num());
+	for (uint32_t group_id = 0; group_id < group_num(); ++group_id) {
+		groups.emplace_back(Group::unsafe_create(type_id_, group_id));
+	}
+
+	return groups;
 }
 
 inline std::optional<Group> GroupUnion::group(const uint32_t group_id) const {
-	if (group_id < GROUP_NUM[group_id]) {
+	if (group_id < group_num()) {
 		return Group::unsafe_create(type_id_, group_id);
 	}
 	return std::nullopt;
@@ -120,27 +128,3 @@ inline GroupUnion GroupUnion::from_common_code(const codec::CommonCode common_co
 // ------------------------------------------------------------------------------------- //
 
 } // namespace klotski::cases
-
-namespace klotski::cases::internal {
-
-class GroupImpl {
-public:
-    explicit GroupImpl(const int flat_id) : flat_id_(flat_id) {}
-
-    const std::vector<codec::CommonCode>& cases();
-
-    int flat_id_;
-	bool available_;
-	std::mutex building_;
-
-    // static constexpr std::array<GroupImpl, ALL_GROUP_NUM> ins() {
-    //     return std::array<GroupImpl, ALL_GROUP_NUM> {};
-    // }
-};
-
-} // namespace klotski::cases::internal
-
-// inline const std::vector<codec::CommonCode>& Group::cases() {
-//     static auto kk = internal::GroupImpl::ins();
-//     return kk[0].cases();
-// }
