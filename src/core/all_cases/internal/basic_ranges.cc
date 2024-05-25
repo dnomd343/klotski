@@ -63,7 +63,7 @@ void BasicRanges::build_ranges(Ranges &ranges) {
         }
     } while (flags.size() > 2); // merge until only one interval remains
 
-    for (auto &x : ranges) {
-        x = range_reverse(x); // flip every 2-bit
-    }
+    // for (auto &x : ranges) {
+    //     x = range_reverse(x); // flip every 2-bit
+    // }
 }

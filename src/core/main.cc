@@ -27,6 +27,34 @@ using klotski::codec::SHORT_CODE_LIMIT;
 int main() {
     const auto start = clock();
 
+    auto &basic_ranges = klotski::cases::BasicRanges::instance().fetch();
+
+    klotski::cases::Ranges flip {basic_ranges};
+    for (auto &x : flip) {
+        x = klotski::range_reverse(x);
+    }
+
+    klotski::cases::Ranges results;
+    results.reserve(klotski::cases::ALL_CASES_NUM_);
+
+    klotski::cases::derive_demo(basic_ranges, flip, results, 0);
+    klotski::cases::derive_demo(basic_ranges, flip, results, 1);
+    klotski::cases::derive_demo(basic_ranges, flip, results, 2);
+
+    klotski::cases::derive_demo(basic_ranges, flip, results, 4);
+    klotski::cases::derive_demo(basic_ranges, flip, results, 5);
+    klotski::cases::derive_demo(basic_ranges, flip, results, 6);
+
+    klotski::cases::derive_demo(basic_ranges, flip, results, 8);
+    klotski::cases::derive_demo(basic_ranges, flip, results, 9);
+    klotski::cases::derive_demo(basic_ranges, flip, results, 10);
+
+    klotski::cases::derive_demo(basic_ranges, flip, results, 12);
+    klotski::cases::derive_demo(basic_ranges, flip, results, 13);
+    klotski::cases::derive_demo(basic_ranges, flip, results, 14);
+
+    // std::cout << results.size() << " vs " << klotski::cases::ALL_CASES_NUM_ << std::endl;
+
     // auto raw_code = RawCode::from_common_code(0x1A9BF0C00)->unwrap();
     // auto ret = klotski::cases::group_extend_from_seed(raw_code);
     //

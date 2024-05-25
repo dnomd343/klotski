@@ -22,13 +22,47 @@ consteval static std::array<int, 12> heads() {
 static void build_cases(const int head, Ranges &release) {
     release.clear();
     release.reserve(ALL_CASES_NUM[head]);
-    BasicRanges::instance().fetch().derive(head, release);
+
+    // klotski::cases::global_derive(BasicRanges::instance().fetch(), release, head);
+    klotski::cases::global_derive_pro(BasicRanges::instance().fetch(), klotski::cases::get_reversed(), release, head);
+
+    // BasicRanges::instance().fetch().derive(head, release);
 }
 
 void AllCases::build() {
-    build_parallel([](auto &&func) {
-        func();
-    });
+
+    // TODO: lock here
+
+    // klotski::cases::get_reversed();
+
+    std::vector<uint32_t> reversed {BasicRanges::instance().fetch()};
+    for (auto &x : reversed) {
+        x = range_reverse(x);
+    }
+
+    // std::vector<uint32_t> reversed;
+    // std::ranges::transform(BasicRanges::instance().fetch(), std::back_inserter(reversed), [](uint32_t x) { return range_reverse(x); });
+
+    // auto &reversed = get_reversed();
+
+    for (auto head : heads()) {
+        // build_cases(head, get_cases()[head]);
+
+        auto &release = get_cases()[head];
+
+        release.clear();
+        release.reserve(ALL_CASES_NUM[head]);
+
+        // klotski::cases::global_derive(BasicRanges::instance().fetch(), release, head);
+        // klotski::cases::global_derive_pro(BasicRanges::instance().fetch(), reversed, release, head);
+        klotski::cases::global_derive_pro(reversed, BasicRanges::instance().fetch(), release, head);
+
+    }
+    available_ = true;
+
+    // build_parallel([](auto &&func) {
+    //     func();
+    // });
 }
 
 void AllCases::build_parallel(Executor &&executor) {
