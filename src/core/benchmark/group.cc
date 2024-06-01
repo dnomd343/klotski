@@ -167,9 +167,20 @@ static void SpawnRanges(benchmark::State &state) {
 }
 
 static void OriginBasicRanges(benchmark::State &state) {
+
+    BS::thread_pool pool {4};
+
     for (auto _ : state) {
         auto &kk = klotski::cases::BasicRanges::instance();
         kk.build_ranges(kk.get_ranges());
+
+        // kk.build_async([](auto func) {func();}, [](){});
+
+        // kk.build_async([&pool](auto func) {
+        //     pool.submit_task(func);
+        // }, [] {});
+        // pool.wait();
+
     }
 }
 
@@ -270,9 +281,9 @@ static void RangesDerive(benchmark::State &state) {
 
 // BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
 
-// BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
+BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(OriginAllCases)->Unit(benchmark::kMillisecond);
+// BENCHMARK(OriginAllCases)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
 

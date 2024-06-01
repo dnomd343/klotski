@@ -164,7 +164,7 @@ public:
 	static Group from_raw_code(codec::RawCode raw_code);
 	static Group from_common_code(codec::CommonCode common_code);
 
-private:
+// private:
 	uint32_t type_id_;
 	uint32_t group_id_;
 

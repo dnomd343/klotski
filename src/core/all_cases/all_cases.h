@@ -39,10 +39,7 @@
 
 #include <array>
 #include <mutex>
-#include <vector>
-#include <cstdint>
 #include <numeric>
-#include <functional>
 
 #include "utils/utility.h"
 #include "ranges/ranges.h"
@@ -52,9 +49,6 @@ namespace klotski::cases {
 // ------------------------------------------------------------------------------------- //
 
 typedef std::array<Ranges, 16> RangesUnion;
-
-typedef std::function<void()> Notifier;
-typedef std::function<void(std::function<void()>&&)> Executor;
 
 // ------------------------------------------------------------------------------------- //
 
@@ -77,6 +71,9 @@ class BasicRanges {
 public:
     /// Execute the build process and ensure thread safety.
     void build();
+
+    /// Execute the build process in parallel without blocking.
+    void build_async(Executor &&executor, Notifier &&callback);
 
     /// Get the basic-ranges and make sure the result is available.
     const Ranges& fetch();
@@ -103,10 +100,6 @@ class AllCases {
 public:
     /// Execute the build process and ensure thread safety.
     void build();
-
-    /// TODO: remove this interface
-    /// Execute the build process with parallel support and ensure thread safety.
-    // void build_parallel(Executor &&executor);
 
     /// Execute the build process in parallel without blocking.
     void build_parallel_async(Executor &&executor, Notifier &&callback);

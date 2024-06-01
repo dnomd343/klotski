@@ -48,7 +48,7 @@ void BasicRanges::build_ranges(Ranges &ranges) {
     ranges.clear();
     ranges.reserve(BASIC_RANGES_NUM);
 
-    std::list flags { ranges.begin() };
+    std::list flags {ranges.begin()}; // TODO: flags can be constexpr
     for (auto [n, n_2x1, n_1x1] : range_types()) {
         ranges.spawn(n, n_2x1, n_1x1);
         flags.emplace_back(ranges.end()); // mark ordered interval
@@ -62,8 +62,70 @@ void BasicRanges::build_ranges(Ranges &ranges) {
             begin = end;
         }
     } while (flags.size() > 2); // merge until only one interval remains
+}
 
-    // for (auto &x : ranges) {
-    //     x = range_reverse(x); // flip every 2-bit
-    // }
+void do_sort(klotski::Executor &&executor, klotski::Notifier notifier, std::shared_ptr<std::list<Ranges::iterator>> flags) {
+
+    klotski::Worker worker {std::move(executor)};
+
+    decltype(flags->begin()) begin = flags->begin(), mid, end;
+    while (++(mid = begin) != flags->end() && ++(end = mid) != flags->end()) {
+
+        worker.post([begin = *begin, mid = *mid, end = *end]() {
+            inplace_merge(begin, mid, end); // merge two ordered interval
+        });
+
+        flags->erase(mid);
+        begin = end;
+    }
+
+    worker.then([flags, notifier](klotski::Executor &&executor) {
+
+        if (flags->size() == 2) {
+            notifier();
+            return;
+        }
+
+        do_sort(std::move(executor), notifier, flags);
+
+    });
+
+}
+
+void BasicRanges::build_async(Executor &&executor, Notifier &&callback) {
+
+    // TODO: add mutex protect here
+
+    Worker worker {std::move(executor)};
+    auto cache = std::make_shared<std::array<Ranges, 203>>();
+
+    for (uint32_t i = 0; i < 203; ++i) {
+        worker.post([cache, i] {
+            auto [n, n_2x1, n_1x1] = range_types()[i];
+            cache->operator[](i).spawn(n, n_2x1, n_1x1);
+        });
+    }
+
+    // auto all_done = std::make_shared<Notifier>(std::move(callback));
+
+    worker.then([cache, this, callback](Executor &&executor) {
+
+        auto &ranges = get_ranges();
+
+        ranges.clear();
+        ranges.reserve(BASIC_RANGES_NUM);
+
+        const auto flags = std::make_shared<std::list<Ranges::iterator>>();
+        flags->emplace_back(ranges.end());
+
+        for (auto &tmp : *cache) {
+            ranges.insert(ranges.end(), tmp.begin(), tmp.end());
+            flags->emplace_back(ranges.end()); // mark ordered interval
+        }
+
+        do_sort(std::move(executor), callback, flags);
+
+        available_ = true;
+
+    });
 }

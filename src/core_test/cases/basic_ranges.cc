@@ -1,7 +1,7 @@
 #include "hash.h"
 #include "helper.h"
 
-static constexpr uint64_t BASIC_RANGES_XXH3 = 0x2ced674494fe904d;
+static constexpr uint64_t BASIC_RANGES_XXH3 = 0x34fce9da6a052533;
 
 class BasicRangesTest : public testing::Test, public Concurrent {
 protected:

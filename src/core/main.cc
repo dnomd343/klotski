@@ -29,17 +29,57 @@ using klotski::codec::SHORT_CODE_LIMIT;
 int main() {
     // const auto start = clock();
 
+    // auto ret = klotski::cases::Group::extend(RawCode::from_common_code(0xDAAFE0C00).value());
+    // std::cout << ret.size() << std::endl;
+
     const auto start = std::chrono::system_clock::now();
+
+    // klotski::cases::BasicRanges::instance().build();
 
     BS::thread_pool pool {};
 
-    klotski::cases::BasicRanges::instance().build();
+    // klotski::cases::BasicRanges::instance().build();
 
-    klotski::cases::AllCases::instance().build_parallel_async([&pool](auto func) {
+    klotski::cases::BasicRanges::instance().build_async([&pool](auto &&func) {
         pool.submit_task(func);
-    }, [] {});
+    }, [] {
+        std::cout << "all done" << std::endl;
+    });
+
+    // klotski::cases::BasicRanges::instance().build();
+    //
+    // klotski::cases::AllCases::instance().build_parallel_async([&pool](auto func) {
+    //     pool.submit_task(func);
+    // }, [] {});
+
+    // std::cout << "start call" << std::endl;
+    // klotski::Notifier kk {};
+    // kk();
+    // std::cout << "end call" << std::endl;
+
+    // {
+    //     klotski::Worker worker {[&pool](auto &&func) { pool.submit_task(func); }};
+    //
+    //     for (int i = 1; i < 3; ++i) {
+    //         worker.post([i] {
+    //             std::cout << std::format("task {} begin\n", i);
+    //             std::this_thread::sleep_for(std::chrono::seconds(i));
+    //             std::cout << std::format("task {} complete\n", i);
+    //         });
+    //     }
+    //
+    //     worker.then([](klotski::Executor &&executor){
+    //         std::cout << "all tasks done\n";
+    //     });
+    //
+    //     std::cout << "worker start release\n";
+    // }
+    //
+    // std::cout << "block exit\n";
 
     pool.wait();
+
+    // std::cout << BasicRanges::instance().fetch().size() << std::endl;
 
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 
