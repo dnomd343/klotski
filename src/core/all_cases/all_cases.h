@@ -37,45 +37,25 @@
 
 #pragma once
 
-#include <array>
 #include <mutex>
-#include <numeric>
 
 #include "utils/utility.h"
 #include "ranges/ranges.h"
+#include "internal/constant.inl"
 
 namespace klotski::cases {
 
 // ------------------------------------------------------------------------------------- //
 
-typedef std::array<Ranges, 16> RangesUnion;
-
-// ------------------------------------------------------------------------------------- //
-
-constexpr auto BASIC_RANGES_NUM = 7311885;
-
-constexpr std::array ALL_CASES_NUM {
-    2942906, 2260392, 2942906, 0,
-    2322050, 1876945, 2322050, 0,
-    2322050, 1876945, 2322050, 0,
-    2942906, 2260392, 2942906, 0,
-};
-
-// TODO: move to short_code namespace (also `numeric` header)
-constexpr auto ALL_CASES_NUM_ = std::accumulate(
-    ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0);
-
-// ------------------------------------------------------------------------------------- //
-
 class BasicRanges {
 public:
-    /// Execute the build process and ensure thread safety.
+    /// Execute the build process.
     void build();
 
-    /// Execute the build process in parallel without blocking.
+    /// Execute the build process without blocking.
     void build_async(Executor &&executor, Notifier &&callback);
 
-    /// Get the basic-ranges and make sure the result is available.
+    /// Get basic-ranges and make sure the result is available.
     const Ranges& fetch();
 
     /// Determine whether the basic-ranges data is available.
@@ -88,9 +68,6 @@ private:
     /// Get static singleton variable.
     static Ranges& get_ranges();
 
-    /// Search and sort all possible basic-ranges permutations.
-    static void build_ranges(Ranges &ranges);
-
     KLSK_INSTANCE(BasicRanges)
 };
 
@@ -98,11 +75,11 @@ private:
 
 class AllCases {
 public:
-    /// Execute the build process and ensure thread safety.
+    /// Execute the build process.
     void build();
 
-    /// Execute the build process in parallel without blocking.
-    void build_parallel_async(Executor &&executor, Notifier &&callback);
+    /// Execute the build process without blocking.
+    void build_async(Executor &&executor, Notifier &&callback);
 
     /// Get all-cases and make sure the result is available.
     const RangesUnion& fetch();

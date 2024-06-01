@@ -38,44 +38,31 @@ int main() {
 
     BS::thread_pool pool {};
 
+    // auto demo = [](auto &&self, int val) {
+    //     std::cout << "val = " << val << std::endl;
+    //     if (val == 0) {
+    //         return;
+    //     }
+    //     self(self, val - 1);
+    // };
+    //
+    // demo(demo, 5);
+
+    // constexpr std::array<int, 5> kk {1, 2, 3, 4, 5};
+    // auto ret = klotski::to_offset(kk, 0);
+    // std::cout << std::format("{}", ret) << std::endl;
+
     // klotski::cases::BasicRanges::instance().build();
 
     klotski::cases::BasicRanges::instance().build_async([&pool](auto &&func) {
         pool.submit_task(func);
     }, [] {
-        std::cout << "all done" << std::endl;
+        // std::cout << "all done" << std::endl;
     });
 
-    // klotski::cases::BasicRanges::instance().build();
-    //
     // klotski::cases::AllCases::instance().build_parallel_async([&pool](auto func) {
     //     pool.submit_task(func);
     // }, [] {});
-
-    // std::cout << "start call" << std::endl;
-    // klotski::Notifier kk {};
-    // kk();
-    // std::cout << "end call" << std::endl;
-
-    // {
-    //     klotski::Worker worker {[&pool](auto &&func) { pool.submit_task(func); }};
-    //
-    //     for (int i = 1; i < 3; ++i) {
-    //         worker.post([i] {
-    //             std::cout << std::format("task {} begin\n", i);
-    //             std::this_thread::sleep_for(std::chrono::seconds(i));
-    //             std::cout << std::format("task {} complete\n", i);
-    //         });
-    //     }
-    //
-    //     worker.then([](klotski::Executor &&executor){
-    //         std::cout << "all tasks done\n";
-    //     });
-    //
-    //     std::cout << "worker start release\n";
-    // }
-    //
-    // std::cout << "block exit\n";
 
     pool.wait();
 

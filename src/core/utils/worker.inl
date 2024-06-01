@@ -4,16 +4,16 @@
 
 namespace klotski {
 
-inline Worker::Worker(Executor &&executor)
-    : after_([] {}), executor_(executor) {}
+inline Worker::Worker(Executor executor)
+    : after_([] {}), executor_(std::move(executor)) {}
 
 inline void Worker::post(Task &&task) {
     tasks_.emplace_back(std::move(task));
 }
 
-inline void Worker::then(After &&after) {
-    after_ = [after = std::move(after), executor = executor_]() mutable {
-        after(std::move(executor));
+inline void Worker::then(Notifier &&after) {
+    after_ = [after = std::move(after)]() {
+        after();
     };
 }
 

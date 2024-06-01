@@ -172,14 +172,17 @@ static void OriginBasicRanges(benchmark::State &state) {
 
     for (auto _ : state) {
         auto &kk = klotski::cases::BasicRanges::instance();
-        kk.build_ranges(kk.get_ranges());
+        // kk.build_ranges(kk.get_ranges());
+
+        kk.available_ = false;
+        // kk.build();
 
         // kk.build_async([](auto func) {func();}, [](){});
 
-        // kk.build_async([&pool](auto func) {
-        //     pool.submit_task(func);
-        // }, [] {});
-        // pool.wait();
+        kk.build_async([&pool](auto func) {
+            pool.submit_task(func);
+        }, [] {});
+        pool.wait();
 
     }
 }

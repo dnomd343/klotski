@@ -100,7 +100,7 @@ void AllCases::build() {
     available_ = true;
 }
 
-void AllCases::build_parallel_async(Executor &&executor, Notifier &&callback) {
+void AllCases::build_async(Executor &&executor, Notifier &&callback) {
     if (available_) {
         callback();
         return; // reduce consumption of mutex

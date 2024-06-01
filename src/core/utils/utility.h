@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <list>
+#include <numeric>
 #include <functional>
 
 /// Mark target class as a singleton.
@@ -26,23 +27,33 @@
 
 namespace klotski {
 
-/// Get the number of consecutive `0` in the low bits.
-// inline int low_zero_num(const uint32_t bin) {
-//     return __builtin_ctzl(bin);
-//
-//     // TODO: using (bin ^ (bin - 1)) when non-builtin
-//
-//     // WARN: be aware of serious performance issues
-//     // return __builtin_popcount(~(bin ^ -bin)) - 1;
-// }
+template <typename T>
+concept Addable = requires(T a, T b) { a + b; };
 
-/// Get the number of consecutive `0` in the low bits.
-// inline int low_zero_num(const uint64_t bin) {
-//     return __builtin_ctzll(bin);
-//
-//     // WARN: be aware of serious performance issues
-//     // return __builtin_popcount(~(bin ^ -bin)) - 1;
-// }
+template <Addable T, size_t N>
+consteval int array_sum(const std::array<T, N> &arr) {
+    return std::accumulate(arr.begin(), arr.end(), 0);
+}
+
+template <Addable T, size_t N>
+consteval std::array<T, N> to_offset(const std::array<T, N> &arr, T base) {
+
+    static_assert(N > 0);
+
+    std::array<T, N> offset;
+
+    T val = base;
+
+    offset[0] = 0;
+
+    for (int i = 0; i < N - 1; ++i) {
+        val += arr[i];
+        offset[i + 1] = val;
+    }
+
+    return offset;
+
+}
 
 /// Flips the input u32 every two bits in low-high symmetry.
 inline uint32_t range_reverse(uint32_t bin) {
@@ -69,16 +80,15 @@ typedef std::function<void(std::function<void()> &&)> Executor;
 class Worker final {
 public:
     using Task = std::function<void()>;
-    using After = std::function<void(Executor &&)>;
 
     /// Construction based on executor.
-    explicit Worker(Executor &&executor);
+    explicit Worker(Executor executor);
 
     /// Post new task into the queue.
     void post(Task &&task);
 
     /// Setting up callback entry.
-    void then(After &&after);
+    void then(Notifier &&after);
 
     /// Tasks will be triggered at destruction.
     ~Worker();

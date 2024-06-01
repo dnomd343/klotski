@@ -1,21 +1,23 @@
 #include <list>
 #include <algorithm>
 
-#include "ranges/ranges.h"
+#include "group/group.h"
 #include "all_cases/all_cases.h"
 
 using klotski::cases::Ranges;
 using klotski::cases::BasicRanges;
+using klotski::cases::TYPE_ID_LIMIT;
 
+typedef Ranges::iterator RangesIter;
 typedef std::tuple<int, int, int> RangeType;
-typedef std::array<RangeType, 203> RangeTypeUnion;
+typedef std::array<RangeType, TYPE_ID_LIMIT> RangeTypeUnion;
 
 /// Generate all possible basic-ranges permutations.
 consteval static RangeTypeUnion range_types() {
     RangeTypeUnion data;
     for (int i = 0, n = 0; n <= 7; ++n) { // 1x2 + 2x1 -> 0 ~ 7
         for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // 2x1 -> 0 ~ n
-            if (n == 7 && n_2x1 == 7) {
+            if (n_2x1 == 7) {
                 break;
             }
             for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // 1x1 -> 0 ~ (14 - 2n)
@@ -27,8 +29,8 @@ consteval static RangeTypeUnion range_types() {
 }
 
 /// Combine two consecutive sorted arrays into one sorted arrays.
-static void inplace_merge(Ranges::iterator begin, Ranges::iterator mid, const Ranges::iterator end) {
-    std::vector<uint32_t> tmp = {begin, mid}; // left array backup
+static void inplace_merge(RangesIter begin, RangesIter mid, const RangesIter end) {
+    std::vector<uint32_t> tmp {begin, mid}; // left array backup
     for (auto p = tmp.begin();;) {
         if (*p <= *mid) {
             *(begin++) = *(p++); // stored in original span
@@ -44,88 +46,103 @@ static void inplace_merge(Ranges::iterator begin, Ranges::iterator mid, const Ra
     }
 }
 
-void BasicRanges::build_ranges(Ranges &ranges) {
-    ranges.clear();
-    ranges.reserve(BASIC_RANGES_NUM);
+void BasicRanges::build() {
+    if (available_) {
+        return; // reduce consumption of mutex
+    }
+    std::lock_guard guard {building_};
+    if (available_) {
+        return; // data is already available
+    }
 
-    std::list flags {ranges.begin()}; // TODO: flags can be constexpr
+    auto &ranges = get_ranges();
+    ranges.clear();
+    ranges.reserve(BASIC_RANGES_NUM_);
     for (auto [n, n_2x1, n_1x1] : range_types()) {
         ranges.spawn(n, n_2x1, n_1x1);
-        flags.emplace_back(ranges.end()); // mark ordered interval
     }
+
+    std::list<RangesIter> points; // mark ordered interval
+    for (const auto offset : to_offset(BASIC_RANGES_NUM, 0)) {
+        points.emplace_back(ranges.begin() + offset);
+    }
+    points.emplace_back(ranges.end());
 
     do {
-        decltype(flags.begin()) begin = flags.begin(), mid, end;
-        while (++(mid = begin) != flags.end() && ++(end = mid) != flags.end()) {
+        decltype(points)::iterator begin = points.begin(), mid, end;
+        while (++(mid = begin) != points.end() && ++(end = mid) != points.end()) {
             inplace_merge(*begin, *mid, *end); // merge two ordered interval
-            flags.erase(mid);
+            points.erase(mid);
             begin = end;
         }
-    } while (flags.size() > 2); // merge until only one interval remains
-}
+    } while (points.size() > 2); // merge until only one interval remains
 
-void do_sort(klotski::Executor &&executor, klotski::Notifier notifier, std::shared_ptr<std::list<Ranges::iterator>> flags) {
-
-    klotski::Worker worker {std::move(executor)};
-
-    decltype(flags->begin()) begin = flags->begin(), mid, end;
-    while (++(mid = begin) != flags->end() && ++(end = mid) != flags->end()) {
-
-        worker.post([begin = *begin, mid = *mid, end = *end]() {
-            inplace_merge(begin, mid, end); // merge two ordered interval
-        });
-
-        flags->erase(mid);
-        begin = end;
-    }
-
-    worker.then([flags, notifier](klotski::Executor &&executor) {
-
-        if (flags->size() == 2) {
-            notifier();
-            return;
-        }
-
-        do_sort(std::move(executor), notifier, flags);
-
-    });
-
+    available_ = true;
 }
 
 void BasicRanges::build_async(Executor &&executor, Notifier &&callback) {
+    if (available_) {
+        callback();
+        return; // reduce consumption of mutex
+    }
+    building_.lock();
+    if (available_) {
+        building_.unlock();
+        callback();
+        return; // data is already available
+    }
 
-    // TODO: add mutex protect here
+    auto all_done = [this, callback = std::move(callback)] {
+        available_ = true;
+        building_.unlock();
+        callback();
+    };
 
-    Worker worker {std::move(executor)};
-    auto cache = std::make_shared<std::array<Ranges, 203>>();
-
-    for (uint32_t i = 0; i < 203; ++i) {
+    Worker worker {executor};
+    auto cache = std::make_shared<std::array<Ranges, TYPE_ID_LIMIT>>();
+    for (uint32_t i = 0; i < TYPE_ID_LIMIT; ++i) {
+        (*cache)[i].reserve(BASIC_RANGES_NUM[i]);
         worker.post([cache, i] {
             auto [n, n_2x1, n_1x1] = range_types()[i];
-            cache->operator[](i).spawn(n, n_2x1, n_1x1);
+            (*cache)[i].spawn(n, n_2x1, n_1x1);
         });
     }
 
-    // auto all_done = std::make_shared<Notifier>(std::move(callback));
-
-    worker.then([cache, this, callback](Executor &&executor) {
-
+    worker.then([cache, all_done = std::move(all_done), executor = std::move(executor)] mutable {
         auto &ranges = get_ranges();
-
         ranges.clear();
-        ranges.reserve(BASIC_RANGES_NUM);
-
-        const auto flags = std::make_shared<std::list<Ranges::iterator>>();
-        flags->emplace_back(ranges.end());
-
-        for (auto &tmp : *cache) {
+        ranges.reserve(BASIC_RANGES_NUM_);
+        for (auto &&tmp : *cache) {
             ranges.insert(ranges.end(), tmp.begin(), tmp.end());
-            flags->emplace_back(ranges.end()); // mark ordered interval
         }
 
-        do_sort(std::move(executor), callback, flags);
+        auto points = std::make_shared<std::list<RangesIter>>(); // mark ordered interval
+        for (const auto offset : to_offset(BASIC_RANGES_NUM, 0)) {
+            points->emplace_back(ranges.begin() + offset);
+        }
+        points->emplace_back(ranges.end());
 
-        available_ = true;
+        auto inner_sort = [points, all_done, executor = std::move(executor)](auto &&self) -> void {
+            Worker sorter {executor};
 
+            auto begin = points->begin();
+            decltype(begin) mid, end;
+            while (++(mid = begin) != points->end() && ++(end = mid) != points->end()) {
+                sorter.post([begin = *begin, mid = *mid, end = *end] {
+                    inplace_merge(begin, mid, end); // merge two ordered interval
+                });
+                points->erase(mid);
+                begin = end;
+            }
+
+            sorter.then([self, points, all_done] {
+                if (points->size() == 2) {
+                    all_done();
+                    return;
+                }
+                self(self); // next sort round
+            });
+        };
+        inner_sort(inner_sort); // TODO: using `this auto &&self` in new version
     });
 }

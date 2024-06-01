@@ -25,6 +25,8 @@ void derive_demo(const std::vector<uint32_t> &range, const std::vector<uint32_t>
 
 void derive_demo_pro(const BidiRanges &bidi_range, std::vector<uint32_t> &output, int head);
 
+typedef std::array<Ranges, 16> RangesUnion;
+
 // TODO: add RangesUnion here
 // TODO: -> spawn from Ranges / export std::vector<CommonCode>
 
