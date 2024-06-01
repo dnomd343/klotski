@@ -12,6 +12,8 @@ public:
     /// Spawn klotski-ranges that match the specified block numbers.
     void spawn(int n, int n_2x1, int n_1x1);
 
+    void reverse();
+
     /// Derive the legal klotski-ranges with specified head.
     void derive(int head, Ranges &output) const;
 
@@ -19,9 +21,16 @@ public:
     static KLSK_INLINE int check(int head, uint32_t range);
 };
 
-typedef std::array<Ranges, 16> RangesUnion;
+// typedef std::array<Ranges, 16> RangesUnion;
 
-// TODO: add RangesUnion here
-// TODO: -> spawn from Ranges / export std::vector<CommonCode>
+class RangesUnion final : public std::array<Ranges, 16> {
+    std::vector<uint64_t> codes();
+};
+
+inline void Ranges::reverse() {
+    for (auto &x : *this) {
+        x = range_reverse(x);
+    }
+}
 
 } // namespace klotski::cases

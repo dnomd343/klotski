@@ -34,10 +34,12 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
-    AllCases::instance().build();
+    // AllCases::instance().build();
 
-    // auto ret = GroupUnion::unsafe_create(169).cases();
-    // std::cout << ret[4].size() << std::endl;
+    for (int type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
+        auto ret = GroupUnion::unsafe_create(type_id).cases();
+        // std::cout << ret[4].size() << std::endl;
+    }
 
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 
