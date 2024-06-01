@@ -93,11 +93,15 @@ klotski::cases::RangesUnion klotski::cases::GroupUnion::cases() const {
     int n_1x1 = TYPE_ID_N_1x1_NUM[type_id_]; // TODO: cal from type_id
     ranges.spawn(n, n_2x1, n_1x1);
 
+    // for (int i = 0; i < TYPE_ID_LIMIT; ++i) {
+    //     ranges.spawn(TYPE_ID_N_NUM[i], TYPE_ID_N_2x1_NUM[i], TYPE_ID_N_1x1_NUM[i]);
+    // }
+    // std::stable_sort(ranges.begin(), ranges.end());
+
     for (auto &x : ranges) {
         x = klotski::range_reverse(x);
     }
 
-    // std::cout << "start derive" << std::endl;
     RangesUnion cases;
     ranges.derive(0x0, cases[0x0]);
     ranges.derive(0x1, cases[0x1]);

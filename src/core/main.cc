@@ -34,39 +34,10 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
-    // klotski::cases::BasicRanges::instance().build();
+    AllCases::instance().build();
 
-    BS::thread_pool pool {};
-
-    // auto demo = [](auto &&self, int val) {
-    //     std::cout << "val = " << val << std::endl;
-    //     if (val == 0) {
-    //         return;
-    //     }
-    //     self(self, val - 1);
-    // };
-    //
-    // demo(demo, 5);
-
-    // constexpr std::array<int, 5> kk {1, 2, 3, 4, 5};
-    // auto ret = klotski::to_offset(kk, 0);
-    // std::cout << std::format("{}", ret) << std::endl;
-
-    // klotski::cases::BasicRanges::instance().build();
-
-    klotski::cases::BasicRanges::instance().build_async([&pool](auto &&func) {
-        pool.submit_task(func);
-    }, [] {
-        // std::cout << "all done" << std::endl;
-    });
-
-    // klotski::cases::AllCases::instance().build_parallel_async([&pool](auto func) {
-    //     pool.submit_task(func);
-    // }, [] {});
-
-    pool.wait();
-
-    // std::cout << BasicRanges::instance().fetch().size() << std::endl;
+    // auto ret = GroupUnion::unsafe_create(169).cases();
+    // std::cout << ret[4].size() << std::endl;
 
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 

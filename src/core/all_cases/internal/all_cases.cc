@@ -19,34 +19,6 @@ static consteval Heads get_heads() {
     return heads;
 }
 
-/// Check whether the combination of head and range is valid.
-static int check_range(const int head, uint32_t range) {
-    uint32_t flags = 0b110011 << head; // fill 2x2 block
-    for (int addr = 0, offset = 1; range; range >>= 2, ++offset) { // traverse every 2-bit
-        const auto num = std::countr_one(flags);
-        addr += num; // next unfilled block
-        flags >>= num;
-        switch (range & 0b11) {
-            case 0b00: // space
-            case 0b11: // 1x1 block
-                flags |= 0b1;
-                continue;
-            case 0b01: // 1x2 block
-                if (flags & 0b10 || addr % 4 == 3) { // invalid case
-                    return offset; // broken offset
-                }
-                flags |= 0b11;
-                continue;
-            case 0b10: // 2x1 block
-                if (flags & 0b10000 || addr > 15) { // invalid case
-                    return offset; // broken offset
-                }
-                flags |= 0b10001;
-        }
-    }
-    return 0; // pass check
-}
-
 /// Build all valid ranges of the specified head.
 static void build_cases(const std::vector<uint32_t> &ranges,
                         const std::vector<uint32_t> &reversed, Ranges &release, const int head) {
@@ -54,23 +26,25 @@ static void build_cases(const std::vector<uint32_t> &ranges,
     release.reserve(ALL_CASES_NUM[head]);
 
     for (uint32_t index = 0; index < reversed.size(); ++index) {
-        if (const auto offset = check_range(head, reversed[index])) { // invalid case
+        CHECK_NEXT:
+        if (const auto offset = Ranges::check(head, reversed[index])) { // invalid case
             if (offset > 14) {
-                continue;
+                ++index; // never overflow
+                goto CHECK_NEXT;
             }
             //         !! <- broken
             // ( xx xx xx ) xx xx xx ... [range]
             //         +1   00 00 00 ... (delta)
             const int tmp = (16 - offset) * 2;
-            uint32_t min_next = ((ranges[index] >> tmp) + 1) << tmp; // next possible range
+            const uint32_t min_next = ((ranges[index] >> tmp) + 1) << tmp; // next possible range
 
-            if (offset > 5) { // located next range by min_next
-                while (ranges[++index] < min_next) {}
-            } else {
-                index = std::lower_bound(ranges.begin() + index, ranges.end(), min_next) - ranges.begin();
+            // min_next always less than ranges.back()
+            if (offset > 5) {
+                while (ranges[++index] < min_next) {} // located next range
+                goto CHECK_NEXT;
             }
-            --index;
-            continue;
+            index = std::lower_bound(ranges.begin() + index, ranges.end(), min_next) - ranges.begin();
+            goto CHECK_NEXT;
         }
         release.emplace_back(range_reverse(reversed[index])); // release valid case
     }

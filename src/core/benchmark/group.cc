@@ -217,58 +217,17 @@ static void RangesDerive(benchmark::State &state) {
 
     auto &basic_ranges = klotski::cases::BasicRanges::instance().fetch();
 
-    klotski::cases::Ranges flip {basic_ranges};
-    for (auto &x : flip) {
-        x = klotski::range_reverse(x);
-    }
+    // klotski::cases::Ranges results;
+    // results.reserve(klotski::cases::ALL_CASES_NUM_);
 
-    klotski::cases::BidiRanges bidi_ranges;
-    for (auto x : basic_ranges) {
-        bidi_ranges.emplace_back(klotski::cases::bidi_t {.r1 = x, .r2 = klotski::range_reverse(x)});
-    }
-
-    klotski::cases::Ranges results;
-    // results.reserve(klotski::cases::ALL_CASES_NUM[5]);
-    results.reserve(klotski::cases::ALL_CASES_NUM_);
+    auto group_union = klotski::cases::GroupUnion::unsafe_create(169);
 
     for (auto _ : state) {
 
-        results.clear();
+        // results.clear();
         // results.reserve(klotski::cases::ALL_CASES_NUM[5]);
 
-        // basic_ranges.derive(5, results);
-
-        klotski::cases::derive_demo(basic_ranges, flip, results, 0);
-        klotski::cases::derive_demo(basic_ranges, flip, results, 1);
-        klotski::cases::derive_demo(basic_ranges, flip, results, 2);
-
-        klotski::cases::derive_demo(basic_ranges, flip, results, 4);
-        klotski::cases::derive_demo(basic_ranges, flip, results, 5);
-        klotski::cases::derive_demo(basic_ranges, flip, results, 6);
-
-        klotski::cases::derive_demo(basic_ranges, flip, results, 8);
-        klotski::cases::derive_demo(basic_ranges, flip, results, 9);
-        klotski::cases::derive_demo(basic_ranges, flip, results, 10);
-
-        klotski::cases::derive_demo(basic_ranges, flip, results, 12);
-        klotski::cases::derive_demo(basic_ranges, flip, results, 13);
-        klotski::cases::derive_demo(basic_ranges, flip, results, 14);
-
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 0);
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 1);
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 2);
-        //
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 4);
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 5);
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 6);
-        //
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 8);
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 9);
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 10);
-        //
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 12);
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 13);
-        // klotski::cases::derive_demo_pro(bidi_ranges, results, 14);
+        volatile auto tmp = group_union.cases();
 
     }
 
@@ -284,10 +243,10 @@ static void RangesDerive(benchmark::State &state) {
 
 // BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
+// BENCHMARK(OriginBasicRanges)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(OriginAllCases)->Unit(benchmark::kMillisecond);
 
-// BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
+BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_MAIN();

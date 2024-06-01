@@ -3,14 +3,9 @@
 #include <vector>
 #include <cstdint>
 
+#include "utils/utility.h"
+
 namespace klotski::cases {
-
-struct bidi_t {
-    uint32_t r1;
-    uint32_t r2;
-};
-
-typedef std::vector<bidi_t> BidiRanges;
 
 class Ranges : public std::vector<uint32_t> {
 public:
@@ -19,11 +14,10 @@ public:
 
     /// Derive the legal klotski-ranges with specified head.
     void derive(int head, Ranges &output) const;
+
+    /// Check whether the combination of head and range is valid.
+    static KLSK_INLINE int check(int head, uint32_t range);
 };
-
-void derive_demo(const std::vector<uint32_t> &range, const std::vector<uint32_t> &reversed, std::vector<uint32_t> &output, int head);
-
-void derive_demo_pro(const BidiRanges &bidi_range, std::vector<uint32_t> &output, int head);
 
 typedef std::array<Ranges, 16> RangesUnion;
 
