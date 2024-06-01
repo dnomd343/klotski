@@ -79,7 +79,7 @@ TEST_FF(AllCases, all_cases) {
 }
 
 TEST_FF(AllCases, all_cases_race) {
-    racer_.Begin([] {
+    racer_.Start([] {
         AllCases::instance().build();
     });
     EXPECT_FALSE(Available());
@@ -112,7 +112,7 @@ TEST_FF(AllCases, all_cases_async) {
     std::atomic_flag flag;
 
     flag.clear();
-    AllCases::instance().build_parallel_async(executor_.Entry(), [&flag]() {
+    AllCases::instance().build_async(executor_.Entry(), [&flag]() {
         flag.test_and_set();
         flag.notify_all();
     });
@@ -122,7 +122,7 @@ TEST_FF(AllCases, all_cases_async) {
     Verify();
 
     flag.clear();
-    AllCases::instance().build_parallel_async(executor_.Entry(), [&flag]() {
+    AllCases::instance().build_async(executor_.Entry(), [&flag]() {
         flag.test_and_set();
         flag.notify_all();
     });
@@ -135,8 +135,8 @@ TEST_FF(AllCases, all_cases_async) {
 TEST_FF(AllCases, all_cases_async_race) {
     std::atomic<int> callback_num(0);
 
-    racer_.Begin([this, &callback_num] {
-        AllCases::instance().build_parallel_async(executor_.Entry(), [&callback_num]() {
+    racer_.Start([this, &callback_num] {
+        AllCases::instance().build_async(executor_.Entry(), [&callback_num]() {
             callback_num.fetch_add(1);
         });
     });
@@ -144,6 +144,6 @@ TEST_FF(AllCases, all_cases_async_race) {
 
     racer_.Join();
     EXPECT_TRUE(Available());
-    EXPECT_EQ(callback_num.load(), co::Racer::Num);
+    EXPECT_EQ(callback_num.load(), racer_.RaceNum());
     Verify();
 }

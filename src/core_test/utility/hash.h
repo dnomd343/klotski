@@ -12,7 +12,7 @@
 namespace hash {
 
 inline std::string md5(const void *data, const uint64_t size) {
-    return ::md5::MD5::Hash(data, size);
+    return md5::MD5::Hash(data, size);
 }
 
 inline uint64_t xxh3(const void *data, const uint64_t size) {
@@ -28,12 +28,12 @@ inline uint64_t xxh3(const std::string_view &data) {
 }
 
 template <typename T>
-inline std::string md5(const std::vector<T> &data) {
+std::string md5(const std::vector<T> &data) {
     return md5(data.data(), data.size() * sizeof(T));
 }
 
 template <typename T>
-inline uint64_t xxh3(const std::vector<T> &data) {
+uint64_t xxh3(const std::vector<T> &data) {
     return xxh3(data.data(), data.size() * sizeof(T));
 }
 

@@ -10,13 +10,20 @@ using klotski::cases::BasicRanges;
 
 using klotski::cases::ALL_CASES_NUM;
 using klotski::cases::ALL_CASES_NUM_;
-using klotski::cases::BASIC_RANGES_NUM;
 
-/// Test fixture wrapper with Racer and Executor.
+using klotski::cases::BASIC_RANGES_NUM;
+using klotski::cases::BASIC_RANGES_NUM_;
+
+/// Test fixture wrapper with concurrency tools.
 class Concurrent {
 protected:
-    co::Racer racer_;
-    co::Executor executor_;
+    co::Racer racer_ {256};
+
+    co::Executor serial_ {1};
+    co::Executor executor_ {0};
+
+    std::atomic<int> counter_ {0};
+    std::atomic_flag condition_ {false};
 };
 
 /// Forcibly modify private variables to reset state.

@@ -5,7 +5,6 @@
 /// and dispatch them to different threads. The Racer schedules the specified
 /// function to a certain number of threads at one time.
 
-#include <memory>
 #include <functional>
 
 #include "BS_thread_pool.hpp"
@@ -14,13 +13,16 @@ namespace co {
 
 class Executor final {
 public:
-    Executor() = default;
-    ~Executor() { pool_.wait(); }
+    explicit Executor(const int num) : pool_(num) {}
 
     std::function<void(std::function<void()> &&)> Entry() {
         return [this](auto &&func) {
             pool_.detach_task(func);
         };
+    }
+
+    ~Executor() {
+        pool_.wait();
     }
 
 private:
@@ -29,24 +31,30 @@ private:
 
 class Racer final {
 public:
-    Racer() = default;
-    ~Racer() { Join(); }
+    explicit Racer(const int num) : race_num_(num), pool_(num) {}
 
-    static constexpr int Num = 256; // number of racing threads
-
-    void Begin(std::function<void()> &&item) {
-        item_ = std::move(item);
-        pool_.detach_sequence(0, Num, [this](const int) {
-            item_(); // execute racing function
-        });
+    int RaceNum() const {
+        return race_num_; // number of racing threads
     }
 
-    void Join() { pool_.wait(); }
+    void Start(std::function<void()> &&item) {
+        auto wrapper = [item = std::move(item)](const int) {
+            item(); // execute racing function
+        };
+        pool_.detach_sequence(0, race_num_, wrapper);
+    }
+
+    void Join() {
+        pool_.wait();
+    }
+
+    ~Racer() {
+        Join();
+    }
 
 private:
-    std::function<void()> item_;
-    BS::thread_pool pool_ { Num };
+    const int race_num_;
+    BS::thread_pool pool_;
 };
-
 
 } // namespace co
