@@ -1,7 +1,3 @@
-#include <future>
-
-#include "utils/utility.h"
-#include "ranges/ranges.h"
 #include "all_cases/all_cases.h"
 
 using klotski::range_reverse;
@@ -10,9 +6,11 @@ using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
 using klotski::cases::ALL_CASES_NUM;
 
+typedef std::array<int, 12> Heads;
+
 /// Generate all possible klotski heads.
-static consteval std::array<int, 12> heads() {
-    std::array<int, 12> heads {};
+static consteval Heads get_heads() {
+    Heads heads {};
     for (int i = 0, head = 0; head < 15; ++head) {
         if (head % 4 != 3) {
             heads[i++] = head;
@@ -60,7 +58,6 @@ static void build_cases(const std::vector<uint32_t> &ranges,
             if (offset > 14) {
                 continue;
             }
-
             //         !! <- broken
             // ( xx xx xx ) xx xx xx ... [range]
             //         +1   00 00 00 ... (delta)
@@ -83,7 +80,6 @@ void AllCases::build() {
     if (available_) {
         return; // reduce consumption of mutex
     }
-
     std::lock_guard guard {building_};
     if (available_) {
         return; // data is already available
@@ -94,7 +90,7 @@ void AllCases::build() {
     for (auto &x : reversed) {
         x = range_reverse(x);
     }
-    for (const auto head : heads()) {
+    for (const auto head : get_heads()) {
         build_cases(ranges, reversed, get_cases()[head], head);
     }
     available_ = true;
@@ -105,7 +101,6 @@ void AllCases::build_async(Executor &&executor, Notifier &&callback) {
         callback();
         return; // reduce consumption of mutex
     }
-
     building_.lock();
     if (available_) {
         building_.unlock();
@@ -113,21 +108,22 @@ void AllCases::build_async(Executor &&executor, Notifier &&callback) {
         return; // data is already available
     }
 
-    const auto counter = std::make_shared<std::atomic<int>>(0);
-    const auto all_done = std::make_shared<Notifier>(std::move(callback));
-    const auto reversed = std::make_shared<std::vector<uint32_t>>(BasicRanges::instance().fetch());
+    auto &ranges = BasicRanges::instance().fetch();
+    auto reversed = std::make_shared<std::vector<uint32_t>>(ranges);
     for (auto &x : *reversed) {
         x = range_reverse(x);
     }
 
-    for (const auto head : heads()) {
-        executor([=, this] {
+    Worker worker {executor};
+    for (const auto head : get_heads()) {
+        worker.post([head, reversed] {
             build_cases(BasicRanges::instance().fetch(), *reversed, get_cases()[head], head);
-            if (counter->fetch_add(1) == heads().size() - 1) { // all tasks done
-                available_ = true;
-                building_.unlock(); // release building mutex
-                all_done->operator()(); // trigger callback
-            }
         });
     }
+
+    worker.then([this, callback = std::move(callback)] {
+        available_ = true;
+        building_.unlock();
+        callback();
+    });
 }
