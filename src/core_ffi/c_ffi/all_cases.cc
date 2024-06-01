@@ -5,7 +5,7 @@ using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
 using klotski::cases::ALL_CASES_NUM;
 
-typedef std::function<void()> Runner;
+typedef std::function<void()> Task;
 
 // ------------------------------------------------------------------------------------- //
 
@@ -14,11 +14,15 @@ void all_cases_prebuild() {
 }
 
 void all_cases_prebuild_async(const executor_t executor, const notifier_t callback) {
-    const auto func = [](void *arg) {
-        all_cases_prebuild();
-        reinterpret_cast<notifier_t>(arg)();
+    auto worker = [executor](Task &&task) {
+        const auto func = [](void *arg) {
+            const auto *ptr = static_cast<Task*>(arg);
+            (*ptr)();
+            delete ptr;
+        };
+        executor(func, new Task {std::move(task)});
     };
-    executor(func, reinterpret_cast<void*>(callback));
+    BasicRanges::instance().build_async(worker, callback);
 }
 
 int all_cases_prebuild_available() {
@@ -32,34 +36,15 @@ void all_cases_build() {
 }
 
 void all_cases_build_async(const executor_t executor, const notifier_t callback) {
-    const auto func = [](void *arg) {
-        all_cases_build();
-        reinterpret_cast<notifier_t>(arg)();
-    };
-    executor(func, reinterpret_cast<void*>(callback));
-}
-
-void all_cases_build_parallel(executor_t executor) {
-    // AllCases::instance().build_parallel([executor](Runner &&runner) {
-    //     const auto func = [](void *arg) {
-    //         (*static_cast<Runner*>(arg))();
-    //         delete static_cast<Runner*>(arg);
-    //     };
-    //     executor(func, new Runner {std::move(runner)});
-    // });
-}
-
-void all_cases_build_parallel_async(executor_t executor, notifier_t callback) {
-    auto all_done = [callback] {
-        callback();
-    };
-    AllCases::instance().build_parallel_async([executor](Runner &&runner) {
+    auto worker = [executor](Task &&task) {
         const auto func = [](void *arg) {
-            (*static_cast<Runner*>(arg))();
-            delete static_cast<Runner*>(arg);
+            const auto *ptr = static_cast<Task*>(arg);
+            (*ptr)();
+            delete ptr;
         };
-        executor(func, new Runner {std::move(runner)});
-    }, std::move(all_done));
+        executor(func, new Task {std::move(task)});
+    };
+    AllCases::instance().build_async(worker, callback);
 }
 
 int all_cases_available() {

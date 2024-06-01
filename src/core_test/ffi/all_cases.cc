@@ -1,21 +1,19 @@
-#include <future>
-#include <string>
+#include <format>
 #include <thread>
+#include <gtest/gtest.h>
 
 #include "hash.h"
 #include "exposer.h"
 #include "klotski.h"
-#include "all_cases.h"
-#include "gtest/gtest.h"
+#include "all_cases/all_cases.h"
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
-
 using klotski::cases::ALL_CASES_NUM;
 
 /// The efficiency of string hashing is not very high, but there is a memorable
 /// story, and this scheme is still retained here.
-static const std::string ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
+static constexpr std::string_view ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
 
 /// Forcibly modify private variables to reset state.
 FORCIBLY_ACCESS(AllCases, available_, bool)
@@ -42,13 +40,15 @@ TEST(AllCases, all_cases_prebuild) {
 
 TEST(AllCases, all_cases_prebuild_async) {
     basic_ranges_reset();
+
     static std::atomic_flag flag;
+    auto executor = [](void (*fn)(void*), void *arg) {
+        std::thread worker {fn, arg};
+        worker.detach();
+    };
 
     flag.clear();
-    all_cases_prebuild_async([](void (*fn)(void*), void *arg) {
-        std::thread worker(fn, arg);
-        worker.detach();
-    }, []() { // callback function
+    all_cases_prebuild_async(executor, [] {
         flag.test_and_set();
         flag.notify_all();
     });
@@ -57,10 +57,7 @@ TEST(AllCases, all_cases_prebuild_async) {
     EXPECT_TRUE(all_cases_prebuild_available());
 
     flag.clear();
-    all_cases_prebuild_async([](void (*fn)(void*), void *arg) {
-        std::thread worker(fn, arg);
-        worker.detach();
-    }, []() { // callback function
+    all_cases_prebuild_async(executor, [] {
         flag.test_and_set();
         flag.notify_all();
     });
@@ -80,13 +77,15 @@ TEST(AllCases, all_cases_build) {
 
 TEST(AllCases, all_cases_build_async) {
     all_cases_reset();
+
     static std::atomic_flag flag;
+    auto executor = [](void (*fn)(void*), void *arg) {
+        std::thread worker {fn, arg};
+        worker.detach();
+    };
 
     flag.clear();
-    all_cases_build_async([](void (*fn)(void*), void *arg) {
-        std::thread worker(fn, arg);
-        worker.detach();
-    }, []() { // callback function
+    all_cases_build_async(executor, [] {
         flag.test_and_set();
         flag.notify_all();
     });
@@ -95,54 +94,7 @@ TEST(AllCases, all_cases_build_async) {
     EXPECT_TRUE(all_cases_available());
 
     flag.clear();
-    all_cases_build_async([](void (*fn)(void*), void *arg) {
-        std::thread worker(fn, arg);
-        worker.detach();
-    }, []() { // callback function
-        flag.test_and_set();
-        flag.notify_all();
-    });
-    EXPECT_TRUE(all_cases_available());
-    flag.wait(false);
-    EXPECT_TRUE(all_cases_available());
-}
-
-TEST(AllCases, all_cases_build_parallel) {
-    all_cases_reset();
-    EXPECT_FALSE(all_cases_available());
-    all_cases_build_parallel([](void (*fn)(void*), void *arg) {
-        std::thread worker(fn, arg);
-        worker.detach();
-    });
-    EXPECT_TRUE(all_cases_available());
-    all_cases_build_parallel([](void (*fn)(void*), void *arg) {
-        std::thread worker(fn, arg);
-        worker.detach();
-    });
-    EXPECT_TRUE(all_cases_available());
-}
-
-TEST(AllCases, all_cases_build_parallel_async) {
-    all_cases_reset();
-    static std::atomic_flag flag;
-
-    flag.clear();
-    all_cases_build_parallel_async([](void (*fn)(void*), void *arg) {
-        std::thread worker(fn, arg);
-        worker.detach();
-    }, []() { // callback function
-        flag.test_and_set();
-        flag.notify_all();
-    });
-    EXPECT_FALSE(all_cases_available());
-    flag.wait(false);
-    EXPECT_TRUE(all_cases_available());
-
-    flag.clear();
-    all_cases_build_parallel_async([](void (*fn)(void*), void *arg) {
-        std::thread worker(fn, arg);
-        worker.detach();
-    }, []() { // callback function
+    all_cases_build_async(executor, [] {
         flag.test_and_set();
         flag.notify_all();
     });
@@ -169,12 +121,10 @@ TEST(AllCases, all_cases_export) {
 
     std::string all_cases_str;
     for (uint64_t head = 0; head < 15; ++head) {
-        auto num = all_cases_num((int)head);
-        auto *ranges = all_cases_export((int)head);
+        const auto num = all_cases_num(static_cast<int>(head));
+        auto *ranges = all_cases_export(static_cast<int>(head));
         for (auto i = 0; i < num; ++i) {
-            char *tmp;
-            asprintf(&tmp, "%09llX\n", head << 32 | ranges[i]);
-            all_cases_str += tmp;
+            all_cases_str += std::format("{:09X}\n", head << 32 | ranges[i]);
         }
     }
     EXPECT_EQ(hash::md5(all_cases_str), ALL_CASES_MD5);

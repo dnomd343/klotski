@@ -44,17 +44,6 @@ KLSK_EXPORT void all_cases_build();
 /// data is ready, the callback will still be triggered.
 KLSK_EXPORT void all_cases_build_async(executor_t executor, notifier_t callback);
 
-/// Build all_cases in parallel, the tasks will be split and sent to the
-/// executor, you can put them on different threads to work, but note that the
-/// task can only be executed once, otherwise it will lead to unknown
-/// consequences, the function will be blocked until all mission completed.
-KLSK_EXPORT void all_cases_build_parallel(executor_t executor);
-
-/// Similar to `all_cases_build_parallel`, but it is non-blocking. The callback
-/// will be triggered after the build is completed. Note that the callback will
-/// still be triggered even if the data is ready.
-KLSK_EXPORT void all_cases_build_parallel_async(executor_t executor, notifier_t callback);
-
 /// Returns whether the all_cases is ready, 0 means not completed, non-0 means
 /// the data is ready.
 KLSK_EXPORT int all_cases_available();
