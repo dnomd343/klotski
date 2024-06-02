@@ -1,9 +1,13 @@
 #pragma once
 
+#include <algorithm>
+
 #include "exposer.h"
 #include "all_cases.h"
 #include "concurrent.h"
 #include "gtest/gtest.h"
+
+using klotski::array_sum;
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
