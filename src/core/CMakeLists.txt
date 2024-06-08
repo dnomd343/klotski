@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(KLOTSKI_CORE_SRC
         all_cases/internal/basic_ranges.cc
         all_cases/internal/all_cases.cc
-#        all_cases/internal/derive.cc
 
         common_code/internal/common_code.cc
         common_code/internal/serialize.cc
@@ -52,3 +51,7 @@ target_link_libraries(group_benchmark PRIVATE klotski::core benchmark::benchmark
 add_executable(bm_all_cases benchmark/all_cases.cc)
 target_compile_options(bm_all_cases PRIVATE -fno-rtti -fno-exceptions -fno-access-control)
 target_link_libraries(bm_all_cases PRIVATE klotski::core benchmark::benchmark_main bs::thread_pool)
+
+add_executable(bm_ranges benchmark/ranges.cc)
+target_compile_options(bm_ranges PRIVATE -fno-rtti -fno-exceptions)
+target_link_libraries(bm_ranges PRIVATE klotski::core benchmark::benchmark_main)

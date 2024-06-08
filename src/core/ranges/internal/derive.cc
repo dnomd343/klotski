@@ -32,23 +32,17 @@ int Ranges::check(const int head, uint32_t range) {
 }
 
 void Ranges::derive(const int head, Ranges &output) const {
-
-    uint32_t last_val = range_reverse(this->back());
-
+    const uint32_t max_val = range_reverse(this->back());
     for (uint32_t index = 0; index < size(); ++index) {
         if (const auto offset = check(head, (*this)[index])) { // invalid case
-            uint32_t tmp = 1U << (32 - offset * 2); // distance to next possible range
             ///         !! <- broken
             /// ( xx xx xx ) xx xx xx ... [reversed range]
             ///         +1   00 00 00 ...     (delta)
-            tmp += range_reverse((*this)[index]) & ~(tmp - 1);
-
-            auto min_next = tmp;
-
-            if (min_next > last_val) {
-                break;
+            const uint32_t delta = 1U << (32 - offset * 2); // distance to next possible range
+            const auto min_next = delta + range_reverse((*this)[index]) & ~(delta - 1);
+            if (min_next > max_val) {
+                break; // index has overflowed
             }
-
             while (range_reverse((*this)[++index]) < min_next) {} // located next range
             --index;
             continue;

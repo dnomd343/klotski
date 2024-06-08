@@ -1,35 +1,35 @@
-#pragma once
-
+#include "ranges/ranges.h"
 #include "common_code/common_code.h"
 
 using klotski::cases::Ranges;
 using klotski::codec::CommonCode;
 using klotski::cases::RangesUnion;
 
-inline void Ranges::reverse() {
+void Ranges::reverse() {
     for (auto &x : *this) {
         x = range_reverse(x);
     }
 }
 
-inline std::vector<CommonCode> RangesUnion::codes() const {
-    std::vector<CommonCode> codes;
+std::vector<CommonCode> RangesUnion::codes() const {
+    constexpr auto heads = std::to_array<uint64_t>({
+        0x0, 0x1, 0x2,
+        0x4, 0x5, 0x6,
+        0x8, 0x9, 0xA,
+        0xC, 0xD, 0xE,
+    });
 
-    codes.reserve(0); // TODO: cal sum
-
-    for (uint64_t head = 0; head < 16; ++head) {
-
-        if (head % 4 == 3) {
-            continue;
-        }
-
-        for (auto range : (*this)[head]) {
-            auto kk = head << 32 | range;
-            codes.emplace_back(CommonCode::unsafe_create(kk));
-
-        }
-
+    size_type size = 0;
+    for (const auto head : heads) {
+        size += (*this)[head].size();
     }
 
+    std::vector<CommonCode> codes;
+    codes.reserve(size);
+    for (const auto head : heads) {
+        for (const auto range : (*this)[head]) {
+            codes.emplace_back(CommonCode::unsafe_create(head << 32 | range));
+        }
+    }
     return codes;
 }
