@@ -23,6 +23,7 @@ set(KLSK_TEST_CASES_SRC
     cases/all_cases.cc
     cases/basic_ranges.cc
     cases/group_union.cc
+    cases/ranges.cc
 )
 
 add_executable(test_klotski_cases ${KLSK_TEST_CASES_SRC})
