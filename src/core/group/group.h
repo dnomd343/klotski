@@ -75,11 +75,6 @@ namespace klotski::cases {
 constexpr uint32_t TYPE_ID_LIMIT = 203;
 constexpr uint32_t ALL_GROUP_NUM = 25422;
 
-// uint32_t common_code_to_type_id(uint64_t common_code);
-// uint32_t raw_code_to_type_id(uint64_t raw_code);
-
-// std::vector<uint64_t> group_extend_from_seed(uint64_t raw_code);
-
 class Group;
 
 // TODO: add constexpr
@@ -90,28 +85,31 @@ public:
 	// ------------------------------------------------------------------------------------- //
 
 	/// Get the original type id.
-	[[nodiscard]] uint32_t unwrap() const;
+	[[nodiscard]] constexpr uint32_t unwrap() const;
 
 	/// Create GroupUnion without any check.
-	static GroupUnion unsafe_create(uint32_t type_id);
+	static constexpr GroupUnion unsafe_create(uint32_t type_id);
 
 	/// Create GroupUnion with validity check.
-	static std::optional<GroupUnion> create(uint32_t type_id);
+	static constexpr std::optional<GroupUnion> create(uint32_t type_id);
 
 	// ------------------------------------------------------------------------------------- //
 
 	/// Get the number of cases contained.
-	[[nodiscard]] uint32_t size() const;
+	[[nodiscard]] constexpr uint32_t size() const;
 
 	/// Get the number of groups contained.
-	[[nodiscard]] uint32_t group_num() const;
+	[[nodiscard]] constexpr uint32_t group_num() const;
 
 	/// Get the upper limit of the group size.
-	[[nodiscard]] uint32_t max_group_size() const;
+	[[nodiscard]] constexpr uint32_t max_group_size() const;
 
+	// ------------------------------------------------------------------------------------- //
+
+	/// Get all cases under the current type id.
 	[[nodiscard]] RangesUnion cases() const;
 
-	/// Get all group instances under the current type id.
+	/// Get all groups under the current type id.
 	[[nodiscard]] std::vector<Group> groups() const;
 
 	/// Get the group instance with the specified group id.
@@ -131,15 +129,15 @@ public:
 	// ------------------------------------------------------------------------------------- //
 
 private:
-	uint32_t type_id_ {};
+	uint32_t type_id_;
 
 	// ------------------------------------------------------------------------------------- //
 
 	/// Get the type id of RawCode.
-	static uint32_t type_id(codec::RawCode raw_code);
+	static KLSK_INLINE uint32_t type_id(codec::RawCode raw_code);
 
 	/// Get the type id of CommonCode.
-	static uint32_t type_id(codec::CommonCode common_code);
+	static KLSK_INLINE uint32_t type_id(codec::CommonCode common_code);
 
 	// ------------------------------------------------------------------------------------- //
 };
@@ -151,25 +149,36 @@ class Group {
 public:
 	Group() = delete;
 
+	// ------------------------------------------------------------------------------------- //
+
 	/// Create Group without any check.
 	static Group unsafe_create(uint32_t type_id, uint32_t group_id);
 
 	/// Create Group with validity check.
 	static std::optional<Group> create(uint32_t type_id, uint32_t group_id);
 
+	// ------------------------------------------------------------------------------------- //
+
+	/// Get the number of cases contained.
 	[[nodiscard]] uint32_t size() const;
 
+	/// Get all cases under the current group.
 	[[nodiscard]] RangesUnion cases() const;
 
+	// ------------------------------------------------------------------------------------- //
+
 	static Group from_raw_code(codec::RawCode raw_code);
+
+	static Group from_short_code(codec::ShortCode short_code);
+
 	static Group from_common_code(codec::CommonCode common_code);
 
-// private:
-	uint32_t type_id_;
-	uint32_t group_id_;
+	// ------------------------------------------------------------------------------------- //
 
-	[[nodiscard]] uint32_t flat_id() const;
+private:
+	uint32_t flat_id_;
 
+	// TODO: maybe we can using `std::vector<RawCode>`
 	static std::vector<uint64_t> extend(codec::RawCode raw_code);
 };
 
@@ -204,3 +213,4 @@ private:
 } // namespace klotski::cases
 
 #include "internal/group_union.inl"
+#include "internal/group.inl"

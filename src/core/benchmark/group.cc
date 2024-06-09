@@ -25,7 +25,7 @@ static std::vector<uint64_t> all_common_codes() {
     return codes;
 }
 
-std::vector<uint64_t> common_code_samples(uint64_t num) {
+std::vector<klotski::codec::CommonCode> common_code_samples(uint64_t num) {
 
     static auto codes = all_common_codes();
 
@@ -34,7 +34,7 @@ std::vector<uint64_t> common_code_samples(uint64_t num) {
     // uint64_t offset = 0;
     uint64_t offset = part_size / 2;
 
-    std::vector<uint64_t> result;
+    std::vector<klotski::codec::CommonCode> result;
 
     for (uint64_t i = 0; i < num; ++i) {
         uint64_t index = i * part_size + offset;
@@ -43,22 +43,24 @@ std::vector<uint64_t> common_code_samples(uint64_t num) {
         // uint64_t kk[] {343, 666, 114514, 35324, 123454, 76453, 93411};
         // uint64_t index = kk[i % 7];
 
-        result.emplace_back(codes[index]);
+        result.emplace_back(klotski::codec::CommonCode::unsafe_create(codes[index]));
     }
 
     return result;
-
 }
 
-std::vector<uint64_t> raw_code_samples(uint64_t num) {
+std::vector<klotski::codec::RawCode> raw_code_samples(uint64_t num) {
 
     auto codes = common_code_samples(num);
 
-    for (auto &code : codes) {
-        code = klotski::codec::CommonCode::unsafe_create(code).to_raw_code().unwrap();
+    std::vector<klotski::codec::RawCode> raw_codes;
+
+    raw_codes.reserve(codes.size());
+    for (auto code : codes) {
+        raw_codes.emplace_back(code.to_raw_code());
     }
 
-    return codes;
+    return raw_codes;
 }
 
 static void CommonCodeToTypeId(benchmark::State &state) {
@@ -69,7 +71,7 @@ static void CommonCodeToTypeId(benchmark::State &state) {
 
         for (auto code : samples) {
 
-            // volatile auto ret = klotski::cases::common_code_to_type_id(code);
+            volatile auto ret = klotski::cases::GroupUnion::type_id(code);
         }
 
     }
@@ -82,16 +84,16 @@ static void RawCodeToTypeId(benchmark::State &state) {
 
     auto samples = raw_code_samples(state.range(0));
 
-    // for (auto code : samples) {
-    //     if (klotski::codec::RawCode::check(code) == false) {
-    //         std::cout << "error" << std::endl;
-    //     }
-    // }
+    for (auto code : samples) {
+        if (klotski::codec::RawCode::check(code.code_) == false) {
+            std::cout << "error" << std::endl;
+        }
+    }
 
     for (auto _ : state) {
 
         for (auto code : samples) {
-            // volatile auto ret = klotski::cases::raw_code_to_type_id(code);
+            volatile auto ret = klotski::cases::GroupUnion::type_id(code);
         }
 
     }
@@ -222,12 +224,22 @@ static void RangesDerive(benchmark::State &state) {
 
     auto group_union = klotski::cases::GroupUnion::unsafe_create(169);
 
+    std::vector<klotski::cases::GroupUnion> unions;
+    unions.reserve(klotski::cases::TYPE_ID_LIMIT);
+    for (int type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
+        unions.emplace_back(klotski::cases::GroupUnion::create(type_id).value());
+    }
+
     for (auto _ : state) {
 
         // results.clear();
         // results.reserve(klotski::cases::ALL_CASES_NUM[5]);
 
-        volatile auto tmp = group_union.cases();
+        // volatile auto tmp = group_union.cases();
+
+        for (auto g_union : unions) {
+            volatile auto tmp = g_union.cases();
+        }
 
     }
 

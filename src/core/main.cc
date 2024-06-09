@@ -41,6 +41,19 @@ int main() {
         // std::cout << ret[4].size() << std::endl;
     }
 
+    // auto group_union = GroupUnion::unsafe_create(169);
+    // for (auto group : group_union.groups()) {
+    //     std::cout << group.type_id_ << ", " << group.group_id_ << std::endl;
+    // }
+
+    constexpr auto gu = GroupUnion::unsafe_create(169);
+    constexpr auto gu_ = GroupUnion::create(169).value();
+    // constexpr auto gu_ = GroupUnion::create(1169).value();
+    constexpr auto k1 = gu.unwrap();
+    constexpr auto k2 = gu.size();
+    constexpr auto k3 = gu.group_num();
+    constexpr auto k4 = gu.max_group_size();
+
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 
     // auto raw_code = RawCode::from_common_code(0x1A9BF0C00)->unwrap();

@@ -6,15 +6,15 @@ namespace klotski::cases {
 
 // ------------------------------------------------------------------------------------- //
 
-inline uint32_t GroupUnion::unwrap() const {
+inline constexpr uint32_t GroupUnion::unwrap() const {
 	return type_id_;
 }
 
-inline GroupUnion GroupUnion::unsafe_create(const uint32_t type_id) {
+inline constexpr GroupUnion GroupUnion::unsafe_create(const uint32_t type_id) {
 	return std::bit_cast<GroupUnion>(type_id);
 }
 
-inline std::optional<GroupUnion> GroupUnion::create(const uint32_t type_id) {
+inline constexpr std::optional<GroupUnion> GroupUnion::create(const uint32_t type_id) {
 	if (type_id < TYPE_ID_LIMIT) {
 		return unsafe_create(type_id);
 	}
@@ -23,19 +23,20 @@ inline std::optional<GroupUnion> GroupUnion::create(const uint32_t type_id) {
 
 // ------------------------------------------------------------------------------------- //
 
-inline uint32_t GroupUnion::size() const {
+inline constexpr uint32_t GroupUnion::size() const {
 	return GROUP_UNION_SIZE[type_id_];
 }
 
-inline uint32_t GroupUnion::group_num() const {
+inline constexpr uint32_t GroupUnion::group_num() const {
 	return GROUP_NUM[type_id_];
 }
 
-inline uint32_t GroupUnion::max_group_size() const {
+inline constexpr uint32_t GroupUnion::max_group_size() const {
 	return MAX_GROUP_SIZE[type_id_];
 }
 
 inline std::vector<Group> GroupUnion::groups() const {
+	// TODO: using `std::iota` helper
 
 	std::vector<Group> groups;
 
