@@ -54,3 +54,27 @@ TEST(GroupUnion, demo) {
 
 
 }
+
+TEST(GroupUnion, cases) {
+    // auto ret = group_union_cases(0);
+    //
+    // EXPECT_EQ(ret, klotski::cases::GroupUnion::unsafe_create(0).cases().codes());
+
+    // group_union_cases(0);
+
+    for (uint32_t type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
+        auto cases = group_union_cases(type_id);
+        EXPECT_EQ(cases, klotski::cases::GroupUnion::unsafe_create(type_id).cases().codes());
+    }
+}
+
+TEST(GroupUnion, group) {
+
+    for (uint32_t type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
+        auto ret = group_cases(type_id, 0);
+    }
+
+    // auto ret = group_cases(169, 0);
+    // std::cout << ret.size() << std::endl;
+
+}

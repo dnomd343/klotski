@@ -46,9 +46,9 @@ constexpr auto Heads = std::to_array({
 
 /// The number of blocks in one klotski layout.
 struct block_num_t {
-    int n_1x1;
-    int n_1x2;
-    int n_2x1;
+    int n_1x1; // 4-bit
+    int n_1x2; // 3-bit
+    int n_2x1; // 3-bit
 };
 
 template <>
@@ -73,4 +73,17 @@ uint32_t to_type_id(block_num_t block_num);
 /// Calculate the block number value from type id.
 block_num_t to_block_num(uint32_t type_id);
 
-std::vector<block_num_t> block_nums();
+/// Get all block number combinations without dependencies.
+const std::vector<block_num_t>& block_nums();
+
+// ------------------------------------------------------------------------------------- //
+
+// TODO: get cases with type id (filter from AllCases)
+
+const std::vector<CommonCode>& group_union_cases(uint32_t type_id);
+
+// TODO: get cases with (type id + group id) (cal data from Group rules)
+
+std::vector<CommonCode> group_cases(uint32_t type_id, uint32_t group_id);
+
+// TODO: always return ref of `std::vector` here
