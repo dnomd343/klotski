@@ -2,14 +2,14 @@
 
 #include <benchmark/benchmark.h>
 
-#define private public
+// #define private public
 #include "group/group.h"
 
 #include <ranges/ranges.h>
 
 #include "../../../third_party/thread-pool/include/BS_thread_pool.hpp"
 #include "all_cases/all_cases.h"
-#undef private
+// #undef private
 
 using klotski::cases::AllCases;
 
@@ -104,11 +104,11 @@ static void RawCodeToTypeId(benchmark::State &state) {
 
 static void GroupExtend(benchmark::State &state) {
 
-    auto src = klotski::codec::RawCode::from_common_code(0x1A9BF0C00)->unwrap();
+    auto src = klotski::codec::RawCode::from_common_code(0x1A9BF0C00).value();
 
     for (auto _ : state) {
 
-        // volatile auto ret = klotski::cases::group_extend_from_seed(src);
+        volatile auto ret = klotski::cases::Group::extend(src, 0);
 
         // std::cout << ret.size() << std::endl;
     }
@@ -246,10 +246,21 @@ static void RangesDerive(benchmark::State &state) {
     // std::cout << results.size() << " vs " << klotski::cases::ALL_CASES_NUM[5] << std::endl;
 }
 
+static void SpawnGroups(benchmark::State &state) {
+
+    volatile auto val = 169;
+    auto group_union = klotski::cases::GroupUnion::create(val).value();
+
+    for (auto _ : state) {
+        volatile auto kk = group_union.groups();
+    }
+
+}
+
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
-// BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
+BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(FilterFromAllCases)->Unit(benchmark::kMillisecond);
 
@@ -259,6 +270,8 @@ static void RangesDerive(benchmark::State &state) {
 
 // BENCHMARK(OriginAllCases)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
+// BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
+
+// BENCHMARK(SpawnGroups);
 
 BENCHMARK_MAIN();

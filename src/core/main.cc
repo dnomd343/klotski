@@ -46,13 +46,38 @@ int main() {
     //     std::cout << group.type_id_ << ", " << group.group_id_ << std::endl;
     // }
 
-    constexpr auto gu = GroupUnion::unsafe_create(169);
-    constexpr auto gu_ = GroupUnion::create(169).value();
-    // constexpr auto gu_ = GroupUnion::create(1169).value();
-    constexpr auto k1 = gu.unwrap();
-    constexpr auto k2 = gu.size();
-    constexpr auto k3 = gu.group_num();
-    constexpr auto k4 = gu.max_group_size();
+    // constexpr auto gu = GroupUnion::unsafe_create(169);
+    // constexpr auto gu_ = GroupUnion::create(169).value();
+    // // constexpr auto gu_ = GroupUnion::create(1169).value();
+    // constexpr auto k1 = gu.unwrap();
+    // constexpr auto k2 = gu.size();
+    // constexpr auto k3 = gu.group_num();
+    // constexpr auto k4 = gu.max_group_size();
+
+    // auto kk = GroupUnion::unsafe_create(169);
+    // auto pp = kk.group(0).value();
+    // std::cout << pp.type_id() << ", " << pp.group_id() << std::endl;
+
+    // for (auto group : kk.groups()) {
+    //     std::cout << group.type_id() << ", " << group.group_id() << std::endl;
+    // }
+
+
+    auto gu = GroupUnion::unsafe_create(169);
+    // auto cases = gu.group(0).value().cases();
+
+    // for (auto &kk : cases) {
+    //     std::cout << kk.size() << std::endl;
+    // }
+
+    klotski::cases::RangesUnion cases;
+    for (auto group : gu.groups()) {
+        cases += group.cases();
+    }
+    for (auto &kk : cases) {
+        std::ranges::sort(kk.begin(), kk.end());
+    }
+    std::cout << (cases == gu.cases()) << std::endl;
 
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 

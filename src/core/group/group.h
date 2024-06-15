@@ -151,6 +151,12 @@ public:
 
 	// ------------------------------------------------------------------------------------- //
 
+	/// Get the original type id.
+	[[nodiscard]] uint32_t type_id() const;
+
+	/// Get the original group id.
+	[[nodiscard]] uint32_t group_id() const;
+
 	/// Create Group without any check.
 	static Group unsafe_create(uint32_t type_id, uint32_t group_id);
 
@@ -176,10 +182,13 @@ public:
 	// ------------------------------------------------------------------------------------- //
 
 private:
-	uint32_t flat_id_;
+	uint32_t type_id_;
+	uint32_t group_id_;
 
-	// TODO: maybe we can using `std::vector<RawCode>`
-	static std::vector<uint64_t> extend(codec::RawCode raw_code);
+	[[nodiscard]] uint32_t flat_id() const;
+
+public:
+	static std::vector<codec::RawCode> extend(codec::RawCode raw_code, uint32_t reserve = 0);
 };
 
 class GroupCase {

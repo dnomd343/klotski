@@ -1,45 +1,59 @@
+#include <absl/container/flat_hash_map.h>
+
+#include "core/core.h"
 #include "group/group.h"
 
-#include <queue>
+using klotski::core::Core;
+using klotski::cases::Group;
+using klotski::codec::RawCode;
+using klotski::codec::CommonCode;
+using klotski::cases::RangesUnion;
 
-#include <absl/container/btree_set.h>
-#include <absl/container/flat_hash_map.h>
-#include <absl/container/node_hash_map.h>
+std::vector<RawCode> Group::extend(RawCode raw_code, uint32_t reserve) {
+    std::vector<RawCode> codes;
+    absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+    reserve = reserve ? reserve : GroupUnion::from_raw_code(raw_code).max_group_size();
+    codes.reserve(reserve);
+    cases.reserve(reserve);
 
-#include <core/core.h>
-
-std::vector<uint64_t> klotski::cases::Group::extend(codec::RawCode raw_code) {
-
-    auto max_size = GroupUnion::from_raw_code(raw_code).max_group_size();
-    // auto max_size = GroupUnion::create(raw_code_to_type_id(raw_code))->max_group_size();
+    auto core = Core([&codes, &cases](uint64_t code, uint64_t mask) {
+        if (const auto match = cases.find(code); match != cases.end()) {
+            match->second |= mask; // update mask
+            return;
+        }
+        cases.emplace(code, mask);
+        codes.emplace_back(RawCode::unsafe_create(code)); // new case
+    });
 
     uint64_t offset = 0;
-    std::vector<uint64_t> results;
-    results.reserve(max_size);
-    results.emplace_back(raw_code);
-
-    absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
-    cases.reserve(max_size);
+    codes.emplace_back(raw_code);
     cases.emplace(raw_code, 0); // without mask
+    while (offset != codes.size()) {
+        auto curr = codes[offset++].unwrap();
+        core.next_cases(curr, cases.find(curr)->second);
+    }
+    return codes;
+}
 
-    auto core = klotski::core::Core(
-        [&results, &cases](auto code, auto mask) { // callback function
-            auto current = cases.find(code);
-            if (current != cases.end()) {
-                current->second |= mask; // update mask
-                return;
-            }
-            cases.emplace(code, mask);
-            results.emplace_back(code);
-        }
-    );
+RangesUnion Group::cases() const {
+    auto seed = CommonCode::unsafe_create(GROUP_SEED[flat_id()]);
 
-    while (offset != results.size()) {
-        auto tmp = results[offset];
-        core.next_cases(tmp, cases.find(tmp)->second);
-        ++offset;
+    // std::cout << seed << std::endl;
+
+    auto codes = extend(seed.to_raw_code(), size());
+
+    // std::cout << codes.size() << std::endl;
+
+    // TODO: how to reserve
+
+    RangesUnion data;
+
+    for (auto raw_code : codes) {
+        auto common_code = raw_code.to_common_code().unwrap();
+        data[common_code >> 32].emplace_back(static_cast<uint32_t>(common_code));
     }
 
-    return results;
+    // TODO: do sort process
 
+    return data;
 }

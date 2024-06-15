@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include "utils/utility.h"
+
 namespace klotski::cases {
 
 /// The number of groups contained in GroupUnion.
@@ -20,6 +22,8 @@ constexpr auto GROUP_NUM = std::to_array<uint16_t>({
     2  , 138, 14  , 126, 590 , 22 , 183, 1074, 33 , 209 , 1178, 13  , 171, 1185, 6  , 16  ,
     214, 6  , 18  , 54 , 2   , 44 , 40 , 124 , 84 , 70  , 18  ,
 });
+
+constexpr auto GROUP_OFFSET = to_offset<uint16_t, 203>(GROUP_NUM, 0);
 
 /// The maximum Group size in each GroupUnion.
 constexpr auto MAX_GROUP_SIZE = std::to_array<uint32_t>({
