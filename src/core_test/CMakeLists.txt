@@ -21,6 +21,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../core/common_code)
 
 set(KLSK_TEST_CASES_SRC
     cases/ranges.cc
+    cases/ranges_union.cc
     cases/basic_ranges.cc
     cases/all_cases.cc
     cases/group_union.cc

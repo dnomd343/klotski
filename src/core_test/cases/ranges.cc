@@ -5,16 +5,13 @@
 #include "ranges/ranges.h"
 
 static_assert(std::is_base_of_v<std::vector<uint32_t>, Ranges>);
-static_assert(std::is_base_of_v<std::array<Ranges, 16>, RangesUnion>);
 
 TEST(Ranges, check) {
     RangesUnion all_cases;
-    const auto ranges = BasicRanges::instance().fetch();
-
     for (const auto head : Heads) {
-        for (auto range : ranges) {
+        for (auto range : BasicRanges::instance().fetch()) {
             if (Ranges::check(head, range_reverse(range)) == 0) {
-                all_cases[head].emplace_back(range); // valid cases
+                all_cases[head].emplace_back(range); // found valid cases
             }
         }
     }
@@ -25,13 +22,13 @@ TEST(Ranges, spawn) {
     for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
         Ranges ranges;
         ranges.spawn(n, n_2x1, n_1x1);
-        EXPECT_SORTED_AND_UNIQUE(ranges);
+        EXPECT_SORTED_AND_UNIQUE(ranges); // sorted and unique
 
         for (const auto range : ranges) {
             const auto [val_1x1, val_1x2, val_2x1] = cal_block_num(range);
             EXPECT_EQ(val_1x1, n_1x1);
             EXPECT_EQ(val_2x1, n_2x1);
-            EXPECT_EQ(val_1x2 + val_2x1, n);
+            EXPECT_EQ(val_1x2 + val_2x1, n); // verify block nums
         }
     }
 }
@@ -40,18 +37,18 @@ TEST(Ranges, derive) {
     for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
         Ranges ranges;
         ranges.spawn(n, n_2x1, n_1x1);
-        ranges.reverse();
+        ranges.reverse(); // reverse ranges for derive
 
         RangesUnion cases;
         for (const auto head : Heads) {
             ranges.derive(head, cases[head]);
-            EXPECT_SORTED_AND_UNIQUE(cases[head]);
-            EXPECT_COMMON_CODES(head, cases[head]);
+            EXPECT_SORTED_AND_UNIQUE(cases[head]); // sorted and unique
+            EXPECT_COMMON_CODES(head, cases[head]); // verify common codes
         }
 
         ranges.reverse();
         for (const auto head : Heads) {
-            EXPECT_SUBSET(ranges, cases[head]); // subset verify
+            EXPECT_SUBSET(ranges, cases[head]); // derive ranges is subset
         }
     }
 }
@@ -82,9 +79,8 @@ TEST(Ranges, combine) {
     for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
         Ranges ranges;
         ranges.spawn(n, n_2x1, n_1x1);
-        // TODO: add += interface
-        all_ranges.insert(all_ranges.end(), ranges.begin(), ranges.end());
-        ranges.reverse();
+        all_ranges += ranges;
+        ranges.reverse(); // reverse ranges for derive
         for (const auto head : Heads) {
             ranges.derive(head, all_cases[head]); // derive from sub ranges
         }
@@ -97,7 +93,7 @@ TEST(Ranges, combine) {
     EXPECT_EQ(all_ranges, BasicRanges::instance().fetch()); // verify content
     EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify content
 
-    all_ranges.reverse();
+    all_ranges.reverse(); // reverse ranges for derive
     for (const auto head : Heads) {
         all_cases[head].clear();
         all_ranges.derive(head, all_cases[head]); // derive from all ranges
@@ -105,4 +101,11 @@ TEST(Ranges, combine) {
     EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify content
 }
 
-// TODO: export CommonCode
+TEST(Ranges, operator) {
+    Ranges r, r1, r2;
+    r.spawn(5, 3, 4);
+    r.spawn(5, 4, 4);
+    r1.spawn(5, 3, 4);
+    r2.spawn(5, 4, 4);
+    EXPECT_EQ(r, r1 += r2);
+}
