@@ -1,120 +1,108 @@
 #include <gtest/gtest.h>
 
+#include "group/group.h"
+#include "helper/cases.h"
 #include "ranges/ranges.h"
 
-#include <algorithm>
-#include <group/group.h>
-
-using klotski::cases::Ranges;
-
 static_assert(std::is_base_of_v<std::vector<uint32_t>, Ranges>);
-static_assert(std::is_base_of_v<std::array<Ranges, 16>, klotski::cases::RangesUnion>);
+static_assert(std::is_base_of_v<std::array<Ranges, 16>, RangesUnion>);
 
-TEST(Ranges, demo) {
+TEST(Ranges, check) {
+    RangesUnion all_cases;
+    const auto ranges = BasicRanges::instance().fetch();
 
-    for (int type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-        auto [n, n_2x1, n_1x1] = klotski::cases::BLOCK_NUM[type_id];
-
-        Ranges ranges;
-        ranges.spawn(n, n_2x1, n_1x1);
-
-        EXPECT_TRUE(std::ranges::is_sorted(ranges.begin(), ranges.end()));
-
-        const auto match = std::ranges::adjacent_find(ranges.begin(), ranges.end());
-
-        EXPECT_EQ(match, ranges.end());
-
-    }
-
-}
-
-TEST(Ranges, combine) {
-
-    Ranges ranges;
-
-    for (int type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-        auto [n, n_2x1, n_1x1] = klotski::cases::BLOCK_NUM[type_id];
-
-        ranges.spawn(n, n_2x1, n_1x1);
-
-    }
-
-    std::ranges::stable_sort(ranges.begin(), ranges.end());
-
-    EXPECT_EQ(ranges, klotski::cases::BasicRanges::instance().fetch());
-
-}
-
-TEST(Ranges, reverse) {
-
-    for (int type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-        auto [n, n_2x1, n_1x1] = klotski::cases::BLOCK_NUM[type_id];
-
-        Ranges ranges;
-        ranges.spawn(n, n_2x1, n_1x1);
-
-        Ranges reverse {ranges};
-        for (auto &x : reverse) {
-            x = klotski::range_reverse(x);
+    for (const auto head : Heads) {
+        for (auto range : ranges) {
+            if (Ranges::check(head, range_reverse(range)) == 0) {
+                all_cases[head].emplace_back(range); // valid cases
+            }
         }
-        ranges.reverse();
-
-        EXPECT_EQ(ranges, reverse);
-
     }
+    EXPECT_EQ(all_cases, AllCases::instance().fetch());
+}
 
+TEST(Ranges, spawn) {
+    for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
+        Ranges ranges;
+        ranges.spawn(n, n_2x1, n_1x1);
+        EXPECT_SORTED_AND_UNIQUE(ranges);
 
+        for (const auto range : ranges) {
+            const auto [val_1x1, val_1x2, val_2x1] = get_block_num(range);
+            EXPECT_EQ(val_1x1, n_1x1);
+            EXPECT_EQ(val_2x1, n_2x1);
+            EXPECT_EQ(val_1x2 + val_2x1, n);
+        }
+    }
 }
 
 TEST(Ranges, derive) {
-
-    for (int type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-        auto [n, n_2x1, n_1x1] = klotski::cases::BLOCK_NUM[type_id];
-
+    for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
         Ranges ranges;
         ranges.spawn(n, n_2x1, n_1x1);
-
         ranges.reverse();
 
-        auto kk = klotski::cases::GroupUnion::unsafe_create(type_id);
-
-        klotski::cases::RangesUnion result;
-
-        for (int head = 0; head < 16; ++head) {
-
-            if (head % 4 == 3) {
-                continue;
-            }
-
-            ranges.derive(head, result[head]);
+        RangesUnion cases;
+        for (const auto head : Heads) {
+            ranges.derive(head, cases[head]);
+            EXPECT_SORTED_AND_UNIQUE(cases[head]);
+            EXPECT_COMMON_CODES(head, cases[head]);
         }
 
-        EXPECT_EQ(result, kk.cases());
-
+        ranges.reverse();
+        for (const auto head : Heads) {
+            EXPECT_SUBSET(ranges, cases[head]); // subset verify
+        }
     }
-
-
 }
 
-TEST(Ranges, check) {
-    auto ranges = klotski::cases::BasicRanges::instance().fetch();
+TEST(Ranges, reverse) {
+    auto ranges = BasicRanges::instance().fetch();
+    Ranges reverse {ranges};
 
-    klotski::cases::RangesUnion all_cases;
+    for (auto &x : reverse) {
+        x = range_reverse(x); // manual reverse
+    }
+    ranges.reverse();
+    EXPECT_EQ(ranges, reverse);
 
-    for (int head = 0; head < 16; ++head) {
-        if (head % 4 == 3) {
-            continue;
-        }
+    ranges.reverse();
+    EXPECT_EQ(ranges, BasicRanges::instance().fetch());
+}
 
-        for (auto range : ranges) {
-            if (Ranges::check(head, klotski::range_reverse(range)) == 0) {
-                all_cases[head].emplace_back(range);
-            }
+TEST(Ranges, combine) {
+    Ranges all_ranges;
+    RangesUnion all_cases;
+
+    all_ranges.reserve(BASIC_RANGES_NUM_); // pre reserve
+    for (const auto head : Heads) {
+        all_cases[head].reserve(ALL_CASES_NUM[head]); // pre reserve
+    }
+
+    for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
+        Ranges ranges;
+        ranges.spawn(n, n_2x1, n_1x1);
+        // TODO: add += interface
+        all_ranges.insert(all_ranges.end(), ranges.begin(), ranges.end());
+        ranges.reverse();
+        for (const auto head : Heads) {
+            ranges.derive(head, all_cases[head]); // derive from sub ranges
         }
     }
 
-    EXPECT_EQ(klotski::cases::AllCases::instance().fetch(), all_cases);
+    std::ranges::stable_sort(all_ranges.begin(), all_ranges.end());
+    for (const auto head : Heads) {
+        std::ranges::stable_sort(all_cases[head].begin(), all_cases[head].end());
+    }
+    EXPECT_EQ(all_ranges, BasicRanges::instance().fetch()); // verify content
+    EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify content
 
+    all_ranges.reverse();
+    for (const auto head : Heads) {
+        all_cases[head].clear();
+        all_ranges.derive(head, all_cases[head]); // derive from all ranges
+    }
+    EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify content
 }
 
 // TODO: export CommonCode
