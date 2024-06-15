@@ -1,11 +1,11 @@
 #pragma once
 
 #include <algorithm>
+#include <gtest/gtest.h>
 
 #include "exposer.h"
-#include "all_cases.h"
 #include "concurrent.h"
-#include "gtest/gtest.h"
+#include "all_cases/all_cases.h"
 
 using klotski::array_sum;
 

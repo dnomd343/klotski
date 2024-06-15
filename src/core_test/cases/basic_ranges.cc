@@ -1,9 +1,10 @@
 #include "hash.h"
-#include "helper.h"
 #include "group/group.h"
+#include "cases_helper.h"
 
 using klotski::cases::Ranges;
 using klotski::cases::BLOCK_NUM;
+using klotski::cases::TYPE_ID_LIMIT;
 
 static constexpr uint64_t BASIC_RANGES_XXH3 = 0x34fce9da6a052533;
 
@@ -45,12 +46,12 @@ TEST_FF(BasicRanges, content) {
 
 TEST_FF(BasicRanges, constant) {
     EXPECT_EQ(BASIC_RANGES_NUM_, 7311885);
+    EXPECT_EQ(BASIC_RANGES_NUM.size(), TYPE_ID_LIMIT);
     EXPECT_EQ(array_sum(BASIC_RANGES_NUM), BASIC_RANGES_NUM_);
 
-    Ranges ranges;
-    for (uint32_t type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id];
-        ranges.clear();
+        Ranges ranges;
         ranges.spawn(n, n_2x1, n_1x1);
         EXPECT_EQ(ranges.size(), BASIC_RANGES_NUM[type_id]);
     }

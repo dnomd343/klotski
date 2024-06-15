@@ -1,5 +1,9 @@
 #include "hash.h"
-#include "helper.h"
+#include "cases_helper.h"
+#include "common_code/common_code.h"
+
+using klotski::cases::Ranges;
+using klotski::codec::CommonCode;
 
 static constexpr auto ALL_CASES_XXH3 = std::to_array<uint64_t>({
     0x71c8ff7a71c93da0, 0x2a5247ee8bfed666, 0xf4efc8fc692d58e2, 0x2d06800538d394c2,
@@ -30,38 +34,55 @@ protected:
         const auto &all_cases = AllCases::instance().fetch();
         for (int head = 0; head < 16; ++head) {
             EXPECT_EQ(all_cases[head].size(), ALL_CASES_NUM[head]); // verify all cases size
-        }
-        for (int head = 0; head < 16; ++head) {
             EXPECT_EQ(hash::xxh3(all_cases[head]), ALL_CASES_XXH3[head]); // verify all cases checksum
         }
     }
 };
 
+TEST_FF(AllCases, content) {
+    auto verify = [](const uint64_t head) {
+        auto &cases = AllCases::instance().fetch()[head];
+
+        EXPECT_EQ(cases.size(), ALL_CASES_NUM[head]); // size verify
+        EXPECT_EQ(hash::xxh3(cases), ALL_CASES_XXH3[head]); // checksum verify
+
+        EXPECT_TRUE(std::ranges::is_sorted(cases.begin(), cases.end()));
+        const auto match = std::ranges::adjacent_find(cases.begin(), cases.end());
+        EXPECT_EQ(match, cases.end()); // no duplicates
+
+        auto &all = BasicRanges::instance().fetch(); // subset verify
+        EXPECT_TRUE(std::ranges::includes(all.begin(), all.end(), cases.begin(), cases.end()));
+
+        for (const auto range : cases) {
+            CommonCode::check(head << 32 | range); // release verify
+        }
+    };
+
+    for (int head = 0; head < 16; ++head) {
+        if (head % 4 != 3) {
+            verify(head);
+            continue;
+        }
+        EXPECT_EQ(AllCases::instance().fetch()[head].size(), 0);
+    }
+}
+
 TEST_FF(AllCases, constant) {
     EXPECT_EQ(ALL_CASES_NUM_, 29334498);
+    EXPECT_EQ(ALL_CASES_NUM.size(), 16);
+    EXPECT_EQ(array_sum(ALL_CASES_NUM), ALL_CASES_NUM_);
 
-    EXPECT_EQ(ALL_CASES_NUM[0], 2942906);
-    EXPECT_EQ(ALL_CASES_NUM[1], 2260392);
-    EXPECT_EQ(ALL_CASES_NUM[2], 2942906);
-
-    EXPECT_EQ(ALL_CASES_NUM[4], 2322050);
-    EXPECT_EQ(ALL_CASES_NUM[5], 1876945);
-    EXPECT_EQ(ALL_CASES_NUM[6], 2322050);
-
-    EXPECT_EQ(ALL_CASES_NUM[8], 2322050);
-    EXPECT_EQ(ALL_CASES_NUM[9], 1876945);
-    EXPECT_EQ(ALL_CASES_NUM[10], 2322050);
-
-    EXPECT_EQ(ALL_CASES_NUM[12], 2942906);
-    EXPECT_EQ(ALL_CASES_NUM[13], 2260392);
-    EXPECT_EQ(ALL_CASES_NUM[14], 2942906);
-
-    EXPECT_EQ(ALL_CASES_NUM[3], 0);
-    EXPECT_EQ(ALL_CASES_NUM[7], 0);
-    EXPECT_EQ(ALL_CASES_NUM[11], 0);
-    EXPECT_EQ(ALL_CASES_NUM[15], 0);
-
-    EXPECT_EQ(klotski::array_sum(ALL_CASES_NUM), ALL_CASES_NUM_);
+    auto ranges = BasicRanges::instance().fetch();
+    ranges.reverse();
+    for (int head = 0; head < 16; ++head) {
+        if (head % 4 == 3) {
+            EXPECT_EQ(ALL_CASES_NUM[head], 0);
+            continue;
+        }
+        Ranges release;
+        ranges.derive(head, release);
+        EXPECT_EQ(release.size(), ALL_CASES_NUM[head]);
+    }
 }
 
 TEST_FF(AllCases, all_cases) {
