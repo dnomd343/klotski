@@ -14,6 +14,9 @@ namespace klotski::cases {
 
 class Ranges final : public std::vector<uint32_t> {
 public:
+    /// Append the ranges from another instance.
+    Ranges& operator+=(const Ranges &ranges);
+
     /// Spawn klotski-ranges that match the specified block numbers.
     void spawn(int n, int n_2x1, int n_1x1);
 
@@ -29,7 +32,10 @@ public:
 
 class RangesUnion final : public std::array<Ranges, 16> {
 public:
-    /// Export RangesUnion as CommonCode list.
+    /// Append the ranges from another instance.
+    RangesUnion& operator+=(const RangesUnion &ranges_union);
+
+    /// Export the RangesUnion as CommonCode list.
     [[nodiscard]] std::vector<codec::CommonCode> codes() const;
 };
 
