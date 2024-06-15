@@ -2,6 +2,8 @@
 #include <thread>
 #include <iostream>
 #include <format>
+#include <map>
+#include <unordered_set>
 #include <ranges/ranges.h>
 
 #include "core/core.h"
@@ -34,50 +36,52 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
-    // AllCases::instance().build();
+    // auto kk = AllCases::instance().fetch()[1];
+    // for (auto &x : kk) {
+    //     x >>= 20;
+    // }
+    // std::cout << kk.size() << std::endl;
 
-    for (int type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-        auto ret = GroupUnion::unsafe_create(type_id).cases();
-        // std::cout << ret[4].size() << std::endl;
-    }
-
-    // auto group_union = GroupUnion::unsafe_create(169);
-    // for (auto group : group_union.groups()) {
-    //     std::cout << group.type_id_ << ", " << group.group_id_ << std::endl;
+    // for (int i = 0; i < 4096; ++i) {
+    //     auto pp = std::ranges::lower_bound(kk.begin(), kk.end(), i);
+    //     std::cout << pp - kk.begin() << std::endl;
     // }
 
-    // constexpr auto gu = GroupUnion::unsafe_create(169);
-    // constexpr auto gu_ = GroupUnion::create(169).value();
-    // // constexpr auto gu_ = GroupUnion::create(1169).value();
-    // constexpr auto k1 = gu.unwrap();
-    // constexpr auto k2 = gu.size();
-    // constexpr auto k3 = gu.group_num();
-    // constexpr auto k4 = gu.max_group_size();
+    // std::unordered_set<uint32_t> tmp;
+    // for (auto x : kk) {
+    //     tmp.emplace(x);
+    // }
+    // std::cout << tmp.size() << std::endl;
 
-    // auto kk = GroupUnion::unsafe_create(169);
-    // auto pp = kk.group(0).value();
-    // std::cout << pp.type_id() << ", " << pp.group_id() << std::endl;
+    // ShortCode::speed_up(true);
+    // ShortCode::speed_up(false);
 
-    // for (auto group : kk.groups()) {
-    //     std::cout << group.type_id() << ", " << group.group_id() << std::endl;
+    // auto show_with_index = [](uint32_t index) {
+    //     uint64_t head = 1;
+    //     uint32_t range = BasicRanges::instance().fetch()[index];
+    //     std::cout << CommonCode::unsafe_create(head << 32 | range) << std::endl;
+    // };
+    //
+    // for (int offset = -29; offset < 42; ++offset) {
+    //     std::cout << "offset = " << offset << " | ";
+    //     show_with_index(4273474 + offset);
     // }
 
+    auto short_code = ShortCode::unsafe_create(4091296);
+    std::cout << short_code.to_common_code() << std::endl;
 
-    auto gu = GroupUnion::unsafe_create(169);
-    // auto cases = gu.group(0).value().cases();
+    auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
+    std::cout << common_code.to_short_code().unwrap() << std::endl;
 
-    // for (auto &kk : cases) {
-    //     std::cout << kk.size() << std::endl;
+    // auto kk = BasicRanges::instance().fetch();
+    // for (auto &x : kk) {
+    //     x >>= 20;
     // }
-
-    klotski::cases::RangesUnion cases;
-    for (auto group : gu.groups()) {
-        cases += group.cases();
-    }
-    for (auto &kk : cases) {
-        std::ranges::sort(kk.begin(), kk.end());
-    }
-    std::cout << (cases == gu.cases()) << std::endl;
+    // std::cout << kk.size() << std::endl;
+    // for (int i = 0; i < 4096; ++i) {
+    //     auto pp = std::ranges::lower_bound(kk.begin(), kk.end(), i);
+    //     std::cout << pp - kk.begin() << std::endl;
+    // }
 
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 

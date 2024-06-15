@@ -71,9 +71,9 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
     uint32_t offset = 0;
     auto index = BASIC_RANGES_OFFSET[prefix];
     const auto &basic_ranges = BasicRanges::instance().fetch();
-    auto target = range_reverse((uint32_t)common_code); // target range
+    auto target = (uint32_t)common_code; // target range
     for (; index < basic_ranges.size(); ++index) {
-        auto broken_offset = check_range(head, basic_ranges[index]);
+        auto broken_offset = check_range(head, range_reverse(basic_ranges[index]));
         if (!broken_offset) { // valid case
             if (basic_ranges[index] == target) {
                 break; // found target range
@@ -81,8 +81,8 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
             ++offset; // record sub offset
         } else {
             auto delta = (uint32_t)1 << (32 - broken_offset * 2); // delta to next possible range
-            auto next_min = (range_reverse(basic_ranges[index]) & ~(delta - 1)) + delta;
-            while (range_reverse(basic_ranges[++index]) < next_min); // located next range
+            auto next_min = (basic_ranges[index] & ~(delta - 1)) + delta;
+            while (basic_ranges[++index] < next_min); // located next range
             --index;
         }
     }
@@ -102,14 +102,14 @@ uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common 
     auto index = BASIC_RANGES_OFFSET[prefix];
     const auto &basic_ranges = BasicRanges::instance().fetch();
     for (; index < basic_ranges.size(); ++index) { // traverse basic ranges
-        auto broken_offset = check_range(head, basic_ranges[index]);
+        auto broken_offset = check_range(head, range_reverse(basic_ranges[index]));
         if (!broken_offset && !short_code--) { // valid case -> short code approximate
             break;
         }
         auto delta = (uint32_t)1 << (32 - broken_offset * 2); // delta to next possible range
-        auto next_min = (range_reverse(basic_ranges[index]) & ~(delta - 1)) + delta;
-        while (range_reverse(basic_ranges[++index]) < next_min); // located next range
+        auto next_min = (basic_ranges[index] & ~(delta - 1)) + delta;
+        while (basic_ranges[++index] < next_min); // located next range
         --index;
     }
-    return (uint64_t)head << 32 | range_reverse(basic_ranges[index]);
+    return (uint64_t)head << 32 | basic_ranges[index];
 }
