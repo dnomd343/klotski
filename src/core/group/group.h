@@ -27,7 +27,7 @@
 ///   (10-bit)    | (n_1x2 + n_2x1) | (n_2x1) |  (n_1x1) |
 ///               |     (0 ~ 7)     | (0 ~ 7) | (0 ~ 14) |
 ///
-///     flag  =>  ((n_1x2 + n_2x1) << 7) | (n_2x1 << 3) | (n_1x1)
+///     flag  =>  ((n_1x2 + n_2x1) << 7) | (n_2x1 << 4) | (n_1x1)
 ///
 /// Using the table lookup method, the `type_id` of any case can be obtained
 /// within O(1), which is encapsulated in `GroupUnion`.
@@ -74,6 +74,9 @@ namespace klotski::cases {
 
 constexpr uint32_t TYPE_ID_LIMIT = 203;
 constexpr uint32_t ALL_GROUP_NUM = 25422;
+
+typedef std::vector<codec::RawCode> RawCodes;
+typedef std::vector<codec::CommonCode> CommonCodes;
 
 class Group;
 
@@ -141,9 +144,6 @@ private:
 
 	// ------------------------------------------------------------------------------------- //
 };
-
-typedef std::vector<codec::RawCode> RawCodes;
-typedef std::vector<codec::CommonCode> CommonCodes;
 
 class Group {
 public:

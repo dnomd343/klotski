@@ -26,6 +26,8 @@ constexpr auto Heads = std::to_array({
     0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14
 });
 
+// ------------------------------------------------------------------------------------- //
+
 /// Assert that Ranges are sorted and unique.
 #define EXPECT_SORTED_AND_UNIQUE(R)                          \
     EXPECT_TRUE(std::ranges::is_sorted(R.begin(), R.end())); \
@@ -40,10 +42,35 @@ constexpr auto Heads = std::to_array({
     for (const auto range : ranges)       \
         EXPECT_TRUE(CommonCode::check(static_cast<uint64_t>(head) << 32 | range))
 
+// ------------------------------------------------------------------------------------- //
+
+/// The number of blocks in one klotski layout.
 struct block_num_t {
     int n_1x1;
     int n_1x2;
     int n_2x1;
 };
 
-block_num_t get_block_num(uint32_t range);
+template <>
+struct std::hash<block_num_t> {
+    size_t operator()(const block_num_t val) const noexcept {
+        return (val.n_1x1 << 6) ^ (val.n_1x2 << 3) ^ val.n_2x1;
+    }
+};
+
+constexpr bool operator==(const block_num_t &lhs, const block_num_t &rhs) {
+    return lhs.n_1x1 == rhs.n_1x1 && lhs.n_1x2 == rhs.n_1x2 && lhs.n_2x1 == rhs.n_2x1;
+}
+
+// ------------------------------------------------------------------------------------- //
+
+/// Calculate the block number from Range.
+block_num_t cal_block_num(uint32_t range);
+
+/// Calculate type id value from the block number.
+uint32_t to_type_id(block_num_t block_num);
+
+/// Calculate the block number value from type id.
+block_num_t to_block_num(uint32_t type_id);
+
+std::vector<block_num_t> block_nums();

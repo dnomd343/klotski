@@ -28,7 +28,7 @@ TEST(Ranges, spawn) {
         EXPECT_SORTED_AND_UNIQUE(ranges);
 
         for (const auto range : ranges) {
-            const auto [val_1x1, val_1x2, val_2x1] = get_block_num(range);
+            const auto [val_1x1, val_1x2, val_2x1] = cal_block_num(range);
             EXPECT_EQ(val_1x1, n_1x1);
             EXPECT_EQ(val_2x1, n_2x1);
             EXPECT_EQ(val_1x2 + val_2x1, n);
