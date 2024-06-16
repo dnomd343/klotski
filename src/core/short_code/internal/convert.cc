@@ -59,8 +59,8 @@ uint32_t ShortCode::fast_encode(uint64_t common_code) {
 }
 
 uint64_t ShortCode::fast_decode(uint32_t short_code) {
-    auto offset = std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code) - 1;
-    uint64_t head = offset - ALL_CASES_OFFSET;
+    auto offset = std::upper_bound(ALL_CASES_OFFSET.begin(), ALL_CASES_OFFSET.end(), short_code) - 1;
+    uint64_t head = offset - ALL_CASES_OFFSET.begin();
     return (head << 32) | AllCases::instance().fetch()[head][short_code - *offset];
 }
 
@@ -90,11 +90,11 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
 }
 
 uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common code
-    auto offset = std::upper_bound(ALL_CASES_OFFSET, ALL_CASES_OFFSET + 16, short_code) - 1;
-    auto head = offset - ALL_CASES_OFFSET; // head index
-    short_code -= *offset;
+    auto offset_ = std::upper_bound(ALL_CASES_OFFSET.begin(), ALL_CASES_OFFSET.end(), short_code) - 1;
+    auto head = offset_ - ALL_CASES_OFFSET.begin(); // head index
+    short_code -= *offset_;
 
-    offset = std::upper_bound(RANGE_PREFIX_OFFSET[head], RANGE_PREFIX_OFFSET[head] + 4096, short_code) - 1;
+    auto offset = std::upper_bound(RANGE_PREFIX_OFFSET[head], RANGE_PREFIX_OFFSET[head] + 4096, short_code) - 1;
     auto prefix = offset - RANGE_PREFIX_OFFSET[head]; // range prefix
     short_code -= *offset;
 

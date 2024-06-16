@@ -23,36 +23,31 @@
 #define KLSK_ASSUME(expr) __builtin_assume(expr)
 
 /// Force function declaration to be inline.
-#define KLSK_INLINE __attribute__((always_inline))
+#define KLSK_INLINE __attribute__ ((always_inline))
 
 namespace klotski {
 
-template <typename T>
-concept Addable = requires(T a, T b) { a + b; };
-
-template <Addable T, size_t N>
+/// Calculate the sum of an array of integers.
+template <typename T, size_t N>
+requires std::is_integral_v<T>
 consteval int array_sum(const std::array<T, N> &arr) {
     return std::accumulate(arr.begin(), arr.end(), 0);
 }
 
-template <Addable T, size_t N>
-consteval std::array<T, N> to_offset(const std::array<T, N> &arr, T base) {
-
-    static_assert(N > 0);
-
+/// Calculate offset list of integer array with sizes.
+template <typename T, size_t N>
+requires std::is_integral_v<T>
+consteval std::array<T, N> to_offset(const std::array<T, N> &arr) {
     std::array<T, N> offset;
-
-    T val = base;
-
+    static_assert(N > 0);
     offset[0] = 0;
 
-    for (int i = 0; i < N - 1; ++i) {
+    T val = 0;
+    for (int i = 0; i < N - 1; ++i) { // TODO: using `std::views::iota`
         val += arr[i];
         offset[i + 1] = val;
     }
-
     return offset;
-
 }
 
 /// Flips the input u32 every two bits in low-high symmetry.

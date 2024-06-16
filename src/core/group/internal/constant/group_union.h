@@ -23,7 +23,7 @@ constexpr auto GROUP_NUM = std::to_array<uint16_t>({
     214, 6  , 18  , 54 , 2   , 44 , 40 , 124 , 84 , 70  , 18  ,
 });
 
-constexpr auto GROUP_OFFSET = to_offset<uint16_t, 203>(GROUP_NUM, 0);
+constexpr auto GROUP_OFFSET = to_offset<uint16_t, 203>(GROUP_NUM);
 
 /// The maximum Group size in each GroupUnion.
 constexpr auto MAX_GROUP_SIZE = std::to_array<uint32_t>({

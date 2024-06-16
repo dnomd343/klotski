@@ -63,7 +63,7 @@ void BasicRanges::build() {
     }
 
     std::list<RangesIter> points; // mark ordered interval
-    for (const auto offset : to_offset(BASIC_RANGES_NUM, 0)) {
+    for (const auto offset : BASIC_RANGES_OFFSET) {
         points.emplace_back(ranges.begin() + offset);
     }
     points.emplace_back(ranges.end());
@@ -117,7 +117,7 @@ void BasicRanges::build_async(Executor &&executor, Notifier &&callback) {
         }
 
         auto points = std::make_shared<std::list<RangesIter>>(); // mark ordered interval
-        for (const auto offset : to_offset(BASIC_RANGES_NUM, 0)) {
+        for (const auto offset : BASIC_RANGES_OFFSET) {
             points->emplace_back(ranges.begin() + offset);
         }
         points->emplace_back(ranges.end());

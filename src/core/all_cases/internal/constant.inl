@@ -13,9 +13,9 @@ constexpr auto ALL_CASES_NUM = std::to_array({
     2942906, 2260392, 2942906, 0,
 });
 
-static_assert(ALL_CASES_NUM.size() == 16);
-
 constexpr auto ALL_CASES_NUM_ = array_sum(ALL_CASES_NUM);
+
+constexpr auto ALL_CASES_OFFSET = to_offset(ALL_CASES_NUM);
 
 // ------------------------------------------------------------------------------------- //
 
@@ -48,9 +48,9 @@ constexpr auto BASIC_RANGES_NUM = std::to_array({
     1260  , 756   , 252   ,
 });
 
-static_assert(BASIC_RANGES_NUM.size() == 203);
-
 constexpr auto BASIC_RANGES_NUM_ = array_sum(BASIC_RANGES_NUM);
+
+constexpr auto BASIC_RANGES_OFFSET = to_offset(BASIC_RANGES_NUM);
 
 // ------------------------------------------------------------------------------------- //
 
