@@ -1,16 +1,15 @@
 #include <algorithm>
 
-#include "offset/basic.h"
-#include "offset/range_prefix.h"
+#include "offset/offset.h"
 #include "short_code/short_code.h"
 
 using klotski::cases::AllCases;
 using klotski::codec::ShortCode;
 using klotski::cases::BasicRanges;
 
-using klotski::codec::offset::ALL_CASES_OFFSET;
-using klotski::codec::offset::BASIC_RANGES_OFFSET;
-using klotski::codec::offset::RANGE_PREFIX_OFFSET;
+using klotski::cases::ALL_CASES_OFFSET;
+using klotski::codec::RANGES_GLOBAL_OFFSET;
+using klotski::codec::RANGES_SUBSET_OFFSET;
 
 /// FIXME: temporarily used to implement tidy conversion
 static uint32_t check_range(uint32_t head, uint32_t range) noexcept {
@@ -69,7 +68,7 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
     uint32_t prefix = (common_code >> 20) & 0xFFF;
 
     uint32_t offset = 0;
-    auto index = BASIC_RANGES_OFFSET[prefix];
+    auto index = RANGES_GLOBAL_OFFSET[prefix];
     const auto &basic_ranges = BasicRanges::instance().fetch();
     auto target = (uint32_t)common_code; // target range
     for (; index < basic_ranges.size(); ++index) {
@@ -86,7 +85,7 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
             --index;
         }
     }
-    return ALL_CASES_OFFSET[head] + RANGE_PREFIX_OFFSET[head][prefix] + offset;
+    return ALL_CASES_OFFSET[head] + RANGES_SUBSET_OFFSET[head][prefix] + offset;
 }
 
 uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common code
@@ -94,12 +93,12 @@ uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common 
     auto head = offset_ - ALL_CASES_OFFSET.begin(); // head index
     short_code -= *offset_;
 
-    auto offset = std::upper_bound(RANGE_PREFIX_OFFSET[head], RANGE_PREFIX_OFFSET[head] + 4096, short_code) - 1;
-    auto prefix = offset - RANGE_PREFIX_OFFSET[head]; // range prefix
+    auto offset = std::upper_bound(RANGES_SUBSET_OFFSET[head].begin(), RANGES_SUBSET_OFFSET[head].end(), short_code) - 1;
+    auto prefix = offset - RANGES_SUBSET_OFFSET[head].begin(); // range prefix
     short_code -= *offset;
 
     /// search for target range
-    auto index = BASIC_RANGES_OFFSET[prefix];
+    auto index = RANGES_GLOBAL_OFFSET[prefix];
     const auto &basic_ranges = BasicRanges::instance().fetch();
     for (; index < basic_ranges.size(); ++index) { // traverse basic ranges
         auto broken_offset = check_range(head, range_reverse(basic_ranges[index]));
