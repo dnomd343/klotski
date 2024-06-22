@@ -1,3 +1,7 @@
+/// Klotski Engine by Dnomd343 @2024
+
+// TODO: A stable Ranges or RangesUnion must be ordered and non-repeating.
+
 #pragma once
 
 #include <array>

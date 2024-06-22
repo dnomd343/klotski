@@ -173,10 +173,13 @@ public:
 
 	// ------------------------------------------------------------------------------------- //
 
+	/// Create Group from RawCode.
 	static Group from_raw_code(codec::RawCode raw_code);
 
+	/// Create Group from ShortCode.
 	static Group from_short_code(codec::ShortCode short_code);
 
+	/// Create Group from CommonCode.
 	static Group from_common_code(codec::CommonCode common_code);
 
 	// ------------------------------------------------------------------------------------- //
@@ -191,32 +194,39 @@ public:
 	static std::vector<codec::RawCode> extend(codec::RawCode raw_code, uint32_t reserve = 0);
 };
 
-class GroupCase {
+class GroupCases {
 public:
 	struct info_t {
 		uint16_t type_id;
 		uint16_t group_id;
-		uint32_t group_index;
+		uint32_t case_id;
+
+		// TODO: should we keep it valid? (convert without check)
 	};
 
-	// TODO: mark as instance.
+	void build();
 
-	/// Build group cases accelerated index.
-	static void speed_up();
+	void build_async(Executor &&executor, Notifier &&notifier);
 
 	/// Get the CommonCode using the group info.
-	static codec::CommonCode parse(const info_t &info);
+	// static codec::CommonCode parse(const info_t &info);
 
 	/// Get group info according to specified case.
-	static info_t encode(const codec::RawCode &raw_code);
-	static info_t encode(const codec::CommonCode &common_code);
+	// static info_t encode(const codec::RawCode &raw_code);
+	// static info_t encode(const codec::CommonCode &common_code);
+
+	static info_t to_info_t(codec::ShortCode short_code);
+
+	static codec::CommonCode from_info_t(info_t info);
 
 private:
-	static bool available_;
-	static std::mutex building_;
+	bool available_ = false;
+	std::mutex building_ {};
 
-	static codec::CommonCode fast_decode(const info_t &info);
-	static info_t fast_encode(const codec::CommonCode &common_code);
+	// static codec::CommonCode fast_decode(const info_t &info);
+	// static info_t fast_encode(const codec::CommonCode &common_code);
+
+	KLSK_INSTANCE(GroupCases)
 };
 
 } // namespace klotski::cases

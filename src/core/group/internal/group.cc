@@ -36,6 +36,9 @@ std::vector<RawCode> Group::extend(RawCode raw_code, uint32_t reserve) {
 }
 
 RangesUnion Group::cases() const {
+
+    // TODO: add white list for single-group unions
+
     auto seed = CommonCode::unsafe_create(GROUP_SEED[flat_id()]);
 
     // std::cout << seed << std::endl;
