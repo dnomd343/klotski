@@ -166,6 +166,15 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+// Ref: https://cplusplus.github.io/CWG/issues/1734.html
+
+// TODO: By definition, the default constructor is deleted, it is not trivial.
+// TODO: But in clang and g++, it is legal, but in msvc it fails.
+static_assert(std::is_trivial_v<CommonCode>);
+
+static_assert(std::is_standard_layout_v<CommonCode>);
+static_assert(std::is_trivially_copyable_v<CommonCode>);
+
 } // namespace klotski::codec
 
 #include "internal/common_code.inl"

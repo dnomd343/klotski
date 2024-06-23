@@ -25,6 +25,9 @@
 /// Force function declaration to be inline.
 #define KLSK_INLINE __attribute__ ((always_inline))
 
+/// Prevent reordering for both compiler and processor.
+#define KLSK_MEM_BARRIER std::atomic_thread_fence(std::memory_order_seq_cst)
+
 namespace klotski {
 
 /// Calculate the sum of an array of integers.

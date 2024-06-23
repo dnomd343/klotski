@@ -197,8 +197,8 @@ static void ShortCodeDeserialize(benchmark::State &state) {
 
 static void ShortCodeToCommonCode(benchmark::State &state) {
 
-    // ShortCode::speed_up(true);
-    ShortCode::speed_up(false);
+    ShortCode::speed_up(true);
+    // ShortCode::speed_up(false);
 
     // ShortCode::fast_decode(4091296);
 
@@ -206,7 +206,9 @@ static void ShortCodeToCommonCode(benchmark::State &state) {
 
     for (auto _ : state) {
 
-        volatile auto kk = short_code.to_common_code();
+        // volatile auto kk = short_code.to_common_code();
+
+        benchmark::DoNotOptimize(short_code.to_common_code());
 
         // if (AllCases::instance().is_available()) {
         // if (ShortCode::stage_ == ShortCode::Stage::FAST) {
@@ -218,6 +220,29 @@ static void ShortCodeToCommonCode(benchmark::State &state) {
 
 }
 
+static void CommonCodeToShortCode(benchmark::State &state) {
+    ShortCode::speed_up(true);
+    // ShortCode::speed_up(false);
+
+    auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
+
+    // std::vector<CommonCode> samples;
+    // for (auto code : common_code_samples(256)) {
+    //     samples.emplace_back(CommonCode::unsafe_create(code));
+    // }
+
+    for (auto _ : state) {
+
+        // for (auto common_code : samples) {
+            // volatile auto kk = ShortCode(common_code);
+
+            benchmark::DoNotOptimize(ShortCode(common_code));
+
+        // }
+
+    }
+}
+
 // BENCHMARK(CommonCodeSerialize)->Range(8, 256);
 // BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
 // BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
@@ -226,7 +251,8 @@ static void ShortCodeToCommonCode(benchmark::State &state) {
 // BENCHMARK(ShortCodeSerialize)->Range(8, 256);
 // BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
 
-BENCHMARK(ShortCodeToCommonCode);
+// BENCHMARK(ShortCodeToCommonCode);
+BENCHMARK(CommonCodeToShortCode);
 
 // static void CommonCodeDecode(benchmark::State &state) {
 //     const auto tmp = str_common_codes(state.range(0));

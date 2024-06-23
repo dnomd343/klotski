@@ -178,14 +178,19 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 
-    enum class Stage { UNINIT, TINY, FAST };
+    /// Whether fast mode is available.
+    static inline bool fast_ {false};
 
-    static std::mutex busy_;
+    /// Mutex for protecting critical section.
+    static inline std::mutex busy_ {};
 
-    static inline auto stage_ {Stage::UNINIT};
+    /// Static pointer to klotski AllCases data.
+    static inline const cases::RangesUnion *cases_ {nullptr};
 
-    static const cases::Ranges *ranges_;
-    static const cases::RangesUnion *cases_;
+    /// Static pointer to klotski BasicRanges data.
+    static inline std::atomic<const cases::Ranges*> ranges_ {nullptr};
+
+    // ------------------------------------------------------------------------------------- //
 };
 
 } // namespace klotski::codec
