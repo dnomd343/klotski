@@ -50,6 +50,15 @@ static uint32_t check_range(uint32_t head, uint32_t range) noexcept {
     return 0; // pass check
 }
 
+std::mutex ShortCode::busy_ {};
+
+// ShortCode::Stage ShortCode::stage_ = Stage::UNINIT;
+
+// const klotski::cases::RangesUnion *ShortCode::cases_ = &AllCases::instance().fetch();
+const klotski::cases::RangesUnion *ShortCode::cases_ = nullptr;
+
+const klotski::cases::Ranges *ShortCode::ranges_ = nullptr;
+
 uint32_t ShortCode::fast_encode(uint64_t common_code) {
     auto head = common_code >> 32;
     auto &ranges = AllCases::instance().fetch()[head]; // match available ranges
@@ -60,7 +69,8 @@ uint32_t ShortCode::fast_encode(uint64_t common_code) {
 uint64_t ShortCode::fast_decode(uint32_t short_code) {
     auto offset = std::upper_bound(ALL_CASES_OFFSET.begin(), ALL_CASES_OFFSET.end(), short_code) - 1;
     uint64_t head = offset - ALL_CASES_OFFSET.begin();
-    return (head << 32) | AllCases::instance().fetch()[head][short_code - *offset];
+    // return (head << 32) | AllCases::instance().fetch()[head][short_code - *offset];
+    return (head << 32) | (*cases_)[head][short_code - *offset];
 }
 
 uint32_t ShortCode::tiny_encode(uint64_t common_code) {
@@ -89,6 +99,13 @@ uint32_t ShortCode::tiny_encode(uint64_t common_code) {
 }
 
 uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common code
+    // speed_up(false);
+
+    // std::lock_guard guard {busy_};
+
+    ranges_ = &cases::BasicRanges::instance().fetch();
+    // stage_ = Stage::TINY;
+
     auto offset_ = std::upper_bound(ALL_CASES_OFFSET.begin(), ALL_CASES_OFFSET.end(), short_code) - 1;
     auto head = offset_ - ALL_CASES_OFFSET.begin(); // head index
     short_code -= *offset_;
@@ -99,16 +116,21 @@ uint64_t ShortCode::tiny_decode(uint32_t short_code) { // short code --> common 
 
     /// search for target range
     auto index = RANGES_GLOBAL_OFFSET[prefix];
-    const auto &basic_ranges = BasicRanges::instance().fetch();
-    for (; index < basic_ranges.size(); ++index) { // traverse basic ranges
-        auto broken_offset = check_range(head, range_reverse(basic_ranges[index]));
+    // auto basic_ranges = ranges_;
+    // const auto &basic_ranges = BasicRanges::instance().fetch();
+
+    const auto &ranges = *ranges_;
+    // const auto &ranges = BasicRanges::instance().fetch();
+
+    for (; index < ranges.size(); ++index) { // traverse basic ranges
+        auto broken_offset = check_range(head, range_reverse(ranges[index]));
         if (!broken_offset && !short_code--) { // valid case -> short code approximate
             break;
         }
         auto delta = (uint32_t)1 << (32 - broken_offset * 2); // delta to next possible range
-        auto next_min = (basic_ranges[index] & ~(delta - 1)) + delta;
-        while (basic_ranges[++index] < next_min); // located next range
+        auto next_min = (ranges[index] & ~(delta - 1)) + delta;
+        while (ranges[++index] < next_min); // located next range
         --index;
     }
-    return (uint64_t)head << 32 | basic_ranges[index];
+    return (uint64_t)head << 32 | ranges[index];
 }

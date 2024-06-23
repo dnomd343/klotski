@@ -39,10 +39,19 @@ inline bool ShortCode::check(const uint32_t short_code) {
 }
 
 inline void ShortCode::speed_up(const bool fast_mode) {
+    // TODO: keep one way change.
     if (fast_mode) {
-        cases::AllCases::instance().build();
+        // cases::AllCases::instance().build();
+        std::lock_guard guard {busy_};
+        cases_ = &cases::AllCases::instance().fetch();
+        stage_ = Stage::FAST;
     } else {
-        cases::BasicRanges::instance().build();
+        std::lock_guard guard {busy_};
+
+        // TODO: skip if stage_ is FAST
+
+        ranges_ = &cases::BasicRanges::instance().fetch();
+        stage_ = Stage::TINY;
     }
 }
 
@@ -65,10 +74,20 @@ inline std::string ShortCode::to_string() const {
 
 inline CommonCode ShortCode::to_common_code() const {
     // TODO: test the affect of CPU branch prediction.
-    if (cases::AllCases::instance().is_available()) {
+    // if (cases::AllCases::instance().is_available()) {
+    //     return CommonCode::unsafe_create(fast_decode(code_));
+    // }
+    // return CommonCode::unsafe_create(tiny_decode(code_));
+
+    switch (stage_) {
+    case Stage::UNINIT:
+        // TODO: do speed up
+        // speed_up(false); // FIXME: slow about 3%
+    case Stage::TINY:
+        return CommonCode::unsafe_create(tiny_decode(code_));
+    case Stage::FAST:
         return CommonCode::unsafe_create(fast_decode(code_));
     }
-    return CommonCode::unsafe_create(tiny_decode(code_));
 }
 
 // ----------------------------------------------------------------------------------------- //

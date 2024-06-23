@@ -42,7 +42,7 @@ add_executable(klotski_core_bin main.cc)
 target_link_libraries(klotski_core_bin PRIVATE klotski_core)
 
 add_executable(codec_benchmark benchmark/codec.cc)
-target_compile_options(codec_benchmark PRIVATE -fno-rtti -fno-exceptions)
+target_compile_options(codec_benchmark PRIVATE -fno-rtti -fno-exceptions -fno-access-control)
 target_link_libraries(codec_benchmark PRIVATE klotski::core benchmark::benchmark_main)
 
 add_executable(group_benchmark benchmark/group.cc)

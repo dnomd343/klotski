@@ -157,7 +157,7 @@ private:
     // ------------------------------------------------------------------------------------- //
 
     /// Convert ShortCode to CommonCode based on AllCases data.
-    static uint64_t fast_decode(uint32_t short_code);
+    static KLSK_INLINE uint64_t fast_decode(uint32_t short_code);
 
     /// Convert CommonCode to ShortCode based on AllCases data.
     static uint32_t fast_encode(uint64_t common_code);
@@ -177,6 +177,15 @@ private:
     static std::optional<uint32_t> string_decode(std::string_view short_code);
 
     // ------------------------------------------------------------------------------------- //
+
+    enum class Stage { UNINIT, TINY, FAST };
+
+    static std::mutex busy_;
+
+    static inline auto stage_ {Stage::UNINIT};
+
+    static const cases::Ranges *ranges_;
+    static const cases::RangesUnion *cases_;
 };
 
 } // namespace klotski::codec

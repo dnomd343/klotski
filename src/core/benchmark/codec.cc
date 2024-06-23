@@ -2,11 +2,14 @@
 
 #include <benchmark/benchmark.h>
 
-#define private public
+// #define private public
 #include "group/group.h"
 #include "all_cases/all_cases.h"
 #include "common_code/common_code.h"
-#undef private
+// #undef private
+
+using klotski::codec::ShortCode;
+using klotski::codec::CommonCode;
 
 using klotski::cases::AllCases;
 using klotski::codec::CommonCode;
@@ -192,13 +195,38 @@ static void ShortCodeDeserialize(benchmark::State &state) {
 
 }
 
+static void ShortCodeToCommonCode(benchmark::State &state) {
+
+    // ShortCode::speed_up(true);
+    ShortCode::speed_up(false);
+
+    // ShortCode::fast_decode(4091296);
+
+    auto short_code = CommonCode::unsafe_create(0x1A9BF0C00).to_short_code();
+
+    for (auto _ : state) {
+
+        volatile auto kk = short_code.to_common_code();
+
+        // if (AllCases::instance().is_available()) {
+        // if (ShortCode::stage_ == ShortCode::Stage::FAST) {
+        //     volatile auto pp = ShortCode::fast_decode(4091296);
+        // }
+        // }
+
+    }
+
+}
+
 // BENCHMARK(CommonCodeSerialize)->Range(8, 256);
 // BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
 // BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
 // BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
 
-BENCHMARK(ShortCodeSerialize)->Range(8, 256);
-BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
+// BENCHMARK(ShortCodeSerialize)->Range(8, 256);
+// BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
+
+BENCHMARK(ShortCodeToCommonCode);
 
 // static void CommonCodeDecode(benchmark::State &state) {
 //     const auto tmp = str_common_codes(state.range(0));
