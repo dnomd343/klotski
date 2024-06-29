@@ -1,23 +1,20 @@
-#include <iostream>
 #include <format>
 
 #include "common_code/common_code.h"
 
 using klotski::codec::CommonCode;
 
-bool CommonCode::is_mirror(uint64_t common_code) {
+// TODO: performance optimization.
+bool CommonCode::check_mirror(uint64_t common_code) {
 
     int head = common_code >> 32;
     uint32_t ranges = range_reverse(common_code);
-
-    // std::cout << "head = " << head << std::endl;
-    // std::cout << "ranges = " << std::format("{:08X}", ranges) << std::endl;
 
     if (head % 4 != 1) {
         return false;
     }
 
-    std::array<bool, 6> state {}; // mark emtry/half-full
+    std::array<bool, 5> state {}; // mark emtry/half-full
 
     if (head == 1) {
         state.at(0) = true;
@@ -38,16 +35,10 @@ bool CommonCode::is_mirror(uint64_t common_code) {
     while (1 == 1) {
 
         if (working_line > 4) {
-            // std::cout << "reach end line" << std::endl;
             break;
         }
 
-        // std::cout << std::endl;
-        // std::cout << "working_line: " << working_line << std::endl;
-        // std::cout << "state: " << std::format("{}", state) << std::endl;
-
         if (!state.at(working_line)) { // empty line
-            // std::cout << "empty working line" << std::endl;
 
             /// simple single line
             bool is_single_line = false;
@@ -68,7 +59,6 @@ bool CommonCode::is_mirror(uint64_t common_code) {
                 }
             }
             if (is_single_line) {
-                // std::cout << "simple single line" << std::endl;
                 ++working_line; // next line
                 continue;
             }
@@ -86,7 +76,6 @@ bool CommonCode::is_mirror(uint64_t common_code) {
                 }
             }
             if (is_half_double_line) {
-                // std::cout << "half double line" << std::endl;
                 if (state.at(working_line + 1)) {
                     working_line += 2; // next 2 lines
                 } else {
@@ -98,18 +87,14 @@ bool CommonCode::is_mirror(uint64_t common_code) {
 
             /// full-double line
             if ((ranges & 0b11111111) == 0b10101010) {
-                // std::cout << "full double line" << std::endl;
                 ranges >>= 8;
                 working_line += 2;
                 continue;
             }
 
-            // std::cout << "not mirror layout" << std::endl;
             return false;
 
         } else { // half-full line
-
-            // std::cout << "half-full working line" << std::endl;
 
             /// simple single line
             bool is_simple_line = false;
@@ -125,14 +110,12 @@ bool CommonCode::is_mirror(uint64_t common_code) {
                 }
             }
             if (is_simple_line) {
-                // std::cout << "simple single line" << std::endl;
                 ++working_line;
                 continue;
             }
 
             /// half-double line
             if ((ranges & 0b1111) == 0b1010) {
-                // std::cout << "half double line" << std::endl;
                 ranges >>= 4;
                 if (state.at(working_line + 1)) {
                     working_line += 2; // next 2 lines
@@ -143,12 +126,21 @@ bool CommonCode::is_mirror(uint64_t common_code) {
                 continue;
             }
 
-            // std::cout << "not mirror layout" << std::endl;
             return false;
-
         }
-
     }
 
     return true;
+}
+
+// TODO: temporarily use RawCode conversion.
+uint64_t CommonCode::get_vertical_mirror(uint64_t common_code) {
+    auto raw_code = unsafe_create(common_code).to_raw_code();
+    return raw_code.to_vertical_mirror().to_common_code().unwrap();
+}
+
+// TODO: temporarily use RawCode conversion.
+uint64_t CommonCode::get_horizontal_mirror(uint64_t common_code) {
+    auto raw_code = unsafe_create(common_code).to_raw_code();
+    return raw_code.to_horizontal_mirror().to_common_code().unwrap();
 }

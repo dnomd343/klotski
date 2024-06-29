@@ -1,13 +1,11 @@
 #pragma once
 
-#include <bit>
-
 #include "raw_code/raw_code.h"
 #include "short_code/short_code.h"
 
 namespace klotski::codec {
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline CommonCode::CommonCode(const RawCode raw_code) {
     code_ = raw_code.to_common_code().code_;
@@ -28,7 +26,7 @@ inline std::optional<CommonCode> CommonCode::create(const uint64_t common_code) 
     return unsafe_create(common_code);
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline CommonCode::operator uint64_t() const {
     return code_;
@@ -41,7 +39,7 @@ inline std::ostream& operator<<(std::ostream &out, const CommonCode self) {
 }
 #endif
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline uint64_t CommonCode::unwrap() const {
     return code_;
@@ -62,13 +60,13 @@ inline std::string CommonCode::to_string(const bool shorten) const {
     return string_encode_shorten(code_); // without trailing zero
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline std::optional<CommonCode> CommonCode::from_string(const std::string_view common_code) {
     return string_decode(common_code).transform(unsafe_create);
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline CommonCode CommonCode::from_raw_code(const RawCode raw_code) {
     return raw_code.to_common_code();
@@ -81,7 +79,7 @@ inline std::optional<CommonCode> CommonCode::from_raw_code(const uint64_t raw_co
     return RawCode::create(raw_code).transform(convert);
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline CommonCode CommonCode::from_short_code(const ShortCode short_code) {
     return short_code.to_common_code();
@@ -101,7 +99,25 @@ inline std::optional<CommonCode> CommonCode::from_short_code(const std::string_v
     return ShortCode::from_string(short_code).transform(convert);
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
+
+inline bool CommonCode::is_vertical_mirror() const {
+    return false;
+}
+
+inline bool CommonCode::is_horizontal_mirror() const {
+    return check_mirror(code_);
+}
+
+inline CommonCode CommonCode::to_vertical_mirror() const {
+    return unsafe_create(get_vertical_mirror(code_));
+}
+
+inline CommonCode CommonCode::to_horizontal_mirror() const {
+    return unsafe_create(get_horizontal_mirror(code_));
+}
+
+// ----------------------------------------------------------------------------------------- //
 
 constexpr auto operator==(const CommonCode &lhs, const uint64_t rhs) {
     return lhs.code_ == rhs;
@@ -119,6 +135,6 @@ constexpr auto operator<=>(const CommonCode &lhs, const CommonCode &rhs) {
     return lhs.code_ <=> rhs.code_;
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 } // namespace klotski::codec

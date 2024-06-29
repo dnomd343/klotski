@@ -49,18 +49,36 @@ int main() {
     // auto raw_code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // std::cout << raw_code.is_horizontal_mirror() << std::endl;
 
-    // for (auto common_code : AllCases::instance().fetch().codes()) {
-    //     auto raw_code = common_code.to_raw_code();
-    //
+    for (auto common_code : AllCases::instance().fetch().codes()) {
+        auto raw_code = common_code.to_raw_code();
+
     //     bool r1 = raw_code.is_horizontal_mirror();
-    //     bool r2 = CommonCode::is_mirror(common_code.unwrap());
+    //     bool r2 = common_code.is_horizontal_mirror();
     //
     //     if (r1 != r2) {
     //         std::cout << "found invalid" << std::endl;
     //         std::cout << common_code << std::endl;
     //         break;
     //     }
-    // }
+    //
+    //     // if (raw_code.is_vertical_mirror()) {
+    //     //     std::cout << "found invalid" << std::endl;
+    //     //     break;
+    //     // }
+
+        // auto rr = raw_code.to_vertical_mirror();
+        // auto cc = common_code.to_vertical_mirror();
+        auto rr = raw_code.to_horizontal_mirror();
+        auto cc = common_code.to_horizontal_mirror();
+        if (cc.to_raw_code() != rr) {
+            std::cout << "found invalid" << std::endl;
+            std::cout << common_code << std::endl;
+            break;
+        }
+
+    }
+
+
 
     // GroupCases::from_info_t({169, 1, 7472});
 

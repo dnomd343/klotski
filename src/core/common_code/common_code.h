@@ -139,6 +139,20 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
+    /// Whether the layout is vertically symmetrical.
+    [[nodiscard]] bool is_vertical_mirror() const;
+
+    /// Whether the layout is horizontally symmetrical.
+    [[nodiscard]] bool is_horizontal_mirror() const;
+
+    /// Calculate the vertically symmetrical klotski layout.
+    [[nodiscard]] CommonCode to_vertical_mirror() const;
+
+    /// Calculate the horizontally symmetrical klotski layout.
+    [[nodiscard]] CommonCode to_horizontal_mirror() const;
+
+    // ------------------------------------------------------------------------------------- //
+
     /// Compare CommonCode with u64 value.
     friend constexpr auto operator==(const CommonCode &lhs, uint64_t rhs);
     friend constexpr auto operator<=>(const CommonCode &lhs, uint64_t rhs);
@@ -148,8 +162,6 @@ public:
     friend constexpr auto operator<=>(const CommonCode &lhs, const CommonCode &rhs);
 
     // ------------------------------------------------------------------------------------- //
-
-    static bool is_mirror(uint64_t common_code);
 
 private:
     uint64_t code_;
@@ -164,6 +176,17 @@ private:
 
     /// Deserialize CommonCode from string and return nullopt on error.
     static std::optional<uint64_t> string_decode(std::string_view common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Check the horizontally symmetrical.
+    static bool check_mirror(uint64_t common_code);
+
+    /// Get the vertically symmetrical layout.
+    static uint64_t get_vertical_mirror(uint64_t common_code);
+
+    /// Get the horizontally symmetrical layout.
+    static uint64_t get_horizontal_mirror(uint64_t common_code);
 
     // ------------------------------------------------------------------------------------- //
 };
