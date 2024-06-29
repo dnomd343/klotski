@@ -1,12 +1,10 @@
 #pragma once
 
-#include <bit>
-
 #include "common_code/common_code.h"
 
 namespace klotski::codec {
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline ShortCode::ShortCode(const CommonCode common_code) {
     if (fast_) {
@@ -27,7 +25,7 @@ inline std::optional<ShortCode> ShortCode::create(const uint32_t short_code) {
     return unsafe_create(short_code);
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline ShortCode::operator uint32_t() const {
     return code_;
@@ -97,7 +95,7 @@ inline std::optional<ShortCode> ShortCode::from_common_code(const std::string_vi
     return CommonCode::from_string(common_code).transform(convert);
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 constexpr auto operator==(const ShortCode &lhs, const uint32_t rhs) {
     return lhs.code_ == rhs;

@@ -6,9 +6,9 @@
 
 namespace klotski::codec {
 
-/// This is the index for basic ranges, and its position (0 ~ 7311884) in all
-/// basic ranges is located according to the first 12-bit (0 ~ 4095) within the
-/// 32-bit `range`.
+/// This is the offset index of basic ranges, and its position (0 ~ 7311884) in
+/// all basic ranges is located according to the first 12-bit (0 ~ 4095) within
+/// the 32-bit `range` value.
 
 constexpr auto RANGES_GLOBAL_OFFSET = std::to_array<uint32_t>({
     #include "constant/offset.inc"

@@ -166,7 +166,7 @@ static void ShortCodeSerialize(benchmark::State &state) {
     for (auto _ : state) {
 
         for (const auto code : samples) {
-            volatile auto ret = klotski::codec::ShortCode::string_encode(code);
+            volatile auto ret = ShortCode::string_encode(code);
         }
 
     }
@@ -185,7 +185,7 @@ static void ShortCodeDeserialize(benchmark::State &state) {
 
         for (const auto code : samples) {
 
-            volatile auto ret = klotski::codec::ShortCode::string_decode(code);
+            volatile auto ret = ShortCode::string_decode(code);
 
         }
 
@@ -197,8 +197,8 @@ static void ShortCodeDeserialize(benchmark::State &state) {
 
 static void ShortCodeToCommonCode(benchmark::State &state) {
 
-    ShortCode::speed_up(true);
-    // ShortCode::speed_up(false);
+    // ShortCode::speed_up(true);
+    ShortCode::speed_up(false);
 
     // ShortCode::fast_decode(4091296);
 
@@ -221,8 +221,8 @@ static void ShortCodeToCommonCode(benchmark::State &state) {
 }
 
 static void CommonCodeToShortCode(benchmark::State &state) {
-    ShortCode::speed_up(true);
-    // ShortCode::speed_up(false);
+    // ShortCode::speed_up(true);
+    ShortCode::speed_up(false);
 
     auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
 
@@ -248,11 +248,11 @@ static void CommonCodeToShortCode(benchmark::State &state) {
 // BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
 // BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
 
-// BENCHMARK(ShortCodeSerialize)->Range(8, 256);
-// BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
+BENCHMARK(ShortCodeSerialize)->Range(8, 256);
+BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
 
 // BENCHMARK(ShortCodeToCommonCode);
-BENCHMARK(CommonCodeToShortCode);
+// BENCHMARK(CommonCodeToShortCode);
 
 // static void CommonCodeDecode(benchmark::State &state) {
 //     const auto tmp = str_common_codes(state.range(0));

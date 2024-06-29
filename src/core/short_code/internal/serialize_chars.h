@@ -1,5 +1,3 @@
-#pragma once
-
 ///                ShortCode Convert Table                ///
 ///   -------------------------------------------------   ///
 ///   |  00 |  01 |  02 |  03 |  04 |  05 |  06 |  07 |   ///
@@ -15,17 +13,28 @@
 ///   | `S` | `T` | `U` | `V` | `W` | `X` | `Y` | `Z` |   ///
 ///   -------------------------------------------------   ///
 
+#pragma once
+
+#include <array>
+
 namespace klotski::codec {
 
-constexpr char SHORT_CODE_TABLE[32] {
+constexpr auto SHORT_CODE_TABLE = std::to_array<char>({
     '1', '2', '3', '4', '5', '6', '7', '8', '9', // skip `0`
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', // skip `I`
     'J', 'K', // skip `L`
     'M', 'N', // skip `O`
     'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-};
+});
 
-constexpr char SHORT_CODE_TABLE_REV[74] {
+static_assert(SHORT_CODE_TABLE.size() == 32);
+
+constexpr auto SHORT_CODE_TABLE_REV = std::to_array<char>({
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, //           | [0, 9]
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, //           | [10, 19]
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, //           | [20, 29]
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, //           | [30, 39]
+    -1, -1, -1, -1, -1, -1, -1, -1, -1,     //           | [40, 48]
      0,  1,  2,  3,  4,  5,  6,  7,  8,     // `1` ~ `9` | [49, 57]
     -1, -1, -1, -1, -1, -1, -1,             //           | [58, 64]
      9, 10, 11, 12, 13, 14, 15, 16, -1, 17, // `A` ~ `J` | [65, 74]
@@ -35,6 +44,8 @@ constexpr char SHORT_CODE_TABLE_REV[74] {
      9, 10, 11, 12, 13, 14, 15, 16, -1, 17, // `a` ~ `j` | [97, 106]
     18, -1, 19, 20, -1, 21, 22, 23, 24, 25, // `k` ~ `t` | [107, 116]
     26, 27, 28, 29, 30, 31,                 // `u` ~ `z` | [117, 122]
-};
+});
+
+static_assert(SHORT_CODE_TABLE_REV.size() == 'z' + 1);
 
 } // namespace klotski::codec

@@ -1,7 +1,7 @@
 /// Klotski Engine by Dnomd343 @2024
 
 /// ShortCode is a high-compression encoding scheme based on CommonCode. Since
-/// there are a total of 29334498 valid klotski cases, arrange then from small
+/// there are a total of 29334498 valid klotski cases, arrange them from small
 /// to large by their CommonCodes (36-bit positive integers), and use the index
 /// as the ShortCode.
 
@@ -160,7 +160,7 @@ private:
     static KLSK_INLINE uint64_t fast_decode(uint32_t short_code);
 
     /// Convert CommonCode to ShortCode based on AllCases data.
-    static uint32_t fast_encode(uint64_t common_code);
+    static KLSK_INLINE uint32_t fast_encode(uint64_t common_code);
 
     /// Convert ShortCode to CommonCode based on BasicRanges data.
     static uint64_t tiny_decode(uint32_t short_code);
@@ -171,10 +171,10 @@ private:
     // ------------------------------------------------------------------------------------- //
 
     /// Serialize ShortCode into 5-bit length string.
-    static std::string string_encode(uint32_t short_code);
+    static KLSK_INLINE std::string string_encode(uint32_t short_code);
 
     /// Deserialize ShortCode from string and return nullopt on error.
-    static std::optional<uint32_t> string_decode(std::string_view short_code);
+    static KLSK_INLINE std::optional<uint32_t> string_decode(std::string_view short_code);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -192,6 +192,9 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 };
+
+static_assert(std::is_standard_layout_v<ShortCode>);
+static_assert(std::is_trivially_copyable_v<ShortCode>);
 
 } // namespace klotski::codec
 
