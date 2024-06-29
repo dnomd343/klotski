@@ -243,13 +243,32 @@ static void CommonCodeToShortCode(benchmark::State &state) {
     }
 }
 
+static void IsMirrorCompare(benchmark::State &state) {
+
+    std::vector<CommonCode> samples;
+    for (auto common_code : common_code_samples(512)) {
+        samples.emplace_back(CommonCode::unsafe_create(common_code));
+    }
+
+    for (auto _ : state) {
+        for (auto code : samples) {
+            auto raw_code = code.to_raw_code();
+            volatile auto ret = raw_code.is_horizontal_mirror();
+
+            // volatile auto ret = CommonCode::is_mirror(code.unwrap());
+        }
+    }
+}
+
 // BENCHMARK(CommonCodeSerialize)->Range(8, 256);
 // BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
 // BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
 // BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
 
-BENCHMARK(ShortCodeSerialize)->Range(8, 256);
-BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
+// BENCHMARK(ShortCodeSerialize)->Range(8, 256);
+// BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
+
+BENCHMARK(IsMirrorCompare);
 
 // BENCHMARK(ShortCodeToCommonCode);
 // BENCHMARK(CommonCodeToShortCode);

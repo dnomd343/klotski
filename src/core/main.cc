@@ -40,7 +40,29 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
-    GroupCases::from_info_t({169, 1, 7472});
+    // auto ret = CommonCode::is_mirror(0x1A9BF0C00);
+    // auto ret = CommonCode::is_mirror(0x4FEA13400);
+    // auto ret = CommonCode::is_mirror(0x100AA0300);
+    // auto ret = CommonCode::is_mirror(0x5000A0000);
+    // std::cout << "ret = " << ret << std::endl;
+
+    // auto raw_code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    // std::cout << raw_code.is_horizontal_mirror() << std::endl;
+
+    // for (auto common_code : AllCases::instance().fetch().codes()) {
+    //     auto raw_code = common_code.to_raw_code();
+    //
+    //     bool r1 = raw_code.is_horizontal_mirror();
+    //     bool r2 = CommonCode::is_mirror(common_code.unwrap());
+    //
+    //     if (r1 != r2) {
+    //         std::cout << "found invalid" << std::endl;
+    //         std::cout << common_code << std::endl;
+    //         break;
+    //     }
+    // }
+
+    // GroupCases::from_info_t({169, 1, 7472});
 
     // GroupCases::to_info_t(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
 

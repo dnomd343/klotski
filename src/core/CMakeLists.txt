@@ -9,6 +9,7 @@ set(KLOTSKI_CORE_SRC
 
         common_code/internal/common_code.cc
         common_code/internal/serialize.cc
+        common_code/internal/mirror.cc
 
         raw_code/internal/raw_code.cc
         raw_code/internal/convert.cc
