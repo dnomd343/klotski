@@ -261,14 +261,14 @@ static void IsMirrorCompare(benchmark::State &state) {
 }
 
 // BENCHMARK(CommonCodeSerialize)->Range(8, 256);
-// BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
+BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
 // BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
 // BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
 
 // BENCHMARK(ShortCodeSerialize)->Range(8, 256);
 // BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
 
-BENCHMARK(IsMirrorCompare);
+// BENCHMARK(IsMirrorCompare);
 
 // BENCHMARK(ShortCodeToCommonCode);
 // BENCHMARK(CommonCodeToShortCode);
