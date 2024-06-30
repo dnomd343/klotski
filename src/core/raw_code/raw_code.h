@@ -119,23 +119,17 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Calculate vertically symmetrical layout.
-    [[nodiscard]] RawCode to_vertical_mirror() const;
-
-    /// Calculate horizontally symmetrical layout.
-    [[nodiscard]] RawCode to_horizontal_mirror() const;
-
-    /// Determine whether the layout is vertically symmetrical.
+    /// Whether the layout is vertically symmetrical.
     [[nodiscard]] bool is_vertical_mirror() const;
 
-    /// Determine whether the layout is horizontally symmetrical.
+    /// Whether the layout is horizontally symmetrical.
     [[nodiscard]] bool is_horizontal_mirror() const;
 
-    /// Determine whether two layouts are vertically symmetrical to each other.
-    [[nodiscard]] bool is_vertical_mirror(RawCode raw_code) const;
+    /// Calculate the vertically symmetrical klotski layout.
+    [[nodiscard]] RawCode to_vertical_mirror() const;
 
-    /// Determine whether two layouts are horizontally symmetrical to each other.
-    [[nodiscard]] bool is_horizontal_mirror(RawCode raw_code) const;
+    /// Calculate the horizontally symmetrical klotski layout.
+    [[nodiscard]] RawCode to_horizontal_mirror() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -162,11 +156,8 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Check whether the layout is vertically symmetrical.
-    static bool check_vertical_mirror(uint64_t raw_code);
-
-    /// Check whether the layout is horizontally symmetrical.
-    static bool check_horizontal_mirror(uint64_t raw_code);
+    /// Check the horizontally symmetrical.
+    static bool check_mirror(uint64_t raw_code);
 
     /// Get the vertically symmetrical layout.
     static uint64_t get_vertical_mirror(uint64_t raw_code);
@@ -176,6 +167,9 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 };
+
+static_assert(std::is_standard_layout_v<RawCode>);
+static_assert(std::is_trivially_copyable_v<RawCode>);
 
 } // namespace klotski::codec
 

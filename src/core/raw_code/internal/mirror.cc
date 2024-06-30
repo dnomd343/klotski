@@ -97,13 +97,13 @@ uint64_t RawCode::get_horizontal_mirror(uint64_t raw_code) {
     return raw_code;
 }
 
-bool RawCode::check_vertical_mirror(uint64_t raw_code) {
-    vertical_fill(raw_code);
-    return !(MASK_MIRROR_V1 & ((raw_code >> 48) ^ raw_code))
-        && !(MASK_MIRROR_V2 & ((raw_code >> 24) ^ raw_code));
-}
+// bool RawCode::check_vertical_mirror(uint64_t raw_code) {
+//     vertical_fill(raw_code);
+//     return !(MASK_MIRROR_V1 & ((raw_code >> 48) ^ raw_code))
+//         && !(MASK_MIRROR_V2 & ((raw_code >> 24) ^ raw_code));
+// }
 
-bool RawCode::check_horizontal_mirror(uint64_t raw_code) {
+bool RawCode::check_mirror(uint64_t raw_code) {
     horizontal_fill(raw_code);
     return !(MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
         && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));
