@@ -69,6 +69,32 @@ struct Exposer {
         return (std::forward<C>(c).*fetch(HELPER(Tag){}))(std::forward<Args>(args)...); \
     }
 
+#define FORCE_ACCESS_STATIC_VAR_IMPL(Class, Type, Member, Tag)     \
+    struct HELPER(Tag) {};                                         \
+    template struct Exposer<Type(*), &Class::Member, HELPER(Tag)>; \
+    constexpr Type* fetch(HELPER(Tag));                            \
+    constexpr Type& Class##_##Member() {                           \
+        return *fetch(HELPER(Tag){});                              \
+    }
+
+#define FORCE_ACCESS_STATIC_CONST_VAR_IMPL(Class, Type, Member, Tag)     \
+    struct HELPER(Tag) {};                                               \
+    template struct Exposer<const Type(*), &Class::Member, HELPER(Tag)>; \
+    constexpr const Type* fetch(HELPER(Tag));                            \
+    constexpr const Type& Class##_##Member() {                           \
+        return *fetch(HELPER(Tag){});                                    \
+    }
+
+#define FORCE_ACCESS_STATIC_FUNC_IMPL(Class, Proto, Member, Tag) \
+    struct HELPER(Tag) {}; \
+    using PROTO(Tag) = Proto; \
+    template struct Exposer<PROTO(Tag)(*), &Class::Member, HELPER(Tag)>; \
+    constexpr PROTO(Tag)* fetch(HELPER(Tag)); \
+    template<typename ...Args> \
+    constexpr decltype(auto) sfunc(Args &&...args) { \
+        return fetch(HELPER(Tag){})(std::forward<Args>(args)...); \
+    }
+
 #define FORCE_ACCESS_VAR(Class, Type, Member)                   \
     namespace exposer {                                         \
         FORCE_ACCESS_VAR_IMPL(Class, Type, Member, __COUNTER__) \
@@ -87,4 +113,19 @@ struct Exposer {
 #define FORCE_ACCESS_CONST_FUNC(Class, Proto, Member)                   \
     namespace exposer {                                                 \
         FORCE_ACCESS_CONST_FUNC_IMPL(Class, Proto, Member, __COUNTER__) \
+    }
+
+#define FORCE_ACCESS_STATIC_VAR(Class, Type, Member)                   \
+    namespace exposer {                                                \
+        FORCE_ACCESS_STATIC_VAR_IMPL(Class, Type, Member, __COUNTER__) \
+    }
+
+#define FORCE_ACCESS_STATIC_CONST_VAR(Class, Type, Member)                   \
+    namespace exposer {                                                      \
+        FORCE_ACCESS_STATIC_CONST_VAR_IMPL(Class, Type, Member, __COUNTER__) \
+    }
+
+#define FORCE_ACCESS_STATIC_FUNC(Class, Proto, Member) \
+    namespace exposer {                                \
+        FORCE_ACCESS_STATIC_FUNC_IMPL(Class, Proto, Member, __COUNTER__) \
     }
