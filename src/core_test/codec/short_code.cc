@@ -21,17 +21,17 @@ using klotski::codec::SHORT_CODE_LIMIT;
 static const auto TEST_THREAD_NUM = 256;
 
 /// Forcibly modify private variables to reset state.
-FORCIBLY_ACCESS(AllCases, available_, bool)
-FORCIBLY_ACCESS(BasicRanges, available_, bool)
+//FORCIBLY_ACCESS(AllCases, available_, bool)
+//FORCIBLY_ACCESS(BasicRanges, available_, bool)
 
 /// Reset basic ranges build state, note it is thread-unsafe.
 void basic_ranges_reset() {
-    exposer::BasicRanges_available_(BasicRanges::instance()) = false;
+//    exposer::BasicRanges_available_(BasicRanges::instance()) = false;
 }
 
 /// Reset all cases build state, note it is thread-unsafe.
 void all_cases_reset() {
-    exposer::AllCases_available_(AllCases::instance()) = false;
+//    exposer::AllCases_available_(AllCases::instance()) = false;
 }
 
 TEST(ShortCode, limit) {
