@@ -16,37 +16,17 @@ using klotski::cases::ALL_CASES_NUM;
 static constexpr std::string_view ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
 
 /// Forcibly modify private variables to reset state.
-//FORCIBLY_ACCESS(AllCases, available_, bool)
-//FORCIBLY_ACCESS(BasicRanges, available_, bool)
-
-FORCE_ACCESS_VAR(BasicRanges, available_, bool, Helper_1);
-FORCE_ACCESS_VAR(AllCases, available_, bool, Helper_2);
-
-//namespace exposer {
-//
-//struct Helper_1 {};
-//
-//template struct Exposer<bool (BasicRanges::*), &BasicRanges::available_, Helper_1>;
-//
-////template<>
-//constexpr bool BasicRanges::* fetch(Helper_1);
-//
-//bool& Demo_val(BasicRanges &c) {
-//    return c.*fetch(Helper_1{});
-//}
-//
-//}
+FORCE_ACCESS_VAR(AllCases, bool, available_)
+FORCE_ACCESS_VAR(BasicRanges, bool, available_)
 
 /// Reset basic ranges build state, note it is thread-unsafe.
 void basic_ranges_reset() {
     exposer::BasicRanges_available_(BasicRanges::instance()) = false;
-//    exposer::BasicRanges_available_(BasicRanges::instance()) = false;
 }
 
 /// Reset all cases build state, note it is thread-unsafe.
 void all_cases_reset() {
     exposer::AllCases_available_(AllCases::instance()) = false;
-//    exposer::AllCases_available_(AllCases::instance()) = false;
 }
 
 TEST(AllCases, all_cases_prebuild) {

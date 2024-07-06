@@ -6,52 +6,34 @@
 
 namespace exposer {
 
-// REF: http://bloglitb.blogspot.com/2010/07/access-to-private-members-thats-easy.html
-
-//template <typename T>
-//struct Exposer {
-//    static T ptr;
-//};
-//
-//template <typename T>
-//T Exposer<T>::ptr;
-//
-//template <typename T, T Ptr>
-//struct ExposerImpl {
-//    static struct Factory {
-//        Factory() { Exposer<T>::ptr = Ptr; }
-//    } factory;
-//};
-//
-//template <typename T, T Ptr>
-//typename ExposerImpl<T, Ptr>::Factory ExposerImpl<T, Ptr>::factory;
-
-//template <typename T>
-//constexpr T fetch();
-
-//template <typename T, T Val, int Flag>
-template <typename T, T Val, typename Unique>
+template <typename T, T Val, typename Tag>
 struct Exposer {
-//    constexpr friend T fetch<>() { return Val; }
-    constexpr friend T fetch(Unique) { return Val; }
+    constexpr friend T fetch(Tag) { return Val; }
 };
 
 } // namespace exposer
 
-#define FORCIBLY_ACCESS(Class, Member, Type)                                   \
-    namespace exposer {                                                        \
-        template struct ExposerImpl<decltype(&Class::Member), &Class::Member>; \
-        inline auto& Class##_##Member(Class &T) {                              \
-            return T.*exposer::Exposer<Type Class::*>::ptr;                    \
-        }                                                                      \
-    }
+#define COMBINE_IMPL(x, y) x##y
 
-#define FORCE_ACCESS_VAR(Class, Member, Type, Unique) \
+#define COMBINE(x, y) COMBINE_IMPL(x, y)
+
+#define UNIQUE_TAG COMBINE(Tag, __COUNTER__)
+
+#define FORCE_ACCESS_VAR_IMPL(Class, Type, Member, Tag) \
     namespace exposer { \
-        struct Unique {}; \
-        template struct Exposer<Type (Class::*), &Class::Member, Unique>; \
-        constexpr Type Class::* fetch(Unique); \
-        Type& Class##_##Member(Class &T) { \
-            return T.*fetch(Unique{}); \
+        struct Tag {}; \
+        template struct Exposer<Type(Class::*), &Class::Member, Tag>; \
+        constexpr Type Class::* fetch(Tag); \
+        constexpr Type& Class##_##Member(Class &c) { \
+            return c.*fetch(Tag{}); \
+        } \
+        constexpr const Type& Class##_##Member(const Class &c) { \
+            return c.*fetch(Tag{}); \
+        } \
+        constexpr Type Class##_##Member(Class &&c) { \
+            return c.*fetch(Tag{}); \
         } \
     }
+
+#define FORCE_ACCESS_VAR(Class, Type, Member) \
+    FORCE_ACCESS_VAR_IMPL(Class, Type, Member, UNIQUE_TAG)

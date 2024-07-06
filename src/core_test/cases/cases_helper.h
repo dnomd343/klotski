@@ -31,8 +31,8 @@ protected:
 };
 
 /// Forcibly modify private variables to reset state.
-FORCIBLY_ACCESS(AllCases, available_, bool)
-FORCIBLY_ACCESS(BasicRanges, available_, bool)
+FORCE_ACCESS_VAR(AllCases, bool, available_)
+FORCE_ACCESS_VAR(BasicRanges, bool, available_)
 
 /// Test fixture macro with custom test suite name.
 #define TEST_FF(test_suite_name, test_name)                        \
