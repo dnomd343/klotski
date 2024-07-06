@@ -21,8 +21,8 @@ using klotski::codec::SHORT_CODE_LIMIT;
 static const auto TEST_THREAD_NUM = 256;
 
 /// Forcibly modify private variables to reset state.
-FORCE_ACCESS_VAR(AllCases, bool, available_)
-FORCE_ACCESS_VAR(BasicRanges, bool, available_)
+EXPOSE_VAR(AllCases, bool, available_)
+EXPOSE_VAR(BasicRanges, bool, available_)
 
 /// Reset basic ranges build state, note it is thread-unsafe.
 void basic_ranges_reset() {

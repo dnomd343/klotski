@@ -16,8 +16,8 @@ using klotski::cases::ALL_CASES_NUM;
 static constexpr std::string_view ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
 
 /// Forcibly modify private variables to reset state.
-FORCE_ACCESS_VAR(AllCases, bool, available_)
-FORCE_ACCESS_VAR(BasicRanges, bool, available_)
+EXPOSE_VAR(AllCases, bool, available_)
+EXPOSE_VAR(BasicRanges, bool, available_)
 
 /// Reset basic ranges build state, note it is thread-unsafe.
 void basic_ranges_reset() {
