@@ -4,128 +4,106 @@
 /// any code. It uses macros to construct a function that returns a reference
 /// to the target member variable.
 
+#include <type_traits>
+
+// ----------------------------------------------------------------------------------------- //
+
 namespace exposer {
 
-template <typename T, T Val, typename Tag>
+template <typename T, T Val, typename Dummy>
 struct Exposer {
-    constexpr friend T fetch(Tag) { return Val; }
+    constexpr friend T fetch(Dummy) { return Val; }
 };
 
 } // namespace exposer
 
-#define COMBINE_IMPL(x, y) x##y
+// ----------------------------------------------------------------------------------------- //
 
-#define HELPER(x) COMBINE_IMPL(Helper_, x)
+#define CONCAT(x, y) x##y
 
-#define PROTO(x) COMBINE_IMPL(Proto_, x)
+#define UNIQUE_TAG_IMPL(x) CONCAT(Unique_, x)
 
-#define FORCE_ACCESS_VAR_IMPL(Class, Type, Member, Tag)                   \
-    struct HELPER(Tag) {};                                                \
-    template struct Exposer<Type(Class::*), &Class::Member, HELPER(Tag)>; \
-    constexpr Type Class::* fetch(HELPER(Tag));                           \
-    constexpr Type Class##_##Member(Class &&c) {                          \
-        return c.*fetch(HELPER(Tag){});                                   \
-    }                                                                     \
-    constexpr Type& Class##_##Member(Class &c) {                          \
-        return c.*fetch(HELPER(Tag){});                                   \
-    }                                                                     \
-    constexpr const Type& Class##_##Member(const Class &c) {              \
-        return c.*fetch(HELPER(Tag){});                                   \
+#define UNIQUE_TAG UNIQUE_TAG_IMPL(__COUNTER__)
+
+// ----------------------------------------------------------------------------------------- //
+
+#define ACCESS_SVAR_IMPL(Class, Type, Member, Dummy)         \
+    struct Dummy {};                                         \
+    template struct Exposer<Type(*), &Class::Member, Dummy>; \
+    constexpr Type* fetch(Dummy);                            \
+    constexpr Type& Class##_##Member() {                     \
+        return *fetch(Dummy{});                              \
     }
 
-#define FORCE_ACCESS_CONST_VAR_IMPL(Class, Type, Member, Tag)                   \
-    struct HELPER(Tag) {};                                                      \
-    template struct Exposer<const Type(Class::*), &Class::Member, HELPER(Tag)>; \
-    constexpr const Type Class::* fetch(HELPER(Tag));                           \
-        constexpr Type Class##_##Member(Class &&c) {                            \
-        return c.*fetch(HELPER(Tag){});                                         \
-    }                                                                           \
-    constexpr const Type& Class##_##Member(Class &c) {                          \
-        return c.*fetch(HELPER(Tag){});                                         \
-    }                                                                           \
-    constexpr const Type& Class##_##Member(const Class &c) {                    \
-        return c.*fetch(HELPER(Tag){});                                         \
+#define ACCESS_SFUNC_IMPL(Class, Proto, Member, Dummy, FuncTag) \
+    struct Dummy {};                                            \
+    using FuncTag = Proto;                                      \
+    template struct Exposer<FuncTag(*), &Class::Member, Dummy>; \
+    constexpr FuncTag* fetch(Dummy);                            \
+    template<typename ...Args>                                  \
+    constexpr decltype(auto) sfunc(Args &&...args) {            \
+        return fetch(Dummy{})(std::forward<Args>(args)...);     \
     }
 
-#define FORCE_ACCESS_FUNC_IMPL(Class, Proto, Member, Tag)                               \
-    struct HELPER(Tag) {};                                                              \
-    using PROTO(Tag) = Proto;                                                           \
-    template struct Exposer<PROTO(Tag)(Class::*), &Class::Member, HELPER(Tag)>;         \
-    constexpr PROTO(Tag) Class::* fetch(HELPER(Tag));                                   \
-    template <typename C, typename ...Args>                                             \
-    requires std::is_same_v<std::remove_reference_t<C>, Class>                          \
-    constexpr decltype(auto) Class##_##Member(C &&c, Args &&...args) {                  \
-        return (std::forward<C>(c).*fetch(HELPER(Tag){}))(std::forward<Args>(args)...); \
+#define ACCESS_VAR_IMPL(Class, Type, ConstType, Member, Dummy)      \
+    struct Dummy {};                                                \
+    template struct Exposer<Type(Class::*), &Class::Member, Dummy>; \
+    constexpr Type Class::* fetch(Dummy);                           \
+    constexpr Type Class##_##Member(Class &&c) {                    \
+        return c.*fetch(Dummy{});                                   \
+    }                                                               \
+    constexpr Type& Class##_##Member(Class &c) {                    \
+        return c.*fetch(Dummy{});                                   \
+    }                                                               \
+    constexpr ConstType& Class##_##Member(const Class &c) {         \
+        return c.*fetch(Dummy{});                                   \
     }
 
-#define FORCE_ACCESS_CONST_FUNC_IMPL(Class, Proto, Member, Tag)                         \
-    struct HELPER(Tag) {};                                                              \
-    using PROTO(Tag) = Proto const;                                                     \
-    template struct Exposer<PROTO(Tag)(Class::*), &Class::Member, HELPER(Tag)>;         \
-    constexpr PROTO(Tag) Demo::* fetch(HELPER(Tag));                                    \
-    template <typename C, typename ...Args>                                             \
-    requires std::is_same_v<std::remove_const_t<std::remove_reference_t<C>>, Class>     \
-    constexpr decltype(auto) Class##_##Member(C &&c, Args &&...args) {                  \
-        return (std::forward<C>(c).*fetch(HELPER(Tag){}))(std::forward<Args>(args)...); \
+#define ACCESS_FUNC_IMPL(Class, Proto, Member, Dummy, FuncTag)                    \
+    struct Dummy {};                                                              \
+    using FuncTag = Proto;                                                        \
+    template struct Exposer<FuncTag(Class::*), &Class::Member, Dummy>;            \
+    constexpr FuncTag Class::* fetch(Dummy);                                      \
+    template <typename C, typename ...Args>                                       \
+    requires std::is_same_v<std::decay_t<C>, Class>                               \
+    constexpr decltype(auto) Class##_##Member(C &&c, Args &&...args) {            \
+        return (std::forward<C>(c).*fetch(Dummy{}))(std::forward<Args>(args)...); \
     }
 
-#define FORCE_ACCESS_STATIC_VAR_IMPL(Class, Type, Member, Tag)     \
-    struct HELPER(Tag) {};                                         \
-    template struct Exposer<Type(*), &Class::Member, HELPER(Tag)>; \
-    constexpr Type* fetch(HELPER(Tag));                            \
-    constexpr Type& Class##_##Member() {                           \
-        return *fetch(HELPER(Tag){});                              \
+// ----------------------------------------------------------------------------------------- //
+
+#define EXPOSE_STATIC_VAR(Class, Type, Member)            \
+    namespace exposer {                                   \
+        ACCESS_SVAR_IMPL(Class, Type, Member, UNIQUE_TAG) \
     }
 
-#define FORCE_ACCESS_STATIC_CONST_VAR_IMPL(Class, Type, Member, Tag)     \
-    struct HELPER(Tag) {};                                               \
-    template struct Exposer<const Type(*), &Class::Member, HELPER(Tag)>; \
-    constexpr const Type* fetch(HELPER(Tag));                            \
-    constexpr const Type& Class##_##Member() {                           \
-        return *fetch(HELPER(Tag){});                                    \
-    }
-
-#define FORCE_ACCESS_STATIC_FUNC_IMPL(Class, Proto, Member, Tag) \
-    struct HELPER(Tag) {}; \
-    using PROTO(Tag) = Proto; \
-    template struct Exposer<PROTO(Tag)(*), &Class::Member, HELPER(Tag)>; \
-    constexpr PROTO(Tag)* fetch(HELPER(Tag)); \
-    template<typename ...Args> \
-    constexpr decltype(auto) sfunc(Args &&...args) { \
-        return fetch(HELPER(Tag){})(std::forward<Args>(args)...); \
-    }
-
-#define FORCE_ACCESS_VAR(Class, Type, Member)                   \
-    namespace exposer {                                         \
-        FORCE_ACCESS_VAR_IMPL(Class, Type, Member, __COUNTER__) \
-    }
-
-#define FORCE_ACCESS_CONST_VAR(Class, Type, Member)                   \
-    namespace exposer {                                               \
-        FORCE_ACCESS_CONST_VAR_IMPL(Class, Type, Member, __COUNTER__) \
-    }
-
-#define FORCE_ACCESS_FUNC(Class, Proto, Member)                   \
-    namespace exposer {                                           \
-        FORCE_ACCESS_FUNC_IMPL(Class, Proto, Member, __COUNTER__) \
-    }
-
-#define FORCE_ACCESS_CONST_FUNC(Class, Proto, Member)                   \
+#define EXPOSE_STATIC_FUNC(Class, Proto, Member)                        \
     namespace exposer {                                                 \
-        FORCE_ACCESS_CONST_FUNC_IMPL(Class, Proto, Member, __COUNTER__) \
+        ACCESS_SFUNC_IMPL(Class, Proto, Member, UNIQUE_TAG, UNIQUE_TAG) \
     }
 
-#define FORCE_ACCESS_STATIC_VAR(Class, Type, Member)                   \
+// ----------------------------------------------------------------------------------------- //
+
+#define EXPOSE_VAR(Class, Type, Member)                              \
+    namespace exposer {                                              \
+        ACCESS_VAR_IMPL(Class, Type, const Type, Member, UNIQUE_TAG) \
+    }
+
+#define EXPOSE_FUNC(Class, Proto, Member)                              \
     namespace exposer {                                                \
-        FORCE_ACCESS_STATIC_VAR_IMPL(Class, Type, Member, __COUNTER__) \
+        ACCESS_FUNC_IMPL(Class, Proto, Member, UNIQUE_TAG, UNIQUE_TAG) \
     }
 
-#define FORCE_ACCESS_STATIC_CONST_VAR(Class, Type, Member)                   \
+// ----------------------------------------------------------------------------------------- //
+
+#define EXPOSE_CONST_VAR(Class, Type, Member)                              \
+    namespace exposer {                                                    \
+        ACCESS_VAR_IMPL(Class, const Type, const Type, Member, UNIQUE_TAG) \
+    }
+
+#define EXPOSE_CONST_FUNC(Class, Proto, Member)                              \
     namespace exposer {                                                      \
-        FORCE_ACCESS_STATIC_CONST_VAR_IMPL(Class, Type, Member, __COUNTER__) \
+        ACCESS_FUNC_IMPL(Class, Proto const, Member, UNIQUE_TAG, UNIQUE_TAG) \
     }
 
-#define FORCE_ACCESS_STATIC_FUNC(Class, Proto, Member) \
-    namespace exposer {                                \
-        FORCE_ACCESS_STATIC_FUNC_IMPL(Class, Proto, Member, __COUNTER__) \
-    }
+// ----------------------------------------------------------------------------------------- //
