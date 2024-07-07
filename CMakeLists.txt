@@ -10,6 +10,7 @@ option(KLSK_ENABLE_BENCHMARK "Enable benchmark of the klotski project." ON)
 
 option(KLSK_C_FFI "" ON)
 option(KLSK_PYTHON_FFI "" ON)
+option(KLSK_RUST_FFI "" ON)
 
 # ------------------------------------------------------------------------------------ #
 
