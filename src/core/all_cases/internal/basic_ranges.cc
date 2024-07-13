@@ -8,9 +8,9 @@ using klotski::cases::Ranges;
 using klotski::cases::BasicRanges;
 using klotski::cases::TYPE_ID_LIMIT;
 
-typedef Ranges::iterator RangesIter;
-typedef std::tuple<int, int, int> RangeType;
-typedef std::array<RangeType, TYPE_ID_LIMIT> RangeTypeUnion;
+using RangesIter = Ranges::iterator ;
+using RangeType = std::tuple<int, int, int> ;
+using RangeTypeUnion = std::array<RangeType, TYPE_ID_LIMIT>;
 
 /// Generate all possible basic-ranges permutations.
 consteval static RangeTypeUnion range_types() {
@@ -34,8 +34,9 @@ static void inplace_merge(RangesIter begin, RangesIter mid, const RangesIter end
     for (auto p = tmp.begin();;) {
         if (*p <= *mid) {
             *(begin++) = *(p++); // stored in original span
-            if (p == tmp.end()) // left array is consumed
+            if (p == tmp.end()) { // left array is consumed
                 return;
+            }
             continue;
         }
         *(begin++) = *(mid++); // stored in original span
@@ -50,7 +51,7 @@ void BasicRanges::build() {
     if (available_) {
         return; // reduce consumption of mutex
     }
-    std::lock_guard guard {building_};
+    const std::lock_guard guard {building_};
     if (available_) {
         return; // data is already available
     }
@@ -78,6 +79,7 @@ void BasicRanges::build() {
     } while (points.size() > 2); // merge until only one interval remains
 
     available_ = true;
+    KLSK_MEM_BARRIER;
 }
 
 void BasicRanges::build_async(Executor &&executor, Notifier &&callback) {
@@ -94,6 +96,7 @@ void BasicRanges::build_async(Executor &&executor, Notifier &&callback) {
 
     auto all_done = [this, callback = std::move(callback)] {
         available_ = true;
+        KLSK_MEM_BARRIER;
         building_.unlock();
         callback();
     };

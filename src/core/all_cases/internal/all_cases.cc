@@ -54,7 +54,7 @@ void AllCases::build() {
     if (available_) {
         return; // reduce consumption of mutex
     }
-    std::lock_guard guard {building_};
+    const std::lock_guard guard {building_};
     if (available_) {
         return; // data is already available
     }
@@ -68,6 +68,7 @@ void AllCases::build() {
         build_cases(ranges, reversed, get_cases()[head], head);
     }
     available_ = true;
+    KLSK_MEM_BARRIER;
 }
 
 void AllCases::build_async(Executor &&executor, Notifier &&callback) {
@@ -97,6 +98,7 @@ void AllCases::build_async(Executor &&executor, Notifier &&callback) {
 
     worker.then([this, callback = std::move(callback)] {
         available_ = true;
+        KLSK_MEM_BARRIER;
         building_.unlock();
         callback();
     });
