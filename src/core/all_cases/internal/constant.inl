@@ -4,8 +4,9 @@
 
 namespace klotski::cases {
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
+/// Number of cases corresponding to the head value.
 constexpr auto ALL_CASES_NUM = std::to_array({
     2942906, 2260392, 2942906, 0,
     2322050, 1876945, 2322050, 0,
@@ -17,8 +18,9 @@ constexpr auto ALL_CASES_NUM_ = array_sum(ALL_CASES_NUM);
 
 constexpr auto ALL_CASES_OFFSET = to_offset(ALL_CASES_NUM);
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
+/// Number of ranges corresponding to the type_id.
 constexpr auto BASIC_RANGES_NUM = std::to_array({
     1     , 16    , 120   , 560   , 1820 , 4368 , 8008  , 11440 ,
     12870 , 11440 , 8008  , 4368  , 1820 , 560  , 120   , 15    ,
@@ -52,6 +54,6 @@ constexpr auto BASIC_RANGES_NUM_ = array_sum(BASIC_RANGES_NUM);
 
 constexpr auto BASIC_RANGES_OFFSET = to_offset(BASIC_RANGES_NUM);
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 } // namespace klotski::cases
