@@ -57,3 +57,7 @@ target_link_libraries(bm_all_cases PRIVATE klotski::core benchmark::benchmark_ma
 add_executable(bm_ranges benchmark/ranges.cc)
 target_compile_options(bm_ranges PRIVATE -fno-rtti -fno-exceptions)
 target_link_libraries(bm_ranges PRIVATE klotski::core benchmark::benchmark_main)
+
+add_executable(bm_utility benchmark/utility.cc)
+target_compile_options(bm_utility PRIVATE -fno-rtti -fno-exceptions)
+target_link_libraries(bm_utility PRIVATE klotski::core benchmark::benchmark_main)

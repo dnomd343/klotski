@@ -5,6 +5,8 @@
 #include <numeric>
 #include <functional>
 
+// ----------------------------------------------------------------------------------------- //
+
 /// Mark target class as a singleton.
 #define KLSK_INSTANCE(T)                  \
     private:                              \
@@ -27,6 +29,8 @@
 
 /// Prevent reordering for both compiler and processor.
 #define KLSK_MEM_BARRIER std::atomic_thread_fence(std::memory_order_seq_cst)
+
+// ----------------------------------------------------------------------------------------- //
 
 namespace klotski {
 
@@ -54,19 +58,13 @@ consteval std::array<T, N> to_offset(const std::array<T, N> &arr) {
 }
 
 /// Flips the input u32 every two bits in low-high symmetry.
-inline uint32_t range_reverse(uint32_t bin) {
+constexpr uint32_t range_reverse(uint32_t bin) {
     bin = std::byteswap(bin);
-// #if defined(__GNUC__) || defined(__clang__)
-//     bin = __builtin_bswap32(bin);
-// #else
-//     // FIXME: `_byteswap_ulong` under MSVC
-//     // TODO: using `std::byteswap` (c++23)
-//     bin = ((bin << 16) & 0xFFFF0000) | ((bin >> 16) & 0x0000FFFF);
-//     bin = ((bin << 8) & 0xFF00FF00) | ((bin >> 8) & 0x00FF00FF);
-// #endif
     bin = ((bin << 4) & 0xF0F0F0F0) | ((bin >> 4) & 0x0F0F0F0F);
     return ((bin << 2) & 0xCCCCCCCC) | ((bin >> 2) & 0x33333333);
 }
+
+// ----------------------------------------------------------------------------------------- //
 
 /// Empty function calls that generally used for callbacks.
 typedef std::function<void()> Notifier;
@@ -96,6 +94,8 @@ private:
     Executor executor_;
     std::list<Task> tasks_;
 };
+
+// ----------------------------------------------------------------------------------------- //
 
 } // namespace klotski
 
