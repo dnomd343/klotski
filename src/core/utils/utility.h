@@ -43,17 +43,10 @@ consteval int array_sum(const std::array<T, N> &arr) {
 
 /// Calculate offset list of integer array with sizes.
 template <typename T, size_t N>
-requires std::is_integral_v<T>
+requires std::is_integral_v<T> && (N > 0)
 consteval std::array<T, N> to_offset(const std::array<T, N> &arr) {
-    std::array<T, N> offset;
-    static_assert(N > 0);
-    offset[0] = 0;
-
-    T val = 0;
-    for (int i = 0; i < N - 1; ++i) { // TODO: using `std::views::iota`
-        val += arr[i];
-        offset[i + 1] = val;
-    }
+    std::array<T, N> offset {};
+    std::partial_sum(arr.begin(), arr.end() - 1, offset.begin() + 1);
     return offset;
 }
 

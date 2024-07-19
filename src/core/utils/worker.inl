@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <memory>
 
 namespace klotski {
 
@@ -12,14 +13,12 @@ inline void Worker::post(Task &&task) {
 }
 
 inline void Worker::then(Notifier &&after) {
-    after_ = [after = std::move(after)]() {
-        after();
-    };
+    after_ = std::move(after);
 }
 
 inline Worker::~Worker() {
     if (tasks_.empty()) {
-        executor_([after = after_] {
+        executor_([after = std::move(after_)] {
             after(); // callback directly
         });
         return;
