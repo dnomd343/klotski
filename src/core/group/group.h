@@ -83,150 +83,153 @@ class Group;
 // TODO: add constexpr
 class GroupUnion {
 public:
-	GroupUnion() = delete;
+    GroupUnion() = delete;
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
-	/// Get the original type id.
-	[[nodiscard]] constexpr uint32_t unwrap() const;
+    /// Get the original type id.
+    [[nodiscard]] constexpr uint32_t unwrap() const;
 
-	/// Create GroupUnion without any check.
-	static constexpr GroupUnion unsafe_create(uint32_t type_id);
+    /// Create GroupUnion without any check.
+    static constexpr GroupUnion unsafe_create(uint32_t type_id);
 
-	/// Create GroupUnion with validity check.
-	static constexpr std::optional<GroupUnion> create(uint32_t type_id);
+    /// Create GroupUnion with validity check.
+    static constexpr std::optional<GroupUnion> create(uint32_t type_id);
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
-	/// Get the number of cases contained.
-	[[nodiscard]] constexpr uint32_t size() const;
+    /// Get the number of cases contained.
+    [[nodiscard]] constexpr uint32_t size() const;
 
-	/// Get the number of groups contained.
-	[[nodiscard]] constexpr uint32_t group_num() const;
+    /// Get the number of groups contained.
+    [[nodiscard]] constexpr uint32_t group_num() const;
 
-	/// Get the upper limit of the group size.
-	[[nodiscard]] constexpr uint32_t max_group_size() const;
+    /// Get the upper limit of the group size.
+    [[nodiscard]] constexpr uint32_t max_group_size() const;
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
-	/// Get all cases under the current type id.
-	[[nodiscard]] RangesUnion cases() const;
+    /// Get all cases under the current type id.
+    [[nodiscard]] RangesUnion cases() const;
 
-	/// Get all groups under the current type id.
-	[[nodiscard]] std::vector<Group> groups() const;
+    /// Get all groups under the current type id.
+    [[nodiscard]] std::vector<Group> groups() const;
 
-	/// Get the group instance with the specified group id.
-	[[nodiscard]] std::optional<Group> group(uint32_t group_id) const;
+    /// Get the group instance with the specified group id.
+    [[nodiscard]] std::optional<Group> group(uint32_t group_id) const;
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
-	/// Create GroupUnion from RawCode.
-	static GroupUnion from_raw_code(codec::RawCode raw_code);
+    /// Create GroupUnion from RawCode.
+    static GroupUnion from_raw_code(codec::RawCode raw_code);
 
-	/// Create GroupUnion from ShortCode.
-	static GroupUnion from_short_code(codec::ShortCode short_code);
+    /// Create GroupUnion from ShortCode.
+    static GroupUnion from_short_code(codec::ShortCode short_code);
 
-	/// Create GroupUnion from CommonCode.
-	static GroupUnion from_common_code(codec::CommonCode common_code);
+    /// Create GroupUnion from CommonCode.
+    static GroupUnion from_common_code(codec::CommonCode common_code);
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
 private:
-	uint32_t type_id_;
+    uint32_t type_id_;
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
-	/// Get the type id of RawCode.
-	static KLSK_INLINE uint32_t type_id(codec::RawCode raw_code);
+    /// Get the type id of RawCode.
+    static KLSK_INLINE uint32_t type_id(codec::RawCode raw_code);
 
-	/// Get the type id of CommonCode.
-	static KLSK_INLINE uint32_t type_id(codec::CommonCode common_code);
+    /// Get the type id of CommonCode.
+    static KLSK_INLINE uint32_t type_id(codec::CommonCode common_code);
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 };
 
 class Group {
 public:
-	Group() = delete;
+    Group() = delete;
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
-	/// Get the original type id.
-	[[nodiscard]] uint32_t type_id() const;
+    /// Get the original type id.
+    [[nodiscard]] uint32_t type_id() const;
 
-	/// Get the original group id.
-	[[nodiscard]] uint32_t group_id() const;
+    /// Get the original group id.
+    [[nodiscard]] uint32_t group_id() const;
 
-	/// Create Group without any check.
-	static Group unsafe_create(uint32_t type_id, uint32_t group_id);
+    /// Create Group without any check.
+    static Group unsafe_create(uint32_t type_id, uint32_t group_id);
 
-	/// Create Group with validity check.
-	static std::optional<Group> create(uint32_t type_id, uint32_t group_id);
+    /// Create Group with validity check.
+    static std::optional<Group> create(uint32_t type_id, uint32_t group_id);
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
-	/// Get the number of cases contained.
-	[[nodiscard]] uint32_t size() const;
+    /// Get the number of cases contained.
+    [[nodiscard]] uint32_t size() const;
 
-	/// Get all cases under the current group.
-	[[nodiscard]] RangesUnion cases() const;
+    /// Get all cases under the current group.
+    [[nodiscard]] RangesUnion cases() const;
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
-	/// Create Group from RawCode.
-	static Group from_raw_code(codec::RawCode raw_code);
+    /// Create Group from RawCode.
+    static Group from_raw_code(codec::RawCode raw_code);
 
-	/// Create Group from ShortCode.
-	static Group from_short_code(codec::ShortCode short_code);
+    /// Create Group from ShortCode.
+    static Group from_short_code(codec::ShortCode short_code);
 
-	/// Create Group from CommonCode.
-	static Group from_common_code(codec::CommonCode common_code);
+    /// Create Group from CommonCode.
+    static Group from_common_code(codec::CommonCode common_code);
 
-	// ------------------------------------------------------------------------------------- //
+    // ------------------------------------------------------------------------------------- //
 
 private:
-	uint32_t type_id_;
-	uint32_t group_id_;
+    uint32_t type_id_;
+    uint32_t group_id_;
 
-	[[nodiscard]] uint32_t flat_id() const;
+    [[nodiscard]] uint32_t flat_id() const;
 
 public:
-	static std::vector<codec::RawCode> extend(codec::RawCode raw_code, uint32_t reserve = 0);
+    /// Spawn all the unsorted codes of the current group.
+    static std::vector<codec::RawCode> extend(codec::RawCode raw_code, uint32_t reserve = 0);
 };
 
 class GroupCases {
 public:
-	struct info_t {
-		uint16_t type_id;
-		uint16_t group_id;
-		uint32_t case_id;
+    struct info_t {
+        uint16_t type_id;
+        uint16_t group_id;
+        uint32_t case_id;
 
-		// TODO: should we keep it valid? (convert without check)
-	};
+        // TODO: should we keep it valid? (convert without check)
+    };
 
-	void build();
+    /// Execute the build process.
+    void build();
 
-	void build_async(Executor &&executor, Notifier &&notifier);
+    /// Execute the build process without blocking.
+    void build_async(Executor &&executor, Notifier &&callback);
 
-	/// Get the CommonCode using the group info.
-	// static codec::CommonCode parse(const info_t &info);
+    static info_t to_info_t(codec::ShortCode short_code);
 
-	/// Get group info according to specified case.
-	// static info_t encode(const codec::RawCode &raw_code);
-	// static info_t encode(const codec::CommonCode &common_code);
+    static codec::CommonCode from_info_t(info_t info);
 
-	static info_t to_info_t(codec::ShortCode short_code);
+    /// Get the CommonCode using the group info.
+    // static codec::CommonCode parse(const info_t &info);
 
-	static codec::CommonCode from_info_t(info_t info);
+    /// Get group info according to specified case.
+    // static info_t encode(const codec::RawCode &raw_code);
+    // static info_t encode(const codec::CommonCode &common_code);
 
 private:
-	bool available_ = false;
-	std::mutex building_ {};
+    bool available_ = false;
+    std::mutex building_ {};
 
-	// static codec::CommonCode fast_decode(const info_t &info);
-	// static info_t fast_encode(const codec::CommonCode &common_code);
+    // static codec::CommonCode fast_decode(const info_t &info);
+    // static info_t fast_encode(const codec::CommonCode &common_code);
 
-	KLSK_INSTANCE(GroupCases)
+    KLSK_INSTANCE(GroupCases)
 };
 
 } // namespace klotski::cases
