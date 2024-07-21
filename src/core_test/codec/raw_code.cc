@@ -1,10 +1,11 @@
-#include "common.h"
+#include <gtest/gtest.h>
+#include <BS_thread_pool.hpp>
+
 #include "sample.h"
-#include "raw_code.h"
-#include "all_cases.h"
-#include "common_code.h"
-#include "gtest/gtest.h"
-#include "BS_thread_pool.hpp"
+#include "utils/common.h"
+#include "raw_code/raw_code.h"
+#include "all_cases/all_cases.h"
+#include "common_code/common_code.h"
 
 using klotski::range_reverse;
 

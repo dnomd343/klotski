@@ -2,7 +2,8 @@
 
 #include <string>
 #include <cstdint>
-#include "all_cases.h"
+
+#include "all_cases/all_cases.h"
 
 // ----------------------------------------------------------------------------------------- //
 

@@ -1,8 +1,9 @@
-#include "raw_code.h"
-#include "all_cases.h"
-#include "common_code.h"
-#include "gtest/gtest.h"
-#include "BS_thread_pool.hpp"
+#include <gtest/gtest.h>
+#include <BS_thread_pool.hpp>
+
+#include "raw_code/raw_code.h"
+#include "all_cases/all_cases.h"
+#include "common_code/common_code.h"
 
 using klotski::codec::RawCode;
 using klotski::cases::AllCases;
