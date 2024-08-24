@@ -2,8 +2,9 @@
 #include <gtest/gtest.h>
 #include <BS_thread_pool.hpp>
 
-#include "sample.h"
-#include "exposer.h"
+#include "helper/codec.h"
+#include "helper/sample.h"
+#include "utility/exposer.h"
 #include "all_cases/all_cases.h"
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"

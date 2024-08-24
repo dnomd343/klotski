@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
 #include <BS_thread_pool.hpp>
 
-#include "sample.h"
 #include "utils/common.h"
+#include "helper/codec.h"
+#include "helper/sample.h"
 #include "raw_code/raw_code.h"
 #include "all_cases/all_cases.h"
 #include "common_code/common_code.h"

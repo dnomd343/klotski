@@ -46,6 +46,7 @@ set(KLSK_TEST_CODEC_SRC
     codec/raw_code.cc
     codec/short_code.cc
     codec/common_code.cc
+    codec/helper/codec.cc
 )
 
 add_executable(test_klotski_codec ${KLSK_TEST_CODEC_SRC})

@@ -2,7 +2,8 @@
 #include <gtest/gtest.h>
 #include <BS_thread_pool.hpp>
 
-#include "sample.h"
+#include "helper/codec.h"
+#include "helper/sample.h"
 #include "raw_code/raw_code.h"
 #include "all_cases/all_cases.h"
 #include "short_code/short_code.h"
@@ -34,15 +35,36 @@ TEST(CommonCode, operators) {
     EXPECT_EQ(tmp.str(), TEST_C_CODE_STR);
     EXPECT_EQ((uint64_t)common_code, TEST_C_CODE); // convert as uint64_t
 
+    EXPECT_NE(0, common_code); // uint64_t != CommonCode
+    EXPECT_NE(common_code, 0); // CommonCode != uint64_t
     EXPECT_EQ(TEST_C_CODE, common_code); // uint64_t == CommonCode
     EXPECT_EQ(common_code, TEST_C_CODE); // CommonCode == uint64_t
+
+    EXPECT_LE(TEST_C_CODE, common_code); // uint64_t <= CommonCode
+    EXPECT_LE(TEST_C_CODE - 1, common_code);
+    EXPECT_LT(TEST_C_CODE - 1, common_code); // uint64_t < CommonCode
+
+    EXPECT_LE(common_code, TEST_C_CODE); // CommonCode <= uint64_t
+    EXPECT_LE(common_code, TEST_C_CODE + 1);
+    EXPECT_LT(common_code, TEST_C_CODE + 1); // CommonCode < uint64_t
+
+    EXPECT_GE(TEST_C_CODE, common_code); // uint64_t >= CommonCode
+    EXPECT_GE(TEST_C_CODE + 1, common_code);
+    EXPECT_GT(TEST_C_CODE + 1, common_code); // uint64_t > CommonCode
+
+    EXPECT_GE(common_code, TEST_C_CODE); // CommonCode >= uint64_t
+    EXPECT_GE(common_code, TEST_C_CODE - 1);
+    EXPECT_GT(common_code, TEST_C_CODE - 1); // CommonCode > uint64_t
+
     EXPECT_EQ(common_code, common_code); // CommonCode == CommonCode
+    EXPECT_NE(common_code, CommonCode::unsafe_create(0)); // CommonCode != CommonCode
 
-    EXPECT_NE(TEST_C_CODE + 1, common_code); // uint64_t != CommonCode
-    EXPECT_NE(common_code, TEST_C_CODE + 1); // CommonCode != uint64_t
-    EXPECT_NE(common_code, CommonCode::unsafe_create(TEST_C_CODE + 1)); // CommonCode != CommonCode
-
+    EXPECT_LE(common_code, common_code); // CommonCode <= CommonCode
+    EXPECT_LE(common_code, CommonCode::unsafe_create(TEST_C_CODE + 1));
     EXPECT_LT(common_code, CommonCode::unsafe_create(TEST_C_CODE + 1)); // CommonCode < CommonCode
+
+    EXPECT_GE(common_code, common_code); // CommonCode >= CommonCode
+    EXPECT_GE(CommonCode::unsafe_create(TEST_C_CODE + 1), common_code);
     EXPECT_GT(CommonCode::unsafe_create(TEST_C_CODE + 1), common_code); // CommonCode > CommonCode
 }
 
@@ -54,12 +76,10 @@ TEST(CommonCode, exporter) {
     EXPECT_EQ(common_code.to_short_code(), TEST_S_CODE);
 
     auto code_shorten = common_code.to_string(true);
-    EXPECT_EQ(CommonCode::from_string(code_shorten), common_code); // l-value
-    EXPECT_EQ(CommonCode::from_string(std::move(code_shorten)), common_code); // r-value
+    EXPECT_EQ(CommonCode::from_string(code_shorten), common_code);
 
     auto code_normal = common_code.to_string(false);
-    EXPECT_EQ(CommonCode::from_string(code_normal), common_code); // l-value
-    EXPECT_EQ(CommonCode::from_string(std::move(code_normal)), common_code); // r-value
+    EXPECT_EQ(CommonCode::from_string(code_normal), common_code);
 }
 
 TEST(CommonCode, initializate) {
@@ -67,11 +87,17 @@ TEST(CommonCode, initializate) {
     auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
     auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
+    // operator==
+    CommonCode c1 = common_code;
+    EXPECT_EQ(c1, TEST_C_CODE); // l-value
+    CommonCode c2 = CommonCode {common_code};
+    EXPECT_EQ(c2, TEST_C_CODE); // r-value
+
     // CommonCode(...)
     EXPECT_EQ(CommonCode(raw_code), TEST_C_CODE);
     EXPECT_EQ(CommonCode(short_code), TEST_C_CODE);
     EXPECT_EQ(CommonCode(common_code), TEST_C_CODE); // l-value
-    EXPECT_EQ(CommonCode(CommonCode(common_code)), TEST_C_CODE); // r-value
+    EXPECT_EQ(CommonCode(CommonCode {common_code}), TEST_C_CODE); // r-value
 
     // CommonCode::create(uint64_t)
     EXPECT_TRUE(CommonCode::create(TEST_C_CODE).has_value());
@@ -80,16 +106,12 @@ TEST(CommonCode, initializate) {
 
     // CommonCode::unsafe_create(uint64_t)
     EXPECT_EQ(CommonCode::unsafe_create(TEST_C_CODE), TEST_C_CODE);
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_C_CODE_ERR), TEST_C_CODE_ERR);
 
-    // CommonCode::from_string(const std::string &)
+    // CommonCode::from_string(std::string_view)
     EXPECT_TRUE(CommonCode::from_string(TEST_C_CODE_STR).has_value());
     EXPECT_FALSE(CommonCode::from_string(TEST_C_CODE_STR_ERR).has_value());
     EXPECT_EQ(CommonCode::from_string(TEST_C_CODE_STR), TEST_C_CODE);
-
-    // CommonCode::from_string(std::string &&)
-    EXPECT_TRUE(CommonCode::from_string(TEST_C_CODE_STR_RV).has_value());
-    EXPECT_FALSE(CommonCode::from_string(TEST_C_CODE_STR_ERR_RV).has_value());
-    EXPECT_EQ(CommonCode::from_string(TEST_C_CODE_STR_RV), TEST_C_CODE);
 
     // CommonCode::from_raw_code(RawCode)
     EXPECT_EQ(CommonCode::from_raw_code(raw_code), TEST_C_CODE);
@@ -107,15 +129,10 @@ TEST(CommonCode, initializate) {
     EXPECT_FALSE(CommonCode::from_short_code(TEST_S_CODE_ERR).has_value());
     EXPECT_EQ(CommonCode::from_short_code(TEST_S_CODE), TEST_C_CODE);
 
-    // CommonCode::from_short_code(const std::string &)
+    // CommonCode::from_short_code(std::string_view)
     EXPECT_TRUE(CommonCode::from_short_code(TEST_S_CODE_STR).has_value());
     EXPECT_FALSE(CommonCode::from_short_code(TEST_S_CODE_STR_ERR).has_value());
     EXPECT_EQ(CommonCode::from_short_code(TEST_S_CODE_STR), TEST_C_CODE);
-
-    // CommonCode::from_short_code(std::string &&)
-    EXPECT_TRUE(CommonCode::from_short_code(TEST_S_CODE_STR_RV).has_value());
-    EXPECT_FALSE(CommonCode::from_short_code(TEST_S_CODE_STR_ERR_RV).has_value());
-    EXPECT_EQ(CommonCode::from_short_code(TEST_S_CODE_STR_RV), TEST_C_CODE);
 }
 
 TEST(CommonCode, code_verify) {
