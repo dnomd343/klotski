@@ -48,25 +48,48 @@ TEST(ShortCode, validity) {
     EXPECT_FALSE(ShortCode::from_string("R50EH").has_value()); // with invalid `0`
     EXPECT_FALSE(ShortCode::from_string("123456").has_value()); // length != 5
     EXPECT_FALSE(ShortCode::from_string("Z9EFV").has_value()); // out of short code range
+
+#ifndef KLSK_NDEBUG
+    std::ostringstream out;
+    out << ShortCode::unsafe_create(TEST_S_CODE); // ostream capture
+    EXPECT_EQ(out.str(), TEST_S_CODE_STR);
+#endif
 }
 
 TEST(ShortCode, operators) {
     auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
+    EXPECT_EQ(static_cast<uint32_t>(short_code), TEST_S_CODE); // uint32_t cast
 
-    std::ostringstream tmp;
-    tmp << short_code; // ostream capture
-    EXPECT_EQ(tmp.str(), TEST_S_CODE_STR);
-    EXPECT_EQ((uint32_t)short_code, TEST_S_CODE); // convert as uint32_t
-
+    EXPECT_NE(0, short_code); // uint32_t != ShortCode
+    EXPECT_NE(short_code, 0); // ShortCode != uint32_t
     EXPECT_EQ(TEST_S_CODE, short_code); // uint32_t == ShortCode
     EXPECT_EQ(short_code, TEST_S_CODE); // ShortCode == uint32_t
+
+    EXPECT_LE(TEST_S_CODE, short_code); // uint32_t <= ShortCode
+    EXPECT_LE(TEST_S_CODE - 1, short_code);
+    EXPECT_LT(TEST_S_CODE - 1, short_code); // uint32_t < ShortCode
+
+    EXPECT_LE(short_code, TEST_S_CODE); // ShortCode <= uint32_t
+    EXPECT_LE(short_code, TEST_S_CODE + 1);
+    EXPECT_LT(short_code, TEST_S_CODE + 1); // ShortCode < uint32_t
+
+    EXPECT_GE(TEST_S_CODE, short_code); // uint32_t >= ShortCode
+    EXPECT_GE(TEST_S_CODE + 1, short_code);
+    EXPECT_GT(TEST_S_CODE + 1, short_code); // uint32_t > ShortCode
+
+    EXPECT_GE(short_code, TEST_S_CODE); // ShortCode >= uint32_t
+    EXPECT_GE(short_code, TEST_S_CODE - 1);
+    EXPECT_GT(short_code, TEST_S_CODE - 1); // ShortCode > uint32_t
+
     EXPECT_EQ(short_code, short_code); // ShortCode == ShortCode
+    EXPECT_NE(short_code, ShortCode::unsafe_create(0)); // ShortCode != ShortCode
 
-    EXPECT_NE(TEST_S_CODE + 1, short_code); // uint32_t != ShortCode
-    EXPECT_NE(short_code, TEST_S_CODE + 1); // ShortCode != uint32_t
-    EXPECT_NE(short_code, ShortCode::unsafe_create(TEST_S_CODE + 1)); // ShortCode != ShortCode
-
+    EXPECT_LE(short_code, short_code); // ShortCode <= ShortCode
+    EXPECT_LE(short_code, ShortCode::unsafe_create(TEST_S_CODE + 1));
     EXPECT_LT(short_code, ShortCode::unsafe_create(TEST_S_CODE + 1)); // ShortCode < ShortCode
+
+    EXPECT_GE(short_code, short_code); // ShortCode >= ShortCode
+    EXPECT_GE(ShortCode::unsafe_create(TEST_S_CODE + 1), short_code);
     EXPECT_GT(ShortCode::unsafe_create(TEST_S_CODE + 1), short_code); // ShortCode > ShortCode
 }
 
@@ -75,11 +98,23 @@ TEST(ShortCode, exporter) {
     EXPECT_EQ(short_code.unwrap(), TEST_S_CODE);
     EXPECT_EQ(short_code.to_string(), TEST_S_CODE_STR);
     EXPECT_EQ(short_code.to_common_code(), TEST_C_CODE);
+
+    // TODO: test fast mode of `to_common_code`
 }
+
+// TODO: maybe add `speed_up` test suite
 
 TEST(ShortCode, initializate) {
     auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
     auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+
+    // operator=
+    auto s1 = short_code;
+    auto s2 = ShortCode {short_code};
+    EXPECT_EQ(s1, TEST_S_CODE); // l-value
+    EXPECT_EQ(s2, TEST_S_CODE); // r-value
+
+    // TODO: test fast mode of `ShortCode(CommonCode)`
 
     // ShortCode(...)
     EXPECT_EQ(ShortCode(common_code), TEST_S_CODE);
@@ -94,15 +129,10 @@ TEST(ShortCode, initializate) {
     // ShortCode::unsafe_create(uint32_t)
     EXPECT_EQ(ShortCode::unsafe_create(TEST_S_CODE), TEST_S_CODE);
 
-    // ShortCode::from_string(const std::string &)
+    // ShortCode::from_string(std::string_view)
     EXPECT_TRUE(ShortCode::from_string(TEST_S_CODE_STR).has_value());
     EXPECT_FALSE(ShortCode::from_string(TEST_S_CODE_STR_ERR).has_value());
     EXPECT_EQ(ShortCode::from_string(TEST_S_CODE_STR), TEST_S_CODE);
-
-    // ShortCode::from_string(std::string &&)
-    EXPECT_TRUE(ShortCode::from_string(TEST_S_CODE_STR_RV).has_value());
-    EXPECT_FALSE(ShortCode::from_string(TEST_S_CODE_STR_ERR_RV).has_value());
-    EXPECT_EQ(ShortCode::from_string(TEST_S_CODE_STR_RV), TEST_S_CODE);
 
     // ShortCode::from_common_code(CommonCode)
     EXPECT_EQ(ShortCode::from_common_code(common_code), TEST_S_CODE);
@@ -112,16 +142,17 @@ TEST(ShortCode, initializate) {
     EXPECT_FALSE(ShortCode::from_common_code(TEST_C_CODE_ERR).has_value());
     EXPECT_EQ(ShortCode::from_common_code(TEST_C_CODE), TEST_S_CODE);
 
-    // ShortCode::from_common_code(const std::string &)
+    // ShortCode::from_common_code(std::string_view)
     EXPECT_TRUE(ShortCode::from_common_code(TEST_C_CODE_STR).has_value());
     EXPECT_FALSE(ShortCode::from_common_code(TEST_C_CODE_STR_ERR).has_value());
     EXPECT_EQ(ShortCode::from_common_code(TEST_C_CODE_STR), TEST_S_CODE);
-
-    // ShortCode::from_common_code(std::string &&)
-    EXPECT_TRUE(ShortCode::from_common_code(TEST_C_CODE_STR_RV).has_value());
-    EXPECT_FALSE(ShortCode::from_common_code(TEST_C_CODE_STR_ERR_RV).has_value());
-    EXPECT_EQ(ShortCode::from_common_code(TEST_C_CODE_STR_RV), TEST_S_CODE);
 }
+
+// TODO: global verify function
+//   -> check
+//   -> fast_decode / fast_encode
+//   -> tiny_decode / tiny_encode
+//   -> string_encode / string_decode
 
 TEST(ShortCode, speed_up) {
     all_cases_reset();

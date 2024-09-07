@@ -25,15 +25,27 @@ TEST(CommonCode, validity) {
     EXPECT_FALSE(CommonCode::create(0x123456789).has_value()); // invalid code
     EXPECT_FALSE(CommonCode::from_string("0123456789").has_value()); // length > 9
     EXPECT_FALSE(CommonCode::from_string("123J432A9").has_value()); // with invalid `J`
+
+    EXPECT_TRUE(CommonCode::unsafe_create(0x1'A9BF0C00).is_horizontal_mirror());
+    EXPECT_FALSE(CommonCode::unsafe_create(0x4'FEA13400).is_horizontal_mirror());
+    EXPECT_FALSE(CommonCode::unsafe_create(0x1'A9BF0C00).is_vertical_mirror());
+    EXPECT_FALSE(CommonCode::unsafe_create(0x4'FEA13400).is_vertical_mirror());
+
+    EXPECT_EQ(CommonCode::unsafe_create(0x1'A9BF0C00).to_horizontal_mirror(), 0x1'A9BF0C00);
+    EXPECT_EQ(CommonCode::unsafe_create(0x4'FEA13400).to_horizontal_mirror(), 0x6'BFA47000);
+    EXPECT_EQ(CommonCode::unsafe_create(0x1'A9BF0C00).to_vertical_mirror(), 0xD'C3BE6800);
+    EXPECT_EQ(CommonCode::unsafe_create(0x4'FEA13400).to_vertical_mirror(), 0x8'346AFC00);
+
+#ifndef KLSK_NDEBUG
+    std::ostringstream out;
+    out << CommonCode::unsafe_create(TEST_C_CODE); // ostream capture
+    EXPECT_EQ(out.str(), TEST_C_CODE_STR);
+#endif
 }
 
 TEST(CommonCode, operators) {
     auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
-
-    std::ostringstream tmp;
-    tmp << common_code; // ostream capture
-    EXPECT_EQ(tmp.str(), TEST_C_CODE_STR);
-    EXPECT_EQ((uint64_t)common_code, TEST_C_CODE); // convert as uint64_t
+    EXPECT_EQ(static_cast<uint64_t>(common_code), TEST_C_CODE); // uint64_t cast
 
     EXPECT_NE(0, common_code); // uint64_t != CommonCode
     EXPECT_NE(common_code, 0); // CommonCode != uint64_t
@@ -87,10 +99,10 @@ TEST(CommonCode, initializate) {
     auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
     auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
-    // operator==
-    CommonCode c1 = common_code;
+    // operator=
+    auto c1 = common_code;
+    auto c2 = CommonCode {common_code};
     EXPECT_EQ(c1, TEST_C_CODE); // l-value
-    CommonCode c2 = CommonCode {common_code};
     EXPECT_EQ(c2, TEST_C_CODE); // r-value
 
     // CommonCode(...)
@@ -134,6 +146,11 @@ TEST(CommonCode, initializate) {
     EXPECT_FALSE(CommonCode::from_short_code(TEST_S_CODE_STR_ERR).has_value());
     EXPECT_EQ(CommonCode::from_short_code(TEST_S_CODE_STR), TEST_C_CODE);
 }
+
+// TODO: global test function
+//   -> check
+//   -> string_decode / string_encode / string_encode_shorten
+//   -> check_mirror / get_vertical_mirror / get_horizontal_mirror
 
 TEST(CommonCode, code_verify) {
     BS::thread_pool pool;

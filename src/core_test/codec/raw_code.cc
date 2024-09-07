@@ -21,23 +21,51 @@ TEST(RawCode, validity) {
     EXPECT_FALSE(RawCode::check(0x8603'EDF5'CAFF'F5E2)); // high 4-bits not zero
 
     EXPECT_FALSE(RawCode::create(0x0000'0000'0000'0000).has_value()); // invalid code
+
+    // TODO: add mirror test
+
+#ifndef KLSK_NDEBUG
+    std::ostringstream out;
+    out << RawCode::unsafe_create(TEST_R_CODE); // ostream capture
+    EXPECT_TRUE(out.str().starts_with("603EDF5CAFFF5E2\n")); // TODO: using full string
+#endif
 }
 
 TEST(RawCode, operators) {
     auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
+    EXPECT_EQ((uint64_t)raw_code, TEST_R_CODE); // uint64_t cast
 
-    std::ostringstream tmp;
-    tmp << raw_code; // ostream capture
-    EXPECT_TRUE(tmp.str().starts_with("603EDF5CAFFF5E2\n"));
-    EXPECT_EQ((uint64_t)raw_code, TEST_R_CODE); // convert as uint64_t
-
+    EXPECT_NE(0, raw_code); // uint64_t != RawCode
+    EXPECT_NE(raw_code, 0); // RawCode != uint64_t
     EXPECT_EQ(TEST_R_CODE, raw_code); // uint64_t == RawCode
     EXPECT_EQ(raw_code, TEST_R_CODE); // RawCode == uint64_t
-    EXPECT_EQ(raw_code, raw_code); // RawCode == RawCode
 
-    EXPECT_NE(TEST_R_CODE + 1, raw_code); // uint64_t != RawCode
-    EXPECT_NE(raw_code, TEST_R_CODE + 1); // RawCode != uint64_t
-    EXPECT_NE(raw_code, RawCode::unsafe_create(TEST_R_CODE + 1)); // RawCode != RawCode
+    EXPECT_LE(TEST_R_CODE, raw_code); // uint64_t <= RawCode
+    EXPECT_LE(TEST_R_CODE - 1, raw_code);
+    EXPECT_LT(TEST_R_CODE - 1, raw_code); // uint64_t < RawCode
+
+    EXPECT_LE(raw_code, TEST_R_CODE); // RawCode <= uint64_t
+    EXPECT_LE(raw_code, TEST_R_CODE + 1);
+    EXPECT_LT(raw_code, TEST_R_CODE + 1); // RawCode < uint64_t
+
+    EXPECT_GE(TEST_R_CODE, raw_code); // uint64_t >= RawCode
+    EXPECT_GE(TEST_R_CODE + 1, raw_code);
+    EXPECT_GT(TEST_R_CODE + 1, raw_code); // uint64_t > RawCode
+
+    EXPECT_GE(raw_code, TEST_R_CODE); // RawCode >= uint64_t
+    EXPECT_GE(raw_code, TEST_R_CODE - 1);
+    EXPECT_GT(raw_code, TEST_R_CODE - 1); // RawCode > uint64_t
+
+    EXPECT_EQ(raw_code, raw_code); // RawCode == RawCode
+    EXPECT_NE(raw_code, RawCode::unsafe_create(0)); // RawCode != RawCode
+
+    EXPECT_LE(raw_code, raw_code); // RawCode <= RawCode
+    EXPECT_LE(raw_code, RawCode::unsafe_create(TEST_R_CODE + 1));
+    EXPECT_LT(raw_code, RawCode::unsafe_create(TEST_R_CODE + 1)); // RawCode < RawCode
+
+    EXPECT_GE(raw_code, raw_code); // RawCode >= RawCode
+    EXPECT_GE(RawCode::unsafe_create(TEST_R_CODE + 1), raw_code);
+    EXPECT_GT(RawCode::unsafe_create(TEST_R_CODE + 1), raw_code); // RawCode > RawCode
 }
 
 TEST(RawCode, exporter) {
@@ -49,6 +77,12 @@ TEST(RawCode, exporter) {
 TEST(RawCode, initializate) {
     auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
     auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+
+    // operator=
+    auto r1 = raw_code;
+    auto r2 = RawCode {raw_code};
+    EXPECT_EQ(r1, TEST_R_CODE); // l-value
+    EXPECT_EQ(r2, TEST_R_CODE); // r-value
 
     // RawCode(...)
     EXPECT_EQ(RawCode(common_code), TEST_R_CODE);
@@ -62,6 +96,7 @@ TEST(RawCode, initializate) {
 
     // RawCode::unsafe_create(uint64_t)
     EXPECT_EQ(RawCode::unsafe_create(TEST_R_CODE), TEST_R_CODE);
+    EXPECT_EQ(RawCode::unsafe_create(TEST_R_CODE_ERR), TEST_R_CODE_ERR);
 
     // RawCode::from_common_code(CommonCode)
     EXPECT_EQ(RawCode::from_common_code(common_code), TEST_R_CODE);
@@ -71,16 +106,16 @@ TEST(RawCode, initializate) {
     EXPECT_FALSE(RawCode::from_common_code(TEST_C_CODE_ERR).has_value());
     EXPECT_EQ(RawCode::from_common_code(TEST_C_CODE), TEST_R_CODE);
 
-    // RawCode::from_common_code(const std::string &)
+    // RawCode::from_common_code(std::string_view)
     EXPECT_TRUE(RawCode::from_common_code(TEST_C_CODE_STR).has_value());
     EXPECT_FALSE(RawCode::from_common_code(TEST_C_CODE_STR_ERR).has_value());
     EXPECT_EQ(RawCode::from_common_code(TEST_C_CODE_STR), TEST_R_CODE);
-
-    // RawCode::from_common_code(std::string &&)
-    EXPECT_TRUE(RawCode::from_common_code(TEST_C_CODE_STR_RV).has_value());
-    EXPECT_FALSE(RawCode::from_common_code(TEST_C_CODE_STR_ERR_RV).has_value());
-    EXPECT_EQ(RawCode::from_common_code(TEST_C_CODE_STR_RV), TEST_R_CODE);
 }
+
+// TODO: global check function:
+//   -> check
+//   -> compact / extract
+//   -> check_mirror / get_vertical_mirror / get_horizontal_mirror
 
 TEST(RawCode, code_verify) {
     BS::thread_pool pool;
