@@ -147,59 +147,53 @@ TEST(CommonCode, initialize) {
 }
 
 TEST(CommonCode, code_verify) {
-    common_code_parallel([](std::span<CommonCode> codes) {
-        for (auto code : codes) {
-            EXPECT_TRUE(CommonCode::check(code.unwrap())); // verify all cases
-        }
+    COMMON_CODE_PARALLEL({
+         EXPECT_TRUE(CommonCode::check(code.unwrap())); // verify all cases
     });
 }
 
 TEST(CommonCode, code_mirror) {
-    common_code_parallel([](std::span<CommonCode> codes) {
-        for (auto code : codes) {
-            const auto mirror_v = code.to_vertical_mirror();
-            EXPECT_TRUE(CommonCode::check(mirror_v.unwrap()));
-            EXPECT_EQ(mirror_v.to_vertical_mirror(), code);
-            EXPECT_FALSE(mirror_v.is_vertical_mirror()); // not exist
-            EXPECT_NE(mirror_v, code);
+    COMMON_CODE_PARALLEL({
+        const auto mirror_v = code.to_vertical_mirror();
+        EXPECT_TRUE(CommonCode::check(mirror_v.unwrap()));
+        EXPECT_EQ(mirror_v.to_vertical_mirror(), code);
+        EXPECT_FALSE(mirror_v.is_vertical_mirror()); // not exist
+        EXPECT_NE(mirror_v, code);
 
-            const auto mirror_h = code.to_horizontal_mirror();
-            EXPECT_TRUE(CommonCode::check(mirror_h.unwrap()));
-            EXPECT_EQ(mirror_h.to_horizontal_mirror(), code);
-            if (mirror_h.is_horizontal_mirror()) {
-                EXPECT_EQ(mirror_h, code);
-            } else {
-                EXPECT_NE(mirror_h, code);
-            }
+        const auto mirror_h = code.to_horizontal_mirror();
+        EXPECT_TRUE(CommonCode::check(mirror_h.unwrap()));
+        EXPECT_EQ(mirror_h.to_horizontal_mirror(), code);
+        if (mirror_h.is_horizontal_mirror()) {
+            EXPECT_EQ(mirror_h, code);
+        } else {
+            EXPECT_NE(mirror_h, code);
         }
     });
 }
 
 TEST(CommonCode, code_string) {
-    common_code_parallel([](std::span<CommonCode> codes) {
-        for (auto code : codes) {
-            auto code_shorten = code.to_string(true); // with shorten
-            auto code_normal = code.to_string(false); // without shorten
-            EXPECT_TRUE(code_normal.starts_with(code_shorten));
-            EXPECT_EQ(std::format("{:09X}", code.unwrap()), code_normal);
+    COMMON_CODE_PARALLEL({
+        auto code_shorten = code.to_string(true); // with shorten
+        auto code_normal = code.to_string(false); // without shorten
+        EXPECT_TRUE(code_normal.starts_with(code_shorten));
+        EXPECT_EQ(std::format("{:09X}", code.unwrap()), code_normal);
 
-            EXPECT_LE(code_shorten.size(), 9); // length -> (0, 9]
-            EXPECT_NE(code_shorten.size(), 0);
-            if (code != 0) { // skip special code string `0`
-                EXPECT_NE(code_shorten.back(), '0');
-            }
-            EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test upper cases
-            std::transform(code_shorten.begin(), code_shorten.end(), code_shorten.begin(), ::tolower);
-            EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test lower cases
-
-            EXPECT_EQ(code_normal.size(), 9); // length = 9
-            for (auto c : code_normal) {
-                EXPECT_TRUE((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
-            }
-            EXPECT_EQ(CommonCode::from_string(code_normal), code); // test upper cases
-            std::transform(code_normal.begin(), code_normal.end(), code_normal.begin(), ::tolower);
-            EXPECT_EQ(CommonCode::from_string(code_normal), code); // test lower cases
+        EXPECT_LE(code_shorten.size(), 9); // length -> (0, 9]
+        EXPECT_NE(code_shorten.size(), 0);
+        if (code != 0) { // skip special code string `0`
+            EXPECT_NE(code_shorten.back(), '0');
         }
+        EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test upper cases
+        std::transform(code_shorten.begin(), code_shorten.end(), code_shorten.begin(), ::tolower);
+        EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test lower cases
+
+        EXPECT_EQ(code_normal.size(), 9); // length = 9
+        for (auto c : code_normal) {
+            EXPECT_TRUE((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
+        }
+        EXPECT_EQ(CommonCode::from_string(code_normal), code); // test upper cases
+        std::transform(code_normal.begin(), code_normal.end(), code_normal.begin(), ::tolower);
+        EXPECT_EQ(CommonCode::from_string(code_normal), code); // test lower cases
     });
 }
 

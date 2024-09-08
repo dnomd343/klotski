@@ -119,32 +119,28 @@ TEST(RawCode, initialize) {
 }
 
 TEST(RawCode, code_verify) {
-    raw_code_parallel([](std::span<RawCode> codes) {
-        for (auto code : codes) {
-            EXPECT_TRUE(RawCode::check(code.unwrap()));
-            const auto common_code = code.to_common_code(); // RawCode::compact
-            EXPECT_EQ(RawCode::from_common_code(common_code), code); // RawCode::extract
-        }
+    RAW_CODE_PARALLEL({
+        EXPECT_TRUE(RawCode::check(code.unwrap()));
+        const auto common_code = code.to_common_code(); // RawCode::compact
+        EXPECT_EQ(RawCode::from_common_code(common_code), code); // RawCode::extract
     });
 }
 
 TEST(RawCode, code_mirror) {
-    raw_code_parallel([](std::span<RawCode> codes) {
-        for (auto code : codes) {
-            const auto mirror_v = code.to_vertical_mirror();
-            EXPECT_TRUE(RawCode::check(mirror_v.unwrap()));
-            EXPECT_EQ(mirror_v.to_vertical_mirror(), code);
-            EXPECT_FALSE(mirror_v.is_vertical_mirror()); // not exist
-            EXPECT_NE(mirror_v, code);
+    RAW_CODE_PARALLEL({
+        const auto mirror_v = code.to_vertical_mirror();
+        EXPECT_TRUE(RawCode::check(mirror_v.unwrap()));
+        EXPECT_EQ(mirror_v.to_vertical_mirror(), code);
+        EXPECT_FALSE(mirror_v.is_vertical_mirror()); // not exist
+        EXPECT_NE(mirror_v, code);
 
-            const auto mirror_h = code.to_horizontal_mirror();
-            EXPECT_TRUE(RawCode::check(mirror_h.unwrap()));
-            EXPECT_EQ(mirror_h.to_horizontal_mirror(), code);
-            if (mirror_h.is_horizontal_mirror()) {
-                EXPECT_EQ(mirror_h, code);
-            } else {
-                EXPECT_NE(mirror_h, code);
-            }
+        const auto mirror_h = code.to_horizontal_mirror();
+        EXPECT_TRUE(RawCode::check(mirror_h.unwrap()));
+        EXPECT_EQ(mirror_h.to_horizontal_mirror(), code);
+        if (mirror_h.is_horizontal_mirror()) {
+            EXPECT_EQ(mirror_h, code);
+        } else {
+            EXPECT_NE(mirror_h, code);
         }
     });
 }

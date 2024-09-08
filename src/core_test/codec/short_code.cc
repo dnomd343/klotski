@@ -31,16 +31,7 @@ EXPOSE_STATIC_VAR(ShortCode, bool, fast_)
 EXPOSE_STATIC_VAR(ShortCode, const RangesUnion*, cases_)
 EXPOSE_STATIC_VAR(ShortCode, std::atomic<const Ranges*>, ranges_)
 
-/// Reset basic ranges build state, note it is thread-unsafe.
-void basic_ranges_reset() {
-    exposer::BasicRanges_available_(BasicRanges::instance()) = false;
-}
-
-/// Reset all cases build state, note it is thread-unsafe.
-void all_cases_reset() {
-    exposer::AllCases_available_(AllCases::instance()) = false;
-}
-
+/// Reset ShortCode speed up state, note it is thread-unsafe.
 void speed_up_reset() {
     exposer::ShortCode_fast_() = false;
     exposer::ShortCode_cases_() = nullptr;
@@ -208,28 +199,24 @@ TEST(ShortCode, speed_up) {
 
 TEST(ShortCode, code_verify) {
     ShortCode::speed_up(true); // enter fast mode
-    short_code_parallel([](std::span<ShortCode> codes) {
-        for (auto code : codes) {
-            EXPECT_TRUE(ShortCode::check(code.unwrap()));
-            auto common_code = code.to_common_code(); // ShortCode::fast_decode
-            EXPECT_EQ(ShortCode::from_common_code(common_code), code); // ShortCode::fast_encode
-        }
+    SHORT_CODE_PARALLEL({
+        EXPECT_TRUE(ShortCode::check(code.unwrap()));
+        auto common_code = code.to_common_code(); // ShortCode::fast_decode
+        EXPECT_EQ(ShortCode::from_common_code(common_code), code); // ShortCode::fast_encode
     });
 }
 
 TEST(ShortCode, code_string) {
-    short_code_parallel([](std::span<ShortCode> codes) {
-        for (auto code : codes) {
-            auto code_str = code.to_string();
-            EXPECT_EQ(code_str.size(), 5); // length = 5
-            for (auto c : code_str) {
-                EXPECT_TRUE((c >= '1' && c <= '9') || (c >= 'A' && c <= 'Z'));
-                EXPECT_TRUE(c != 'I' && c != 'L' && c != 'O');
-            }
-            EXPECT_EQ(ShortCode::from_string(code_str), code); // test upper cases
-            std::transform(code_str.begin(), code_str.end(), code_str.begin(), ::tolower);
-            EXPECT_EQ(ShortCode::from_string(code_str), code); // test lower cases
+    SHORT_CODE_PARALLEL({
+        auto code_str = code.to_string();
+        EXPECT_EQ(code_str.size(), 5); // length = 5
+        for (auto c : code_str) {
+            EXPECT_TRUE((c >= '1' && c <= '9') || (c >= 'A' && c <= 'Z'));
+            EXPECT_TRUE(c != 'I' && c != 'L' && c != 'O');
         }
+        EXPECT_EQ(ShortCode::from_string(code_str), code); // test upper cases
+        std::transform(code_str.begin(), code_str.end(), code_str.begin(), ::tolower);
+        EXPECT_EQ(ShortCode::from_string(code_str), code); // test lower cases
     });
 }
 

@@ -2,6 +2,9 @@
 
 #include "codec.h"
 
+using klotski::cases::AllCases;
+using klotski::cases::ALL_CASES_NUM_;
+
 void head_parallel(std::function<void(uint64_t head)> &&func) {
     constexpr auto heads = std::to_array({
         0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14
