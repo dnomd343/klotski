@@ -198,8 +198,7 @@ TEST(CommonCode, code_string) {
 }
 
 TEST(CommonCode, DISABLED_global_verify) {
-    BS::thread_pool pool;
-    auto futures = pool.submit_blocks(0ULL, 0x10'0000'0000ULL, [](auto start, auto end) {
+    const auto result = parallel_spawn(0x10'0000'0000ULL, [](uint64_t start, uint64_t end) {
         std::vector<uint64_t> codes;
         for (uint64_t common_code = start; common_code < end; ++common_code) { // brute-force search
             if (CommonCode::check(common_code)) {
@@ -207,13 +206,6 @@ TEST(CommonCode, DISABLED_global_verify) {
             }
         }
         return codes;
-    }, 0x1000); // split as 4096 pieces
-
-    std::vector<uint64_t> result;
-    result.reserve(ALL_CASES_NUM_);
-    for (auto &future : futures) {
-        const auto data = future.get();
-        result.insert(result.end(), data.begin(), data.end()); // combine sections
-    }
+    });
     EXPECT_EQ(result, all_common_codes());
 }

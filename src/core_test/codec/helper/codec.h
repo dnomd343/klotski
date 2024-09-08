@@ -36,3 +36,19 @@ void common_code_parallel(std::function<void(std::span<CommonCode>)> &&func);
 #define COMMON_CODE_PARALLEL(impl) CODE_PARALLEL(Common, common, impl)
 
 // ----------------------------------------------------------------------------------------- //
+
+/// Calculate multiple ranges separately and combine the results.
+template<typename T, typename F>
+requires std::is_integral_v<T> && std::is_invocable_v<F, T, T>
+auto parallel_spawn(T limit, F &&func) -> std::invoke_result_t<F, T, T> {
+    BS::thread_pool pool;
+    std::invoke_result_t<F, T, T> result;
+    for (auto &&future : pool.submit_blocks((T)0, limit, func, 0x1000)) {
+        const auto data = future.get();
+        result.insert(result.end(), std::begin(data), std::end(data)); // combine sections
+    }
+    pool.wait();
+    return result;
+}
+
+// ----------------------------------------------------------------------------------------- //

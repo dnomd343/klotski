@@ -222,8 +222,7 @@ TEST(ShortCode, code_string) {
 
 TEST(ShortCode, DISABLED_global_verify) {
     speed_up_reset();
-    BS::thread_pool pool;
-    auto futures = pool.submit_blocks(0U, SHORT_CODE_LIMIT, [](auto start, auto end) {
+    const auto result = parallel_spawn(SHORT_CODE_LIMIT, [](uint32_t start, uint32_t end) {
         std::vector<uint64_t> codes;
         codes.reserve(end - start);
         for (uint32_t short_code = start; short_code < end; ++short_code) {
@@ -232,13 +231,6 @@ TEST(ShortCode, DISABLED_global_verify) {
             codes.emplace_back(common_code.unwrap());
         }
         return codes;
-    }, 0x1000); // split as 4096 pieces
-
-    std::vector<uint64_t> result;
-    result.reserve(ALL_CASES_NUM_);
-    for (auto &future : futures) {
-        const auto data = future.get();
-        result.insert(result.end(), data.begin(), data.end()); // combine sections
-    }
+    });
     EXPECT_EQ(result, all_common_codes());
 }
