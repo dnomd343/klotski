@@ -3,14 +3,15 @@
 #include "codec.h"
 
 void head_parallel(std::function<void(uint64_t head)> &&func) {
-    BS::thread_pool pool;
-    // TODO: skip invalid head
-    pool.detach_sequence(0, 16, [func = std::move(func)](const uint64_t head) {
-        if (head == 3 || head == 7 || head == 11 || head == 15) {
-            return;
-        }
-        func(head);
+    constexpr auto heads = std::to_array({
+        0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14
     });
+    BS::thread_pool pool;
+    for (auto head : heads) {
+        pool.detach_task([head, &func] {
+            func(head);
+        });
+    }
     pool.wait();
 }
 
@@ -24,4 +25,22 @@ std::vector<uint64_t> all_common_codes() {
         }
     }
     return common_codes;
+}
+
+void common_code_parallel(std::function<void(std::span<CommonCode>)> &&func) {
+
+    static auto codes = AllCases::instance().fetch().codes();
+
+    BS::thread_pool pool;
+
+    // TODO: enhance performance
+
+    pool.detach_blocks((uint64_t)0, codes.size(), [func = std::move(func)](auto start, auto end) {
+
+        func(std::span<CommonCode> {codes.data() + start, end - start});
+
+    }, 16);
+
+    pool.wait();
+
 }

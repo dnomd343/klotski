@@ -16,7 +16,7 @@ using klotski::codec::CommonCode;
 using klotski::cases::AllCases;
 using klotski::cases::ALL_CASES_NUM_;
 
-TEST(CommonCode, validity) {
+TEST(CommonCode, basic) {
     EXPECT_NE(CommonCode::check(0x3'A9'BF'0C'00), true); // invalid 2x2 block
     EXPECT_NE(CommonCode::check(0x1'D9'BF'0C'00), true); // invalid block range
     EXPECT_NE(CommonCode::check(0x1'A9'BF'FC'00), true); // less than 2 space
@@ -26,21 +26,35 @@ TEST(CommonCode, validity) {
     EXPECT_FALSE(CommonCode::from_string("0123456789").has_value()); // length > 9
     EXPECT_FALSE(CommonCode::from_string("123J432A9").has_value()); // with invalid `J`
 
-    EXPECT_TRUE(CommonCode::unsafe_create(0x1'A9BF0C00).is_horizontal_mirror());
-    EXPECT_FALSE(CommonCode::unsafe_create(0x4'FEA13400).is_horizontal_mirror());
-    EXPECT_FALSE(CommonCode::unsafe_create(0x1'A9BF0C00).is_vertical_mirror());
-    EXPECT_FALSE(CommonCode::unsafe_create(0x4'FEA13400).is_vertical_mirror());
+    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_1).is_vertical_mirror());
+    EXPECT_TRUE(CommonCode::unsafe_create(TEST_MIRROR_1).is_horizontal_mirror());
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_1).to_vertical_mirror(), TEST_MIRROR_1_VM);
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_1).to_horizontal_mirror(), TEST_MIRROR_1_HM);
 
-    EXPECT_EQ(CommonCode::unsafe_create(0x1'A9BF0C00).to_horizontal_mirror(), 0x1'A9BF0C00);
-    EXPECT_EQ(CommonCode::unsafe_create(0x4'FEA13400).to_horizontal_mirror(), 0x6'BFA47000);
-    EXPECT_EQ(CommonCode::unsafe_create(0x1'A9BF0C00).to_vertical_mirror(), 0xD'C3BE6800);
-    EXPECT_EQ(CommonCode::unsafe_create(0x4'FEA13400).to_vertical_mirror(), 0x8'346AFC00);
+    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_2).is_vertical_mirror());
+    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_2).is_horizontal_mirror());
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_2).to_vertical_mirror(), TEST_MIRROR_2_VM);
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_2).to_horizontal_mirror(), TEST_MIRROR_2_HM);
 
 #ifndef KLSK_NDEBUG
     std::ostringstream out;
     out << CommonCode::unsafe_create(TEST_C_CODE); // ostream capture
     EXPECT_EQ(out.str(), TEST_C_CODE_STR);
 #endif
+}
+
+TEST(CommonCode, exporter) {
+    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+    EXPECT_EQ(common_code.unwrap(), TEST_C_CODE);
+    EXPECT_EQ(common_code.to_string(), TEST_C_CODE_STR);
+    EXPECT_EQ(common_code.to_raw_code(), TEST_R_CODE);
+    EXPECT_EQ(common_code.to_short_code(), TEST_S_CODE);
+
+    auto code_shorten = common_code.to_string(true);
+    EXPECT_EQ(CommonCode::from_string(code_shorten), common_code);
+
+    auto code_normal = common_code.to_string(false);
+    EXPECT_EQ(CommonCode::from_string(code_normal), common_code);
 }
 
 TEST(CommonCode, operators) {
@@ -80,21 +94,7 @@ TEST(CommonCode, operators) {
     EXPECT_GT(CommonCode::unsafe_create(TEST_C_CODE + 1), common_code); // CommonCode > CommonCode
 }
 
-TEST(CommonCode, exporter) {
-    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
-    EXPECT_EQ(common_code.unwrap(), TEST_C_CODE);
-    EXPECT_EQ(common_code.to_string(), TEST_C_CODE_STR);
-    EXPECT_EQ(common_code.to_raw_code(), TEST_R_CODE);
-    EXPECT_EQ(common_code.to_short_code(), TEST_S_CODE);
-
-    auto code_shorten = common_code.to_string(true);
-    EXPECT_EQ(CommonCode::from_string(code_shorten), common_code);
-
-    auto code_normal = common_code.to_string(false);
-    EXPECT_EQ(CommonCode::from_string(code_normal), common_code);
-}
-
-TEST(CommonCode, initializate) {
+TEST(CommonCode, initialize) {
     auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
     auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
     auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
@@ -147,65 +147,73 @@ TEST(CommonCode, initializate) {
     EXPECT_EQ(CommonCode::from_short_code(TEST_S_CODE_STR), TEST_C_CODE);
 }
 
-// TODO: global test function
-//   -> check
-//   -> string_decode / string_encode / string_encode_shorten
-//   -> check_mirror / get_vertical_mirror / get_horizontal_mirror
-
 TEST(CommonCode, code_verify) {
-    BS::thread_pool pool;
-    pool.detach_sequence(0, 16, [](const uint64_t head) {
-        for (auto range : AllCases::instance().fetch()[head]) {
-            auto code = head << 32 | range;
-            EXPECT_TRUE(CommonCode::check(code)); // verify all cases
+    common_code_parallel([](std::span<CommonCode> codes) {
+        for (auto code : codes) {
+            EXPECT_TRUE(CommonCode::check(code.unwrap())); // verify all cases
         }
     });
-    pool.wait();
+}
+
+TEST(CommonCode, code_mirror) {
+    common_code_parallel([](std::span<CommonCode> codes) {
+        for (auto code : codes) {
+            const auto mirror_v = code.to_vertical_mirror();
+            EXPECT_TRUE(CommonCode::check(mirror_v.unwrap()));
+            EXPECT_EQ(mirror_v.to_vertical_mirror(), code);
+            EXPECT_FALSE(mirror_v.is_vertical_mirror()); // not exist
+            EXPECT_NE(mirror_v, code);
+
+            const auto mirror_h = code.to_horizontal_mirror();
+            EXPECT_TRUE(CommonCode::check(mirror_h.unwrap()));
+            EXPECT_EQ(mirror_h.to_horizontal_mirror(), code);
+            if (mirror_h.is_horizontal_mirror()) {
+                EXPECT_EQ(mirror_h, code);
+            } else {
+                EXPECT_NE(mirror_h, code);
+            }
+        }
+    });
 }
 
 TEST(CommonCode, code_string) {
-    auto test_func = [](CommonCode code) {
-        auto code_shorten = code.to_string(true); // with shorten
-        auto code_normal = code.to_string(false); // without shorten
-        EXPECT_TRUE(code_normal.starts_with(code_shorten));
+    common_code_parallel([](std::span<CommonCode> codes) {
+        for (auto code : codes) {
+            auto code_shorten = code.to_string(true); // with shorten
+            auto code_normal = code.to_string(false); // without shorten
+            EXPECT_TRUE(code_normal.starts_with(code_shorten));
+            EXPECT_EQ(std::format("{:09X}", code.unwrap()), code_normal);
 
-        EXPECT_LE(code_shorten.size(), 9); // length -> (0, 9]
-        EXPECT_NE(code_shorten.size(), 0);
-        if (code != 0) { // skip special code string `0`
-            EXPECT_NE(code_shorten.back(), '0');
-        }
-        EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test upper cases
-        std::transform(code_shorten.begin(), code_shorten.end(), code_shorten.begin(), ::tolower);
-        EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test lower cases
+            EXPECT_LE(code_shorten.size(), 9); // length -> (0, 9]
+            EXPECT_NE(code_shorten.size(), 0);
+            if (code != 0) { // skip special code string `0`
+                EXPECT_NE(code_shorten.back(), '0');
+            }
+            EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test upper cases
+            std::transform(code_shorten.begin(), code_shorten.end(), code_shorten.begin(), ::tolower);
+            EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test lower cases
 
-        EXPECT_EQ(code_normal.size(), 9); // length = 9
-        for (auto c : code_normal) {
-            EXPECT_TRUE((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
-        }
-        EXPECT_EQ(CommonCode::from_string(code_normal), code); // test upper cases
-        std::transform(code_normal.begin(), code_normal.end(), code_normal.begin(), ::tolower);
-        EXPECT_EQ(CommonCode::from_string(code_normal), code); // test lower cases
-    };
-
-    BS::thread_pool pool;
-    pool.detach_sequence(0, 16, [&test_func](const uint64_t head) {
-        for (auto range : AllCases::instance().fetch()[head]) {
-            test_func(CommonCode::unsafe_create(head << 32 | range));
+            EXPECT_EQ(code_normal.size(), 9); // length = 9
+            for (auto c : code_normal) {
+                EXPECT_TRUE((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
+            }
+            EXPECT_EQ(CommonCode::from_string(code_normal), code); // test upper cases
+            std::transform(code_normal.begin(), code_normal.end(), code_normal.begin(), ::tolower);
+            EXPECT_EQ(CommonCode::from_string(code_normal), code); // test lower cases
         }
     });
-    pool.wait();
 }
 
 TEST(CommonCode, DISABLED_global_verify) {
     BS::thread_pool pool;
-    auto futures = pool.submit_blocks(0ULL, 0x10'0000'0000ULL, [](uint64_t start, uint64_t end) {
-        std::vector<uint64_t> archive;
+    auto futures = pool.submit_blocks(0ULL, 0x10'0000'0000ULL, [](auto start, auto end) {
+        std::vector<uint64_t> codes;
         for (uint64_t common_code = start; common_code < end; ++common_code) { // brute-force search
             if (CommonCode::check(common_code)) {
-                archive.emplace_back(common_code); // found valid common code
+                codes.emplace_back(common_code); // found valid common code
             }
         }
-        return archive;
+        return codes;
     }, 0x1000); // split as 4096 pieces
 
     std::vector<uint64_t> result;
