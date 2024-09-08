@@ -4,6 +4,8 @@
 
 #include "cases.h"
 
+using klotski::range_reverse;
+
 /// Build the sequence list of all block numbers.
 static std::vector<block_num_t> build_block_nums() {
     std::vector<std::pair<uint32_t, block_num_t>> nums;

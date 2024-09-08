@@ -1,11 +1,26 @@
-#include "hash.h"
-#include "cases_helper.h"
+#include <gtest/gtest.h>
+
+#include "helper/cases.h"
+#include "utility/hash.h"
+#include "utility/exposer.h"
+#include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
+using klotski::array_sum;
 using klotski::cases::Ranges;
+using klotski::cases::AllCases;
+using klotski::cases::BasicRanges;
+
+using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 
-static constexpr auto ALL_CASES_XXH3 = std::to_array<uint64_t>({
+using klotski::cases::ALL_CASES_NUM_;
+using klotski::codec::SHORT_CODE_LIMIT;
+
+/// Forcibly modify private variables to reset state.
+EXPOSE_VAR(AllCases, bool, available_)
+
+constexpr auto ALL_CASES_XXH3 = std::to_array<uint64_t>({
     0x71c8ff7a71c93da0, 0x2a5247ee8bfed666, 0xf4efc8fc692d58e2, 0x2d06800538d394c2,
     0xb3f7cc1b962d6944, 0x7e2792f8ab777faa, 0x4b8e78026cca8a27, 0x2d06800538d394c2,
     0x8acd688c5ab93c42, 0xedca5101ed81cc77, 0xe8dc9d30c91ce682, 0x2d06800538d394c2,
@@ -40,31 +55,24 @@ protected:
 };
 
 TEST_FF(AllCases, content) {
-    auto verify = [](const uint64_t head) {
+    for (auto head : Heads) {
         auto &cases = AllCases::instance().fetch()[head];
-
+        EXPECT_SORTED_AND_UNIQUE(cases);
         EXPECT_EQ(cases.size(), ALL_CASES_NUM[head]); // size verify
         EXPECT_EQ(hash::xxh3(cases), ALL_CASES_XXH3[head]); // checksum verify
-
-        EXPECT_TRUE(std::ranges::is_sorted(cases.begin(), cases.end()));
-        const auto match = std::ranges::adjacent_find(cases.begin(), cases.end());
-        EXPECT_EQ(match, cases.end()); // no duplicates
-
-        auto &all = BasicRanges::instance().fetch(); // subset verify
-        EXPECT_TRUE(std::ranges::includes(all.begin(), all.end(), cases.begin(), cases.end()));
-
-        for (const auto range : cases) {
-            CommonCode::check(head << 32 | range); // release verify
-        }
-    };
-
-    for (int head = 0; head < 16; ++head) {
-        if (head % 4 != 3) {
-            verify(head);
-            continue;
-        }
-        EXPECT_EQ(AllCases::instance().fetch()[head].size(), 0);
+        EXPECT_SUBSET(BasicRanges::instance().fetch(), cases); // subset verify
+        EXPECT_COMMON_CODES(head, cases); // release verify
     }
+
+    ShortCode::speed_up(true);
+    std::vector<uint32_t> short_codes;
+    short_codes.reserve(ALL_CASES_NUM_);
+    for (const auto code : AllCases::instance().fetch().codes()) {
+        short_codes.emplace_back(code.to_short_code().unwrap());
+    }
+    EXPECT_EQ(short_codes.front(), 0);
+    EXPECT_SORTED_AND_UNIQUE(short_codes);
+    EXPECT_EQ(short_codes.back(), SHORT_CODE_LIMIT - 1);
 }
 
 TEST_FF(AllCases, constant) {
@@ -72,13 +80,14 @@ TEST_FF(AllCases, constant) {
     EXPECT_EQ(ALL_CASES_NUM.size(), 16);
     EXPECT_EQ(array_sum(ALL_CASES_NUM), ALL_CASES_NUM_);
 
+    EXPECT_EQ(ALL_CASES_NUM[3], 0);
+    EXPECT_EQ(ALL_CASES_NUM[7], 0);
+    EXPECT_EQ(ALL_CASES_NUM[11], 0);
+    EXPECT_EQ(ALL_CASES_NUM[15], 0);
+
     auto ranges = BasicRanges::instance().fetch();
     ranges.reverse();
-    for (int head = 0; head < 16; ++head) {
-        if (head % 4 == 3) {
-            EXPECT_EQ(ALL_CASES_NUM[head], 0);
-            continue;
-        }
+    for (const auto head : Heads) {
         Ranges release;
         ranges.derive(head, release);
         EXPECT_EQ(release.size(), ALL_CASES_NUM[head]);

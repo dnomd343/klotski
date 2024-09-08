@@ -1,12 +1,22 @@
-#include "hash.h"
-#include "group/group.h"
-#include "cases_helper.h"
+#include <gtest/gtest.h>
 
+#include "group/group.h"
+#include "helper/cases.h"
+#include "utility/hash.h"
+#include "utility/exposer.h"
+
+using klotski::array_sum;
 using klotski::cases::Ranges;
+using klotski::cases::AllCases;
+using klotski::cases::BasicRanges;
+
 using klotski::cases::BLOCK_NUM;
 using klotski::cases::TYPE_ID_LIMIT;
 
-static constexpr uint64_t BASIC_RANGES_XXH3 = 0x34fce9da6a052533;
+/// Forcibly modify private variables to reset state.
+EXPOSE_VAR(BasicRanges, bool, available_)
+
+constexpr uint64_t BASIC_RANGES_XXH3 = 0x34fce9da6a052533;
 
 class BasicRangesTest : public testing::Test, public Concurrent {
 protected:
@@ -35,11 +45,7 @@ protected:
 
 TEST_FF(BasicRanges, content) {
     auto &ranges = BasicRanges::instance().fetch();
-
-    EXPECT_TRUE(std::ranges::is_sorted(ranges.begin(), ranges.end()));
-    const auto match = std::ranges::adjacent_find(ranges.begin(), ranges.end());
-    EXPECT_EQ(match, ranges.end()); // no duplicates
-
+    EXPECT_SORTED_AND_UNIQUE(ranges);
     EXPECT_EQ(ranges.size(), BASIC_RANGES_NUM_); // size verify
     EXPECT_EQ(hash::xxh3(ranges), BASIC_RANGES_XXH3); // checksum verify
 }
@@ -50,7 +56,7 @@ TEST_FF(BasicRanges, constant) {
     EXPECT_EQ(array_sum(BASIC_RANGES_NUM), BASIC_RANGES_NUM_);
 
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id];
+        const auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id];
         Ranges ranges;
         ranges.spawn(n, n_2x1, n_1x1);
         EXPECT_EQ(ranges.size(), BASIC_RANGES_NUM[type_id]);

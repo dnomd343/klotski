@@ -4,6 +4,8 @@
 #include "helper/cases.h"
 #include "ranges/ranges.h"
 
+using klotski::range_reverse;
+
 static_assert(std::is_base_of_v<std::vector<uint32_t>, Ranges>);
 
 TEST(Ranges, check) {

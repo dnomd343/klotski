@@ -4,16 +4,15 @@
 #include <algorithm>
 
 #include "group/group.h"
-#include "all_cases/all_cases.h"
+#include "utility/concurrent.h"
+
+// ----------------------------------------------------------------------------------------- //
 
 using klotski::cases::Ranges;
 using klotski::cases::AllCases;
 using klotski::codec::CommonCode;
 using klotski::cases::BasicRanges;
 using klotski::cases::RangesUnion;
-
-using klotski::array_sum;
-using klotski::range_reverse;
 
 using klotski::cases::BLOCK_NUM;
 using klotski::cases::ALL_CASES_NUM;
@@ -26,7 +25,31 @@ constexpr auto Heads = std::to_array({
     0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14
 });
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
+
+/// Test fixture wrapper with concurrency tools.
+class Concurrent {
+protected:
+    // Execute same task concurrently.
+    co::Racer racer_ {256};
+
+    // Execute assigned tasks one by one.
+    co::Executor serial_ {1};
+
+    // Execute assigned tasks on all cores.
+    co::Executor executor_ {0};
+
+    // Atomic helpers for multi-thread testing.
+    std::atomic<int> counter_ {0};
+    std::atomic_flag condition_ {false};
+};
+
+/// Test fixture macro with custom test suite name.
+#define TEST_FF(test_suite_name, test_name)                        \
+    GTEST_TEST_(test_suite_name, test_name, test_suite_name##Test, \
+                ::testing::internal::GetTypeId<test_suite_name##Test>())
+
+// ----------------------------------------------------------------------------------------- //
 
 /// Assert that Ranges are sorted and unique.
 #define EXPECT_SORTED_AND_UNIQUE(R)                          \
@@ -42,7 +65,7 @@ constexpr auto Heads = std::to_array({
     for (const auto range : ranges)       \
         EXPECT_TRUE(CommonCode::check(static_cast<uint64_t>(head) << 32 | range))
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 /// The number of blocks in one klotski layout.
 struct block_num_t {
@@ -62,7 +85,7 @@ constexpr bool operator==(const block_num_t &lhs, const block_num_t &rhs) {
     return lhs.n_1x1 == rhs.n_1x1 && lhs.n_1x2 == rhs.n_1x2 && lhs.n_2x1 == rhs.n_2x1;
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 /// Calculate the block number from Range.
 block_num_t cal_block_num(uint32_t range);
@@ -76,7 +99,7 @@ block_num_t to_block_num(uint32_t type_id);
 /// Get all block number combinations without dependencies.
 const std::vector<block_num_t>& block_nums();
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 // TODO: get cases with type id (filter from AllCases)
 
@@ -87,3 +110,5 @@ const std::vector<CommonCode>& group_union_cases(uint32_t type_id);
 std::vector<CommonCode> group_cases(uint32_t type_id, uint32_t group_id);
 
 // TODO: always return ref of `std::vector` here
+
+// ----------------------------------------------------------------------------------------- //
