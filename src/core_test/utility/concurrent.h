@@ -37,6 +37,11 @@ public:
         return race_num_; // number of racing threads
     }
 
+    void Race(std::function<void()> &&item) {
+        Start(std::move(item));
+        Join();
+    }
+
     void Start(std::function<void()> &&item) {
         auto wrapper = [item = std::move(item)](const int) {
             item(); // execute racing function

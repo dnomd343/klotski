@@ -5,12 +5,15 @@
 #include "helper/codec.h"
 #include "helper/sample.h"
 #include "utility/exposer.h"
+#include "utility/concurrent.h"
 #include "all_cases/all_cases.h"
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
+using klotski::cases::Ranges;
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
+using klotski::cases::RangesUnion;
 
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
@@ -19,11 +22,14 @@ using klotski::cases::ALL_CASES_NUM;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::codec::SHORT_CODE_LIMIT;
 
-static const auto TEST_THREAD_NUM = 256;
+constexpr auto TEST_THREAD_NUM = 256;
 
 /// Forcibly modify private variables to reset state.
 EXPOSE_VAR(AllCases, bool, available_)
 EXPOSE_VAR(BasicRanges, bool, available_)
+EXPOSE_STATIC_VAR(ShortCode, bool, fast_)
+EXPOSE_STATIC_VAR(ShortCode, const RangesUnion*, cases_)
+EXPOSE_STATIC_VAR(ShortCode, std::atomic<const Ranges*>, ranges_)
 
 /// Reset basic ranges build state, note it is thread-unsafe.
 void basic_ranges_reset() {
@@ -35,19 +41,24 @@ void all_cases_reset() {
     exposer::AllCases_available_(AllCases::instance()) = false;
 }
 
-TEST(ShortCode, limit) {
-    auto all_cases_num = std::accumulate(ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0);
-    EXPECT_EQ(all_cases_num, SHORT_CODE_LIMIT);
+void speed_up_reset() {
+    exposer::ShortCode_fast_() = false;
+    exposer::ShortCode_cases_() = nullptr;
+    exposer::ShortCode_ranges_() = nullptr;
+    exposer::AllCases_available_(AllCases::instance()) = false;
+    exposer::BasicRanges_available_(BasicRanges::instance()) = false;
 }
 
-TEST(ShortCode, validity) {
+TEST(ShortCode, basic) {
     EXPECT_FALSE(ShortCode::check(-1)); // out of short code range
     EXPECT_FALSE(ShortCode::check(29670987)); // out of short code range
 
-    EXPECT_FALSE(ShortCode::create(SHORT_CODE_LIMIT).has_value()); // invalid code
     EXPECT_FALSE(ShortCode::from_string("R50EH").has_value()); // with invalid `0`
     EXPECT_FALSE(ShortCode::from_string("123456").has_value()); // length != 5
     EXPECT_FALSE(ShortCode::from_string("Z9EFV").has_value()); // out of short code range
+
+    const auto sum = std::accumulate(ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0);
+    EXPECT_EQ(sum, SHORT_CODE_LIMIT);
 
 #ifndef KLSK_NDEBUG
     std::ostringstream out;
@@ -97,14 +108,14 @@ TEST(ShortCode, exporter) {
     auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
     EXPECT_EQ(short_code.unwrap(), TEST_S_CODE);
     EXPECT_EQ(short_code.to_string(), TEST_S_CODE_STR);
-    EXPECT_EQ(short_code.to_common_code(), TEST_C_CODE);
 
-    // TODO: test fast mode of `to_common_code`
+    speed_up_reset();
+    EXPECT_EQ(short_code.to_common_code(), TEST_C_CODE);
+    ShortCode::speed_up(true);
+    EXPECT_EQ(short_code.to_common_code(), TEST_C_CODE);
 }
 
-// TODO: maybe add `speed_up` test suite
-
-TEST(ShortCode, initializate) {
+TEST(ShortCode, initialize) {
     auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
     auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
@@ -114,14 +125,17 @@ TEST(ShortCode, initializate) {
     EXPECT_EQ(s1, TEST_S_CODE); // l-value
     EXPECT_EQ(s2, TEST_S_CODE); // r-value
 
-    // TODO: test fast mode of `ShortCode(CommonCode)`
-
     // ShortCode(...)
     EXPECT_EQ(ShortCode(common_code), TEST_S_CODE);
     EXPECT_EQ(ShortCode(short_code), TEST_S_CODE); // l-value
     EXPECT_EQ(ShortCode(ShortCode(short_code)), TEST_S_CODE); // r-value
 
     // ShortCode::create(uint32_t)
+    speed_up_reset();
+    EXPECT_TRUE(ShortCode::create(TEST_S_CODE).has_value());
+    EXPECT_FALSE(ShortCode::create(TEST_S_CODE_ERR).has_value());
+    EXPECT_EQ(ShortCode::create(TEST_S_CODE), TEST_S_CODE);
+    ShortCode::speed_up(true);
     EXPECT_TRUE(ShortCode::create(TEST_S_CODE).has_value());
     EXPECT_FALSE(ShortCode::create(TEST_S_CODE_ERR).has_value());
     EXPECT_EQ(ShortCode::create(TEST_S_CODE), TEST_S_CODE);
@@ -148,95 +162,89 @@ TEST(ShortCode, initializate) {
     EXPECT_EQ(ShortCode::from_common_code(TEST_C_CODE_STR), TEST_S_CODE);
 }
 
-// TODO: global verify function
-//   -> check
-//   -> fast_decode / fast_encode
-//   -> tiny_decode / tiny_encode
-//   -> string_encode / string_decode
-
 TEST(ShortCode, speed_up) {
-    all_cases_reset();
-    basic_ranges_reset();
-    BS::thread_pool pool(TEST_THREAD_NUM);
+    co::Racer racer {TEST_THREAD_NUM};
 
-    for (auto i = 0; i < TEST_THREAD_NUM; ++i) {
-        pool.detach_task([]() {
-            ShortCode::speed_up(false);
-        });
-    }
-    EXPECT_FALSE(BasicRanges::instance().is_available());
-    EXPECT_FALSE(AllCases::instance().is_available());
-    pool.wait();
-    EXPECT_TRUE(BasicRanges::instance().is_available());
-    EXPECT_FALSE(AllCases::instance().is_available());
+    static auto EXPECT_STAGE_0 = +[]() {
+        EXPECT_FALSE(exposer::ShortCode_fast_());
+        EXPECT_EQ(exposer::ShortCode_cases_(), nullptr);
+        EXPECT_EQ(exposer::ShortCode_ranges_(), nullptr);
+        EXPECT_FALSE(BasicRanges::instance().is_available());
+        EXPECT_FALSE(AllCases::instance().is_available());
+    };
 
-    for (auto i = 0; i < TEST_THREAD_NUM; ++i) {
-        pool.detach_task([]() {
-            ShortCode::speed_up(true);
-        });
-    }
-    EXPECT_TRUE(BasicRanges::instance().is_available());
-    EXPECT_FALSE(AllCases::instance().is_available());
-    pool.wait();
-    EXPECT_TRUE(BasicRanges::instance().is_available());
-    EXPECT_TRUE(AllCases::instance().is_available());
+    static auto EXPECT_STAGE_1 = +[]() {
+        EXPECT_FALSE(exposer::ShortCode_fast_());
+        EXPECT_EQ(exposer::ShortCode_cases_(), nullptr);
+        EXPECT_EQ(exposer::ShortCode_ranges_(), &BasicRanges::instance().fetch());
+        EXPECT_TRUE(BasicRanges::instance().is_available());
+        EXPECT_FALSE(AllCases::instance().is_available());
+    };
+
+    static auto EXPECT_STAGE_2 = +[]() {
+        EXPECT_TRUE(exposer::ShortCode_fast_());
+        EXPECT_EQ(exposer::ShortCode_cases_(), &AllCases::instance().fetch());
+        EXPECT_EQ(exposer::ShortCode_ranges_(), &BasicRanges::instance().fetch());
+        EXPECT_TRUE(BasicRanges::instance().is_available());
+        EXPECT_TRUE(AllCases::instance().is_available());
+    };
+
+    speed_up_reset();
+    EXPECT_STAGE_0();
+    racer.Race([] { ShortCode::speed_up(false); });
+    EXPECT_STAGE_1();
+    racer.Race([] { ShortCode::speed_up(true); });
+    EXPECT_STAGE_2();
+    racer.Race([] { ShortCode::speed_up(true); });
+    EXPECT_STAGE_2();
+    racer.Race([] { ShortCode::speed_up(false); });
+    EXPECT_STAGE_2();
+
+    speed_up_reset();
+    EXPECT_STAGE_0();
+    racer.Race([] { ShortCode::speed_up(true); });
+    EXPECT_STAGE_2();
 }
 
 TEST(ShortCode, code_verify) {
-    BS::thread_pool pool;
-    ShortCode::speed_up(true);
-    pool.detach_sequence(0, 16, [](const uint64_t head) {
-        std::vector<uint32_t> archive;
-        for (auto range : AllCases::instance().fetch()[head]) {
-            auto code = ShortCode::from_common_code(head << 32 | range);
-            EXPECT_TRUE(code.has_value());
-            EXPECT_TRUE(ShortCode::check(code->unwrap()));
-            EXPECT_EQ(code->to_common_code(), head << 32 | range);
-            archive.emplace_back(code->unwrap());
-        }
-        if (!archive.empty()) {
-            EXPECT_TRUE(std::is_sorted(archive.begin(), archive.end())); // increasingly one by one
-            EXPECT_EQ(archive[archive.size() - 1] - archive[0], archive.size() - 1);
-            EXPECT_EQ(std::accumulate(ALL_CASES_NUM.begin(), ALL_CASES_NUM.begin() + head, 0), archive[0]);
+    ShortCode::speed_up(true); // enter fast mode
+    short_code_parallel([](std::span<ShortCode> codes) {
+        for (auto code : codes) {
+            EXPECT_TRUE(ShortCode::check(code.unwrap()));
+            auto common_code = code.to_common_code(); // ShortCode::fast_decode
+            EXPECT_EQ(ShortCode::from_common_code(common_code), code); // ShortCode::fast_encode
         }
     });
-    pool.wait();
 }
 
 TEST(ShortCode, code_string) {
-    auto test_func = [](ShortCode code) {
-        auto code_str = code.to_string();
-        EXPECT_EQ(code_str.size(), 5); // length = 5
-        for (auto c : code_str) {
-            EXPECT_TRUE((c >= '1' && c <= '9') || (c >= 'A' && c <= 'Z'));
-            EXPECT_TRUE(c != 'I' && c != 'L' && c != 'O');
-        }
-        EXPECT_EQ(ShortCode::from_string(code_str), code); // test upper cases
-        std::transform(code_str.begin(), code_str.end(), code_str.begin(), ::tolower);
-        EXPECT_EQ(ShortCode::from_string(code_str), code); // test lower cases
-    };
-
-    BS::thread_pool pool;
-    pool.detach_blocks((uint32_t)0, SHORT_CODE_LIMIT, [&test_func](uint32_t start, uint32_t end) {
-        for (uint32_t short_code = start; short_code < end; ++short_code) {
-            test_func(ShortCode::unsafe_create(short_code));
+    short_code_parallel([](std::span<ShortCode> codes) {
+        for (auto code : codes) {
+            auto code_str = code.to_string();
+            EXPECT_EQ(code_str.size(), 5); // length = 5
+            for (auto c : code_str) {
+                EXPECT_TRUE((c >= '1' && c <= '9') || (c >= 'A' && c <= 'Z'));
+                EXPECT_TRUE(c != 'I' && c != 'L' && c != 'O');
+            }
+            EXPECT_EQ(ShortCode::from_string(code_str), code); // test upper cases
+            std::transform(code_str.begin(), code_str.end(), code_str.begin(), ::tolower);
+            EXPECT_EQ(ShortCode::from_string(code_str), code); // test lower cases
         }
     });
-    pool.wait();
 }
 
 TEST(ShortCode, DISABLED_global_verify) {
-    all_cases_reset();
+    speed_up_reset();
     BS::thread_pool pool;
-    auto futures = pool.submit_blocks((uint32_t)0, SHORT_CODE_LIMIT, [](uint32_t start, uint32_t end) {
-        std::vector<uint64_t> archive;
-        archive.reserve(end - start);
+    auto futures = pool.submit_blocks(0U, SHORT_CODE_LIMIT, [](auto start, auto end) {
+        std::vector<uint64_t> codes;
+        codes.reserve(end - start);
         for (uint32_t short_code = start; short_code < end; ++short_code) {
-            auto common_code = CommonCode::from_short_code(short_code).value();
-            EXPECT_EQ(common_code.to_short_code(), short_code);
-            archive.emplace_back(common_code.unwrap());
+            auto common_code = CommonCode::from_short_code(short_code).value(); // ShortCode::tiny_decode
+            EXPECT_EQ(common_code.to_short_code(), short_code); // ShortCode::tiny_encode
+            codes.emplace_back(common_code.unwrap());
         }
-        return archive;
+        return codes;
     }, 0x1000); // split as 4096 pieces
 
     std::vector<uint64_t> result;
@@ -245,6 +253,5 @@ TEST(ShortCode, DISABLED_global_verify) {
         const auto data = future.get();
         result.insert(result.end(), data.begin(), data.end()); // combine sections
     }
-    pool.wait();
     EXPECT_EQ(result, all_common_codes());
 }

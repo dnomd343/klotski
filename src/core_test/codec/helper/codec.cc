@@ -68,3 +68,21 @@ void raw_code_parallel(std::function<void(std::span<RawCode>)> &&func) {
     pool.wait();
 
 }
+
+void short_code_parallel(std::function<void(std::span<ShortCode>)> &&func) {
+    static auto codes = []() {
+        std::vector<uint32_t> v (klotski::codec::SHORT_CODE_LIMIT);
+        std::iota(v.begin(), v.end(), 0);
+        return v;
+    }();
+
+    BS::thread_pool pool;
+    pool.detach_blocks((uint64_t)0, codes.size(), [func = std::move(func)](auto start, auto end) {
+
+        auto span = std::span<uint32_t> {codes.data() + start, end - start};
+        func(std::bit_cast<std::span<ShortCode>>(span));
+
+    }, 16);
+
+    pool.wait();
+}
