@@ -44,3 +44,27 @@ void common_code_parallel(std::function<void(std::span<CommonCode>)> &&func) {
     pool.wait();
 
 }
+
+static std::vector<RawCode> convert(const std::vector<CommonCode> &codes) {
+    std::vector<RawCode> result;
+    result.reserve(29334498);
+    for (auto code : codes) {
+        result.emplace_back(RawCode::from_common_code(code));
+    }
+    return result;
+}
+
+void raw_code_parallel(std::function<void(std::span<RawCode>)> &&func) {
+
+    static auto codes = convert(AllCases::instance().fetch().codes());
+
+    BS::thread_pool pool;
+    pool.detach_blocks((uint64_t)0, codes.size(), [func = std::move(func)](auto start, auto end) {
+
+        func(std::span<RawCode> {codes.data() + start, end - start});
+
+    }, 16);
+
+    pool.wait();
+
+}

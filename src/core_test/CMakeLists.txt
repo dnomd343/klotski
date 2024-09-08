@@ -42,7 +42,6 @@ add_test(NAME klotski_ffi COMMAND test_klotski_ffi)
 # ------------------------------------------------------------------------------------ #
 
 set(KLSK_TEST_CODEC_SRC
-    codec/mirror.cc
     codec/raw_code.cc
     codec/short_code.cc
     codec/common_code.cc

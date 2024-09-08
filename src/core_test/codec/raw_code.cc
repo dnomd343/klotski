@@ -16,19 +16,31 @@ using klotski::codec::CommonCode;
 using klotski::cases::AllCases;
 using klotski::cases::ALL_CASES_NUM_;
 
-TEST(RawCode, validity) {
+TEST(RawCode, basic) {
     EXPECT_FALSE(RawCode::check(0x0A34'182B'3810'2D21)); // invalid code
     EXPECT_FALSE(RawCode::check(0x8603'EDF5'CAFF'F5E2)); // high 4-bits not zero
 
-    EXPECT_FALSE(RawCode::create(0x0000'0000'0000'0000).has_value()); // invalid code
+    EXPECT_FALSE(RawCode::unsafe_create(TEST_MIRROR_R1).is_vertical_mirror());
+    EXPECT_TRUE(RawCode::unsafe_create(TEST_MIRROR_R1).is_horizontal_mirror());
+    EXPECT_EQ(RawCode::unsafe_create(TEST_MIRROR_R1).to_vertical_mirror(), TEST_MIRROR_R1_VM);
+    EXPECT_EQ(RawCode::unsafe_create(TEST_MIRROR_R1).to_horizontal_mirror(), TEST_MIRROR_R1_HM);
 
-    // TODO: add mirror test
+    EXPECT_FALSE(RawCode::unsafe_create(TEST_MIRROR_R2).is_vertical_mirror());
+    EXPECT_FALSE(RawCode::unsafe_create(TEST_MIRROR_R2).is_horizontal_mirror());
+    EXPECT_EQ(RawCode::unsafe_create(TEST_MIRROR_R2).to_vertical_mirror(), TEST_MIRROR_R2_VM);
+    EXPECT_EQ(RawCode::unsafe_create(TEST_MIRROR_R2).to_horizontal_mirror(), TEST_MIRROR_R2_HM);
 
 #ifndef KLSK_NDEBUG
     std::ostringstream out;
     out << RawCode::unsafe_create(TEST_R_CODE); // ostream capture
-    EXPECT_TRUE(out.str().starts_with("603EDF5CAFFF5E2\n")); // TODO: using full string
+    EXPECT_EQ(out.str(), "603EDF5CAFFF5E2\n| @ + | \n+ + + + \n| ~ + | \n+ * * + \n* . . * \n");
 #endif
+}
+
+TEST(RawCode, exporter) {
+    auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
+    EXPECT_EQ(raw_code.unwrap(), TEST_R_CODE);
+    EXPECT_EQ(raw_code.to_common_code(), TEST_C_CODE);
 }
 
 TEST(RawCode, operators) {
@@ -68,13 +80,7 @@ TEST(RawCode, operators) {
     EXPECT_GT(RawCode::unsafe_create(TEST_R_CODE + 1), raw_code); // RawCode > RawCode
 }
 
-TEST(RawCode, exporter) {
-    auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
-    EXPECT_EQ(raw_code.unwrap(), TEST_R_CODE);
-    EXPECT_EQ(raw_code.to_common_code(), TEST_C_CODE);
-}
-
-TEST(RawCode, initializate) {
+TEST(RawCode, initialize) {
     auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
     auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
@@ -112,27 +118,41 @@ TEST(RawCode, initializate) {
     EXPECT_EQ(RawCode::from_common_code(TEST_C_CODE_STR), TEST_R_CODE);
 }
 
-// TODO: global check function:
-//   -> check
-//   -> compact / extract
-//   -> check_mirror / get_vertical_mirror / get_horizontal_mirror
-
 TEST(RawCode, code_verify) {
-    BS::thread_pool pool;
-    pool.detach_sequence(0, 16, [](const uint64_t head) {
-        for (const auto range : AllCases::instance().fetch()[head]) {
-            const auto code = RawCode::from_common_code(head << 32 | range);
-            EXPECT_TRUE(code.has_value());
-            EXPECT_TRUE(RawCode::check(code->unwrap()));
-            EXPECT_EQ(code->to_common_code(), head << 32 | range);
+    raw_code_parallel([](std::span<RawCode> codes) {
+        for (auto code : codes) {
+            EXPECT_TRUE(RawCode::check(code.unwrap()));
+            const auto common_code = code.to_common_code(); // RawCode::compact
+            EXPECT_EQ(RawCode::from_common_code(common_code), code); // RawCode::extract
         }
     });
-    pool.wait();
+}
+
+TEST(RawCode, code_mirror) {
+    raw_code_parallel([](std::span<RawCode> codes) {
+        for (auto code : codes) {
+            const auto mirror_v = code.to_vertical_mirror();
+            EXPECT_TRUE(RawCode::check(mirror_v.unwrap()));
+            EXPECT_EQ(mirror_v.to_vertical_mirror(), code);
+            EXPECT_FALSE(mirror_v.is_vertical_mirror()); // not exist
+            EXPECT_NE(mirror_v, code);
+
+            const auto mirror_h = code.to_horizontal_mirror();
+            EXPECT_TRUE(RawCode::check(mirror_h.unwrap()));
+            EXPECT_EQ(mirror_h.to_horizontal_mirror(), code);
+            if (mirror_h.is_horizontal_mirror()) {
+                EXPECT_EQ(mirror_h, code);
+            } else {
+                EXPECT_NE(mirror_h, code);
+            }
+        }
+    });
 }
 
 TEST(RawCode, DISABLED_global_verify) {
-    auto force_convert = [](uint64_t common_code) -> uint64_t {
-        auto range = range_reverse((uint32_t)common_code);
+    // convert to RawCode and ignore errors
+    static auto force_convert = +[](uint64_t common_code) -> uint64_t {
+        auto range = range_reverse(static_cast<uint32_t>(common_code));
         auto raw_code = K_MASK_2x2 << (common_code >> 32) * 3;
         for (int addr = 0; range; range >>= 2) {
             while ((raw_code >> addr) & 0b111 && addr < 60) // found next space
@@ -150,14 +170,14 @@ TEST(RawCode, DISABLED_global_verify) {
     };
 
     BS::thread_pool pool;
-    auto futures = pool.submit_blocks(0ULL, 0x10'0000'0000ULL, [&force_convert](uint64_t start, uint64_t end) {
-        std::vector<uint64_t> archive;
+    auto futures = pool.submit_blocks(0ULL, 0x10'0000'0000ULL, [](auto start, auto end) {
+        std::vector<uint64_t> codes;
         for (uint64_t common_code = start; common_code < end; ++common_code) {
             if (RawCode::check(force_convert(common_code))) {
-                archive.emplace_back(common_code); // store valid raw code
+                codes.emplace_back(common_code); // store valid raw code
             }
         }
-        return archive;
+        return codes;
     }, 0x1000); // split as 4096 pieces
 
     std::vector<uint64_t> result;

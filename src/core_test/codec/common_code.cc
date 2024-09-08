@@ -22,19 +22,18 @@ TEST(CommonCode, basic) {
     EXPECT_NE(CommonCode::check(0x1'A9'BF'FC'00), true); // less than 2 space
     EXPECT_NE(CommonCode::check(0x1'A0'BF'0C'01), true); // low bits not fill zero
 
-    EXPECT_FALSE(CommonCode::create(0x123456789).has_value()); // invalid code
     EXPECT_FALSE(CommonCode::from_string("0123456789").has_value()); // length > 9
     EXPECT_FALSE(CommonCode::from_string("123J432A9").has_value()); // with invalid `J`
 
-    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_1).is_vertical_mirror());
-    EXPECT_TRUE(CommonCode::unsafe_create(TEST_MIRROR_1).is_horizontal_mirror());
-    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_1).to_vertical_mirror(), TEST_MIRROR_1_VM);
-    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_1).to_horizontal_mirror(), TEST_MIRROR_1_HM);
+    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_C1).is_vertical_mirror());
+    EXPECT_TRUE(CommonCode::unsafe_create(TEST_MIRROR_C1).is_horizontal_mirror());
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_C1).to_vertical_mirror(), TEST_MIRROR_C1_VM);
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_C1).to_horizontal_mirror(), TEST_MIRROR_C1_HM);
 
-    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_2).is_vertical_mirror());
-    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_2).is_horizontal_mirror());
-    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_2).to_vertical_mirror(), TEST_MIRROR_2_VM);
-    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_2).to_horizontal_mirror(), TEST_MIRROR_2_HM);
+    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_C2).is_vertical_mirror());
+    EXPECT_FALSE(CommonCode::unsafe_create(TEST_MIRROR_C2).is_horizontal_mirror());
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_C2).to_vertical_mirror(), TEST_MIRROR_C2_VM);
+    EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_C2).to_horizontal_mirror(), TEST_MIRROR_C2_HM);
 
 #ifndef KLSK_NDEBUG
     std::ostringstream out;
