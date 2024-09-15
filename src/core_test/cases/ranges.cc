@@ -25,7 +25,6 @@ TEST(Ranges, spawn) {
         Ranges ranges;
         ranges.spawn(n, n_2x1, n_1x1);
         EXPECT_SORTED_AND_UNIQUE(ranges); // sorted and unique
-
         for (const auto range : ranges) {
             const auto [val_1x1, val_1x2, val_2x1] = cal_block_num(range);
             EXPECT_EQ(val_1x1, n_1x1);
@@ -55,16 +54,23 @@ TEST(Ranges, derive) {
     }
 }
 
+TEST(Ranges, append) {
+    Ranges ranges;
+    for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
+        Ranges r;
+        r.spawn(n, n_2x1, n_1x1);
+        auto &tmp = ranges += r;
+        EXPECT_EQ(tmp, ranges); // reference of ranges
+    }
+    std::stable_sort(ranges.begin(), ranges.end());
+    EXPECT_EQ(ranges, BasicRanges::instance().fetch());
+}
+
 TEST(Ranges, reverse) {
     auto ranges = BasicRanges::instance().fetch();
-    Ranges reverse {ranges};
-
-    for (auto &x : reverse) {
-        x = range_reverse(x); // manual reverse
-    }
+    auto reverse = ranges | std::views::transform(range_reverse) | std::ranges::to<std::vector>();
     ranges.reverse();
     EXPECT_EQ(ranges, reverse);
-
     ranges.reverse();
     EXPECT_EQ(ranges, BasicRanges::instance().fetch());
 }
@@ -72,7 +78,6 @@ TEST(Ranges, reverse) {
 TEST(Ranges, combine) {
     Ranges all_ranges;
     RangesUnion all_cases;
-
     all_ranges.reserve(BASIC_RANGES_NUM_); // pre reserve
     for (const auto head : Heads) {
         all_cases[head].reserve(ALL_CASES_NUM[head]); // pre reserve
@@ -92,8 +97,8 @@ TEST(Ranges, combine) {
     for (const auto head : Heads) {
         std::ranges::stable_sort(all_cases[head].begin(), all_cases[head].end());
     }
-    EXPECT_EQ(all_ranges, BasicRanges::instance().fetch()); // verify content
-    EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify content
+    EXPECT_EQ(all_ranges, BasicRanges::instance().fetch()); // verify all ranges
+    EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify all cases
 
     all_ranges.reverse(); // reverse ranges for derive
     for (const auto head : Heads) {
@@ -101,13 +106,4 @@ TEST(Ranges, combine) {
         all_ranges.derive(head, all_cases[head]); // derive from all ranges
     }
     EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify content
-}
-
-TEST(Ranges, operator) {
-    Ranges r, r1, r2;
-    r.spawn(5, 3, 4);
-    r.spawn(5, 4, 4);
-    r1.spawn(5, 3, 4);
-    r2.spawn(5, 4, 4);
-    EXPECT_EQ(r, r1 += r2);
 }

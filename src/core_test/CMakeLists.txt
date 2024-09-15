@@ -10,9 +10,6 @@ set(KLSK_TEST_DEPS klotski_c klotski_core
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
-# TODO: remove it
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/utility)
-
 # ------------------------------------------------------------------------------------ #
 
 set(KLSK_TEST_CASES_SRC

@@ -16,7 +16,7 @@ using klotski::cases::RangesUnion;
 
 using klotski::cases::BLOCK_NUM;
 using klotski::cases::ALL_CASES_NUM;
-using klotski::cases::ALL_CASES_NUM;
+using klotski::cases::ALL_CASES_NUM_;
 using klotski::cases::BASIC_RANGES_NUM;
 using klotski::cases::BASIC_RANGES_NUM_;
 
