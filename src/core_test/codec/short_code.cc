@@ -52,9 +52,8 @@ TEST(ShortCode, basic) {
     EXPECT_EQ(sum, SHORT_CODE_LIMIT);
 
 #ifndef KLSK_NDEBUG
-    std::ostringstream out;
-    out << ShortCode::unsafe_create(TEST_S_CODE); // ostream capture
-    EXPECT_EQ(out.str(), TEST_S_CODE_STR);
+    EXPECT_OSTREAM(ShortCode::unsafe_create(0), "11111");
+    EXPECT_OSTREAM(ShortCode::unsafe_create(TEST_S_CODE), TEST_S_CODE_STR);
 #endif
 }
 

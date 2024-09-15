@@ -36,9 +36,8 @@ TEST(CommonCode, basic) {
     EXPECT_EQ(CommonCode::unsafe_create(TEST_MIRROR_C2).to_horizontal_mirror(), TEST_MIRROR_C2_HM);
 
 #ifndef KLSK_NDEBUG
-    std::ostringstream out;
-    out << CommonCode::unsafe_create(TEST_C_CODE); // ostream capture
-    EXPECT_EQ(out.str(), TEST_C_CODE_STR);
+    EXPECT_OSTREAM(CommonCode::unsafe_create(0), "000000000");
+    EXPECT_OSTREAM(CommonCode::unsafe_create(TEST_C_CODE), TEST_C_CODE_STR);
 #endif
 }
 

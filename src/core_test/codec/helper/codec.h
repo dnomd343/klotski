@@ -17,6 +17,18 @@ std::vector<uint64_t> all_common_codes();
 
 // ----------------------------------------------------------------------------------------- //
 
+/// Capture ostream output as string.
+template <typename T>
+std::string ostream_capture(T obj) {
+    std::ostringstream out;
+    out << obj; // ostream capture
+    return out.str();
+}
+
+#define EXPECT_OSTREAM(obj, expect) EXPECT_EQ(ostream_capture(obj), expect)
+
+// ----------------------------------------------------------------------------------------- //
+
 /// Spawn all valid RawCodes in parallel.
 void raw_code_parallel(std::function<void(std::span<RawCode>)> &&func);
 

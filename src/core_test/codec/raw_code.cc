@@ -31,9 +31,10 @@ TEST(RawCode, basic) {
     EXPECT_EQ(RawCode::unsafe_create(TEST_MIRROR_R2).to_horizontal_mirror(), TEST_MIRROR_R2_HM);
 
 #ifndef KLSK_NDEBUG
-    std::ostringstream out;
-    out << RawCode::unsafe_create(TEST_R_CODE); // ostream capture
-    EXPECT_EQ(out.str(), "603EDF5CAFFF5E2\n| @ + |\n+ + + +\n| ~ + |\n+ * * +\n* . . *\n");
+    EXPECT_OSTREAM(RawCode::unsafe_create(0x3F03C),
+                   "00000000003F03C\n@ + . .\n+ + . .\n. . . .\n. . . .\n. . . .\n");
+    EXPECT_OSTREAM(RawCode::unsafe_create(TEST_R_CODE),
+                   "603EDF5CAFFF5E2\n| @ + |\n+ + + +\n| ~ + |\n+ * * +\n* . . *\n");
 #endif
 }
 
