@@ -63,6 +63,10 @@
 
 namespace klotski::core {
 
+// TODO: new version without mask
+
+// TODO: allow wrap as a function directly
+
 class Core {
 public:
     /// Release with code and mask
