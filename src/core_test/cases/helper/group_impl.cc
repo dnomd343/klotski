@@ -48,6 +48,13 @@ static std::vector<std::vector<CommonCode>> split_groups(std::vector<CommonCode>
 
 }
 
+// TODO: static data of `build_all_cases`
+
+uint32_t group_union_num() {
+    static auto data = build_all_cases();
+    return data.size();
+}
+
 const std::vector<CommonCode>& group_union_cases(const uint32_t type_id) {
     static auto data = build_all_cases();
     if (type_id < data.size()) {
@@ -56,12 +63,37 @@ const std::vector<CommonCode>& group_union_cases(const uint32_t type_id) {
     std::abort();
 }
 
-// TODO: maybe using multi-threads
+// TODO: multi-threads builder
 
-std::vector<CommonCode> group_cases(uint32_t type_id, uint32_t group_id) {
+static std::vector<std::vector<std::vector<CommonCode>>> all_groups_builder() {
 
-    auto groups = split_groups(group_union_cases(type_id));
+    std::vector<std::vector<std::vector<CommonCode>>> data;
 
-    return groups[group_id];
+    for (uint32_t type_id = 0; type_id < group_union_num(); ++type_id) {
 
+        data.emplace_back(split_groups(group_union_cases(type_id)));
+
+    }
+
+    return data;
+
+}
+
+uint32_t group_num(uint32_t type_id) {
+    static auto data = all_groups_builder();
+    if (type_id < data.size()) {
+        return data[type_id].size();
+    }
+    std::abort();
+}
+
+const std::vector<CommonCode>& group_cases(uint32_t type_id, uint32_t group_id) {
+
+    static auto data = all_groups_builder();
+
+    if (type_id < data.size() && group_id < data[type_id].size()) {
+        return data[type_id][group_id];
+    }
+
+    std::abort();
 }
