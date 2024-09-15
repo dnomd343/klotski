@@ -38,6 +38,7 @@ std::vector<RawCode> Group::extend(RawCode raw_code, uint32_t reserve) {
 RangesUnion Group::cases() const {
 
     // TODO: add white list for single-group unions
+    //       return GroupUnion::cases directly
 
     auto seed = CommonCode::unsafe_create(GROUP_SEED[flat_id()]);
 
@@ -59,4 +60,23 @@ RangesUnion Group::cases() const {
     // TODO: do sort process
 
     return data;
+}
+
+Group Group::from_raw_code(codec::RawCode raw_code) {
+
+    auto raw_codes = extend(raw_code);
+
+    auto common_codes = raw_codes | std::views::transform([](const RawCode r) {
+        return r.to_common_code();
+    }) | std::ranges::to<std::vector>(); // TODO: search min_element directly
+
+    auto seed = std::min_element(common_codes.begin(), common_codes.end());
+
+    std::cout << *seed << std::endl;
+
+    // TODO: search type_id / group_id from map
+    auto flat_id = std::find(GROUP_SEED.begin(), GROUP_SEED.end(), *seed) - GROUP_SEED.begin();
+    std::cout << flat_id << std::endl;
+
+    return Group::unsafe_create(0, 0); // TODO: only for compile
 }

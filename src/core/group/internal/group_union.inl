@@ -6,7 +6,7 @@
 
 namespace klotski::cases {
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 constexpr uint32_t GroupUnion::unwrap() const {
 	return type_id_;
@@ -23,7 +23,7 @@ constexpr std::optional<GroupUnion> GroupUnion::create(const uint32_t type_id) {
 	return std::nullopt;
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 constexpr uint32_t GroupUnion::size() const {
 	return GROUP_UNION_SIZE[type_id_];
@@ -53,7 +53,7 @@ inline std::optional<Group> GroupUnion::group(const uint32_t group_id) const {
 	return std::nullopt;
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 inline GroupUnion GroupUnion::from_raw_code(const codec::RawCode raw_code) {
 	return unsafe_create(type_id(raw_code));
@@ -67,6 +67,6 @@ inline GroupUnion GroupUnion::from_common_code(const codec::CommonCode common_co
 	return unsafe_create(type_id(common_code));
 }
 
-// ------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------- //
 
 } // namespace klotski::cases

@@ -145,6 +145,8 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+// TODO: add debug output
+
 class Group {
 public:
     Group() = delete;
@@ -152,24 +154,24 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Get the original type id.
-    [[nodiscard]] uint32_t type_id() const;
+    [[nodiscard]] constexpr uint32_t type_id() const;
 
     /// Get the original group id.
-    [[nodiscard]] uint32_t group_id() const;
+    [[nodiscard]] constexpr uint32_t group_id() const;
 
     /// Create Group without any check.
-    static Group unsafe_create(uint32_t type_id, uint32_t group_id);
+    static constexpr Group unsafe_create(uint32_t type_id, uint32_t group_id);
 
     /// Create Group with validity check.
-    static std::optional<Group> create(uint32_t type_id, uint32_t group_id);
+    static constexpr std::optional<Group> create(uint32_t type_id, uint32_t group_id);
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Get the number of cases contained.
-    [[nodiscard]] uint32_t size() const;
-
-    /// Get all cases under the current group.
+    /// Get all cases under current group.
     [[nodiscard]] RangesUnion cases() const;
+
+    /// Get the number of klotski cases contained.
+    [[nodiscard]] constexpr uint32_t size() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -188,7 +190,8 @@ private:
     uint32_t type_id_;
     uint32_t group_id_;
 
-    [[nodiscard]] uint32_t flat_id() const;
+    /// Tiled merge of type_id and group_id.
+    [[nodiscard]] constexpr uint32_t flat_id() const;
 
 public:
     /// Spawn all the unsorted codes of the current group.
