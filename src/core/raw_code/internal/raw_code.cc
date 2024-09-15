@@ -1,3 +1,5 @@
+#include <format>
+
 #include "utils/common.h"
 #include "raw_code/raw_code.h"
 
@@ -5,18 +7,17 @@ using klotski::codec::RawCode;
 
 #ifndef KLSK_NDEBUG
 std::ostream& klotski::codec::operator<<(std::ostream &out, const RawCode self) {
-    char *code;
-    asprintf(&code, "%015llX\n", self.code_); // code length -> 15
-    out << code;
-    free(code);
-
-    constexpr char map[] = {
-    //  0x0  1x2  2x1  1x1  2x2  b101 b110 fill
-        '.', '~', '|', '*', '@', '?', '?', '+'
-    };
+    constexpr auto char_map = std::to_array({
+        '.', // space
+        '~', '|', // 1x2 | 2x1
+        '*', '@', // 1x1 | 2x2
+        '?', '?', // unknown
+        '+', // fill
+    });
+    out << std::format("{:015X}\n", self.code_);
     for (int addr = 0; addr < 60; addr += 3) {
-        out << map[(self.code_ >> addr) & 0b111];
-        out << " " << &"\n"[(addr & 0b11) != 0b01];
+        out << char_map[(self.code_ >> addr) & 0b111];
+        out << &" "[(addr & 0b11) == 0b01] << &"\n"[(addr & 0b11) != 0b01];
     }
     return out;
 }

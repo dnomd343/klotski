@@ -33,7 +33,7 @@ TEST(RawCode, basic) {
 #ifndef KLSK_NDEBUG
     std::ostringstream out;
     out << RawCode::unsafe_create(TEST_R_CODE); // ostream capture
-    EXPECT_EQ(out.str(), "603EDF5CAFFF5E2\n| @ + | \n+ + + + \n| ~ + | \n+ * * + \n* . . * \n");
+    EXPECT_EQ(out.str(), "603EDF5CAFFF5E2\n| @ + |\n+ + + +\n| ~ + |\n+ * * +\n* . . *\n");
 #endif
 }
 
