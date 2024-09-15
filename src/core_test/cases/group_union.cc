@@ -1,13 +1,9 @@
 #include <gtest/gtest.h>
 
-#include <format>
 #include <cstdint>
 #include <algorithm>
 
 #include <ranges>
-
-// TODO: only for debug
-#include <iostream>
 
 #include "group/group.h"
 #include "helper/cases.h"
@@ -21,6 +17,7 @@ using klotski::cases::ALL_GROUP_NUM;
 
 TEST(GroupUnion, basic) {
 
+    // TODO: loop for all
     EXPECT_TRUE(GroupUnion::create(0).has_value());
     EXPECT_EQ(GroupUnion::create(0).value().unwrap(), 0);
     EXPECT_FALSE(GroupUnion::create(TYPE_ID_LIMIT).has_value());
@@ -76,60 +73,18 @@ TEST(GroupUnion, size) {
 }
 
 TEST(GroupUnion, group_num) {
-
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         EXPECT_EQ(GroupUnion::unsafe_create(type_id).group_num(), group_num(type_id));
-
     }
 }
 
 TEST(GroupUnion, cases) {
     for (uint32_t type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
         auto cases = group_union_cases(type_id);
-        EXPECT_EQ(cases, klotski::cases::GroupUnion::unsafe_create(type_id).cases().codes());
+        EXPECT_EQ(cases, GroupUnion::unsafe_create(type_id).cases().codes());
     }
 }
 
-TEST(GroupUnion, demo) {
+// TODO: test max_group_size
 
-    // for (auto i = 0; i < block_nums().size(); ++i) {
-    //     std::cout << block_nums()[i].n_2x1 + block_nums()[i].n_1x2 << ", ";
-    //     std::cout << block_nums()[i].n_2x1 << ", ";
-    //     std::cout << block_nums()[i].n_1x1 << std::endl;
-    // }
-
-    std::vector<std::vector<uint64_t>> pp;
-
-    pp.resize(block_nums().size());
-
-    for (uint64_t head = 0; head < 16; ++head) {
-
-        for (auto range : AllCases::instance().fetch()[head]) {
-            uint64_t common_code = head << 32 | range;
-
-            auto type_id = to_type_id(cal_block_num(common_code));
-
-            pp[type_id].emplace_back(common_code);
-
-        }
-
-    }
-
-    for (uint32_t type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-
-        auto cases = klotski::cases::GroupUnion::unsafe_create(type_id).cases();
-
-        std::vector<uint64_t> extend {};
-        for (uint64_t head = 0; head < 16; ++head) {
-            for (auto range : cases[head]) {
-                extend.emplace_back(head << 32 | range);
-            }
-        }
-
-        std::cout << "type_id " << type_id << " -> " << extend.size() << std::endl;
-
-        EXPECT_EQ(extend, pp[type_id]);
-    }
-
-
-}
+// TODO: verify from_raw_code / from_short_code / from_common_code
