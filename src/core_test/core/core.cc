@@ -1,13 +1,23 @@
 #include <gtest/gtest.h>
 
-#include "core/core.h"
-
+#include <algorithm>
 #include <unordered_set>
+#include <numeric>
+#include <ranges>
 
+#include "core/core.h"
 #include "utils/common.h"
-
 #include "all_cases/all_cases.h"
 #include "common_code/common_code.h"
+
+#include "utility/hash.h"
+
+constexpr auto NEXT_CASES_XXH3 = std::to_array<uint64_t>({
+    0xcd1920b50bc3bda1, 0xd881004a12384988, 0xbdefaaee9508848d, 0x2d06800538d394c2,
+    0xb1c484293104fbfc, 0x0474e965bfd0bf98, 0x76891a6b2906d7d6, 0x2d06800538d394c2,
+    0x878de6f355826c4d, 0xe67c680ab0cbfd21, 0x0b987953e6860717, 0x2d06800538d394c2,
+    0x4a7599e1bdbffbb3, 0xb3cf1fdea988466a, 0x21226a4f692e1892, 0x2d06800538d394c2,
+});
 
 using klotski::core::Core;
 using klotski::cases::AllCases;
@@ -15,7 +25,11 @@ using klotski::codec::CommonCode;
 
 using klotski::codec::RawCode;
 
-TEST(core, core) {
+// TODO: test input mask with samples
+
+TEST(Core, core) {
+
+    // TODO: test for each type_id
 
     std::vector<uint64_t> raw_codes;
     raw_codes.reserve(klotski::cases::ALL_CASES_NUM_);
@@ -54,7 +68,7 @@ TEST(core, core) {
 
 // TODO: support multi-thread test
 
-TEST(core, mask) {
+TEST(Core, mask) {
     std::vector<uint64_t> raw_codes;
     raw_codes.reserve(klotski::cases::ALL_CASES_NUM_);
 
@@ -116,13 +130,7 @@ TEST(core, mask) {
             return;
         }
 
-//        std::cout << RawCode::unsafe_create(full_mask) << std::endl;
-//        std::cout << RawCode::unsafe_create(ret) << std::endl;
-//        std::cout << RawCode::unsafe_create(removed) << std::endl;
-
         auto diff = src ^ removed;
-//        std::cout << RawCode::unsafe_create(diff) << std::endl;
-//        std::cout << RawCode::unsafe_create(moved) << std::endl;
 
         int tmp;
         switch ((ret >> num) & 0b111) {
@@ -147,10 +155,6 @@ TEST(core, mask) {
             return;
         }
 
-//        std::cout << "----------------" << std::endl;
-
-//        EXPECT_NE(src, ret);
-
     });
 
     for (auto raw_code : raw_codes) {
@@ -161,10 +165,53 @@ TEST(core, mask) {
     }
 
 
-//    auto raw_code = RawCode::from_common_code(0x1A9BF0C00).value();
-//    auto raw_code = RawCode::from_common_code(0x4FEA13400).value();
-//    src = raw_code.unwrap();
-//
-//    core.next_cases(raw_code.unwrap(), 0);
+}
+
+TEST(Core, next_cases) {
+
+    std::vector<RawCode> raw_codes;
+
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto range : AllCases::instance().fetch()[head]) {
+            auto common_code = CommonCode::unsafe_create(head << 32 | range);
+
+            auto raw_code = common_code.to_raw_code();
+            raw_codes.emplace_back(raw_code);
+        }
+        break;
+    }
+
+    std::vector<CommonCode> result {};
+
+    std::vector<CommonCode> tmp;
+    auto core = Core([&tmp](uint64_t ret, uint64_t mask) {
+        tmp.emplace_back(CommonCode::from_raw_code(ret).value());
+    });
+
+    for (const auto raw_code : raw_codes) {
+
+        result.emplace_back(raw_code.to_common_code());
+//        std::cout << raw_code.to_common_code() << "->";
+        core.next_cases(raw_code.unwrap(), 0);
+
+        std::stable_sort(tmp.begin(), tmp.end());
+        for (uint64_t i = 0; i < tmp.size(); ++i) {
+            result.emplace_back(tmp[i]);
+//            std::cout << tmp[i];
+//            if (i + 1 != tmp.size()) {
+//                std::cout << "/";
+//            }
+        }
+
+        tmp.clear();
+//        std::cout << std::endl;
+
+    }
+
+//    std::cout << result.size() << std::endl;
+
+//    std::cout << std::hex << hash::xxh3(result) << std::endl;
+
+    EXPECT_EQ(hash::xxh3(result), NEXT_CASES_XXH3[0]);
 
 }
