@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: move to independent repo
+
 /// The Exposer can forcibly access private members of a class without changing
 /// any code, and in most scenarios, it has zero over-cost. This exposer using
 /// macros to construct function that return a reference of target variable or
@@ -49,11 +51,17 @@ struct Exposer {
 
 #define UNIQUE_TAG UNIQUE_TAG_IMPL(__COUNTER__)
 
-#define NS_EXPOSER_START \
-    namespace {          \
-    namespace exposer {  \
+// TODO: add GCC warning ignored
 
-#define NS_EXPOSER_END }}
+#define NS_EXPOSER_START             \
+    namespace {                      \
+    namespace exposer {              \
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Wunused-function\"")
+
+#define NS_EXPOSER_END              \
+    _Pragma("clang diagnostic pop") \
+    }}
 
 // ----------------------------------------------------------------------------------------- //
 
