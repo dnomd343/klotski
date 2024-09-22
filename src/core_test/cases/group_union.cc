@@ -9,6 +9,8 @@
 #include "helper/cases.h"
 #include "common_code/common_code.h"
 
+using klotski::codec::ShortCode;
+
 using klotski::cases::Group;
 using klotski::cases::GroupUnion;
 
@@ -87,4 +89,42 @@ TEST(GroupUnion, cases) {
 
 // TODO: test max_group_size
 
-// TODO: verify from_raw_code / from_short_code / from_common_code
+TEST(GroupUnion, max_group_size) {
+    for (uint32_t type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
+
+        auto groups = GroupUnion::unsafe_create(type_id).groups();
+
+        auto sizes = groups | std::views::transform([](Group group) {
+            return group.size();
+        }) | std::ranges::to<std::vector>();
+
+//        std::cout << std::format("{} -> {}\n", type_id, sizes);
+
+        auto max_item = *std::max_element(sizes.begin(), sizes.end()); // TODO: using std::ranges
+
+        EXPECT_EQ(GroupUnion::unsafe_create(type_id).max_group_size(), max_item);
+
+    }
+}
+
+TEST(GroupUnion, type_id) {
+
+    ShortCode::speed_up(true);
+
+    for (uint64_t head = 0; head < 16; ++head) {
+        for (const auto range : AllCases::instance().fetch()[head]) {
+
+            auto common_code = CommonCode::unsafe_create(head << 32 | range);
+            auto short_code = common_code.to_short_code();
+            auto raw_code = common_code.to_raw_code();
+
+            auto expect = to_type_id(cal_block_num(range));
+
+            EXPECT_EQ(GroupUnion::from_common_code(common_code).unwrap(), expect);
+            EXPECT_EQ(GroupUnion::from_short_code(short_code).unwrap(), expect);
+            EXPECT_EQ(GroupUnion::from_raw_code(raw_code).unwrap(), expect);
+
+        }
+    }
+
+}

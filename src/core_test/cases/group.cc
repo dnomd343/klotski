@@ -32,3 +32,5 @@ TEST(Group, cases) {
 }
 
 // TODO: test from_raw_code / from_short_code / from_common_code
+
+// TODO: GroupCases hash verify
