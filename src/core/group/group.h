@@ -200,13 +200,23 @@ public:
 
 class GroupCases {
 public:
+    // TODO: rename as Info and changed as class
     struct info_t {
         uint16_t type_id;
         uint16_t group_id;
         uint32_t case_id;
 
-        // TODO: should we keep it valid? (convert without check)
+#ifndef KLSK_NDEBUG
+        friend std::ostream& operator<<(std::ostream &out, info_t self) {
+            out << std::format("{}-{}-{}", self.type_id, self.group_id, self.case_id);
+            return out;
+        }
+#endif
+
+        // TODO: keep info_t valid (convert without check)
     };
+
+    // ------------------------------------------------------------------------------------- //
 
     /// Execute the build process.
     void build();
@@ -214,28 +224,40 @@ public:
     /// Execute the build process without blocking.
     void build_async(Executor &&executor, Notifier &&callback);
 
-    static info_t to_info_t(codec::ShortCode short_code);
+    // ------------------------------------------------------------------------------------- //
 
-    static codec::CommonCode from_info_t(info_t info);
+    /// Parse CommonCode from group info.
+    codec::CommonCode parse(info_t info);
 
-    /// Get the CommonCode using the group info.
-    // static codec::CommonCode parse(const info_t &info);
+    /// Get group info from RawCode.
+    info_t group_info(codec::RawCode raw_code);
 
-    /// Get group info according to specified case.
-    // static info_t encode(const codec::RawCode &raw_code);
-    // static info_t encode(const codec::CommonCode &common_code);
+    /// Get group info from short code.
+    info_t group_info(codec::ShortCode short_code);
+
+    /// Get group info from common code.
+    info_t group_info(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
 
 private:
     bool available_ = false;
     std::mutex building_ {};
 
-    // static codec::CommonCode fast_decode(const info_t &info);
-    // static info_t fast_encode(const codec::CommonCode &common_code);
-
     KLSK_INSTANCE(GroupCases)
+
+public:
+    // fast api
+    static info_t to_info_t(codec::ShortCode short_code);
+    static codec::CommonCode from_info_t(info_t info);
+
+    // TODO: add to_info_t(CommonCode) interface
+
+    // TODO: tiny api
 };
 
 } // namespace klotski::cases
 
 #include "internal/group_union.inl"
+#include "internal/group_cases.inl"
 #include "internal/group.inl"

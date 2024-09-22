@@ -5,9 +5,19 @@
 
 using klotski::cases::GroupCases;
 
+using klotski::codec::ShortCode;
+
 using klotski::codec::CommonCode;
 
 using klotski::cases::RangesUnion;
+
+using klotski::cases::GroupUnion;
+
+using klotski::cases::ALL_GROUP_NUM;
+
+using klotski::cases::TYPE_ID_LIMIT;
+
+using klotski::cases::ALL_CASES_NUM_;
 
 struct tmp_t {
     uint32_t group_id : 12;
@@ -21,38 +31,26 @@ static_assert(sizeof(tmp_t) == 4);
 std::vector<RangesUnion> build_ranges_unions() {
 
     std::vector<RangesUnion> unions;
-    unions.reserve(25422);
-
-    // auto group_union = klotski::cases::GroupUnion::unsafe_create(169);
+    unions.reserve(ALL_GROUP_NUM);
 
     // TODO: add white list for single-group unions
 
-    for (uint32_t type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-        auto group_union = klotski::cases::GroupUnion::unsafe_create(type_id);
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        auto group_union = GroupUnion::unsafe_create(type_id);
         for (auto group : group_union.groups()) {
             unions.emplace_back(group.cases());
         }
     }
-
-    std::cout << unions.size() << std::endl;
 
     return unions;
 }
 
 CommonCode GroupCases::from_info_t(info_t info) {
 
-    std::vector<RangesUnion> data = build_ranges_unions();
-
-    // TODO: build as static data
-
-    // TODO: loop [0, 25422) -> get RangesUnion of all flat_ids
+    // TODO: build as static class member (ptr)
+    static std::vector<RangesUnion> data = build_ranges_unions();
 
     auto flat_id = GROUP_OFFSET[info.type_id] + info.group_id;
-    std::cout << "flat_id = " << flat_id << std::endl;
-
-    // auto codes = data[flat_id].codes();
-    // std::stable_sort(codes.begin(), codes.end());
-    // std::cout << codes[info.case_id] << std::endl;
 
     auto &cases = data[flat_id];
     // TODO: make offset table for perf
@@ -68,23 +66,50 @@ CommonCode GroupCases::from_info_t(info_t info) {
         }
     }
 
-    std::cout << "head = " << head << std::endl;
-    std::cout << info.case_id << std::endl;
+    auto range = cases[head][info.case_id];
+    return CommonCode::unsafe_create(head << 32 | range);
+}
 
-    // TODO: need sort in `Group::cases`
-    std::stable_sort(cases[head].begin(), cases[head].end());
+static std::vector<tmp_t> build_tmp_data() {
 
-    std::cout << CommonCode::unsafe_create(head << 32 | cases[1][1909]) << std::endl;
+    std::vector<tmp_t> data;
+    data.resize(ALL_CASES_NUM_);
+    ShortCode::speed_up(true);
 
-    return CommonCode::unsafe_create(0);
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        auto group_union = GroupUnion::unsafe_create(type_id);
+        for (auto group : group_union.groups()) {
+            uint32_t group_id = group.group_id();
+
+            auto codes = group.cases().codes();
+            for (uint32_t case_id = 0; case_id < codes.size(); ++case_id) {
+                auto short_code = codes[case_id].to_short_code();
+
+                data[short_code.unwrap()] = tmp_t {
+                    .group_id = group_id,
+                    .case_id = case_id,
+                };
+
+            }
+        }
+    }
+
+    return data;
+
 }
 
 GroupCases::info_t GroupCases::to_info_t(codec::ShortCode short_code) {
-    std::vector<tmp_t> data;
 
-    // TODO: build as static data
+    // TODO: build as static class member (ptr)
+    static auto data = build_tmp_data();
 
-    // TODO: loop from `std::vector<RangesUnion>`
+    uint16_t type_id = GroupUnion::from_short_code(short_code).unwrap(); // NOTE: need to convert as CommonCode
+    uint16_t group_id = data[short_code.unwrap()].group_id;
+    auto case_id = data[short_code.unwrap()].case_id;
 
-    return {};
+    return info_t {
+        .type_id = type_id,
+        .group_id = group_id,
+        .case_id = case_id,
+    };
 }

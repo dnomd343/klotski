@@ -40,11 +40,14 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
-    const auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
-    const auto group = Group::from_common_code(common_code);
+//    const auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
+//    const auto group = Group::from_common_code(common_code);
 
-    // GroupCases::from_info_t({169, 1, 7472});
-    // GroupCases::to_info_t(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
+    std::cout << GroupCases::from_info_t({169, 1, 7472}) << std::endl;
+    std::cout << GroupCases::from_info_t({164, 0, 30833}) << std::endl;
+
+    std::cout << GroupCases::to_info_t(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code()) << std::endl;
+    std::cout << GroupCases::to_info_t(CommonCode::unsafe_create(0x4FEA13400).to_short_code()) << std::endl;
 
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 
