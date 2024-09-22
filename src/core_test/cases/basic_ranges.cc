@@ -74,11 +74,9 @@ TEST_FF(BasicRanges, basic_ranges) {
 }
 
 TEST_FF(BasicRanges, basic_ranges_race) {
-    racer_.Start([] {
+    racer_.Execute([] {
         BasicRanges::instance().build();
     });
-    EXPECT_FALSE(Available());
-    racer_.Join();
     EXPECT_TRUE(Available());
     Verify();
 }
@@ -107,13 +105,11 @@ TEST_FF(BasicRanges, basic_ranges_async) {
 
 TEST_FF(BasicRanges, basic_ranges_async_race) {
     counter_.store(0);
-    racer_.Start([this] {
+    racer_.Execute([this] {
         BasicRanges::instance().build_async(executor_.Entry(), [this] {
             counter_.fetch_add(1);
         });
     });
-    EXPECT_FALSE(Available());
-    racer_.Join();
     EXPECT_TRUE(Available());
     EXPECT_EQ(counter_.load(), racer_.RaceNum());
     Verify();

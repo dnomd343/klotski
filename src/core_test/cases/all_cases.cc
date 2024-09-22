@@ -106,11 +106,9 @@ TEST_FF(AllCases, all_cases) {
 }
 
 TEST_FF(AllCases, all_cases_race) {
-    racer_.Start([] {
+    racer_.Execute([] {
         AllCases::instance().build();
     });
-    EXPECT_FALSE(Available());
-    racer_.Join();
     EXPECT_TRUE(Available());
     Verify();
 }
@@ -139,13 +137,11 @@ TEST_FF(AllCases, all_cases_async) {
 
 TEST_FF(AllCases, all_cases_async_race) {
     counter_.store(0);
-    racer_.Start([this] {
+    racer_.Execute([this] {
         AllCases::instance().build_async(executor_.Entry(), [this] {
             counter_.fetch_add(1);
         });
     });
-    EXPECT_FALSE(Available());
-    racer_.Join();
     EXPECT_TRUE(Available());
     EXPECT_EQ(counter_.load(), racer_.RaceNum());
     Verify();

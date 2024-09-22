@@ -4,7 +4,7 @@
 #include <algorithm>
 
 #include "group/group.h"
-#include "utility/concurrent.h"
+#include "helper/concurrent.h"
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -33,13 +33,13 @@ constexpr auto Heads = std::to_array({
 class Concurrent {
 protected:
     // Execute same task concurrently.
-    co::Racer racer_ {256};
+    helper::Racer racer_ {};
 
     // Execute assigned tasks one by one.
-    co::Executor serial_ {1};
+    helper::Executor serial_ {1};
 
     // Execute assigned tasks on all cores.
-    co::Executor executor_ {0};
+    helper::Executor executor_ {0};
 
     // Atomic helpers for multi-thread testing.
     std::atomic<int> counter_ {0};

@@ -5,7 +5,7 @@
 #include "helper/expect.h"
 #include "helper/parallel.h"
 #include "utility/exposer.h"
-#include "utility/concurrent.h"
+#include "helper/concurrent.h"
 
 #include "all_cases/all_cases.h"
 #include "short_code/short_code.h"
@@ -22,8 +22,6 @@ using klotski::codec::CommonCode;
 using klotski::cases::ALL_CASES_NUM;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::codec::SHORT_CODE_LIMIT;
-
-constexpr auto TEST_THREAD_NUM = 256;
 
 /// Forcibly modify private variables to reset state.
 EXPOSE_VAR(AllCases, bool, available_)
@@ -154,7 +152,7 @@ TEST(ShortCode, initialize) {
 }
 
 TEST(ShortCode, speed_up) {
-    co::Racer racer {TEST_THREAD_NUM};
+    helper::Racer racer {};
 
     static auto EXPECT_STAGE_0 = +[]() {
         EXPECT_FALSE(exposer::ShortCode_fast_());
@@ -182,18 +180,18 @@ TEST(ShortCode, speed_up) {
 
     speed_up_reset();
     EXPECT_STAGE_0();
-    racer.Race([] { ShortCode::speed_up(false); });
+    racer.Execute([] { ShortCode::speed_up(false); });
     EXPECT_STAGE_1();
-    racer.Race([] { ShortCode::speed_up(true); });
+    racer.Execute([] { ShortCode::speed_up(true); });
     EXPECT_STAGE_2();
-    racer.Race([] { ShortCode::speed_up(true); });
+    racer.Execute([] { ShortCode::speed_up(true); });
     EXPECT_STAGE_2();
-    racer.Race([] { ShortCode::speed_up(false); });
+    racer.Execute([] { ShortCode::speed_up(false); });
     EXPECT_STAGE_2();
 
     speed_up_reset();
     EXPECT_STAGE_0();
-    racer.Race([] { ShortCode::speed_up(true); });
+    racer.Execute([] { ShortCode::speed_up(true); });
     EXPECT_STAGE_2();
 }
 

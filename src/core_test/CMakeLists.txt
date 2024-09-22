@@ -13,6 +13,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # ------------------------------------------------------------------------------------ #
 
 add_library(test_helper
+    helper/internal/concurrent.cc
     helper/internal/parallel.cc
     helper/internal/hash.cc
 )
