@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
 
+#include <ranges>
 #include <cstdint>
 #include <algorithm>
 
-#include <ranges>
+#include "helper/cases.h"
+#include "helper/parallel.h"
+#include "helper/block_num.h"
 
 #include "group/group.h"
-#include "helper/cases.h"
 #include "common_code/common_code.h"
-
-#include "helper/parallel.h"
 
 using klotski::codec::ShortCode;
 
@@ -93,7 +93,7 @@ TEST(GroupUnion, values) {
 TEST(GroupUnion, type_id) {
     ShortCode::speed_up(true);
     COMMON_CODE_PARALLEL({
-         auto type_id = to_type_id(cal_block_num(code.unwrap()));
+         auto type_id = to_type_id(helper::cal_block_num(code.unwrap()));
          EXPECT_EQ(GroupUnion::from_common_code(code).unwrap(), type_id);
          EXPECT_EQ(GroupUnion::from_raw_code(code.to_raw_code()).unwrap(), type_id);
          EXPECT_EQ(GroupUnion::from_short_code(code.to_short_code()).unwrap(), type_id);

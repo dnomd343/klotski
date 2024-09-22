@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "group/group.h"
 #include "helper/cases.h"
+#include "helper/block_num.h"
+
+#include "group/group.h"
 #include "ranges/ranges.h"
 
 using klotski::range_reverse;
@@ -26,7 +28,7 @@ TEST(Ranges, spawn) {
         ranges.spawn(n, n_2x1, n_1x1);
         EXPECT_SORTED_AND_UNIQUE(ranges); // sorted and unique
         for (const auto range : ranges) {
-            const auto [val_1x1, val_1x2, val_2x1] = cal_block_num(range);
+            const auto [val_1x1, val_1x2, val_2x1] = helper::cal_block_num(range);
             EXPECT_EQ(val_1x1, n_1x1);
             EXPECT_EQ(val_2x1, n_2x1);
             EXPECT_EQ(val_1x2 + val_2x1, n); // verify block nums

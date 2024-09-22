@@ -13,6 +13,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # ------------------------------------------------------------------------------------ #
 
 add_library(test_helper
+    helper/internal/block_num.cc
     helper/internal/concurrent.cc
     helper/internal/parallel.cc
     helper/internal/hash.cc
@@ -28,7 +29,6 @@ set(KLSK_TEST_CASES_SRC
     cases/all_cases.cc
     cases/group_union.cc
     cases/group.cc
-    cases/helper/block_num.cc
     cases/helper/group_impl.cc
 )
 

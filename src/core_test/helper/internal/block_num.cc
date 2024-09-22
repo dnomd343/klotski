@@ -1,9 +1,12 @@
 #include <ranges>
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
 
-#include "cases.h"
+#include "ranges/ranges.h"
+#include "helper/block_num.h"
 
+using helper::block_num_t;
 using klotski::range_reverse;
 
 /// Build the sequence list of all block numbers.
@@ -33,18 +36,18 @@ static std::vector<block_num_t> build_block_nums() {
 /// Build the mapping table from block_num to type_id.
 static std::unordered_map<block_num_t, uint32_t> build_type_id_map() {
     std::unordered_map<block_num_t, uint32_t> ids;
-    for (uint64_t i = 0; i < block_nums().size(); ++i) {
-        ids.emplace(block_nums()[i], i); // TODO: using `std::views::enumerate`
+    for (uint64_t i = 0; i < helper::block_nums().size(); ++i) {
+        ids.emplace(helper::block_nums()[i], i); // TODO: using `std::views::enumerate`
     }
     return ids;
 }
 
-const std::vector<block_num_t>& block_nums() {
+const std::vector<block_num_t>& helper::block_nums() {
     static auto data = build_block_nums();
     return data;
 }
 
-block_num_t cal_block_num(uint32_t range) {
+block_num_t helper::cal_block_num(uint32_t range) {
     block_num_t result {};
     for (range = range_reverse(range); range; range >>= 2) {
         switch (range & 0b11) {
@@ -63,14 +66,14 @@ block_num_t cal_block_num(uint32_t range) {
     return result;
 }
 
-block_num_t to_block_num(const uint32_t type_id) {
-    if (type_id < block_nums().size()) {
-        return block_nums()[type_id];
+block_num_t helper::to_block_num(const uint32_t type_id) {
+    if (type_id < helper::block_nums().size()) {
+        return helper::block_nums()[type_id];
     }
     std::abort();
 }
 
-uint32_t to_type_id(const block_num_t block_num) {
+uint32_t helper::to_type_id(const block_num_t block_num) {
     static auto data = build_type_id_map();
     if (const auto match = data.find(block_num); match != data.end()) {
         return match->second;

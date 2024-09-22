@@ -1,5 +1,7 @@
 #include "cases.h"
 
+#include "helper/block_num.h"
+
 // TODO: multi-threads builder
 
 /// Extend ordered Group from the specified CommonCode seed.
@@ -33,9 +35,9 @@ static std::vector<std::vector<CommonCode>> split_groups(std::vector<CommonCode>
 static const std::vector<std::vector<CommonCode>>& group_union_data() {
     static auto data = [] {
         std::vector<std::vector<CommonCode>> codes;
-        codes.resize(block_nums().size());
+        codes.resize(helper::block_nums().size());
         for (auto code: AllCases::instance().fetch().codes()) {
-            codes[to_type_id(cal_block_num(code.unwrap()))].emplace_back(code);
+            codes[to_type_id(helper::cal_block_num(code.unwrap()))].emplace_back(code);
         }
         return codes;
     }();
