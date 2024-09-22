@@ -3,20 +3,15 @@
 
 #include "group/group.h"
 
-using klotski::cases::GroupCases;
-
 using klotski::codec::ShortCode;
-
 using klotski::codec::CommonCode;
 
+using klotski::cases::GroupCases;
+using klotski::cases::GroupUnion;
 using klotski::cases::RangesUnion;
 
-using klotski::cases::GroupUnion;
-
 using klotski::cases::ALL_GROUP_NUM;
-
 using klotski::cases::TYPE_ID_LIMIT;
-
 using klotski::cases::ALL_CASES_NUM_;
 
 struct tmp_t {
@@ -28,8 +23,10 @@ static_assert(sizeof(tmp_t) == 4);
 
 // TODO: we need multi-thread support (Executor)
 
-std::vector<RangesUnion> build_ranges_unions() {
+static std::vector<tmp_t> *rev_data = nullptr;
+static std::vector<RangesUnion> *ru_data = nullptr;
 
+std::vector<RangesUnion> build_ranges_unions() {
     std::vector<RangesUnion> unions;
     unions.reserve(ALL_GROUP_NUM);
 
@@ -41,37 +38,10 @@ std::vector<RangesUnion> build_ranges_unions() {
             unions.emplace_back(group.cases());
         }
     }
-
     return unions;
 }
 
-CommonCode GroupCases::from_info_t(info_t info) {
-
-    // TODO: build as static class member (ptr)
-    static std::vector<RangesUnion> data = build_ranges_unions();
-
-    auto flat_id = GROUP_OFFSET[info.type_id] + info.group_id;
-
-    auto &cases = data[flat_id];
-    // TODO: make offset table for perf
-
-    uint64_t head = 0;
-
-    for (;;) {
-        if (info.case_id >= cases[head].size()) {
-            info.case_id -= cases[head].size();
-            ++head;
-        } else {
-            break;
-        }
-    }
-
-    auto range = cases[head][info.case_id];
-    return CommonCode::unsafe_create(head << 32 | range);
-}
-
 static std::vector<tmp_t> build_tmp_data() {
-
     std::vector<tmp_t> data;
     data.resize(ALL_CASES_NUM_);
     ShortCode::speed_up(true);
@@ -89,27 +59,68 @@ static std::vector<tmp_t> build_tmp_data() {
                     .group_id = group_id,
                     .case_id = case_id,
                 };
-
             }
         }
     }
-
     return data;
-
 }
 
-GroupCases::info_t GroupCases::to_info_t(codec::ShortCode short_code) {
+void GroupCases::build() {
+    static auto data_1 = build_ranges_unions();
+    static auto data_2 = build_tmp_data();
+    ru_data = &data_1;
+    rev_data = &data_2;
+}
 
-    // TODO: build as static class member (ptr)
-    static auto data = build_tmp_data();
+CommonCode GroupCases::fast_parse(Info info) {
+
+    auto flat_id = GROUP_OFFSET[info.type_id] + info.group_id;
+
+    auto &cases = (*ru_data)[flat_id];
+    // TODO: make offset table for perf
+
+    uint64_t head = 0;
+
+    for (;;) {
+        if (info.case_id >= cases[head].size()) {
+            info.case_id -= cases[head].size();
+            ++head;
+        } else {
+            break;
+        }
+    }
+
+    auto range = cases[head][info.case_id];
+    return CommonCode::unsafe_create(head << 32 | range);
+}
+
+GroupCases::Info GroupCases::fast_obtain(codec::ShortCode short_code) {
 
     uint16_t type_id = GroupUnion::from_short_code(short_code).unwrap(); // NOTE: need to convert as CommonCode
-    uint16_t group_id = data[short_code.unwrap()].group_id;
-    auto case_id = data[short_code.unwrap()].case_id;
+    uint16_t group_id = (*rev_data)[short_code.unwrap()].group_id;
+    auto case_id = (*rev_data)[short_code.unwrap()].case_id;
 
-    return info_t {
+    return Info {
         .type_id = type_id,
         .group_id = group_id,
         .case_id = case_id,
     };
+}
+
+GroupCases::Info GroupCases::fast_obtain(codec::CommonCode common_code) {
+    return fast_obtain(common_code.to_short_code());
+}
+
+void GroupCases::build_async(klotski::Executor &&executor, klotski::Notifier &&callback) {
+
+}
+
+klotski::codec::CommonCode GroupCases::tiny_parse(klotski::cases::GroupCases::Info info) {
+    // TODO: tiny parse process
+    return CommonCode::unsafe_create(0);
+}
+
+GroupCases::Info GroupCases::tiny_obtain(codec::CommonCode common_code) {
+    // TODO: tiny obtain process
+    return Info {};
 }

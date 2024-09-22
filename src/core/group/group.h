@@ -201,13 +201,14 @@ public:
 class GroupCases {
 public:
     // TODO: rename as Info and changed as class
-    struct info_t {
+    class Info {
+    public:
         uint16_t type_id;
         uint16_t group_id;
         uint32_t case_id;
 
 #ifndef KLSK_NDEBUG
-        friend std::ostream& operator<<(std::ostream &out, info_t self) {
+        friend std::ostream& operator<<(std::ostream &out, Info self) {
             out << std::format("{}-{}-{}", self.type_id, self.group_id, self.case_id);
             return out;
         }
@@ -219,24 +220,24 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Execute the build process.
-    void build();
+    static void build();
 
     /// Execute the build process without blocking.
-    void build_async(Executor &&executor, Notifier &&callback);
+    static void build_async(Executor &&executor, Notifier &&callback);
 
     // ------------------------------------------------------------------------------------- //
 
     /// Parse CommonCode from group info.
-    codec::CommonCode parse(info_t info);
+    // codec::CommonCode parse(Info info);
 
     /// Get group info from RawCode.
-    info_t group_info(codec::RawCode raw_code);
+    // Info get_info(codec::RawCode raw_code);
 
     /// Get group info from short code.
-    info_t group_info(codec::ShortCode short_code);
+    // Info get_info(codec::ShortCode short_code);
 
     /// Get group info from common code.
-    info_t group_info(codec::CommonCode common_code);
+    // Info get_info(codec::CommonCode common_code);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -247,13 +248,26 @@ private:
     KLSK_INSTANCE(GroupCases)
 
 public:
-    // fast api
-    static info_t to_info_t(codec::ShortCode short_code);
-    static codec::CommonCode from_info_t(info_t info);
+    // ------------------------------------------------------------------------------------- //
 
-    // TODO: add to_info_t(CommonCode) interface
+    /// Parse group info into CommonCode.
+    static codec::CommonCode tiny_parse(Info info);
 
-    // TODO: tiny api
+    /// Obtain group info from CommonCode.
+    static Info tiny_obtain(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Quickly parse group info into CommonCode.
+    static codec::CommonCode fast_parse(Info info);
+
+    /// Quickly obtain group info from ShortCode.
+    static Info fast_obtain(codec::ShortCode short_code);
+
+    /// Quickly obtain group info from CommonCode.
+    static Info fast_obtain(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
 };
 
 } // namespace klotski::cases
