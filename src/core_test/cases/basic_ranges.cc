@@ -3,6 +3,7 @@
 #include "group/group.h"
 #include "helper/hash.h"
 #include "helper/cases.h"
+#include "helper/fixture.h"
 #include "utility/exposer.h"
 
 using klotski::array_sum;
@@ -18,7 +19,7 @@ EXPOSE_VAR(BasicRanges, bool, available_)
 
 constexpr uint64_t BASIC_RANGES_XXH3 = 0x34fce9da6a052533;
 
-class BasicRangesTest : public testing::Test, public Concurrent {
+class BasicRangesTest : public testing::Test, public helper::Concurrent {
 protected:
     void SetUp() override {
         Reset();

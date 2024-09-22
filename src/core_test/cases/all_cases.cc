@@ -2,6 +2,7 @@
 
 #include "helper/hash.h"
 #include "helper/cases.h"
+#include "helper/fixture.h"
 #include "utility/exposer.h"
 
 #include "short_code/short_code.h"
@@ -28,7 +29,7 @@ constexpr auto ALL_CASES_XXH3 = std::to_array<uint64_t>({
     0x2cdf6c14a7ce3e9a, 0xb9dd04a315583f5c, 0x19046e49c44ae90d, 0x2d06800538d394c2,
 });
 
-class AllCasesTest : public testing::Test, public Concurrent {
+class AllCasesTest : public testing::Test, public helper::Concurrent {
 protected:
     void SetUp() override {
         Reset();

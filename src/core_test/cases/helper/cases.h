@@ -29,30 +29,6 @@ constexpr auto Heads = std::to_array({
 
 // ----------------------------------------------------------------------------------------- //
 
-/// Test fixture wrapper with concurrency tools.
-class Concurrent {
-protected:
-    // Execute same task concurrently.
-    helper::Racer racer_ {};
-
-    // Execute assigned tasks one by one.
-    helper::Executor serial_ {1};
-
-    // Execute assigned tasks on all cores.
-    helper::Executor executor_ {0};
-
-    // Atomic helpers for multi-thread testing.
-    std::atomic<int> counter_ {0};
-    std::atomic_flag condition_ {false};
-};
-
-/// Test fixture macro with custom test suite name.
-#define TEST_FF(test_suite_name, test_name)                        \
-    GTEST_TEST_(test_suite_name, test_name, test_suite_name##Test, \
-                ::testing::internal::GetTypeId<test_suite_name##Test>())
-
-// ----------------------------------------------------------------------------------------- //
-
 /// Assert that Ranges are sorted and unique.
 #define EXPECT_SORTED_AND_UNIQUE(R)                          \
     EXPECT_TRUE(std::ranges::is_sorted(R.begin(), R.end())); \
