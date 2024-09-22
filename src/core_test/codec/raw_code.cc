@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
-#include <BS_thread_pool.hpp>
+
+#include "test_samples.h"
+#include "helper/expect.h"
+#include "helper/parallel.h"
 
 #include "utils/common.h"
-#include "helper/codec.h"
-#include "helper/sample.h"
 #include "raw_code/raw_code.h"
 #include "all_cases/all_cases.h"
 #include "common_code/common_code.h"
@@ -166,14 +167,14 @@ TEST(RawCode, DISABLED_global_verify) {
         return raw_code;
     };
 
-    const auto result = parallel_spawn(0x10'0000'0000ULL, [](uint64_t start, uint64_t end) {
-        std::vector<uint64_t> codes;
+    const auto result = SCOPE_PARALLEL(0x10'0000'0000ULL, [](uint64_t start, uint64_t end) {
+        std::vector<CommonCode> codes;
         for (uint64_t common_code = start; common_code < end; ++common_code) {
             if (RawCode::check(force_convert(common_code))) {
-                codes.emplace_back(common_code); // store valid code
+                codes.emplace_back(CommonCode::unsafe_create(common_code)); // store valid code
             }
         }
         return codes;
     });
-    EXPECT_EQ(result, all_common_codes());
+    EXPECT_EQ(result, AllCases::instance().fetch().codes());
 }

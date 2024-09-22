@@ -13,7 +13,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # ------------------------------------------------------------------------------------ #
 
 add_library(test_helper
-    helper/internal/impl.cc
+    helper/internal/parallel.cc
 )
 target_link_libraries(test_helper PRIVATE klotski_core bs::thread_pool)
 
@@ -50,11 +50,10 @@ set(KLSK_TEST_CODEC_SRC
     codec/raw_code.cc
     codec/short_code.cc
     codec/common_code.cc
-    codec/helper/codec.cc
 )
 
 add_executable(test_klotski_codec ${KLSK_TEST_CODEC_SRC})
-target_link_libraries(test_klotski_codec PRIVATE ${KLSK_TEST_DEPS})
+target_link_libraries(test_klotski_codec PRIVATE ${KLSK_TEST_DEPS} test_helper)
 add_test(NAME klotski_codec COMMAND test_klotski_codec)
 
 # ------------------------------------------------------------------------------------ #

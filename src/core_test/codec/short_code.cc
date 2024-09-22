@@ -1,11 +1,12 @@
 #include <algorithm>
 #include <gtest/gtest.h>
-#include <BS_thread_pool.hpp>
 
-#include "helper/codec.h"
-#include "helper/sample.h"
+#include "test_samples.h"
+#include "helper/expect.h"
+#include "helper/parallel.h"
 #include "utility/exposer.h"
 #include "utility/concurrent.h"
+
 #include "all_cases/all_cases.h"
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
@@ -221,15 +222,15 @@ TEST(ShortCode, code_string) {
 
 TEST(ShortCode, DISABLED_global_verify) {
     speed_up_reset();
-    const auto result = parallel_spawn(SHORT_CODE_LIMIT, [](uint32_t start, uint32_t end) {
-        std::vector<uint64_t> codes;
+    const auto result = SCOPE_PARALLEL(SHORT_CODE_LIMIT, [](uint32_t start, uint32_t end) {
+        std::vector<CommonCode> codes;
         codes.reserve(end - start);
         for (uint32_t short_code = start; short_code < end; ++short_code) {
             auto common_code = CommonCode::from_short_code(short_code).value(); // ShortCode::tiny_decode
             EXPECT_EQ(common_code.to_short_code(), short_code); // ShortCode::tiny_encode
-            codes.emplace_back(common_code.unwrap());
+            codes.emplace_back(common_code);
         }
         return codes;
     });
-    EXPECT_EQ(result, all_common_codes());
+    EXPECT_EQ(result, AllCases::instance().fetch().codes());
 }
