@@ -12,6 +12,13 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # ------------------------------------------------------------------------------------ #
 
+add_library(test_helper
+    helper/internal/impl.cc
+)
+target_link_libraries(test_helper PRIVATE klotski_core bs::thread_pool)
+
+# ------------------------------------------------------------------------------------ #
+
 set(KLSK_TEST_CASES_SRC
     cases/ranges.cc
     cases/ranges_union.cc
@@ -19,13 +26,12 @@ set(KLSK_TEST_CASES_SRC
     cases/all_cases.cc
     cases/group_union.cc
     cases/group.cc
-    cases/helper/helper.cc
     cases/helper/block_num.cc
     cases/helper/group_impl.cc
 )
 
 add_executable(test_klotski_cases ${KLSK_TEST_CASES_SRC})
-target_link_libraries(test_klotski_cases PRIVATE ${KLSK_TEST_DEPS})
+target_link_libraries(test_klotski_cases PRIVATE ${KLSK_TEST_DEPS} test_helper)
 add_test(NAME klotski_cases COMMAND test_klotski_cases)
 
 # ------------------------------------------------------------------------------------ #

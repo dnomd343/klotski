@@ -116,5 +116,3 @@ const std::vector<CommonCode>& group_union_cases(uint32_t type_id);
 const std::vector<CommonCode>& group_cases(uint32_t type_id, uint32_t group_id);
 
 // ----------------------------------------------------------------------------------------- //
-
-void type_id_parallel(std::function<void(uint32_t type_id)> &&func);
