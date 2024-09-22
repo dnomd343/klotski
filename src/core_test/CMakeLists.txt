@@ -19,6 +19,7 @@ set(KLSK_TEST_CASES_SRC
     cases/all_cases.cc
     cases/group_union.cc
     cases/group.cc
+    cases/helper/helper.cc
     cases/helper/block_num.cc
     cases/helper/group_impl.cc
 )
