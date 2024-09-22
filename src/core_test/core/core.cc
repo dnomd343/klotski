@@ -10,7 +10,7 @@
 #include "all_cases/all_cases.h"
 #include "common_code/common_code.h"
 
-#include "utility/hash.h"
+#include "helper/hash.h"
 
 constexpr auto NEXT_CASES_XXH3 = std::to_array<uint64_t>({
     0xcd1920b50bc3bda1, 0xd881004a12384988, 0xbdefaaee9508848d, 0x2d06800538d394c2,

@@ -4,7 +4,7 @@ project(core-test LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 23)
 
 set(KLSK_TEST_DEPS klotski_c klotski_core
-        GTest::gtest_main bs::thread_pool md5sum::md5 xxHash::xxh3)
+        GTest::gtest_main bs::thread_pool)
 
 # ------------------------------------------------------------------------------------ #
 
@@ -14,8 +14,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_library(test_helper
     helper/internal/parallel.cc
+    helper/internal/hash.cc
 )
-target_link_libraries(test_helper PRIVATE klotski_core bs::thread_pool)
+target_link_libraries(test_helper PRIVATE klotski_core bs::thread_pool md5sum::md5 xxHash::xxh3)
 
 # ------------------------------------------------------------------------------------ #
 

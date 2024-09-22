@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
 
+#include "helper/hash.h"
 #include "helper/cases.h"
-#include "utility/hash.h"
 #include "utility/exposer.h"
+
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
@@ -49,7 +50,7 @@ protected:
         const auto &all_cases = AllCases::instance().fetch();
         for (int head = 0; head < 16; ++head) {
             EXPECT_EQ(all_cases[head].size(), ALL_CASES_NUM[head]); // verify all cases size
-            EXPECT_EQ(hash::xxh3(all_cases[head]), ALL_CASES_XXH3[head]); // verify all cases checksum
+            EXPECT_EQ(helper::xxh3(all_cases[head]), ALL_CASES_XXH3[head]); // verify all cases checksum
         }
     }
 };
@@ -59,7 +60,7 @@ TEST_FF(AllCases, content) {
         auto &cases = AllCases::instance().fetch()[head];
         EXPECT_SORTED_AND_UNIQUE(cases);
         EXPECT_EQ(cases.size(), ALL_CASES_NUM[head]); // size verify
-        EXPECT_EQ(hash::xxh3(cases), ALL_CASES_XXH3[head]); // checksum verify
+        EXPECT_EQ(helper::xxh3(cases), ALL_CASES_XXH3[head]); // checksum verify
         EXPECT_SUBSET(BasicRanges::instance().fetch(), cases); // subset verify
         EXPECT_COMMON_CODES(head, cases); // release verify
     }

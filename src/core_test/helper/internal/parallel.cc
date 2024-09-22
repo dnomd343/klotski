@@ -1,9 +1,8 @@
+#include "helper/parallel.h"
+
 #include <BS_thread_pool.hpp>
 
-#include <iostream>
-
 #include "group/group.h"
-#include "helper/parallel.h"
 #include "all_cases/all_cases.h"
 
 using klotski::cases::AllCases;

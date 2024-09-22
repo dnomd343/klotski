@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
+#include "helper/hash.h"
 #include "helper/cases.h"
-#include "utility/hash.h"
 #include "ranges/ranges.h"
 
 constexpr std::string_view ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";
@@ -14,7 +14,7 @@ TEST(RangesUnion, export) {
     for (auto code : AllCases::instance().fetch().codes()) {
         buffer += std::format("{:09X}\n", code.unwrap());
     }
-    EXPECT_EQ(hash::md5(buffer), ALL_CASES_MD5);
+    EXPECT_EQ(helper::md5(buffer), ALL_CASES_MD5);
 }
 
 TEST(RangesUnion, append) {

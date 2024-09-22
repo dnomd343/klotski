@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "group/group.h"
+#include "helper/hash.h"
 #include "helper/cases.h"
-#include "utility/hash.h"
 #include "utility/exposer.h"
 
 using klotski::array_sum;
@@ -39,7 +39,7 @@ protected:
     static void Verify() {
         const auto &basic_ranges = BasicRanges::instance().fetch();
         EXPECT_EQ(basic_ranges.size(), BASIC_RANGES_NUM_); // verify basic ranges size
-        EXPECT_EQ(hash::xxh3(basic_ranges), BASIC_RANGES_XXH3); // verify basic ranges checksum
+        EXPECT_EQ(helper::xxh3(basic_ranges), BASIC_RANGES_XXH3); // verify basic ranges checksum
     }
 };
 
@@ -47,7 +47,7 @@ TEST_FF(BasicRanges, content) {
     auto &ranges = BasicRanges::instance().fetch();
     EXPECT_SORTED_AND_UNIQUE(ranges);
     EXPECT_EQ(ranges.size(), BASIC_RANGES_NUM_); // size verify
-    EXPECT_EQ(hash::xxh3(ranges), BASIC_RANGES_XXH3); // checksum verify
+    EXPECT_EQ(helper::xxh3(ranges), BASIC_RANGES_XXH3); // checksum verify
 }
 
 TEST_FF(BasicRanges, constant) {
