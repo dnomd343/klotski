@@ -59,6 +59,10 @@ RangesUnion Group::cases() const {
 
     // TODO: do sort process
 
+    for (int head = 0; head < 16; ++head) {
+        std::stable_sort(data[head].begin(), data[head].end());
+    }
+
     return data;
 }
 

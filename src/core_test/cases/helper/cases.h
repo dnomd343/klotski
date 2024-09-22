@@ -25,6 +25,8 @@ constexpr auto Heads = std::to_array({
     0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14
 });
 
+// TODO: add NonHeads -> {3, 7, 11, 15}
+
 // ----------------------------------------------------------------------------------------- //
 
 /// Test fixture wrapper with concurrency tools.

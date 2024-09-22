@@ -4,7 +4,7 @@
 
 /// Extend ordered Group from the specified CommonCode seed.
 static std::vector<CommonCode> extend_cases(CommonCode seed) {
-    // TODO: using inner build process
+    // TODO: using inner build process -> only allow calling klotski::core
     auto raw_codes = klotski::cases::Group::extend(seed.to_raw_code());
     std::vector<CommonCode> common_codes {raw_codes.begin(), raw_codes.end()};
     std::ranges::sort(common_codes.begin(), common_codes.end());
