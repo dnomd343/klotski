@@ -30,6 +30,7 @@ using klotski::cases::Group;
 using klotski::cases::GroupCases;
 using klotski::cases::GroupUnion;
 
+using klotski::cases::TYPE_ID_LIMIT;
 using klotski::codec::SHORT_CODE_LIMIT;
 
 int main() {
@@ -43,13 +44,18 @@ int main() {
 //    const auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
 //    const auto group = Group::from_common_code(common_code);
 
-    GroupCases::build();
+//    GroupCases::build();
+//
+//    std::cout << GroupCases::fast_parse({169, 1, 7472}) << std::endl;
+//    std::cout << GroupCases::fast_parse({164, 0, 30833}) << std::endl;
+//
+//    std::cout << GroupCases::fast_obtain(CommonCode::unsafe_create(0x1A9BF0C00)) << std::endl;
+//    std::cout << GroupCases::fast_obtain(CommonCode::unsafe_create(0x4FEA13400)) << std::endl;
 
-    std::cout << GroupCases::fast_parse({169, 1, 7472}) << std::endl;
-    std::cout << GroupCases::fast_parse({164, 0, 30833}) << std::endl;
+    auto group = Group::unsafe_create(123, 1446);
 
-    std::cout << GroupCases::fast_obtain(CommonCode::unsafe_create(0x1A9BF0C00)) << std::endl;
-    std::cout << GroupCases::fast_obtain(CommonCode::unsafe_create(0x4FEA13400)) << std::endl;
+    std::cout << group.to_horizontal_mirror().group_id() << std::endl;
+    std::cout << group.to_vertical_mirror().group_id() << std::endl;
 
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 

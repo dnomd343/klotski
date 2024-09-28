@@ -186,6 +186,12 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
+    // TODO: add `is_xxx_mirror` interface
+
+    [[nodiscard]] Group to_vertical_mirror() const;
+
+    [[nodiscard]] Group to_horizontal_mirror() const;
+
 private:
     uint32_t type_id_;
     uint32_t group_id_;

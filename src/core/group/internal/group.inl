@@ -24,6 +24,16 @@ constexpr uint32_t Group::flat_id() const {
 
 // ----------------------------------------------------------------------------------------- //
 
+Group Group::to_vertical_mirror() const {
+    return Group::unsafe_create(type_id_, GROUP_MIRROR_V[flat_id()]);
+}
+
+Group Group::to_horizontal_mirror() const {
+    return Group::unsafe_create(type_id_, GROUP_MIRROR_H[flat_id()]);
+}
+
+// ----------------------------------------------------------------------------------------- //
+
 inline Group Group::from_common_code(codec::CommonCode common_code) {
     return from_raw_code(common_code.to_raw_code());
 }
