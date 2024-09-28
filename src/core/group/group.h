@@ -188,9 +188,9 @@ public:
 
     // TODO: add `is_xxx_mirror` interface
 
-    [[nodiscard]] Group to_vertical_mirror() const;
+    [[nodiscard]] constexpr Group to_vertical_mirror() const;
 
-    [[nodiscard]] Group to_horizontal_mirror() const;
+    [[nodiscard]] constexpr Group to_horizontal_mirror() const;
 
 private:
     uint32_t type_id_;
