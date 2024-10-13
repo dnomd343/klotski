@@ -8,12 +8,15 @@
 #include "helper/parallel.h"
 #include "helper/block_num.h"
 
+#include "helper/group.h"
+
 #include "group/group.h"
 #include "common_code/common_code.h"
 
 using klotski::codec::ShortCode;
 
 using klotski::cases::Group;
+using klotski::cases::GroupPro;
 using klotski::cases::GroupUnion;
 
 using klotski::cases::TYPE_ID_LIMIT;
@@ -87,6 +90,37 @@ TEST(GroupUnion, values) {
         auto get_group_size = [](auto g) { return g.size(); };
         const auto sizes = group_union.groups() | std::views::transform(get_group_size);
         EXPECT_EQ(group_union.max_group_size(), *std::ranges::max_element(sizes));
+    });
+}
+
+TEST(GroupUnion, values_pro) {
+    GROUP_UNION_PARALLEL({
+        auto type_id = group_union.unwrap();
+        auto &cases = helper::group_union_cases(type_id);
+
+        EXPECT_EQ(group_union.size(), cases.size());
+        EXPECT_EQ(group_union.cases().codes(), cases);
+        EXPECT_EQ(group_union.group_num(), helper::group_union_group_num(type_id));
+        EXPECT_EQ(group_union.pattern_num(), helper::group_union_pattern_num(type_id));
+
+        auto get_group_size = [](auto g) { return g.size(); };
+        const auto sizes = group_union.groups() | std::views::transform(get_group_size);
+        EXPECT_EQ(group_union.max_group_size(), *std::ranges::max_element(sizes));
+
+        auto groups = group_union.groups_pro();
+        for (uint32_t pattern_id = 0; pattern_id < group_union.pattern_num(); ++pattern_id) {
+            std::vector<uint32_t> towards;
+            for (auto group : groups) {
+                if (group.pattern_id() == pattern_id) {
+                    towards.emplace_back(group.mirror_toward());
+                }
+            }
+            auto exp_towards = helper::pattern_toward_list(type_id, pattern_id);
+            EXPECT_EQ(towards.size(), exp_towards.size());
+            for (uint32_t i = 0; i < towards.size(); ++i) {
+                EXPECT_EQ(towards[i], exp_towards[i]);
+            }
+        }
     });
 }
 

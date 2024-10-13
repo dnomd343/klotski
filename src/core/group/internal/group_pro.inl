@@ -102,13 +102,13 @@ constexpr GroupPro GroupPro::to_horizontal_mirror() const {
             return GroupPro::unsafe_create(type_id_, pattern_id_, 0);
         case MirrorType::NonMirror:
             if (mirror_toward_ == 0) {
-                return GroupPro::unsafe_create(type_id_, pattern_id_, 2);
+                return GroupPro::unsafe_create(type_id_, pattern_id_, 1);
             } else if (mirror_toward_ == 1) {
-                return GroupPro::unsafe_create(type_id_, pattern_id_, 3);
-            } else if (mirror_toward_ == 2) {
                 return GroupPro::unsafe_create(type_id_, pattern_id_, 0);
+            } else if (mirror_toward_ == 2) {
+                return GroupPro::unsafe_create(type_id_, pattern_id_, 3);
             }
-            return GroupPro::unsafe_create(type_id_, pattern_id_, 1);
+            return GroupPro::unsafe_create(type_id_, pattern_id_, 2);
     }
 }
 
