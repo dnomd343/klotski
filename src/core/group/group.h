@@ -79,6 +79,7 @@ typedef std::vector<codec::RawCode> RawCodes;
 typedef std::vector<codec::CommonCode> CommonCodes;
 
 class Group;
+class GroupPro;
 
 // TODO: add constexpr
 class GroupUnion {
@@ -106,6 +107,13 @@ public:
 
     /// Get the upper limit of the group size.
     [[nodiscard]] constexpr uint32_t max_group_size() const;
+
+    // ------------------------------------------------------------------------------------- //
+    /// TODO: new interface
+
+    [[nodiscard]] constexpr uint32_t pattern_num() const;
+
+    [[nodiscard]] std::vector<GroupPro> groups_pro() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -145,7 +153,64 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+// TODO: add `==` and `std::hash`
+
 // TODO: add debug output
+
+class GroupPro {
+public:
+    GroupPro() = delete;
+
+    enum class MirrorType {
+        FullMirror = 0,
+        HorizontalMirror = 1,
+        CentroMirror = 2,
+        VerticalMirror = 3,
+        NonMirror = 4,
+    };
+
+    // NOTE: using enum `MirrorTowards`
+    static GroupPro unsafe_create(uint32_t type_id, uint32_t pattern_id, uint32_t mirror_toward) {
+        return {type_id, pattern_id, mirror_toward};
+    }
+
+    [[nodiscard]] constexpr uint32_t type_id() const {
+        return type_id_;
+    }
+
+    [[nodiscard]] constexpr uint32_t pattern_id() const {
+        return pattern_id_;
+    }
+
+    [[nodiscard]] constexpr uint32_t mirror_toward() const {
+        return mirror_toward_;
+    }
+
+    [[nodiscard]] constexpr uint32_t size() const;
+
+    [[nodiscard]] constexpr MirrorType mirror_type() const;
+
+    [[nodiscard]] constexpr bool is_vertical_mirror() const;
+    [[nodiscard]] constexpr bool is_horizontal_mirror() const;
+
+    [[nodiscard]] constexpr GroupPro to_vertical_mirror() const;
+    [[nodiscard]] constexpr GroupPro to_horizontal_mirror() const;
+
+    RangesUnion cases() const;
+
+private:
+    uint32_t type_id_;
+    uint32_t pattern_id_;
+    uint32_t mirror_toward_;
+
+    GroupPro(uint32_t type_id, uint32_t pattern_id, uint32_t mirror_toward) {
+        type_id_ = type_id;
+        pattern_id_ = pattern_id;
+        mirror_toward_ = mirror_toward;
+    }
+
+    [[nodiscard]] constexpr uint32_t flat_id() const;
+};
 
 class Group {
 public:
@@ -281,3 +346,5 @@ public:
 #include "internal/group_union.inl"
 #include "internal/group_cases.inl"
 #include "internal/group.inl"
+
+#include "internal/group_pro.inl"

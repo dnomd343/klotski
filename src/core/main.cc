@@ -27,6 +27,7 @@ using klotski::codec::CommonCode;
 using klotski::cases::GroupUnion;
 
 using klotski::cases::Group;
+using klotski::cases::GroupPro;
 using klotski::cases::GroupCases;
 using klotski::cases::GroupUnion;
 
@@ -52,10 +53,34 @@ int main() {
 //    std::cout << GroupCases::fast_obtain(CommonCode::unsafe_create(0x1A9BF0C00)) << std::endl;
 //    std::cout << GroupCases::fast_obtain(CommonCode::unsafe_create(0x4FEA13400)) << std::endl;
 
-    auto group = Group::unsafe_create(123, 1446);
+    auto gu = GroupUnion::unsafe_create(169);
+    std::cout << gu.pattern_num() << std::endl;
 
-    std::cout << group.to_horizontal_mirror().group_id() << std::endl;
-    std::cout << group.to_vertical_mirror().group_id() << std::endl;
+    std::cout << gu.group_num() << std::endl;
+    std::cout << gu.groups_pro().size() << std::endl;
+
+    const auto g = gu.groups_pro()[1];
+    std::cout << std::format("{}-{}-{}\n", g.type_id(), g.pattern_id(), g.mirror_toward());
+
+    const auto codes = g.cases().codes();
+    std::cout << codes.size() << std::endl;
+    for (const auto code : codes) {
+        if (code == 0x1A9BF0C00) {
+            std::cout << "get it" << std::endl;
+        }
+    }
+
+    std::cout << g.is_vertical_mirror() << std::endl;
+    std::cout << g.is_horizontal_mirror() << std::endl;
+
+    auto g1 = g.to_vertical_mirror();
+    std::cout << std::format("{}-{}-{}\n", g1.type_id(), g1.pattern_id(), g1.mirror_toward());
+    auto g2 = g.to_horizontal_mirror();
+    std::cout << std::format("{}-{}-{}\n", g2.type_id(), g2.pattern_id(), g2.mirror_toward());
+
+//    auto gp = GroupPro::unsafe_create(169, 0, 0);
+//    std::cout << gp.size() << std::endl;
+//    std::cout << (int)gp.mirror_type() << std::endl;
 
     std::cerr << std::chrono::system_clock::now() - start << std::endl;
 

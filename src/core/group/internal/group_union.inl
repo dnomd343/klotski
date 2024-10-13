@@ -54,6 +54,39 @@ inline std::optional<Group> GroupUnion::group(const uint32_t group_id) const {
 }
 
 // ----------------------------------------------------------------------------------------- //
+// TODO: new interface
+
+constexpr uint32_t GroupUnion::pattern_num() const {
+    return PATTERN_NUM[type_id_];
+}
+
+inline std::vector<GroupPro> GroupUnion::groups_pro() const {
+    std::vector<GroupPro> groups;
+    groups.reserve(group_num());
+    for (uint32_t pattern_id = 0; pattern_id < pattern_num(); ++pattern_id) {
+        auto group = GroupPro::unsafe_create(type_id_, pattern_id, 0);
+        groups.emplace_back(group);
+        switch (group.mirror_type()) {
+            case GroupPro::MirrorType::FullMirror:
+                continue;
+            case GroupPro::MirrorType::HorizontalMirror:
+                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, 2));
+                break;
+            case GroupPro::MirrorType::CentroMirror:
+            case GroupPro::MirrorType::VerticalMirror:
+                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, 1));
+                break;
+            case GroupPro::MirrorType::NonMirror:
+                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, 1));
+                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, 2));
+                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, 3));
+                break;
+        }
+    }
+    return groups;
+}
+
+// ----------------------------------------------------------------------------------------- //
 
 inline GroupUnion GroupUnion::from_raw_code(const codec::RawCode raw_code) {
 	return unsafe_create(type_id(raw_code));
