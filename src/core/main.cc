@@ -78,6 +78,11 @@ int main() {
     auto g2 = g.to_horizontal_mirror();
     std::cout << std::format("{}-{}-{}\n", g2.type_id(), g2.pattern_id(), g2.mirror_toward());
 
+//    auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
+    auto common_code = CommonCode::unsafe_create(0x4FEA13400);
+    auto kk = GroupPro::from_common_code(common_code);
+    std::cout << std::format("{}-{}-{}\n", kk.type_id(), kk.pattern_id(), kk.mirror_toward());
+
 //    auto gp = GroupPro::unsafe_create(169, 0, 0);
 //    std::cout << gp.size() << std::endl;
 //    std::cout << (int)gp.mirror_type() << std::endl;

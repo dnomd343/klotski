@@ -12,6 +12,10 @@ constexpr uint32_t GroupPro::size() const {
     return GROUP_PRO_SIZE[flat_id()];
 }
 
+inline GroupPro GroupPro::from_common_code(codec::CommonCode common_code) {
+    return from_raw_code(common_code.to_raw_code());
+}
+
 constexpr GroupPro::MirrorType GroupPro::mirror_type() const {
     switch (GROUP_PRO_TYPE[flat_id()]) {
         case 0:

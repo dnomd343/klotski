@@ -196,7 +196,10 @@ public:
     [[nodiscard]] constexpr GroupPro to_vertical_mirror() const;
     [[nodiscard]] constexpr GroupPro to_horizontal_mirror() const;
 
-    RangesUnion cases() const;
+    [[nodiscard]] RangesUnion cases() const;
+
+    static GroupPro from_raw_code(codec::RawCode raw_code);
+    static GroupPro from_common_code(codec::CommonCode common_code);
 
 private:
     uint32_t type_id_;
