@@ -17,6 +17,7 @@ add_library(test_helper
     helper/internal/concurrent.cc
     helper/internal/parallel.cc
     helper/internal/hash.cc
+    helper/internal/group.cc
 )
 target_link_libraries(test_helper PRIVATE klotski_core bs::thread_pool md5sum::md5 xxHash::xxh3)
 
@@ -30,6 +31,7 @@ set(KLSK_TEST_CASES_SRC
     cases/group_union.cc
     cases/group.cc
     cases/helper/group_impl.cc
+    cases/group_pro.cc
 )
 
 add_executable(test_klotski_cases ${KLSK_TEST_CASES_SRC})
