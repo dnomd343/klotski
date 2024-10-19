@@ -81,10 +81,11 @@ typedef std::vector<codec::CommonCode> CommonCodes;
 
 class Group;
 
-// TODO: add constexpr
 class GroupUnion {
 public:
     GroupUnion() = delete;
+
+    using Groups = std::vector<Group>;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -105,17 +106,11 @@ public:
     /// Get the number of groups contained.
     [[nodiscard]] constexpr uint32_t group_num() const;
 
-    /// Get the upper limit of the group size.
-    [[nodiscard]] constexpr uint32_t max_group_size() const;
-
-    // ------------------------------------------------------------------------------------- //
-    /// TODO: new interface
-
+    /// Get the number of patterns contained.
     [[nodiscard]] constexpr uint32_t pattern_num() const;
 
-    [[nodiscard]] std::vector<Group> groups_pro() const;
-
-    // TODO: get target pattern_id
+    /// Get the upper limit of the group size.
+    [[nodiscard]] constexpr uint32_t max_group_size() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -123,21 +118,26 @@ public:
     [[nodiscard]] RangesUnion cases() const;
 
     /// Get all groups under the current type id.
-//    [[nodiscard]] std::vector<Group> groups() const;
+    [[nodiscard]] constexpr Groups groups() const;
 
-    /// Get the group instance with the specified group id.
-//    [[nodiscard]] std::optional<Group> group(uint32_t group_id) const;
+    /// Get the group instance with the specified pattern id.
+    [[nodiscard]] constexpr std::optional<Groups> groups(uint32_t pattern_id) const;
 
     // ------------------------------------------------------------------------------------- //
 
     /// Create GroupUnion from RawCode.
-    static GroupUnion from_raw_code(codec::RawCode raw_code);
+    static constexpr GroupUnion from_raw_code(codec::RawCode raw_code);
 
     /// Create GroupUnion from ShortCode.
-    static GroupUnion from_short_code(codec::ShortCode short_code);
+    static constexpr GroupUnion from_short_code(codec::ShortCode short_code);
 
     /// Create GroupUnion from CommonCode.
-    static GroupUnion from_common_code(codec::CommonCode common_code);
+    static constexpr GroupUnion from_common_code(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Compare the type_id values of two GroupUnion.
+    friend constexpr auto operator==(const GroupUnion &lhs, const GroupUnion &rhs);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -154,8 +154,6 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 };
-
-// TODO: add `==` and `std::hash`
 
 // TODO: add debug output
 
@@ -236,6 +234,11 @@ public:
 
     /// Obtain the horizontally symmetrical klotski group.
     [[nodiscard]] constexpr Group to_horizontal_mirror() const;
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Compare the internal values of two Group.
+    friend constexpr auto operator==(const Group &lhs, const Group &rhs);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -351,3 +354,26 @@ public:
 #include "internal/group_union.inl"
 #include "internal/group_cases.inl"
 #include "internal/group.inl"
+
+// ----------------------------------------------------------------------------------------- //
+
+namespace std {
+
+template <>
+struct std::hash<klotski::cases::Group> {
+    constexpr std::size_t operator()(const klotski::cases::Group &g) const noexcept {
+        // TODO: perf hash alg
+        return std::hash<uint64_t>{}(g.type_id() ^ g.pattern_id() ^ (int)g.toward());
+    }
+};
+
+template <>
+struct std::hash<klotski::cases::GroupUnion> {
+    constexpr std::size_t operator()(const klotski::cases::GroupUnion &gu) const noexcept {
+        return std::hash<uint32_t>{}(gu.unwrap());
+    }
+};
+
+} // namespace std
+
+// ----------------------------------------------------------------------------------------- //

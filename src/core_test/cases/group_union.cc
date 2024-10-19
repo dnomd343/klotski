@@ -41,7 +41,7 @@ TEST(GroupUnion, basic) {
     EXPECT_FALSE(GroupUnion::create(TYPE_ID_LIMIT).has_value());
 
     GROUP_UNION_PARALLEL({
-        const auto groups = group_union.groups_pro();
+        const auto groups = group_union.groups();
         EXPECT_EQ(groups.size(), group_union.group_num());
 
         auto get_type_id = [](const auto g) { return g.type_id(); };
@@ -87,7 +87,7 @@ TEST(GroupUnion, values) {
         EXPECT_EQ(group_union.group_num(), group_num(type_id));
 
         auto get_group_size = [](auto g) { return g.size(); };
-        const auto sizes = group_union.groups_pro() | std::views::transform(get_group_size);
+        const auto sizes = group_union.groups() | std::views::transform(get_group_size);
         EXPECT_EQ(group_union.max_group_size(), *std::ranges::max_element(sizes));
     });
 }
@@ -103,10 +103,10 @@ TEST(GroupUnion, values_pro) {
         EXPECT_EQ(group_union.pattern_num(), helper::group_union_pattern_num(type_id));
 
         auto get_group_size = [](auto g) { return g.size(); };
-        const auto sizes = group_union.groups_pro() | std::views::transform(get_group_size);
+        const auto sizes = group_union.groups() | std::views::transform(get_group_size);
         EXPECT_EQ(group_union.max_group_size(), *std::ranges::max_element(sizes));
 
-        auto groups = group_union.groups_pro();
+        auto groups = group_union.groups();
         for (uint32_t pattern_id = 0; pattern_id < group_union.pattern_num(); ++pattern_id) {
             std::vector<uint32_t> towards;
             for (auto group : groups) {

@@ -37,7 +37,7 @@ std::vector<std::vector<RangesUnion>> build_ranges_unions() {
         auto group_union = GroupUnion::unsafe_create(type_id);
         for (uint32_t pattern_id = 0; pattern_id < group_union.pattern_num(); ++pattern_id) {
             std::vector<Group> groups;
-            for (auto group : group_union.groups_pro()) {
+            for (auto group : group_union.groups()) {
                 if (group.pattern_id() == pattern_id) {
                     groups.emplace_back(group);
                 }
@@ -60,7 +60,7 @@ static std::vector<case_info_t> build_tmp_data() {
 
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         auto group_union = GroupUnion::unsafe_create(type_id);
-        for (auto group : group_union.groups_pro()) {
+        for (auto group : group_union.groups()) {
             uint32_t pattern_id = group.pattern_id();
             auto toward_id = (uint32_t)group.toward();
 

@@ -29,7 +29,7 @@ set(KLSK_TEST_CASES_SRC
     cases/basic_ranges.cc
     cases/all_cases.cc
     cases/group_union.cc
-    cases/group.cc
+    cases/group_legacy.cc
     cases/helper/group_impl.cc
     cases/group_pro.cc
 )

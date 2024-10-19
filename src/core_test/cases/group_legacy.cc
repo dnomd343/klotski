@@ -12,10 +12,10 @@ using klotski::cases::TYPE_ID_LIMIT;
 
 // TODO: hash check for every group
 
-TEST(Group, cases) {
-
-    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        auto group_union = GroupUnion::unsafe_create(type_id);
+//TEST(Group, cases) {
+//
+//    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+//        auto group_union = GroupUnion::unsafe_create(type_id);
 
 //        for (auto group : group_union.groups()) {
 //
@@ -27,9 +27,9 @@ TEST(Group, cases) {
 //            EXPECT_EQ(codes.size(), group.size());
 //
 //        }
-    }
-
-}
+//    }
+//
+//}
 
 // TODO: test from_raw_code / from_short_code / from_common_code
 

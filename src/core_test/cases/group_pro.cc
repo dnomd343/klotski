@@ -10,7 +10,7 @@
 using klotski::cases::Group;
 using klotski::cases::GroupUnion;
 
-TEST(GroupPro, demo) {
+TEST(Group, demo) {
 
     std::cout << helper::group_union_num() << std::endl;
 
@@ -24,19 +24,19 @@ TEST(GroupPro, demo) {
     std::cout << (int)Group::unsafe_create(169, 0, Group::Toward::A).mirror_type() << std::endl;
 
     std::cout << std::format("{}", helper::pattern_toward_list(169, 0)) << std::endl;
-    std::cout << (int)GroupUnion::unsafe_create(169).groups_pro()[0].toward() << std::endl;
-    std::cout << (int)GroupUnion::unsafe_create(169).groups_pro()[1].toward() << std::endl;
+    std::cout << (int)GroupUnion::unsafe_create(169).groups()[0].toward() << std::endl;
+    std::cout << (int)GroupUnion::unsafe_create(169).groups()[1].toward() << std::endl;
 
-    auto group_1 = GroupUnion::unsafe_create(169).groups_pro()[0];
+    auto group_1 = GroupUnion::unsafe_create(169).groups()[0];
     EXPECT_EQ(group_1.cases().codes(), helper::group_cases(169, 0, (uint32_t)group_1.toward()));
-    auto group_2 = GroupUnion::unsafe_create(169).groups_pro()[1];
+    auto group_2 = GroupUnion::unsafe_create(169).groups()[1];
     EXPECT_EQ(group_2.cases().codes(), helper::group_cases(169, 0, (uint32_t)group_2.toward()));
 
 }
 
-TEST(GroupPro, cases) {
+TEST(Group, cases) {
     GROUP_UNION_PARALLEL({
-        for (auto group : group_union.groups_pro()) {
+        for (auto group : group_union.groups()) {
             const auto &cases = helper::group_cases(group.type_id(), group.pattern_id(), (uint32_t)group.toward());
             EXPECT_EQ(group.size(), cases.size());
             EXPECT_EQ(group.cases().codes(), cases);
@@ -56,9 +56,9 @@ TEST(GroupPro, cases) {
     });
 }
 
-TEST(GroupPro, v_mirror) {
+TEST(Group, v_mirror) {
     GROUP_UNION_PARALLEL({
-        for (auto group : group_union.groups_pro()) {
+        for (auto group : group_union.groups()) {
             auto g = group.to_vertical_mirror();
             EXPECT_EQ(group.type_id(), g.type_id());
             EXPECT_EQ(group.pattern_id(), g.pattern_id());
@@ -96,9 +96,9 @@ TEST(GroupPro, v_mirror) {
     });
 }
 
-TEST(GroupPro, h_mirror) {
+TEST(Group, h_mirror) {
     GROUP_UNION_PARALLEL({
-        for (auto group : group_union.groups_pro()) {
+        for (auto group : group_union.groups()) {
             auto g = group.to_horizontal_mirror();
             EXPECT_EQ(group.type_id(), g.type_id());
             EXPECT_EQ(group.pattern_id(), g.pattern_id());
