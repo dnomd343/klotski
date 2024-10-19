@@ -102,23 +102,24 @@ void GroupCases::build_async(Executor &&executor, Notifier &&callback) {
 
 CommonCode GroupCases::fast_obtain_code(CaseInfo info) {
 
-    auto flat_id = PATTERN_OFFSET[info.group.type_id()] + info.group.pattern_id();
+    auto flat_id = PATTERN_OFFSET[info.group().type_id()] + info.group().pattern_id();
 
-    auto &cases = (*ru_data)[flat_id][(int)info.group.toward()];
+    auto &cases = (*ru_data)[flat_id][(int)info.group().toward()];
     // TODO: make offset table for perf
 
     uint64_t head = 0;
 
+    auto case_id = info.case_id();
     for (;;) {
-        if (info.case_id >= cases[head].size()) {
-            info.case_id -= cases[head].size();
+        if (case_id >= cases[head].size()) {
+            case_id -= cases[head].size();
             ++head;
         } else {
             break;
         }
     }
 
-    auto range = cases[head][info.case_id];
+    auto range = cases[head][case_id];
     return CommonCode::unsafe_create(head << 32 | range);
 }
 
@@ -128,10 +129,8 @@ GroupCases::CaseInfo GroupCases::fast_obtain_info(ShortCode short_code) {
     uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
     auto case_id = (*rev_data)[short_code.unwrap()].case_id;
 
-    return CaseInfo {
-        .group = Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id),
-        .case_id = case_id,
-    };
+    auto group = Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id);
+    return CaseInfo::unsafe_create(group, case_id);
 }
 
 GroupCases::CaseInfo GroupCases::fast_obtain_info(CommonCode common_code) {
@@ -141,10 +140,8 @@ GroupCases::CaseInfo GroupCases::fast_obtain_info(CommonCode common_code) {
     uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
     auto case_id = (*rev_data)[short_code.unwrap()].case_id;
 
-    return CaseInfo {
-        .group = Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id),
-        .case_id = case_id,
-    };
+    auto group = Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id);
+    return CaseInfo::unsafe_create(group, case_id);
 }
 
 Group GroupCases::fast_obtain_group(codec::ShortCode short_code) {
@@ -163,19 +160,20 @@ Group GroupCases::fast_obtain_group(codec::CommonCode common_code) {
 }
 
 CommonCode GroupCases::tiny_obtain_code(CaseInfo info) {
-    auto cases = info.group.cases();
+    auto cases = info.group().cases();
     uint64_t head = 0;
 
+    auto case_id = info.case_id();
     for (;;) {
-        if (info.case_id >= cases[head].size()) {
-            info.case_id -= cases[head].size();
+        if (case_id >= cases[head].size()) {
+            case_id -= cases[head].size();
             ++head;
         } else {
             break;
         }
     }
 
-    auto range = cases[head][info.case_id];
+    auto range = cases[head][case_id];
     return CommonCode::unsafe_create(head << 32 | range);
 }
 
@@ -213,8 +211,5 @@ GroupCases::CaseInfo GroupCases::tiny_obtain_info(CommonCode common_code) {
     auto tmp = std::lower_bound(common_codes.begin(), common_codes.end(), common_code);
     auto case_id = tmp - common_codes.begin();
 
-    return CaseInfo {
-        .group = group,
-        .case_id = (uint32_t)case_id,
-    };
+    return CaseInfo::unsafe_create(group, case_id);
 }

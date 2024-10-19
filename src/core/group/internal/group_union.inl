@@ -53,6 +53,13 @@ constexpr uint32_t GroupUnion::max_group_size() const {
 //	return std::nullopt;
 //}
 
+#ifndef KLSK_NDEBUG
+inline std::ostream& operator<<(std::ostream &out, GroupUnion self) {
+    out << self.type_id_; // TODO: benchmark using `std::format`
+    return out;
+}
+#endif
+
 constexpr auto operator==(const GroupUnion &lhs, const GroupUnion &rhs) {
     return lhs.type_id_ == rhs.type_id_;
 }

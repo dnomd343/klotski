@@ -84,6 +84,9 @@ public:
 
     using Groups = std::vector<Group>;
 
+#ifndef KLSK_NDEBUG
+    friend std::ostream& operator<<(std::ostream &out, GroupUnion self);
+#endif
     // ------------------------------------------------------------------------------------- //
 
     /// Get the original type id.
@@ -152,16 +155,15 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
-// TODO: add debug output
-
 class Group {
 public:
     Group() = delete;
 
-    // TODO: add stream output for debug
-
     [[nodiscard]] constexpr std::string to_string() const;
 
+#ifndef KLSK_NDEBUG
+    friend std::ostream& operator<<(std::ostream &out, Group self);
+#endif
     // ------------------------------------------------------------------------------------- //
 
     enum class Toward {
@@ -268,15 +270,29 @@ class GroupCases {
 public:
     // ------------------------------------------------------------------------------------- //
 
-    struct CaseInfo {
-        Group group;
-        uint32_t case_id;
+    class CaseInfo {
+    public:
+        CaseInfo() = delete;
 
-        // TODO: add create interface
+        [[nodiscard]] constexpr Group group() const;
+
+        [[nodiscard]] constexpr uint32_t case_id() const;
+
+        static CaseInfo unsafe_create(Group group, uint32_t case_id);
+
+        static std::optional<CaseInfo> create(Group group, uint32_t case_id);
+
+        [[nodiscard]] std::string to_string() const;
 
 #ifndef KLSK_NDEBUG
         friend std::ostream& operator<<(std::ostream &out, CaseInfo self);
 #endif
+
+    private:
+        CaseInfo(Group group, uint32_t case_id) : group_(group), case_id_(case_id) {}
+
+        Group group_;
+        uint32_t case_id_;
     };
 
     // ------------------------------------------------------------------------------------- //
@@ -340,6 +356,15 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 };
+
+static_assert(std::is_standard_layout_v<Group>);
+static_assert(std::is_trivially_copyable_v<Group>);
+
+static_assert(std::is_standard_layout_v<GroupUnion>);
+static_assert(std::is_trivially_copyable_v<GroupUnion>);
+
+static_assert(std::is_standard_layout_v<GroupCases::CaseInfo>);
+static_assert(std::is_trivially_copyable_v<GroupCases::CaseInfo>);
 
 } // namespace klotski::cases
 

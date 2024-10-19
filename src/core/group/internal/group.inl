@@ -16,6 +16,13 @@ constexpr auto Group::toward() const -> Toward {
     return toward_;
 }
 
+#ifndef KLSK_NDEBUG
+inline std::ostream& operator<<(std::ostream &out, Group self) {
+    out << self.to_string();
+    return out;
+}
+#endif
+
 constexpr char Group::toward_char() const {
     // TODO: select chars from pre-build std::array
     switch (mirror_type()) {
