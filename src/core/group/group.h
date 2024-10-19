@@ -76,9 +76,6 @@ constexpr uint32_t TYPE_ID_LIMIT = 203;
 constexpr uint32_t ALL_GROUP_NUM = 25422;
 constexpr uint32_t ALL_PATTERN_NUM = 6577;
 
-typedef std::vector<codec::RawCode> RawCodes;
-typedef std::vector<codec::CommonCode> CommonCodes;
-
 class Group;
 
 class GroupUnion {
@@ -189,6 +186,10 @@ public:
     /// Get the original pattern id.
     [[nodiscard]] constexpr uint32_t pattern_id() const;
 
+    // TODO: add toward char interface
+
+    // TODO: add stream output for debug
+
     // ------------------------------------------------------------------------------------- //
 
     /// Create Group without any check.
@@ -262,31 +263,18 @@ std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reser
 
 class GroupCases {
 public:
+    // ------------------------------------------------------------------------------------- //
+
     struct CaseInfo {
         Group group;
         uint32_t case_id;
+
+        // TODO: add create interface
+
+#ifndef KLSK_NDEBUG
+        friend std::ostream& operator<<(std::ostream &out, CaseInfo self);
+#endif
     };
-
-    static codec::CommonCode obtain_code(CaseInfo info) {
-        if (fast_) {
-            return fast_obtain_code(info);
-        }
-        return tiny_obtain_code(info);
-    }
-
-    static CaseInfo obtain_info(codec::CommonCode common_code) {
-        if (fast_) {
-            return fast_obtain_info(common_code);
-        }
-        return tiny_obtain_info(common_code);
-    }
-
-    static Group obtain_group(codec::CommonCode common_code) {
-        if (fast_) {
-            return fast_obtain_group(common_code);
-        }
-        return tiny_obtain_group(common_code);
-    }
 
     // ------------------------------------------------------------------------------------- //
 
@@ -298,96 +286,57 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
+    /// Get the CommonCode from CaseInfo.
+    static codec::CommonCode obtain_code(CaseInfo info);
+
+    /// Get the Group which ShortCode is located.
+    static Group obtain_group(codec::ShortCode short_code);
+
+    /// Get the Group which CommonCode is located.
+    static Group obtain_group(codec::CommonCode common_code);
+
+    /// Get the CaseInfo corresponding to the ShortCode.
+    static CaseInfo obtain_info(codec::ShortCode short_code);
+
+    /// Get the CaseInfo corresponding to the CommonCode.
+    static CaseInfo obtain_info(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+private:
     static inline bool fast_ {false};
 
     static inline std::mutex busy_ {};
 
+    // ------------------------------------------------------------------------------------- //
+
+    /// Quickly obtain CommonCode from CaseInfo.
     static codec::CommonCode fast_obtain_code(CaseInfo info);
 
-    static CaseInfo fast_obtain_info(codec::ShortCode short_code);
-    static CaseInfo fast_obtain_info(codec::CommonCode common_code);
-
-    static Group fast_obtain_group(codec::ShortCode short_code);
-    static Group fast_obtain_group(codec::CommonCode common_code);
-
-    static Group tiny_obtain_group(codec::CommonCode common_code);
-
+    /// Obtain CommonCode from CaseInfo without cache.
     static codec::CommonCode tiny_obtain_code(CaseInfo info);
 
+    // ------------------------------------------------------------------------------------- //
+
+    /// Quickly obtain Group from ShortCode.
+    static Group fast_obtain_group(codec::ShortCode short_code);
+
+    /// Quickly obtain Group from CommonCode.
+    static Group fast_obtain_group(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Quickly obtain CaseInfo from ShortCode.
+    static CaseInfo fast_obtain_info(codec::ShortCode short_code);
+
+    /// Quickly obtain CaseInfo from CommonCode.
+    static CaseInfo fast_obtain_info(codec::CommonCode common_code);
+
+    /// Obtain CaseInfo from CommonCode without cache.
     static CaseInfo tiny_obtain_info(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
 };
-
-//class GroupCases {
-//public:
-    // TODO: rename as Info and changed as class
-//    class Info {
-//    public:
-//        uint16_t type_id;
-//        uint16_t group_id;
-//        uint32_t case_id;
-
-#ifndef KLSK_NDEBUG
-//        friend std::ostream& operator<<(std::ostream &out, Info self) {
-//            out << std::format("{}-{}-{}", self.type_id, self.group_id, self.case_id);
-//            return out;
-//        }
-#endif
-
-//        // TODO: keep info_t valid (convert without check)
-//    };
-
-    // ------------------------------------------------------------------------------------- //
-
-    /// Execute the build process.
-//    static void build();
-
-    /// Execute the build process without blocking.
-//    static void build_async(Executor &&executor, Notifier &&callback);
-
-    // ------------------------------------------------------------------------------------- //
-
-    /// Parse CommonCode from group info.
-    // codec::CommonCode parse(Info info);
-
-    /// Get group info from RawCode.
-    // Info get_info(codec::RawCode raw_code);
-
-    /// Get group info from short code.
-    // Info get_info(codec::ShortCode short_code);
-
-    /// Get group info from common code.
-    // Info get_info(codec::CommonCode common_code);
-
-    // ------------------------------------------------------------------------------------- //
-
-//private:
-//    bool available_ = false;
-//    std::mutex building_ {};
-//
-//    KLSK_INSTANCE(GroupCases)
-
-//public:
-    // ------------------------------------------------------------------------------------- //
-
-    /// Parse group info into CommonCode.
-//    static codec::CommonCode tiny_parse(Info info);
-
-    /// Obtain group info from CommonCode.
-//    static Info tiny_obtain(codec::CommonCode common_code);
-
-    // ------------------------------------------------------------------------------------- //
-
-    /// Quickly parse group info into CommonCode.
-//    static codec::CommonCode fast_parse(Info info);
-
-    /// Quickly obtain group info from ShortCode.
-//    static Info fast_obtain(codec::ShortCode short_code);
-
-    /// Quickly obtain group info from CommonCode.
-//    static Info fast_obtain(codec::CommonCode common_code);
-
-    // ------------------------------------------------------------------------------------- //
-//};
 
 } // namespace klotski::cases
 

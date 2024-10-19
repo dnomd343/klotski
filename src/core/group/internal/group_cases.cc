@@ -218,7 +218,3 @@ GroupCases::CaseInfo GroupCases::tiny_obtain_info(CommonCode common_code) {
         .case_id = (uint32_t)case_id,
     };
 }
-
-Group GroupCases::tiny_obtain_group(codec::CommonCode common_code) {
-    return Group::from_common_code(common_code);
-}
