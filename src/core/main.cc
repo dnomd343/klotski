@@ -29,7 +29,6 @@ using klotski::cases::GroupUnion;
 using klotski::cases::Group;
 using klotski::cases::GroupCases;
 using klotski::cases::GroupUnion;
-using klotski::cases::GroupCasesPro;
 
 using klotski::cases::TYPE_ID_LIMIT;
 using klotski::cases::ALL_CASES_NUM_;
@@ -65,18 +64,18 @@ int main() {
 //    std::cout << group.pattern_id() << std::endl;
 //    std::cout << (int)group.toward() << std::endl;
 
-    GroupCasesPro::build();
-
-    auto kk = GroupCasesPro::fast_obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
+    auto kk = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
     std::cout << std::format("{}-{}-{}-{}\n", kk.group.type_id(), kk.group.pattern_id(), (int)kk.group.toward(), kk.case_id);
 
-    auto code_1 = GroupCasesPro::fast_obtain_code(kk);
+    auto code_1 = GroupCases::obtain_code(kk);
     std::cout << code_1 << std::endl;
 
-    auto pp = GroupCasesPro::tiny_obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
+    GroupCases::build();
+
+    auto pp = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
     std::cout << std::format("{}-{}-{}-{}\n", pp.group.type_id(), pp.group.pattern_id(), (int)pp.group.toward(), pp.case_id);
 
-    auto code_2 = GroupCasesPro::tiny_obtain_code(pp);
+    auto code_2 = GroupCases::obtain_code(pp);
     std::cout << code_2 << std::endl;
 
 //    const auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);

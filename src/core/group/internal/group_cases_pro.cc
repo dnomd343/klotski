@@ -8,9 +8,9 @@ using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 
 using klotski::cases::Group;
+using klotski::cases::GroupCases;
 using klotski::cases::GroupUnion;
 using klotski::cases::RangesUnion;
-using klotski::cases::GroupCasesPro;
 
 using klotski::cases::ALL_GROUP_NUM;
 using klotski::cases::TYPE_ID_LIMIT;
@@ -83,7 +83,7 @@ static std::vector<case_info_t> build_tmp_data() {
     return data;
 }
 
-void GroupCasesPro::build() {
+void GroupCases::build() {
     static auto data_1 = build_ranges_unions();
     static auto data_2 = build_tmp_data();
     ru_data = &data_1;
@@ -93,7 +93,14 @@ void GroupCasesPro::build() {
     fast_ = true;
 }
 
-CommonCode GroupCasesPro::fast_obtain_code(CaseInfo info) {
+void GroupCases::build_async(Executor &&executor, Notifier &&callback) {
+    executor([callback = std::move(callback)] {
+        build();
+        callback();
+    });
+}
+
+CommonCode GroupCases::fast_obtain_code(CaseInfo info) {
 
     auto flat_id = PATTERN_OFFSET[info.group.type_id()] + info.group.pattern_id();
 
@@ -115,7 +122,7 @@ CommonCode GroupCasesPro::fast_obtain_code(CaseInfo info) {
     return CommonCode::unsafe_create(head << 32 | range);
 }
 
-GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain_info(ShortCode short_code) {
+GroupCases::CaseInfo GroupCases::fast_obtain_info(ShortCode short_code) {
     uint16_t type_id = GroupUnion::from_short_code(short_code).unwrap(); // NOTE: need to convert as CommonCode
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
     uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
@@ -127,7 +134,7 @@ GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain_info(ShortCode short_code) {
     };
 }
 
-GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain_info(CommonCode common_code) {
+GroupCases::CaseInfo GroupCases::fast_obtain_info(CommonCode common_code) {
     auto short_code = common_code.to_short_code();
     uint16_t type_id = GroupUnion::from_common_code(common_code).unwrap();
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
@@ -140,7 +147,22 @@ GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain_info(CommonCode common_code) 
     };
 }
 
-CommonCode GroupCasesPro::tiny_obtain_code(CaseInfo info) {
+Group GroupCases::fast_obtain_group(codec::ShortCode short_code) {
+    uint16_t type_id = GroupUnion::from_short_code(short_code).unwrap();
+    uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
+    uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
+    return Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id);
+}
+
+Group GroupCases::fast_obtain_group(codec::CommonCode common_code) {
+    auto short_code = common_code.to_short_code();
+    uint16_t type_id = GroupUnion::from_common_code(common_code).unwrap();
+    uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
+    uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
+    return Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id);
+}
+
+CommonCode GroupCases::tiny_obtain_code(CaseInfo info) {
     auto cases = info.group.cases();
     uint64_t head = 0;
 
@@ -173,7 +195,7 @@ static std::unordered_map<uint64_t, Group> build_map_data() {
     return data;
 }
 
-GroupCasesPro::CaseInfo GroupCasesPro::tiny_obtain_info(CommonCode common_code) {
+GroupCases::CaseInfo GroupCases::tiny_obtain_info(CommonCode common_code) {
     auto raw_codes = Group_extend(common_code.to_raw_code());
     std::vector<CommonCode> common_codes;
     common_codes.reserve(raw_codes.size());
@@ -195,4 +217,8 @@ GroupCasesPro::CaseInfo GroupCasesPro::tiny_obtain_info(CommonCode common_code) 
         .group = group,
         .case_id = (uint32_t)case_id,
     };
+}
+
+Group GroupCases::tiny_obtain_group(codec::CommonCode common_code) {
+    return Group::from_common_code(common_code);
 }

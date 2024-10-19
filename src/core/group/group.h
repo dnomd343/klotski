@@ -260,7 +260,7 @@ private:
 /// Spawn all the unsorted codes of the current group.
 std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reserve = 0);
 
-class GroupCasesPro {
+class GroupCases {
 public:
     struct CaseInfo {
         Group group;
@@ -274,44 +274,19 @@ public:
         return tiny_obtain_code(info);
     }
 
-    CaseInfo obtain_info(codec::CommonCode common_code);
-
-    // TODO: allow cal Group directly -> `obtain_group`
-
-    static inline bool fast_ {false};
-
-    static inline std::mutex busy_ {};
-
-    static void build();
-
-    static codec::CommonCode fast_obtain_code(CaseInfo info);
-
-    static CaseInfo fast_obtain_info(codec::ShortCode short_code);
-    static CaseInfo fast_obtain_info(codec::CommonCode common_code);
-
-    static codec::CommonCode tiny_obtain_code(CaseInfo info);
-
-    static CaseInfo tiny_obtain_info(codec::CommonCode common_code);
-};
-
-class GroupCases {
-public:
-    // TODO: rename as Info and changed as class
-    class Info {
-    public:
-        uint16_t type_id;
-        uint16_t group_id;
-        uint32_t case_id;
-
-#ifndef KLSK_NDEBUG
-        friend std::ostream& operator<<(std::ostream &out, Info self) {
-            out << std::format("{}-{}-{}", self.type_id, self.group_id, self.case_id);
-            return out;
+    static CaseInfo obtain_info(codec::CommonCode common_code) {
+        if (fast_) {
+            return fast_obtain_info(common_code);
         }
-#endif
+        return tiny_obtain_info(common_code);
+    }
 
-        // TODO: keep info_t valid (convert without check)
-    };
+    static Group obtain_group(codec::CommonCode common_code) {
+        if (fast_) {
+            return fast_obtain_group(common_code);
+        }
+        return tiny_obtain_group(common_code);
+    }
 
     // ------------------------------------------------------------------------------------- //
 
@@ -320,6 +295,54 @@ public:
 
     /// Execute the build process without blocking.
     static void build_async(Executor &&executor, Notifier &&callback);
+
+    // ------------------------------------------------------------------------------------- //
+
+    static inline bool fast_ {false};
+
+    static inline std::mutex busy_ {};
+
+    static codec::CommonCode fast_obtain_code(CaseInfo info);
+
+    static CaseInfo fast_obtain_info(codec::ShortCode short_code);
+    static CaseInfo fast_obtain_info(codec::CommonCode common_code);
+
+    static Group fast_obtain_group(codec::ShortCode short_code);
+    static Group fast_obtain_group(codec::CommonCode common_code);
+
+    static Group tiny_obtain_group(codec::CommonCode common_code);
+
+    static codec::CommonCode tiny_obtain_code(CaseInfo info);
+
+    static CaseInfo tiny_obtain_info(codec::CommonCode common_code);
+};
+
+//class GroupCases {
+//public:
+    // TODO: rename as Info and changed as class
+//    class Info {
+//    public:
+//        uint16_t type_id;
+//        uint16_t group_id;
+//        uint32_t case_id;
+
+#ifndef KLSK_NDEBUG
+//        friend std::ostream& operator<<(std::ostream &out, Info self) {
+//            out << std::format("{}-{}-{}", self.type_id, self.group_id, self.case_id);
+//            return out;
+//        }
+#endif
+
+//        // TODO: keep info_t valid (convert without check)
+//    };
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Execute the build process.
+//    static void build();
+
+    /// Execute the build process without blocking.
+//    static void build_async(Executor &&executor, Notifier &&callback);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -337,34 +360,34 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-private:
-    bool available_ = false;
-    std::mutex building_ {};
+//private:
+//    bool available_ = false;
+//    std::mutex building_ {};
+//
+//    KLSK_INSTANCE(GroupCases)
 
-    KLSK_INSTANCE(GroupCases)
-
-public:
+//public:
     // ------------------------------------------------------------------------------------- //
 
     /// Parse group info into CommonCode.
-    static codec::CommonCode tiny_parse(Info info);
+//    static codec::CommonCode tiny_parse(Info info);
 
     /// Obtain group info from CommonCode.
-    static Info tiny_obtain(codec::CommonCode common_code);
+//    static Info tiny_obtain(codec::CommonCode common_code);
 
     // ------------------------------------------------------------------------------------- //
 
     /// Quickly parse group info into CommonCode.
-    static codec::CommonCode fast_parse(Info info);
+//    static codec::CommonCode fast_parse(Info info);
 
     /// Quickly obtain group info from ShortCode.
-    static Info fast_obtain(codec::ShortCode short_code);
+//    static Info fast_obtain(codec::ShortCode short_code);
 
     /// Quickly obtain group info from CommonCode.
-    static Info fast_obtain(codec::CommonCode common_code);
+//    static Info fast_obtain(codec::CommonCode common_code);
 
     // ------------------------------------------------------------------------------------- //
-};
+//};
 
 } // namespace klotski::cases
 

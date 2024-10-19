@@ -26,7 +26,7 @@ set(KLOTSKI_CORE_SRC
         group/internal/group_union.cc
         group/internal/extend.cc
         group/internal/group.cc
-        group/internal/group_cases.cc
+        group/internal/group_cases_legacy.cc
         group/internal/group_cases_pro.cc
 
         ranges/internal/spawn.cc
