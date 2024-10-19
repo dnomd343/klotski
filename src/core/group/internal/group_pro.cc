@@ -24,7 +24,7 @@ RangesUnion GroupPro::cases() const {
         seed = seed.to_vertical_mirror().to_horizontal_mirror();
     }
 
-    auto codes = Group::extend(seed.to_raw_code(), size());
+    auto codes = Group_extend(seed.to_raw_code(), size());
 
     RangesUnion data;
     for (auto raw_code : codes) {
@@ -56,7 +56,7 @@ static std::unordered_map<uint64_t, GroupPro> build_map_data() {
 GroupPro GroupPro::from_raw_code(codec::RawCode raw_code) {
     static auto map_data = build_map_data();
 
-    auto raw_codes = Group::extend(raw_code);
+    auto raw_codes = Group_extend(raw_code);
     auto common_codes = raw_codes | std::views::transform([](const RawCode r) {
         return r.to_common_code();
     }) | std::ranges::to<std::vector>(); // TODO: search min_element directly

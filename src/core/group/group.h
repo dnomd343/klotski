@@ -74,11 +74,12 @@ namespace klotski::cases {
 
 constexpr uint32_t TYPE_ID_LIMIT = 203;
 constexpr uint32_t ALL_GROUP_NUM = 25422;
+constexpr uint32_t ALL_PATTERN_NUM = 6577;
 
 typedef std::vector<codec::RawCode> RawCodes;
 typedef std::vector<codec::CommonCode> CommonCodes;
 
-class Group;
+//class Group;
 class GroupPro;
 
 // TODO: add constexpr
@@ -123,10 +124,10 @@ public:
     [[nodiscard]] RangesUnion cases() const;
 
     /// Get all groups under the current type id.
-    [[nodiscard]] std::vector<Group> groups() const;
+//    [[nodiscard]] std::vector<Group> groups() const;
 
     /// Get the group instance with the specified group id.
-    [[nodiscard]] std::optional<Group> group(uint32_t group_id) const;
+//    [[nodiscard]] std::optional<Group> group(uint32_t group_id) const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -222,12 +223,19 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
+    /// Obtain the symmetry type of the group.
     [[nodiscard]] constexpr MirrorType mirror_type() const;
 
+    /// Whether the group is vertically symmetrical.
     [[nodiscard]] constexpr bool is_vertical_mirror() const;
+
+    /// Whether the group is horizontally symmetrical.
     [[nodiscard]] constexpr bool is_horizontal_mirror() const;
 
+    /// Obtain the vertically symmetrical klotski group.
     [[nodiscard]] constexpr GroupPro to_vertical_mirror() const;
+
+    /// Obtain the horizontally symmetrical klotski group.
     [[nodiscard]] constexpr GroupPro to_horizontal_mirror() const;
 
     // ------------------------------------------------------------------------------------- //
@@ -247,62 +255,61 @@ private:
     [[nodiscard]] constexpr uint32_t flat_id() const;
 };
 
-class Group {
-public:
-    Group() = delete;
+//class Group {
+//public:
+//    Group() = delete;
 
     // ------------------------------------------------------------------------------------- //
 
     /// Get the original type id.
-    [[nodiscard]] constexpr uint32_t type_id() const;
+//    [[nodiscard]] constexpr uint32_t type_id() const;
 
     /// Get the original group id.
-    [[nodiscard]] constexpr uint32_t group_id() const;
+//    [[nodiscard]] constexpr uint32_t group_id() const;
 
     /// Create Group without any check.
-    static constexpr Group unsafe_create(uint32_t type_id, uint32_t group_id);
+//    static constexpr Group unsafe_create(uint32_t type_id, uint32_t group_id);
 
     /// Create Group with validity check.
-    static constexpr std::optional<Group> create(uint32_t type_id, uint32_t group_id);
+//    static constexpr std::optional<Group> create(uint32_t type_id, uint32_t group_id);
 
     // ------------------------------------------------------------------------------------- //
 
     /// Get all cases under current group.
-    [[nodiscard]] RangesUnion cases() const;
+//    [[nodiscard]] RangesUnion cases() const;
 
     /// Get the number of klotski cases contained.
-    [[nodiscard]] constexpr uint32_t size() const;
+//    [[nodiscard]] constexpr uint32_t size() const;
 
     // ------------------------------------------------------------------------------------- //
 
     /// Create Group from RawCode.
-    static Group from_raw_code(codec::RawCode raw_code);
+//    static Group from_raw_code(codec::RawCode raw_code);
 
     /// Create Group from ShortCode.
-    static Group from_short_code(codec::ShortCode short_code);
+//    static Group from_short_code(codec::ShortCode short_code);
 
     /// Create Group from CommonCode.
-    static Group from_common_code(codec::CommonCode common_code);
+//    static Group from_common_code(codec::CommonCode common_code);
 
     // ------------------------------------------------------------------------------------- //
 
     // TODO: add `is_xxx_mirror` interface
 
-    [[nodiscard]] constexpr Group to_vertical_mirror() const;
+//    [[nodiscard]] constexpr Group to_vertical_mirror() const;
 
-    [[nodiscard]] constexpr Group to_horizontal_mirror() const;
+//    [[nodiscard]] constexpr Group to_horizontal_mirror() const;
 
-private:
-    uint32_t type_id_;
-    uint32_t group_id_;
+//private:
+//    uint32_t type_id_;
+//    uint32_t group_id_;
 
     /// Tiled merge of type_id and group_id.
-    [[nodiscard]] constexpr uint32_t flat_id() const;
+//    [[nodiscard]] constexpr uint32_t flat_id() const;
+//};
 
-public:
-    /// Spawn all the unsorted codes of the current group.
-    static std::vector<codec::RawCode> extend(codec::RawCode raw_code, uint32_t reserve = 0);
-};
+/// Spawn all the unsorted codes of the current group.
+std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reserve = 0);
 
 class GroupCasesPro {
 public:

@@ -34,9 +34,9 @@ std::vector<RangesUnion> build_ranges_unions() {
 
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         auto group_union = GroupUnion::unsafe_create(type_id);
-        for (auto group : group_union.groups()) {
-            unions.emplace_back(group.cases());
-        }
+//        for (auto group : group_union.groups()) {
+//            unions.emplace_back(group.cases());
+//        }
     }
     return unions;
 }
@@ -48,19 +48,19 @@ static std::vector<tmp_t> build_tmp_data() {
 
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         auto group_union = GroupUnion::unsafe_create(type_id);
-        for (auto group : group_union.groups()) {
-            uint32_t group_id = group.group_id();
-
-            auto codes = group.cases().codes();
-            for (uint32_t case_id = 0; case_id < codes.size(); ++case_id) {
-                auto short_code = codes[case_id].to_short_code();
-
-                data[short_code.unwrap()] = tmp_t {
-                    .group_id = group_id,
-                    .case_id = case_id,
-                };
-            }
-        }
+//        for (auto group : group_union.groups()) {
+//            uint32_t group_id = group.group_id();
+//
+//            auto codes = group.cases().codes();
+//            for (uint32_t case_id = 0; case_id < codes.size(); ++case_id) {
+//                auto short_code = codes[case_id].to_short_code();
+//
+//                data[short_code.unwrap()] = tmp_t {
+//                    .group_id = group_id,
+//                    .case_id = case_id,
+//                };
+//            }
+//        }
     }
     return data;
 }

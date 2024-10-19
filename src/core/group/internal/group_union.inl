@@ -37,21 +37,21 @@ constexpr uint32_t GroupUnion::max_group_size() const {
 	return MAX_GROUP_SIZE[type_id_];
 }
 
-inline std::vector<Group> GroupUnion::groups() const {
-	auto build = [this](const uint32_t group_id) {
-		return Group::unsafe_create(type_id_, group_id);
-	};
-	return std::views::iota(0U, group_num())
-		| std::views::transform(build)
-		| std::ranges::to<std::vector>();
-}
+//inline std::vector<Group> GroupUnion::groups() const {
+//	auto build = [this](const uint32_t group_id) {
+//		return Group::unsafe_create(type_id_, group_id);
+//	};
+//	return std::views::iota(0U, group_num())
+//		| std::views::transform(build)
+//		| std::ranges::to<std::vector>();
+//}
 
-inline std::optional<Group> GroupUnion::group(const uint32_t group_id) const {
-	if (group_id < group_num()) {
-		return Group::unsafe_create(type_id_, group_id);
-	}
-	return std::nullopt;
-}
+//inline std::optional<Group> GroupUnion::group(const uint32_t group_id) const {
+//	if (group_id < group_num()) {
+//		return Group::unsafe_create(type_id_, group_id);
+//	}
+//	return std::nullopt;
+//}
 
 // ----------------------------------------------------------------------------------------- //
 // TODO: new interface

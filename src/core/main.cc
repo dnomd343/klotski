@@ -26,7 +26,7 @@ using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 using klotski::cases::GroupUnion;
 
-using klotski::cases::Group;
+//using klotski::cases::Group;
 using klotski::cases::GroupPro;
 using klotski::cases::GroupCases;
 using klotski::cases::GroupUnion;
