@@ -1,6 +1,6 @@
 #include "fast_cal/fast_cal.h"
 
-Core FastCal::init(uint64_t code) { // initialize process
+MaskMover FastCal::init(uint64_t code) { // initialize process
     /// reset working data
     cases.clear();
     cases.reserve(FC_MAP_RESERVE); // hashmap pre-reserve
@@ -13,8 +13,8 @@ Core FastCal::init(uint64_t code) { // initialize process
         .last = nullptr, // without parent node
     }).first->second);
 
-    /// import klotski core
-    return Core(
+    /// import klotski mover
+    return MaskMover(
         [this](auto &&code, auto &&mask) { // lambda as function pointer
             new_case(std::forward<decltype(code)>(code), std::forward<decltype(mask)>(mask));
         }

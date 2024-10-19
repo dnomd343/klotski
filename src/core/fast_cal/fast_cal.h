@@ -10,11 +10,11 @@
 #include <functional>
 #include <unordered_map>
 
-#include "core/core.h"
+#include "mover/mover.h"
 #include "raw_code/raw_code.h"
 
-using klotski::core::Core;
 using klotski::codec::RawCode;
+using klotski::mover::MaskMover;
 
 // TODO: using prime number
 const uint32_t FC_MAP_RESERVE = 65536 * 8;
@@ -60,6 +60,6 @@ private:
     std::queue<fast_cal_t*> cache;
     std::unordered_map<uint64_t, fast_cal_t> cases;
 
-    inline Core init(uint64_t code);
+    inline MaskMover init(uint64_t code);
     void new_case(uint64_t code, uint64_t mask);
 };

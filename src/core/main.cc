@@ -6,8 +6,8 @@
 #include <unordered_set>
 #include <ranges/ranges.h>
 
-#include "core/core.h"
 #include "group/group.h"
+#include "mover/mover.h"
 #include "raw_code/raw_code.h"
 #include "fast_cal/fast_cal.h"
 #include "all_cases/all_cases.h"
@@ -16,7 +16,7 @@
 
 #include "../../third_party/thread-pool/include/BS_thread_pool.hpp"
 
-using klotski::core::Core;
+using klotski::mover::MaskMover;
 
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;

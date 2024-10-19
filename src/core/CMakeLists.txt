@@ -18,7 +18,7 @@ set(KLOTSKI_CORE_SRC
         short_code/internal/convert.cc
         short_code/internal/serialize.cc
 
-        core/internal/core.cc
+        mover/internal/mover.cc
 
         fast_cal/internal/cal_core.cc
         fast_cal/internal/fast_cal.cc

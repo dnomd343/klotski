@@ -62,12 +62,12 @@ add_test(NAME klotski_codec COMMAND test_klotski_codec)
 
 # ------------------------------------------------------------------------------------ #
 
-set(KLSK_TEST_CORE_SRC
-    core/core.cc
+set(KLSK_TEST_MOVER_SRC
+    mover/mover.cc
 )
 
-add_executable(test_klotski_core ${KLSK_TEST_CORE_SRC})
-target_link_libraries(test_klotski_core PRIVATE ${KLSK_TEST_DEPS})
-add_test(NAME klotski_core COMMAND test_klotski_core)
+add_executable(test_klotski_mover ${KLSK_TEST_MOVER_SRC})
+target_link_libraries(test_klotski_mover PRIVATE ${KLSK_TEST_DEPS} test_helper)
+add_test(NAME klotski_mover COMMAND test_klotski_mover)
 
 # ------------------------------------------------------------------------------------ #

@@ -1,4 +1,4 @@
-#include "core/core.h"
+#include "mover/mover.h"
 #include "utils/common.h"
 
 /// block move direction
@@ -73,9 +73,9 @@
 
 ///////////////////////////////////////////////
 
-using klotski::core::Core;
+using klotski::mover::MaskMover;
 
-inline void Core::cache_insert(cache_t next_case) { // try to insert into cache
+inline void MaskMover::cache_insert(cache_t next_case) { // try to insert into cache
     auto *cache_ptr = cache_;
     for (; cache_ptr < cache_ + cache_size_; ++cache_ptr) {
         if (cache_ptr->code == next_case.code) {
@@ -86,7 +86,7 @@ inline void Core::cache_insert(cache_t next_case) { // try to insert into cache
     ++cache_size_;
 }
 
-void Core::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
+void MaskMover::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -105,7 +105,7 @@ void Core::move_1x1(uint64_t code, int addr) { // try to move target 1x1 block
     }
 }
 
-void Core::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
+void MaskMover::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -124,7 +124,7 @@ void Core::move_1x2(uint64_t code, int addr) { // try to move target 1x2 block
     }
 }
 
-void Core::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
+void MaskMover::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -143,7 +143,7 @@ void Core::move_2x1(uint64_t code, int addr) { // try to move target 2x1 block
     }
 }
 
-void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
+void MaskMover::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     BFS_INIT
     while (!BFS_STOP) { // bfs search process
         BFS_LOAD
@@ -162,7 +162,7 @@ void Core::move_2x2(uint64_t code, int addr) { // try to move target 2x2 block
     }
 }
 
-void Core::next_cases(uint64_t code, uint64_t mask) { // search next step cases
+void MaskMover::next_cases(uint64_t code, uint64_t mask) { // search next step cases
     cache_[0].filter = 0; // without filter
     cache_[0].code = code; // bfs root code
     auto range = code | mask;

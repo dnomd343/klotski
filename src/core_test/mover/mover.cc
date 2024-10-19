@@ -5,7 +5,7 @@
 #include <numeric>
 #include <ranges>
 
-#include "core/core.h"
+#include "mover/mover.h"
 #include "utils/common.h"
 #include "all_cases/all_cases.h"
 #include "common_code/common_code.h"
@@ -19,7 +19,7 @@ constexpr auto NEXT_CASES_XXH3 = std::to_array<uint64_t>({
     0x4a7599e1bdbffbb3, 0xb3cf1fdea988466a, 0x21226a4f692e1892, 0x2d06800538d394c2,
 });
 
-using klotski::core::Core;
+using klotski::mover::MaskMover;
 using klotski::cases::AllCases;
 using klotski::codec::CommonCode;
 
@@ -54,7 +54,7 @@ TEST(Core, core) {
     std::vector<uint64_t> codes;
     codes.reserve(402258220);
 
-    auto core = Core([&codes](uint64_t ret, uint64_t) {
+    auto core = MaskMover([&codes](uint64_t ret, uint64_t) {
         codes.emplace_back(klotski::codec::RawCode::unsafe_create(ret).to_common_code().unwrap());
     });
 
@@ -82,7 +82,7 @@ TEST(Core, mask) {
 
     uint64_t src;
 
-    auto core = Core([&src](uint64_t ret, uint64_t mask) {
+    auto core = MaskMover([&src](uint64_t ret, uint64_t mask) {
 
         EXPECT_EQ(std::popcount(mask), 3);
 
@@ -184,7 +184,7 @@ TEST(Core, next_cases) {
     std::vector<CommonCode> result {};
 
     std::vector<CommonCode> tmp;
-    auto core = Core([&tmp](uint64_t ret, uint64_t mask) {
+    auto core = MaskMover([&tmp](uint64_t ret, uint64_t mask) {
         tmp.emplace_back(CommonCode::from_raw_code(ret).value());
     });
 
@@ -212,6 +212,6 @@ TEST(Core, next_cases) {
 
 //    std::cout << std::hex << hash::xxh3(result) << std::endl;
 
-    EXPECT_EQ(hash::xxh3(result), NEXT_CASES_XXH3[0]);
+    EXPECT_EQ(helper::xxh3(result), NEXT_CASES_XXH3[0]);
 
 }

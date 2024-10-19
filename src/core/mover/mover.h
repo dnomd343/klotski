@@ -52,7 +52,7 @@
 /// be obtained at the same time, which marks the moved block as `111`, which
 /// will speed up subsequent calculations. The generated layout will be
 /// inserted into the cache, and after the BFS search for each block is
-/// completed, the core will use the callback function to output these
+/// completed, the mover will use the callback function to output these
 /// results.
 
 #pragma once
@@ -61,20 +61,20 @@
 #include <utility>
 #include <functional>
 
-namespace klotski::core {
+namespace klotski::mover {
 
 // TODO: new version without mask
 
 // TODO: allow wrap as a function directly
 
-class Core {
+class MaskMover {
 public:
     /// Release with code and mask
     typedef std::function<void(uint64_t, uint64_t)> release_t;
 
     /// Core interface
     void next_cases(uint64_t code, uint64_t mask);
-    explicit Core(release_t release_func) : release_(std::move(release_func)) {}
+    explicit MaskMover(release_t release_func) : release_(std::move(release_func)) {}
 
 private:
     struct cache_t {
@@ -95,4 +95,4 @@ private:
     inline void cache_insert(cache_t next_case);
 };
 
-} // namespace klotski::core
+} // namespace klotski::mover

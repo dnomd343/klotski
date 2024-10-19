@@ -1,13 +1,14 @@
 #include <absl/container/flat_hash_map.h>
 
-#include "core/core.h"
+#include "mover/mover.h"
 #include "group/group.h"
 
-using klotski::core::Core;
 using klotski::cases::Group;
 using klotski::codec::RawCode;
 using klotski::codec::CommonCode;
 using klotski::cases::RangesUnion;
+
+using klotski::mover::MaskMover;
 
 std::vector<RawCode> Group::extend(RawCode raw_code, uint32_t reserve) {
     std::vector<RawCode> codes;
@@ -16,7 +17,7 @@ std::vector<RawCode> Group::extend(RawCode raw_code, uint32_t reserve) {
     codes.reserve(reserve);
     cases.reserve(reserve);
 
-    auto core = Core([&codes, &cases](uint64_t code, uint64_t mask) {
+    auto core = MaskMover([&codes, &cases](uint64_t code, uint64_t mask) {
         if (const auto match = cases.find(code); match != cases.end()) {
             match->second |= mask; // update mask
             return;
