@@ -45,7 +45,7 @@ std::vector<std::vector<RangesUnion>> build_ranges_unions() {
 
             std::vector<RangesUnion> tmp {4};
             for (auto group : groups) {
-                tmp[group.mirror_toward()] = group.cases();
+                tmp[(int)group.toward()] = group.cases();
             }
             unions.emplace_back(tmp);
         }
@@ -62,7 +62,7 @@ static std::vector<case_info_t> build_tmp_data() {
         auto group_union = GroupUnion::unsafe_create(type_id);
         for (auto group : group_union.groups_pro()) {
             uint32_t pattern_id = group.pattern_id();
-            uint32_t toward_id = group.mirror_toward();
+            auto toward_id = (uint32_t)group.toward();
 
             // TODO: batch mirror base on pattern
             auto codes = group.cases().codes();
@@ -90,7 +90,7 @@ CommonCode GroupCasesPro::fast_parse(CaseInfo info) {
 
     auto flat_id = PATTERN_OFFSET[info.group.type_id()] + info.group.pattern_id();
 
-    auto &cases = (*ru_data)[flat_id][info.group.mirror_toward()];
+    auto &cases = (*ru_data)[flat_id][(int)info.group.toward()];
     // TODO: make offset table for perf
 
     uint64_t head = 0;
@@ -115,7 +115,7 @@ GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain(codec::ShortCode short_code) 
     auto case_id = (*rev_data)[short_code.unwrap()].case_id;
 
     return CaseInfo {
-        .group = GroupPro::unsafe_create(type_id, pattern_id, toward_id),
+        .group = GroupPro::unsafe_create(type_id, pattern_id, (GroupPro::Toward)toward_id),
         .case_id = case_id,
     };
 }

@@ -115,6 +115,8 @@ public:
 
     [[nodiscard]] std::vector<GroupPro> groups_pro() const;
 
+    // TODO: get target pattern_id
+
     // ------------------------------------------------------------------------------------- //
 
     /// Get all cases under the current type id.
@@ -161,32 +163,64 @@ class GroupPro {
 public:
     GroupPro() = delete;
 
-    enum class MirrorType {
-        FullMirror = 0,
-        HorizontalMirror = 1,
-        CentroMirror = 2,
-        VerticalMirror = 3,
-        NonMirror = 4,
+    // ------------------------------------------------------------------------------------- //
+
+    enum class Toward {
+        A = 0, // baseline
+        B = 1, // horizontal mirror
+        C = 2, // vertical mirror
+        D = 3, // diagonal mirror
     };
 
-    // NOTE: using enum `MirrorTowards`
-    static GroupPro unsafe_create(uint32_t type_id, uint32_t pattern_id, uint32_t mirror_toward) {
-        return {type_id, pattern_id, mirror_toward};
-    }
+    enum class MirrorType {
+        Full = 0, // fully self-symmetry
+        Horizontal = 1, // horizontal self-symmetry
+        Centro = 2, // centrosymmetric
+        Vertical = 3, // vertical self-symmetry
+        Ordinary = 4, // non self-symmetric
+    };
 
-    [[nodiscard]] constexpr uint32_t type_id() const {
-        return type_id_;
-    }
+    // ------------------------------------------------------------------------------------- //
 
-    [[nodiscard]] constexpr uint32_t pattern_id() const {
-        return pattern_id_;
-    }
+    /// Get the mirror toward.
+    [[nodiscard]] constexpr Toward toward() const;
 
-    [[nodiscard]] constexpr uint32_t mirror_toward() const {
-        return mirror_toward_;
-    }
+    /// Get the original type id.
+    [[nodiscard]] constexpr uint32_t type_id() const;
 
+    /// Get the original pattern id.
+    [[nodiscard]] constexpr uint32_t pattern_id() const;
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Create Group without any check.
+    static constexpr GroupPro unsafe_create(uint32_t type_id,
+                                            uint32_t pattern_id, Toward toward);
+
+    /// Create Group with validity check.
+    static constexpr std::optional<GroupPro> create(uint32_t type_id,
+                                                    uint32_t pattern_id, Toward toward);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Get all cases under current group.
+    [[nodiscard]] RangesUnion cases() const;
+
+    /// Get the number of klotski cases contained.
     [[nodiscard]] constexpr uint32_t size() const;
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Create Group from RawCode.
+    static GroupPro from_raw_code(codec::RawCode raw_code);
+
+    /// Create Group from ShortCode.
+    static GroupPro from_short_code(codec::ShortCode short_code);
+
+    /// Create Group from CommonCode.
+    static GroupPro from_common_code(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
 
     [[nodiscard]] constexpr MirrorType mirror_type() const;
 
@@ -196,22 +230,20 @@ public:
     [[nodiscard]] constexpr GroupPro to_vertical_mirror() const;
     [[nodiscard]] constexpr GroupPro to_horizontal_mirror() const;
 
-    [[nodiscard]] RangesUnion cases() const;
-
-    static GroupPro from_raw_code(codec::RawCode raw_code);
-    static GroupPro from_common_code(codec::CommonCode common_code);
+    // ------------------------------------------------------------------------------------- //
 
 private:
     uint32_t type_id_;
+    Toward toward_;
     uint32_t pattern_id_;
-    uint32_t mirror_toward_;
 
-    GroupPro(uint32_t type_id, uint32_t pattern_id, uint32_t mirror_toward) {
+    GroupPro(uint32_t type_id, uint32_t pattern_id, Toward toward) {
         type_id_ = type_id;
         pattern_id_ = pattern_id;
-        mirror_toward_ = mirror_toward;
+        toward_ = toward;
     }
 
+    /// Tiled merge of type_id and pattern_id.
     [[nodiscard]] constexpr uint32_t flat_id() const;
 };
 

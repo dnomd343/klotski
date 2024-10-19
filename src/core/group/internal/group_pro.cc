@@ -15,11 +15,11 @@ RangesUnion GroupPro::cases() const {
     auto seed = CommonCode::unsafe_create(GROUP_PRO_SEED[flat_id()]);
 
     // NOTE: convert as RawCode directly
-    if (mirror_toward_ == 1) {
+    if (toward_ == Toward::B) {
         seed = seed.to_horizontal_mirror();
-    } else if (mirror_toward_ == 2) {
+    } else if (toward_ == Toward::C) {
         seed = seed.to_vertical_mirror();
-    } else if (mirror_toward_ == 3) {
+    } else if (toward_ == Toward::D) {
         // NOTE: avoid multi convert
         seed = seed.to_vertical_mirror().to_horizontal_mirror();
     }
@@ -47,7 +47,7 @@ static std::unordered_map<uint64_t, GroupPro> build_map_data() {
         uint32_t pattern_id = (raw >> 38) & 0b1111111111;
         uint32_t toward = (raw >> 36) & 0b11;
         auto seed = CommonCode::unsafe_create(raw & (uint64_t)0xFFFFFFFFF).unwrap();
-        auto group = GroupPro::unsafe_create(type_id, pattern_id, toward);
+        auto group = GroupPro::unsafe_create(type_id, pattern_id, (GroupPro::Toward)toward);
         data.emplace(seed, group);
     }
     return data;

@@ -64,7 +64,7 @@ int main() {
     GroupCasesPro::build();
 
     auto kk = GroupCasesPro::fast_obtain(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
-    std::cout << std::format("{}-{}-{}-{}", kk.group.type_id(), kk.group.pattern_id(), kk.group.mirror_toward(), kk.case_id) << std::endl;
+    std::cout << std::format("{}-{}-{}-{}", kk.group.type_id(), kk.group.pattern_id(), (int)kk.group.toward(), kk.case_id) << std::endl;
 
     auto code = GroupCasesPro::fast_parse(kk);
     std::cout << code << std::endl;

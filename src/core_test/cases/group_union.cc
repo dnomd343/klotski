@@ -112,7 +112,7 @@ TEST(GroupUnion, values_pro) {
             std::vector<uint32_t> towards;
             for (auto group : groups) {
                 if (group.pattern_id() == pattern_id) {
-                    towards.emplace_back(group.mirror_toward());
+                    towards.emplace_back((uint32_t)group.toward());
                 }
             }
             auto exp_towards = helper::pattern_toward_list(type_id, pattern_id);

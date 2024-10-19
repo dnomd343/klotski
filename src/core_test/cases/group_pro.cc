@@ -21,23 +21,23 @@ TEST(GroupPro, demo) {
     std::cout << GroupUnion::unsafe_create(169).group_num() << std::endl;
 
     std::cout << (int)helper::pattern_mirror_type(169, 0) << std::endl;
-    std::cout << (int)GroupPro::unsafe_create(169, 0, 0).mirror_type() << std::endl;
+    std::cout << (int)GroupPro::unsafe_create(169, 0, GroupPro::Toward::A).mirror_type() << std::endl;
 
     std::cout << std::format("{}", helper::pattern_toward_list(169, 0)) << std::endl;
-    std::cout << (int)GroupUnion::unsafe_create(169).groups_pro()[0].mirror_toward() << std::endl;
-    std::cout << (int)GroupUnion::unsafe_create(169).groups_pro()[1].mirror_toward() << std::endl;
+    std::cout << (int)GroupUnion::unsafe_create(169).groups_pro()[0].toward() << std::endl;
+    std::cout << (int)GroupUnion::unsafe_create(169).groups_pro()[1].toward() << std::endl;
 
     auto group_1 = GroupUnion::unsafe_create(169).groups_pro()[0];
-    EXPECT_EQ(group_1.cases().codes(), helper::group_cases(169, 0, group_1.mirror_toward()));
+    EXPECT_EQ(group_1.cases().codes(), helper::group_cases(169, 0, (uint32_t)group_1.toward()));
     auto group_2 = GroupUnion::unsafe_create(169).groups_pro()[1];
-    EXPECT_EQ(group_2.cases().codes(), helper::group_cases(169, 0, group_2.mirror_toward()));
+    EXPECT_EQ(group_2.cases().codes(), helper::group_cases(169, 0, (uint32_t)group_2.toward()));
 
 }
 
 TEST(GroupPro, cases) {
     GROUP_UNION_PARALLEL({
         for (auto group : group_union.groups_pro()) {
-            const auto &cases = helper::group_cases(group.type_id(), group.pattern_id(), group.mirror_toward());
+            const auto &cases = helper::group_cases(group.type_id(), group.pattern_id(), (uint32_t)group.toward());
             EXPECT_EQ(group.size(), cases.size());
             EXPECT_EQ(group.cases().codes(), cases);
 
@@ -46,12 +46,12 @@ TEST(GroupPro, cases) {
             auto g1 = GroupPro::from_common_code(cases.front());
             EXPECT_EQ(g1.type_id(), group.type_id());
             EXPECT_EQ(g1.pattern_id(), group.pattern_id());
-            EXPECT_EQ(g1.mirror_toward(), group.mirror_toward());
+            EXPECT_EQ(g1.toward(), group.toward());
 
             auto g2 = GroupPro::from_common_code(cases.back());
             EXPECT_EQ(g2.type_id(), group.type_id());
             EXPECT_EQ(g2.pattern_id(), group.pattern_id());
-            EXPECT_EQ(g2.mirror_toward(), group.mirror_toward());
+            EXPECT_EQ(g2.toward(), group.toward());
         }
     });
 }
@@ -62,7 +62,7 @@ TEST(GroupPro, v_mirror) {
             auto g = group.to_vertical_mirror();
             EXPECT_EQ(group.type_id(), g.type_id());
             EXPECT_EQ(group.pattern_id(), g.pattern_id());
-            if (group.mirror_toward() == g.mirror_toward()) {
+            if (group.toward() == g.toward()) {
                 EXPECT_TRUE(group.is_vertical_mirror());
 
                 std::unordered_set<uint64_t> cases;
@@ -102,7 +102,7 @@ TEST(GroupPro, h_mirror) {
             auto g = group.to_horizontal_mirror();
             EXPECT_EQ(group.type_id(), g.type_id());
             EXPECT_EQ(group.pattern_id(), g.pattern_id());
-            if (group.mirror_toward() == g.mirror_toward()) {
+            if (group.toward() == g.toward()) {
                 EXPECT_TRUE(group.is_horizontal_mirror());
 
                 std::unordered_set<uint64_t> cases;
