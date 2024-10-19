@@ -4,21 +4,16 @@
 
 namespace klotski::cases {
 
-// TODO: should we try to compress it?
-constexpr auto GROUP_SIZE = std::to_array<uint32_t>({
-#include "sizes.inc"
+// seed(36) + size(20) + type(3)
+
+constexpr auto PATTERN_DATA = std::to_array<uint64_t>({
+#include "pattern.inc"
 });
 
-constexpr auto GROUP_SEED = std::to_array<uint64_t>({
-#include "seeds.inc"
-});
+// seed(36) + type_id(8) + pattern_id(10) + toward(2)
 
-constexpr auto GROUP_MIRROR_H = std::to_array<uint16_t>({
-#include "mirror_h.inc"
-});
-
-constexpr auto GROUP_MIRROR_V = std::to_array<uint16_t>({
-#include "mirror_v.inc"
+constexpr auto GROUP_DATA = std::to_array<uint64_t>({
+#include "group.inc"
 });
 
 } // namespace klotski::cases

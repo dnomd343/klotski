@@ -7,7 +7,7 @@
 
 #include "helper/parallel.h"
 
-using klotski::cases::GroupPro;
+using klotski::cases::Group;
 using klotski::cases::GroupUnion;
 
 TEST(GroupPro, demo) {
@@ -21,7 +21,7 @@ TEST(GroupPro, demo) {
     std::cout << GroupUnion::unsafe_create(169).group_num() << std::endl;
 
     std::cout << (int)helper::pattern_mirror_type(169, 0) << std::endl;
-    std::cout << (int)GroupPro::unsafe_create(169, 0, GroupPro::Toward::A).mirror_type() << std::endl;
+    std::cout << (int)Group::unsafe_create(169, 0, Group::Toward::A).mirror_type() << std::endl;
 
     std::cout << std::format("{}", helper::pattern_toward_list(169, 0)) << std::endl;
     std::cout << (int)GroupUnion::unsafe_create(169).groups_pro()[0].toward() << std::endl;
@@ -43,12 +43,12 @@ TEST(GroupPro, cases) {
 
             EXPECT_EQ((int)group.mirror_type(), helper::pattern_mirror_type(group.type_id(), group.pattern_id()));
 
-            auto g1 = GroupPro::from_common_code(cases.front());
+            auto g1 = Group::from_common_code(cases.front());
             EXPECT_EQ(g1.type_id(), group.type_id());
             EXPECT_EQ(g1.pattern_id(), group.pattern_id());
             EXPECT_EQ(g1.toward(), group.toward());
 
-            auto g2 = GroupPro::from_common_code(cases.back());
+            auto g2 = Group::from_common_code(cases.back());
             EXPECT_EQ(g2.type_id(), group.type_id());
             EXPECT_EQ(g2.pattern_id(), group.pattern_id());
             EXPECT_EQ(g2.toward(), group.toward());

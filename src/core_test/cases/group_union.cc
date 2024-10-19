@@ -15,8 +15,7 @@
 
 using klotski::codec::ShortCode;
 
-//using klotski::cases::Group;
-using klotski::cases::GroupPro;
+using klotski::cases::Group;
 using klotski::cases::GroupUnion;
 
 using klotski::cases::TYPE_ID_LIMIT;

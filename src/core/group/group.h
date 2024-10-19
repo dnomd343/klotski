@@ -79,8 +79,7 @@ constexpr uint32_t ALL_PATTERN_NUM = 6577;
 typedef std::vector<codec::RawCode> RawCodes;
 typedef std::vector<codec::CommonCode> CommonCodes;
 
-//class Group;
-class GroupPro;
+class Group;
 
 // TODO: add constexpr
 class GroupUnion {
@@ -114,7 +113,7 @@ public:
 
     [[nodiscard]] constexpr uint32_t pattern_num() const;
 
-    [[nodiscard]] std::vector<GroupPro> groups_pro() const;
+    [[nodiscard]] std::vector<Group> groups_pro() const;
 
     // TODO: get target pattern_id
 
@@ -160,9 +159,9 @@ private:
 
 // TODO: add debug output
 
-class GroupPro {
+class Group {
 public:
-    GroupPro() = delete;
+    Group() = delete;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -195,12 +194,12 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Create Group without any check.
-    static constexpr GroupPro unsafe_create(uint32_t type_id,
-                                            uint32_t pattern_id, Toward toward);
+    static constexpr Group unsafe_create(uint32_t type_id,
+                                         uint32_t pattern_id, Toward toward);
 
     /// Create Group with validity check.
-    static constexpr std::optional<GroupPro> create(uint32_t type_id,
-                                                    uint32_t pattern_id, Toward toward);
+    static constexpr std::optional<Group> create(uint32_t type_id,
+                                                 uint32_t pattern_id, Toward toward);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -213,13 +212,13 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Create Group from RawCode.
-    static GroupPro from_raw_code(codec::RawCode raw_code);
+    static Group from_raw_code(codec::RawCode raw_code);
 
     /// Create Group from ShortCode.
-    static GroupPro from_short_code(codec::ShortCode short_code);
+    static Group from_short_code(codec::ShortCode short_code);
 
     /// Create Group from CommonCode.
-    static GroupPro from_common_code(codec::CommonCode common_code);
+    static Group from_common_code(codec::CommonCode common_code);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -233,10 +232,10 @@ public:
     [[nodiscard]] constexpr bool is_horizontal_mirror() const;
 
     /// Obtain the vertically symmetrical klotski group.
-    [[nodiscard]] constexpr GroupPro to_vertical_mirror() const;
+    [[nodiscard]] constexpr Group to_vertical_mirror() const;
 
     /// Obtain the horizontally symmetrical klotski group.
-    [[nodiscard]] constexpr GroupPro to_horizontal_mirror() const;
+    [[nodiscard]] constexpr Group to_horizontal_mirror() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -245,7 +244,7 @@ private:
     Toward toward_;
     uint32_t pattern_id_;
 
-    GroupPro(uint32_t type_id, uint32_t pattern_id, Toward toward) {
+    Group(uint32_t type_id, uint32_t pattern_id, Toward toward) {
         type_id_ = type_id;
         pattern_id_ = pattern_id;
         toward_ = toward;
@@ -255,66 +254,13 @@ private:
     [[nodiscard]] constexpr uint32_t flat_id() const;
 };
 
-//class Group {
-//public:
-//    Group() = delete;
-
-    // ------------------------------------------------------------------------------------- //
-
-    /// Get the original type id.
-//    [[nodiscard]] constexpr uint32_t type_id() const;
-
-    /// Get the original group id.
-//    [[nodiscard]] constexpr uint32_t group_id() const;
-
-    /// Create Group without any check.
-//    static constexpr Group unsafe_create(uint32_t type_id, uint32_t group_id);
-
-    /// Create Group with validity check.
-//    static constexpr std::optional<Group> create(uint32_t type_id, uint32_t group_id);
-
-    // ------------------------------------------------------------------------------------- //
-
-    /// Get all cases under current group.
-//    [[nodiscard]] RangesUnion cases() const;
-
-    /// Get the number of klotski cases contained.
-//    [[nodiscard]] constexpr uint32_t size() const;
-
-    // ------------------------------------------------------------------------------------- //
-
-    /// Create Group from RawCode.
-//    static Group from_raw_code(codec::RawCode raw_code);
-
-    /// Create Group from ShortCode.
-//    static Group from_short_code(codec::ShortCode short_code);
-
-    /// Create Group from CommonCode.
-//    static Group from_common_code(codec::CommonCode common_code);
-
-    // ------------------------------------------------------------------------------------- //
-
-    // TODO: add `is_xxx_mirror` interface
-
-//    [[nodiscard]] constexpr Group to_vertical_mirror() const;
-
-//    [[nodiscard]] constexpr Group to_horizontal_mirror() const;
-
-//private:
-//    uint32_t type_id_;
-//    uint32_t group_id_;
-
-    /// Tiled merge of type_id and group_id.
-//    [[nodiscard]] constexpr uint32_t flat_id() const;
-//};
-
 /// Spawn all the unsorted codes of the current group.
 std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reserve = 0);
 
 class GroupCasesPro {
 public:
     struct CaseInfo {
-        GroupPro group;
+        Group group;
         uint32_t case_id;
     };
 
@@ -405,5 +351,3 @@ public:
 #include "internal/group_union.inl"
 #include "internal/group_cases.inl"
 #include "internal/group.inl"
-
-#include "internal/group_pro.inl"

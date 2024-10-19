@@ -5,7 +5,7 @@
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 
-using klotski::cases::GroupPro;
+using klotski::cases::Group;
 using klotski::cases::GroupUnion;
 using klotski::cases::RangesUnion;
 using klotski::cases::GroupCasesPro;
@@ -36,7 +36,7 @@ std::vector<std::vector<RangesUnion>> build_ranges_unions() {
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         auto group_union = GroupUnion::unsafe_create(type_id);
         for (uint32_t pattern_id = 0; pattern_id < group_union.pattern_num(); ++pattern_id) {
-            std::vector<GroupPro> groups;
+            std::vector<Group> groups;
             for (auto group : group_union.groups_pro()) {
                 if (group.pattern_id() == pattern_id) {
                     groups.emplace_back(group);
@@ -115,7 +115,7 @@ GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain(codec::ShortCode short_code) 
     auto case_id = (*rev_data)[short_code.unwrap()].case_id;
 
     return CaseInfo {
-        .group = GroupPro::unsafe_create(type_id, pattern_id, (GroupPro::Toward)toward_id),
+        .group = Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id),
         .case_id = case_id,
     };
 }

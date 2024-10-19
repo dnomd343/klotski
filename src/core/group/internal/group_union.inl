@@ -60,26 +60,26 @@ constexpr uint32_t GroupUnion::pattern_num() const {
     return PATTERN_NUM[type_id_];
 }
 
-inline std::vector<GroupPro> GroupUnion::groups_pro() const {
-    std::vector<GroupPro> groups;
+inline std::vector<Group> GroupUnion::groups_pro() const {
+    std::vector<Group> groups;
     groups.reserve(group_num());
     for (uint32_t pattern_id = 0; pattern_id < pattern_num(); ++pattern_id) {
-        auto group = GroupPro::unsafe_create(type_id_, pattern_id, GroupPro::Toward::A);
+        auto group = Group::unsafe_create(type_id_, pattern_id, Group::Toward::A);
         groups.emplace_back(group);
         switch (group.mirror_type()) {
-            case GroupPro::MirrorType::Full:
+            case Group::MirrorType::Full:
                 continue;
-            case GroupPro::MirrorType::Horizontal:
-                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, GroupPro::Toward::C));
+            case Group::MirrorType::Horizontal:
+                groups.emplace_back(Group::unsafe_create(type_id_, pattern_id, Group::Toward::C));
                 break;
-            case GroupPro::MirrorType::Centro:
-            case GroupPro::MirrorType::Vertical:
-                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, GroupPro::Toward::B));
+            case Group::MirrorType::Centro:
+            case Group::MirrorType::Vertical:
+                groups.emplace_back(Group::unsafe_create(type_id_, pattern_id, Group::Toward::B));
                 break;
-            case GroupPro::MirrorType::Ordinary:
-                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, GroupPro::Toward::B));
-                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, GroupPro::Toward::C));
-                groups.emplace_back(GroupPro::unsafe_create(type_id_, pattern_id, GroupPro::Toward::D));
+            case Group::MirrorType::Ordinary:
+                groups.emplace_back(Group::unsafe_create(type_id_, pattern_id, Group::Toward::B));
+                groups.emplace_back(Group::unsafe_create(type_id_, pattern_id, Group::Toward::C));
+                groups.emplace_back(Group::unsafe_create(type_id_, pattern_id, Group::Toward::D));
                 break;
         }
     }

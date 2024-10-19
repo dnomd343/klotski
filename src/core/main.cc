@@ -26,8 +26,7 @@ using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 using klotski::cases::GroupUnion;
 
-//using klotski::cases::Group;
-using klotski::cases::GroupPro;
+using klotski::cases::Group;
 using klotski::cases::GroupCases;
 using klotski::cases::GroupUnion;
 using klotski::cases::GroupCasesPro;
@@ -61,7 +60,7 @@ int main() {
 //    std::cout << data_s.size() << std::endl;
 //    std::cout << data_c.size() << std::endl;
 
-    auto group = GroupPro::from_common_code(CommonCode::unsafe_create(0x1A9BF0C00));
+    auto group = Group::from_common_code(CommonCode::unsafe_create(0x1A9BF0C00));
     std::cout << group.type_id() << std::endl;
     std::cout << group.pattern_id() << std::endl;
     std::cout << (int)group.toward() << std::endl;
