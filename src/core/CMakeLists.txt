@@ -27,6 +27,7 @@ set(KLOTSKI_CORE_SRC
         group/internal/group.cc
         group/internal/group_pro.cc
         group/internal/group_cases.cc
+        group/internal/group_cases_pro.cc
 
         ranges/internal/spawn.cc
         ranges/internal/ranges.cc

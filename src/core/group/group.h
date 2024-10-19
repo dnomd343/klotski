@@ -272,6 +272,23 @@ public:
     static std::vector<codec::RawCode> extend(codec::RawCode raw_code, uint32_t reserve = 0);
 };
 
+class GroupCasesPro {
+public:
+    struct CaseInfo {
+        GroupPro group;
+        uint32_t case_id;
+    };
+
+    // TODO: allow cal Group directly
+
+    static void build();
+
+    static codec::CommonCode fast_parse(CaseInfo info);
+
+    static CaseInfo fast_obtain(codec::ShortCode short_code);
+
+};
+
 class GroupCases {
 public:
     // TODO: rename as Info and changed as class
