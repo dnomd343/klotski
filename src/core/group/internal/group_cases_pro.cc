@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <algorithm>
+
 #include "group/group.h"
 
 using klotski::codec::ShortCode;
@@ -13,6 +15,8 @@ using klotski::cases::GroupCasesPro;
 using klotski::cases::ALL_GROUP_NUM;
 using klotski::cases::TYPE_ID_LIMIT;
 using klotski::cases::ALL_CASES_NUM_;
+
+using klotski::cases::GROUP_DATA;
 
 struct case_info_t {
     uint32_t pattern_id : 10;
@@ -84,9 +88,12 @@ void GroupCasesPro::build() {
     static auto data_2 = build_tmp_data();
     ru_data = &data_1;
     rev_data = &data_2;
+
+    // TODO: using std::mutex `busy_`
+    fast_ = true;
 }
 
-CommonCode GroupCasesPro::fast_parse(CaseInfo info) {
+CommonCode GroupCasesPro::fast_obtain_code(CaseInfo info) {
 
     auto flat_id = PATTERN_OFFSET[info.group.type_id()] + info.group.pattern_id();
 
@@ -108,7 +115,7 @@ CommonCode GroupCasesPro::fast_parse(CaseInfo info) {
     return CommonCode::unsafe_create(head << 32 | range);
 }
 
-GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain(codec::ShortCode short_code) {
+GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain_info(ShortCode short_code) {
     uint16_t type_id = GroupUnion::from_short_code(short_code).unwrap(); // NOTE: need to convert as CommonCode
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
     uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
@@ -117,5 +124,75 @@ GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain(codec::ShortCode short_code) 
     return CaseInfo {
         .group = Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id),
         .case_id = case_id,
+    };
+}
+
+GroupCasesPro::CaseInfo GroupCasesPro::fast_obtain_info(CommonCode common_code) {
+    auto short_code = common_code.to_short_code();
+    uint16_t type_id = GroupUnion::from_common_code(common_code).unwrap();
+    uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
+    uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
+    auto case_id = (*rev_data)[short_code.unwrap()].case_id;
+
+    return CaseInfo {
+        .group = Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id),
+        .case_id = case_id,
+    };
+}
+
+CommonCode GroupCasesPro::tiny_obtain_code(CaseInfo info) {
+    auto cases = info.group.cases();
+    uint64_t head = 0;
+
+    for (;;) {
+        if (info.case_id >= cases[head].size()) {
+            info.case_id -= cases[head].size();
+            ++head;
+        } else {
+            break;
+        }
+    }
+
+    auto range = cases[head][info.case_id];
+    return CommonCode::unsafe_create(head << 32 | range);
+}
+
+// NOTE: copy directly from Group impl
+static std::unordered_map<uint64_t, Group> build_map_data() {
+    // NOTE: using CommonCode as map key
+    std::unordered_map<uint64_t, Group> data;
+    data.reserve(GROUP_DATA.size());
+    for (auto raw : GROUP_DATA) {
+        uint32_t type_id = (raw >> 12) & 0b11111111;
+        uint32_t pattern_id = (raw >> 2) & 0b1111111111;
+        uint32_t toward = raw & 0b11;
+        auto seed = CommonCode::unsafe_create(raw >> 20).unwrap();
+        auto group = Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward);
+        data.emplace(seed, group);
+    }
+    return data;
+}
+
+GroupCasesPro::CaseInfo GroupCasesPro::tiny_obtain_info(CommonCode common_code) {
+    auto raw_codes = Group_extend(common_code.to_raw_code());
+    std::vector<CommonCode> common_codes;
+    common_codes.reserve(raw_codes.size());
+    for (auto raw_code : raw_codes) {
+        common_codes.emplace_back(raw_code.to_common_code());
+    }
+
+    static auto map_data = build_map_data(); // TODO: shared map data with Group::from_raw_code
+
+    auto seed = std::min_element(common_codes.begin(), common_codes.end());
+    auto group = map_data.at(seed->unwrap());
+
+    // TODO: try to perf it
+    std::sort(common_codes.begin(), common_codes.end());
+    auto tmp = std::lower_bound(common_codes.begin(), common_codes.end(), common_code);
+    auto case_id = tmp - common_codes.begin();
+
+    return CaseInfo {
+        .group = group,
+        .case_id = (uint32_t)case_id,
     };
 }

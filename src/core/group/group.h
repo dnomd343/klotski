@@ -267,14 +267,31 @@ public:
         uint32_t case_id;
     };
 
-    // TODO: allow cal Group directly
+    static codec::CommonCode obtain_code(CaseInfo info) {
+        if (fast_) {
+            return fast_obtain_code(info);
+        }
+        return tiny_obtain_code(info);
+    }
+
+    CaseInfo obtain_info(codec::CommonCode common_code);
+
+    // TODO: allow cal Group directly -> `obtain_group`
+
+    static inline bool fast_ {false};
+
+    static inline std::mutex busy_ {};
 
     static void build();
 
-    static codec::CommonCode fast_parse(CaseInfo info);
+    static codec::CommonCode fast_obtain_code(CaseInfo info);
 
-    static CaseInfo fast_obtain(codec::ShortCode short_code);
+    static CaseInfo fast_obtain_info(codec::ShortCode short_code);
+    static CaseInfo fast_obtain_info(codec::CommonCode common_code);
 
+    static codec::CommonCode tiny_obtain_code(CaseInfo info);
+
+    static CaseInfo tiny_obtain_info(codec::CommonCode common_code);
 };
 
 class GroupCases {
