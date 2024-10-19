@@ -138,3 +138,18 @@ constexpr auto operator<=>(const CommonCode &lhs, const CommonCode &rhs) {
 // ----------------------------------------------------------------------------------------- //
 
 } // namespace klotski::codec
+
+// ----------------------------------------------------------------------------------------- //
+
+namespace std {
+
+template <>
+struct std::hash<klotski::codec::CommonCode> {
+    constexpr std::size_t operator()(const klotski::codec::CommonCode &c) const noexcept {
+        return std::hash<uint64_t>{}(c.unwrap());
+    }
+};
+
+} // namespace std
+
+// ----------------------------------------------------------------------------------------- //

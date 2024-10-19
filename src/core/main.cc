@@ -32,6 +32,7 @@ using klotski::cases::GroupCases;
 using klotski::cases::GroupUnion;
 
 using klotski::cases::TYPE_ID_LIMIT;
+using klotski::cases::ALL_CASES_NUM_;
 using klotski::codec::SHORT_CODE_LIMIT;
 
 int main() {
@@ -41,6 +42,23 @@ int main() {
     // std::cout << ret.size() << std::endl;
 
     const auto start = std::chrono::system_clock::now();
+
+    ShortCode::speed_up(true);
+
+    std::unordered_set<RawCode> data_r;
+    std::unordered_set<ShortCode> data_s;
+    std::unordered_set<CommonCode> data_c;
+    data_r.reserve(ALL_CASES_NUM_);
+    data_s.reserve(ALL_CASES_NUM_);
+    data_c.reserve(ALL_CASES_NUM_);
+    for (auto code : AllCases::instance().fetch().codes()) {
+        data_c.emplace(code);
+        data_r.emplace(code.to_raw_code());
+        data_s.emplace(code.to_short_code());
+    }
+    std::cout << data_r.size() << std::endl;
+    std::cout << data_s.size() << std::endl;
+    std::cout << data_c.size() << std::endl;
 
 //    const auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
 //    const auto group = Group::from_common_code(common_code);
