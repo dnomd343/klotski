@@ -158,6 +158,10 @@ class Group {
 public:
     Group() = delete;
 
+    // TODO: add stream output for debug
+
+    [[nodiscard]] constexpr std::string to_string() const;
+
     // ------------------------------------------------------------------------------------- //
 
     enum class Toward {
@@ -180,15 +184,14 @@ public:
     /// Get the mirror toward.
     [[nodiscard]] constexpr Toward toward() const;
 
+    /// Get the toward character.
+    [[nodiscard]] constexpr char toward_char() const;
+
     /// Get the original type id.
     [[nodiscard]] constexpr uint32_t type_id() const;
 
     /// Get the original pattern id.
     [[nodiscard]] constexpr uint32_t pattern_id() const;
-
-    // TODO: add toward char interface
-
-    // TODO: add stream output for debug
 
     // ------------------------------------------------------------------------------------- //
 

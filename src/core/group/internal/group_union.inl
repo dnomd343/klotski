@@ -53,6 +53,10 @@ constexpr uint32_t GroupUnion::max_group_size() const {
 //	return std::nullopt;
 //}
 
+constexpr auto operator==(const GroupUnion &lhs, const GroupUnion &rhs) {
+    return lhs.type_id_ == rhs.type_id_;
+}
+
 // ----------------------------------------------------------------------------------------- //
 
 constexpr uint32_t GroupUnion::pattern_num() const {

@@ -4,16 +4,55 @@
 
 namespace klotski::cases {
 
-[[nodiscard]] constexpr uint32_t Group::type_id() const {
+constexpr uint32_t Group::type_id() const {
     return type_id_;
 }
 
-[[nodiscard]] constexpr uint32_t Group::pattern_id() const {
+constexpr uint32_t Group::pattern_id() const {
     return pattern_id_;
 }
 
-[[nodiscard]] constexpr auto Group::toward() const -> Toward {
+constexpr auto Group::toward() const -> Toward {
     return toward_;
+}
+
+constexpr char Group::toward_char() const {
+    // TODO: select chars from pre-build std::array
+    switch (mirror_type()) {
+        case MirrorType::Full:
+            return '\0';
+        case MirrorType::Horizontal:
+            return (toward_ == Toward::A) ? 'n' : 'u';
+        case MirrorType::Centro:
+            return (toward_ == Toward::A) ? '?' : '!'; // TODO: select chars for centro
+        case MirrorType::Vertical:
+            return (toward_ == Toward::A) ? 'p' : 'q';
+        case MirrorType::Ordinary:
+            if (toward_ == Toward::A) {
+                return 'a';
+            } else if (toward_ == Toward::B) {
+                return 'b';
+            } else if (toward_ == Toward::C) {
+                return 'c';
+            } else if (toward_ == Toward::D) {
+                return 'd';
+            }
+            return '\0'; // TODO: never reach
+    }
+}
+
+constexpr std::string Group::to_string() const { // TODO: `std::string` not support constexpr
+    auto c = toward_char();
+    if (c == '\0') {
+        return std::format("{}-{}", type_id_, pattern_id_);
+    }
+    return std::format("{}-{}{}", type_id_, pattern_id_, c);
+}
+
+constexpr auto operator==(const Group &lhs, const Group &rhs) {
+    return lhs.type_id_ == rhs.type_id_
+        && lhs.pattern_id_ == rhs.pattern_id_
+        && lhs.toward_ == rhs.toward_;
 }
 
 constexpr Group Group::unsafe_create(uint32_t type_id, uint32_t pattern_id, Toward toward) {

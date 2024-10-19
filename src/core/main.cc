@@ -59,32 +59,34 @@ int main() {
 //    std::cout << data_s.size() << std::endl;
 //    std::cout << data_c.size() << std::endl;
 
-//    auto group = Group::from_common_code(CommonCode::unsafe_create(0x1A9BF0C00));
-//    std::cout << group.type_id() << std::endl;
-//    std::cout << group.pattern_id() << std::endl;
-//    std::cout << (int)group.toward() << std::endl;
+    auto group = Group::from_common_code(CommonCode::unsafe_create(0x1A9BF0C00));
+    std::cout << group.type_id() << std::endl;
+    std::cout << group.pattern_id() << std::endl;
+    std::cout << (int)group.toward() << std::endl;
+    std::cout << group.toward_char() << std::endl;
+    std::cout << group.to_string() << std::endl;
 
-    auto info_1 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
-    std::cout << std::format("{}-{}-{}-{}\n", info_1.group.type_id(), info_1.group.pattern_id(), (int)info_1.group.toward(), info_1.case_id);
-    auto code_1 = GroupCases::obtain_code(info_1);
-    std::cout << code_1 << std::endl;
-
-    auto info_2 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
-    std::cout << std::format("{}-{}-{}-{}\n", info_2.group.type_id(), info_2.group.pattern_id(), (int)info_2.group.toward(), info_2.case_id);
-    auto code_2 = GroupCases::obtain_code(info_2);
-    std::cout << code_2 << std::endl;
-
-    GroupCases::build();
-
-    auto info_3 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
-    std::cout << std::format("{}-{}-{}-{}\n", info_3.group.type_id(), info_3.group.pattern_id(), (int)info_3.group.toward(), info_3.case_id);
-    auto code_3 = GroupCases::obtain_code(info_3);
-    std::cout << code_3 << std::endl;
-
-    auto info_4 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
-    std::cout << std::format("{}-{}-{}-{}\n", info_4.group.type_id(), info_4.group.pattern_id(), (int)info_4.group.toward(), info_4.case_id);
-    auto code_4 = GroupCases::obtain_code(info_4);
-    std::cout << code_4 << std::endl;
+//    auto info_1 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
+//    std::cout << std::format("{}-{}-{}-{}\n", info_1.group.type_id(), info_1.group.pattern_id(), (int)info_1.group.toward(), info_1.case_id);
+//    auto code_1 = GroupCases::obtain_code(info_1);
+//    std::cout << code_1 << std::endl;
+//
+//    auto info_2 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
+//    std::cout << std::format("{}-{}-{}-{}\n", info_2.group.type_id(), info_2.group.pattern_id(), (int)info_2.group.toward(), info_2.case_id);
+//    auto code_2 = GroupCases::obtain_code(info_2);
+//    std::cout << code_2 << std::endl;
+//
+//    GroupCases::build();
+//
+//    auto info_3 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
+//    std::cout << std::format("{}-{}-{}-{}\n", info_3.group.type_id(), info_3.group.pattern_id(), (int)info_3.group.toward(), info_3.case_id);
+//    auto code_3 = GroupCases::obtain_code(info_3);
+//    std::cout << code_3 << std::endl;
+//
+//    auto info_4 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
+//    std::cout << std::format("{}-{}-{}-{}\n", info_4.group.type_id(), info_4.group.pattern_id(), (int)info_4.group.toward(), info_4.case_id);
+//    auto code_4 = GroupCases::obtain_code(info_4);
+//    std::cout << code_4 << std::endl;
 
 //    const auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
 //    const auto group = Group::from_common_code(common_code);
