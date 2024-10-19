@@ -105,40 +105,31 @@ static std::vector<Pattern> split_patterns(const std::vector<CommonCode> &common
         auto code_d = code_b.to_vertical_mirror();
 
         auto group_a = split_group(codes, code_a);
-        auto group_b = split_group(codes, code_b);
-        auto group_c = split_group(codes, code_c);
-        auto group_d = split_group(codes, code_d);
 
         Pattern pattern {code_a};
         pattern.cases[0] = group_a;
         pattern.size = group_a.size();
         pattern.group_size = group_a.size();
 
-        if (group_a.size() != group_b.size() || group_a.size() != group_c.size() || group_a.size() != group_d.size()) {
-            std::cout << "group size not match" << std::endl;
-            break;
-        }
-
-        if (group_a == group_b && group_a == group_c && group_a == group_d) {
+        if (!codes.contains(code_b.unwrap()) && !codes.contains(code_c.unwrap()) && !codes.contains(code_d.unwrap())) {
             pattern.mirror = Pattern::Mirror::Full;
-        } else if (group_a != group_b && group_a != group_c && group_a != group_d && \
-                   group_b != group_c && group_b != group_d && group_c != group_d) {
+        } else if (codes.contains(code_b.unwrap()) && codes.contains(code_c.unwrap()) && codes.contains(code_d.unwrap())) {
             pattern.mirror = Pattern::Mirror::Common;
-            pattern.cases[1] = group_b;
-            pattern.cases[2] = group_c;
-            pattern.cases[3] = group_d;
+            pattern.cases[1] = split_group(codes, code_b);
+            pattern.cases[2] = split_group(codes, code_c);
+            pattern.cases[3] = split_group(codes, code_d);
             pattern.size *= 4;
-        } else if (group_a == group_b && group_c == group_d && group_a != group_c && group_b != group_d) {
+        } else if (!codes.contains(code_b.unwrap())) {
             pattern.mirror = Pattern::Mirror::V;
-            pattern.cases[1] = group_c;
+            pattern.cases[1] = split_group(codes, code_c);
             pattern.size *= 2;
-        } else if (group_a == group_c && group_b == group_d && group_a != group_b && group_c != group_d) {
+        } else if (!codes.contains(code_c.unwrap())) {
             pattern.mirror = Pattern::Mirror::H;
-            pattern.cases[1] = group_b;
+            pattern.cases[1] = split_group(codes, code_b);
             pattern.size *= 2;
-        } else if (group_a == group_d && group_b == group_c && group_a != group_b && group_c != group_d) {
+        } else if (!codes.contains(code_d.unwrap())) {
             pattern.mirror = Pattern::Mirror::HV;
-            pattern.cases[1] = group_b;
+            pattern.cases[1] = split_group(codes, code_b);
             pattern.size *= 2;
         } else {
             std::cout << "unknown pattern" << std::endl;
