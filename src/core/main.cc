@@ -61,13 +61,18 @@ int main() {
 //    std::cout << data_s.size() << std::endl;
 //    std::cout << data_c.size() << std::endl;
 
-    GroupCasesPro::build();
+    auto group = GroupPro::from_common_code(CommonCode::unsafe_create(0x1A9BF0C00));
+    std::cout << group.type_id() << std::endl;
+    std::cout << group.pattern_id() << std::endl;
+    std::cout << (int)group.toward() << std::endl;
 
-    auto kk = GroupCasesPro::fast_obtain(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
-    std::cout << std::format("{}-{}-{}-{}", kk.group.type_id(), kk.group.pattern_id(), (int)kk.group.toward(), kk.case_id) << std::endl;
-
-    auto code = GroupCasesPro::fast_parse(kk);
-    std::cout << code << std::endl;
+//    GroupCasesPro::build();
+//
+//    auto kk = GroupCasesPro::fast_obtain(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
+//    std::cout << std::format("{}-{}-{}-{}", kk.group.type_id(), kk.group.pattern_id(), (int)kk.group.toward(), kk.case_id) << std::endl;
+//
+//    auto code = GroupCasesPro::fast_parse(kk);
+//    std::cout << code << std::endl;
 
 //    const auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
 //    const auto group = Group::from_common_code(common_code);

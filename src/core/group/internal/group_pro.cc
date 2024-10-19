@@ -8,11 +8,11 @@ using klotski::codec::CommonCode;
 using klotski::cases::GroupPro;
 using klotski::cases::RangesUnion;
 
-using klotski::cases::GROUP_PRO_SEED;
-using klotski::cases::GROUP_SEED_MAP;
+using klotski::cases::GROUP_DATA;
+using klotski::cases::PATTERN_DATA;
 
 RangesUnion GroupPro::cases() const {
-    auto seed = CommonCode::unsafe_create(GROUP_PRO_SEED[flat_id()]);
+    auto seed = CommonCode::unsafe_create(PATTERN_DATA[flat_id()] >> 23);
 
     // NOTE: convert as RawCode directly
     if (toward_ == Toward::B) {
@@ -41,12 +41,12 @@ RangesUnion GroupPro::cases() const {
 static std::unordered_map<uint64_t, GroupPro> build_map_data() {
     // NOTE: using CommonCode as map key
     std::unordered_map<uint64_t, GroupPro> data;
-    data.reserve(GROUP_SEED_MAP.size());
-    for (auto raw : GROUP_SEED_MAP) {
-        uint32_t type_id = (raw >> 48) & 0b11111111;
-        uint32_t pattern_id = (raw >> 38) & 0b1111111111;
-        uint32_t toward = (raw >> 36) & 0b11;
-        auto seed = CommonCode::unsafe_create(raw & (uint64_t)0xFFFFFFFFF).unwrap();
+    data.reserve(GROUP_DATA.size());
+    for (auto raw : GROUP_DATA) {
+        uint32_t type_id = (raw >> 12) & 0b11111111;
+        uint32_t pattern_id = (raw >> 2) & 0b1111111111;
+        uint32_t toward = raw & 0b11;
+        auto seed = CommonCode::unsafe_create(raw >> 20).unwrap();
         auto group = GroupPro::unsafe_create(type_id, pattern_id, (GroupPro::Toward)toward);
         data.emplace(seed, group);
     }
