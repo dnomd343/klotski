@@ -24,6 +24,8 @@ using klotski::ffi::PyExc_CodecError;
 using klotski::ffi::PyGroup;
 using klotski::ffi::PyGroupUnion;
 
+extern void bind_cases(const py::module_ &m);
+
 void bind_common_code(const py::module_ &m) {
     py::class_<PyCommonCode>(m, "CommonCode")
         .def(py::init<uint64_t>())
@@ -100,21 +102,10 @@ PYBIND11_MODULE(klotski, m) {
     m.def("all_cases", &all_cases);
     m.def("group_demo", &group_demo);
 
-    auto py_cases = py::class_<PyCases>(m, "Cases")
-        .def("size", &PyCases::size)
-        .def("__iter__", &PyCases::common_codes, py::keep_alive<0, 1>())
-        .def("short_codes", &PyCases::short_codes, py::keep_alive<0, 1>());
-
-    py::class_<PyCases::ShortCodeIter>(py_cases, "ShortCodeIter")
-            .def("__iter__", [](PyCases::ShortCodeIter &it) -> PyCases::ShortCodeIter& { return it; })
-            .def("__next__", &PyCases::ShortCodeIter::next);
-
-    py::class_<PyCases::CommonCodeIter>(py_cases, "CommonCodeIter")
-            .def("__iter__", [](PyCases::CommonCodeIter &it) -> PyCases::CommonCodeIter& { return it; })
-            .def("__next__", &PyCases::CommonCodeIter::next);
-
     bind_short_code(m);
     bind_common_code(m);
+
+    bind_cases(m);
 
     py::class_<PyGroupUnion>(m, "GroupUnion")
         .def(py::init<uint8_t>())

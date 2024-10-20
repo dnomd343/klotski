@@ -18,6 +18,7 @@ if (KLSK_PYTHON_FFI)
         py_ffi/wrapper/cases.cc
         py_ffi/wrapper/py_group_union.cc
         py_ffi/wrapper/py_group.cc
+        py_ffi/binder/cases.cc
     )
     target_include_directories(klotski_py PRIVATE py_ffi/include)
     target_include_directories(klotski_py PRIVATE py_ffi)

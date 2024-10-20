@@ -11,35 +11,27 @@ namespace klotski::ffi {
 
 using cases::RangesUnion;
 
+class PyCasesIter {
+public:
+    /// Construct from RangesUnion reference.
+    explicit PyCasesIter(const RangesUnion &data);
+
+    /// Get the next CommonCode or throw a stop_iteration exception.
+    PyCommonCode next();
+
+private:
+    uint8_t head_ {0};
+    uint32_t index_ {0};
+    const RangesUnion &data_;
+};
+
 class PyCases {
 public:
     PyCases() = delete;
 
     // ------------------------------------------------------------------------------------- //
 
-    class CommonCodeIter {
-    public:
-        PyCommonCode next();
-        explicit CommonCodeIter(const RangesUnion &data);
-
-    private:
-        uint8_t head_ {0};
-        uint32_t index_ {0};
-        const RangesUnion &data_;
-    };
-
-    class ShortCodeIter {
-    public:
-        PyShortCode next();
-        explicit ShortCodeIter(CommonCodeIter iter);
-
-    private:
-        CommonCodeIter iter_;
-    };
-
-    // ------------------------------------------------------------------------------------- //
-
-    /// Constructing from rvalue.
+    /// Constructing from r-value.
     static PyCases from(RangesUnion &&data) noexcept;
 
     /// Constructing from longer-lived reference.
@@ -48,20 +40,23 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Get the number of cases.
-    [[nodiscard]] size_t size() const;
-
-    /// Get ShortCode iterator of cases.
-    [[nodiscard]] ShortCodeIter short_codes() const;
+    [[nodiscard]] size_t size() const noexcept;
 
     /// Get CommonCode iterator of cases.
-    [[nodiscard]] CommonCodeIter common_codes() const;
+    [[nodiscard]] PyCasesIter codes() const noexcept;
 
     /// Get the CommonCode of the specified index.
-    [[nodiscard]] PyCommonCode operator[](size_t index) const;
+    [[nodiscard]] PyCommonCode at(size_t index) const; // TODO: allow `-1` index
 
     // ------------------------------------------------------------------------------------- //
 
-    // TODO: add len / repr
+    /// Wrapper of `__repr__` method in Python.
+    static std::string repr(const PyCases &cases) noexcept;
+
+    /// Compare the cases contents of two PyCases.
+    friend constexpr auto operator==(const PyCases &lhs, const PyCases &rhs);
+
+    // ------------------------------------------------------------------------------------- //
 
 private:
     explicit PyCases(RangesUnion &&data);
@@ -78,6 +73,8 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
-// TODO: allow compare
+constexpr auto operator==(const PyCases &lhs, const PyCases &rhs) {
+    return lhs.data_ref() == rhs.data_ref();
+}
 
 } // namespace klotski::ffi
