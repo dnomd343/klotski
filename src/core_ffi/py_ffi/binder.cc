@@ -1,9 +1,11 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/operators.h>
+#include <pybind11/stl.h>
 
 #include "py_exps.h"
 #include "py_codec.h"
 #include "py_cases.h"
+#include "py_group.h"
 
 namespace py = pybind11;
 
@@ -13,6 +15,9 @@ using klotski::ffi::PyCasesIter;
 using klotski::ffi::PyCodecExp;
 using klotski::ffi::PyShortCode;
 using klotski::ffi::PyCommonCode;
+
+using klotski::ffi::PyGroup;
+using klotski::ffi::PyGroupUnion;
 
 void bind_common_code(const py::module_ &m) {
     py::class_<PyCommonCode>(m, "CommonCode")
@@ -99,6 +104,40 @@ PYBIND11_MODULE(klotski, m) {
 
     bind_short_code(m);
     bind_common_code(m);
+
+    py::class_<PyGroupUnion>(m, "GroupUnion")
+        .def(py::init<uint8_t>())
+        .def(py::init<PyShortCode>())
+        .def(py::init<PyCommonCode>())
+
+//        .def(py::hash(py::self))
+//        .def(py::self == py::self)
+//        .def("__str__", &PyShortCode::str)
+        .def("__int__", &PyGroupUnion::value)
+//        .def("__repr__", &PyGroupUnion::repr)
+
+        .def("cases", &PyGroupUnion::cases)
+        .def("groups", &PyGroupUnion::groups)
+
+        .def_property_readonly("size", &PyGroupUnion::size)
+        .def_property_readonly("value", &PyGroupUnion::value)
+        .def_property_readonly("group_num", &PyGroupUnion::group_num)
+        .def_property_readonly("pattern_num", &PyGroupUnion::pattern_num)
+        .def_property_readonly("max_group_size", &PyGroupUnion::max_group_size);
+
+    py::class_<PyGroup>(m, "Group")
+        .def_property_readonly("type_id", &PyGroup::type_id)
+        .def_property_readonly("pattern_id", &PyGroup::pattern_id)
+
+        .def("__str__", &PyGroup::to_string)
+
+        .def("cases", &PyGroup::cases)
+        .def("to_vertical_mirror", &PyGroup::to_vertical_mirror)
+        .def("to_horizontal_mirror", &PyGroup::to_horizontal_mirror)
+
+        .def_property_readonly("size", &PyGroup::size)
+        .def_property_readonly("is_vertical_mirror", &PyGroup::is_vertical_mirror)
+        .def_property_readonly("is_horizontal_mirror", &PyGroup::is_horizontal_mirror);
 
     m.attr("__version__") = "version field";
 }

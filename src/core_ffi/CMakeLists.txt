@@ -16,6 +16,8 @@ if (KLSK_PYTHON_FFI)
         py_ffi/codec/short_code.cc
         py_ffi/codec/common_codec.cc
         py_ffi/py_cases.cc
+        py_ffi/py_group_union.cc
+        py_ffi/py_group.cc
     )
     target_include_directories(klotski_py PRIVATE py_ffi/include)
     target_link_libraries(klotski_py PRIVATE klotski::core)
