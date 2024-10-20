@@ -22,6 +22,7 @@ set(KLOTSKI_CORE_SRC
 
         fast_cal/internal/cal_core.cc
         fast_cal/internal/fast_cal.cc
+        fast_cal/internal/demo.cc
 
         group/internal/group_union.cc
         group/internal/extend.cc
@@ -62,3 +63,7 @@ target_link_libraries(bm_ranges PRIVATE klotski::core benchmark::benchmark_main)
 add_executable(bm_utility benchmark/utility.cc)
 target_compile_options(bm_utility PRIVATE -fno-rtti -fno-exceptions)
 target_link_libraries(bm_utility PRIVATE klotski::core benchmark::benchmark_main)
+
+add_executable(bm_fast_cal benchmark/fast_cal.cc)
+target_compile_options(bm_fast_cal PRIVATE -fno-rtti -fno-exceptions)
+target_link_libraries(bm_fast_cal PRIVATE klotski::core benchmark::benchmark_main)

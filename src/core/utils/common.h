@@ -19,6 +19,8 @@
 
 #include <cstdint>
 
+// TODO: using constexpr
+
 /// NOTE: 0b101 and 0b110 are reserved
 #define BLOCK_space 0b000
 #define BLOCK_fill  0b111

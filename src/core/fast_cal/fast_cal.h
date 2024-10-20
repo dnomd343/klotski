@@ -13,6 +13,8 @@
 #include "mover/mover.h"
 #include "raw_code/raw_code.h"
 
+// #include <absl/container/flat_hash_map.h>
+
 using klotski::codec::RawCode;
 using klotski::mover::MaskMover;
 
@@ -63,3 +65,5 @@ private:
     inline MaskMover init(uint64_t code);
     void new_case(uint64_t code, uint64_t mask);
 };
+
+RawCode FastCal_demo(RawCode code);

@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <list>
+#include <cstdint>
 #include <numeric>
 #include <functional>
 
@@ -22,7 +23,11 @@
         }
 
 /// Marking compiler assumptions.
-#define KLSK_ASSUME(expr) __builtin_assume(expr)
+#if defined(__clang__)
+    #define KLSK_ASSUME(expr) __builtin_assume(expr)
+#elif defined(__GNUC__)
+    #define KLSK_ASSUME(expr) [[assume(expr)]]
+#endif
 
 /// Force function declaration to be inline.
 #define KLSK_INLINE __attribute__ ((always_inline))

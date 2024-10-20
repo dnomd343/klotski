@@ -42,6 +42,22 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
+    auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    for (int i = 0; i < 100; ++i) {
+//        FastCal fc {code};
+//        fc.solve();
+//        klotski::cases::Group_extend(code);
+        FastCal_demo(code);
+    }
+
+//    for (int i = 0; i < 10000000; ++i) {
+//        MaskMover mover([](uint64_t code, uint64_t mask) {
+//            volatile auto tmp_1 = code;
+//            volatile auto tmp_2 = mask;
+//        });
+//        mover.next_cases(0x1A9BF0C00, 0);
+//    }
+
 //    ShortCode::speed_up(true);
 //
 //    std::unordered_set<RawCode> data_r;
@@ -59,38 +75,38 @@ int main() {
 //    std::cout << data_s.size() << std::endl;
 //    std::cout << data_c.size() << std::endl;
 
-    auto group_union = GroupUnion::unsafe_create(169);
-    std::cout << group_union << std::endl;
+//    auto group_union = GroupUnion::unsafe_create(169);
+//    std::cout << group_union << std::endl;
 
-    auto group = Group::from_common_code(CommonCode::unsafe_create(0x1A9BF0C00));
-    std::cout << group << std::endl;
+//    auto group = Group::from_common_code(CommonCode::unsafe_create(0x1A9BF0C00));
+//    std::cout << group << std::endl;
 //    std::cout << group.type_id() << std::endl;
 //    std::cout << group.pattern_id() << std::endl;
 //    std::cout << (int)group.toward() << std::endl;
 //    std::cout << group.toward_char() << std::endl;
 //    std::cout << group.to_string() << std::endl;
 
-    auto info_1 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
-    std::cout << info_1 << std::endl;
-    auto code_1 = GroupCases::obtain_code(info_1);
-    std::cout << code_1 << std::endl;
-
-    auto info_2 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
-    std::cout << info_2 << std::endl;
-    auto code_2 = GroupCases::obtain_code(info_2);
-    std::cout << code_2 << std::endl;
-
-    GroupCases::build();
-
-    auto info_3 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
-    std::cout << info_3 << std::endl;
-    auto code_3 = GroupCases::obtain_code(info_3);
-    std::cout << code_3 << std::endl;
-
-    auto info_4 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
-    std::cout << info_4 << std::endl;
-    auto code_4 = GroupCases::obtain_code(info_4);
-    std::cout << code_4 << std::endl;
+//    auto info_1 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
+//    std::cout << info_1 << std::endl;
+//    auto code_1 = GroupCases::obtain_code(info_1);
+//    std::cout << code_1 << std::endl;
+//
+//    auto info_2 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
+//    std::cout << info_2 << std::endl;
+//    auto code_2 = GroupCases::obtain_code(info_2);
+//    std::cout << code_2 << std::endl;
+//
+//    GroupCases::build();
+//
+//    auto info_3 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00));
+//    std::cout << info_3 << std::endl;
+//    auto code_3 = GroupCases::obtain_code(info_3);
+//    std::cout << code_3 << std::endl;
+//
+//    auto info_4 = GroupCases::obtain_info(CommonCode::unsafe_create(0x1A9BF0C00).to_short_code());
+//    std::cout << info_4 << std::endl;
+//    auto code_4 = GroupCases::obtain_code(info_4);
+//    std::cout << code_4 << std::endl;
 
 //    const auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
 //    const auto group = Group::from_common_code(common_code);
@@ -135,7 +151,11 @@ int main() {
 //    std::cout << gp.size() << std::endl;
 //    std::cout << (int)gp.mirror_type() << std::endl;
 
-    std::cerr << std::chrono::system_clock::now() - start << std::endl;
+#if defined(__clang__)
+    std::cerr << (std::chrono::system_clock::now() - start).count() / 1000 << "ms" << std::endl;
+#elif defined(__GNUC__)
+    std::cerr << (std::chrono::system_clock::now() - start).count() / 1000000 << "ms" << std::endl;
+#endif
 
     // auto core = Core([](const uint64_t code, uint64_t) {
     //     std::cout << RawCode::unsafe_create(code);
