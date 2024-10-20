@@ -15,7 +15,7 @@ if (KLSK_PYTHON_FFI)
         py_ffi/binder.cc
         py_ffi/wrapper/short_code.cc
         py_ffi/wrapper/common_codec.cc
-        py_ffi/wrapper/py_cases.cc
+        py_ffi/wrapper/cases.cc
         py_ffi/wrapper/py_group_union.cc
         py_ffi/wrapper/py_group.cc
     )
