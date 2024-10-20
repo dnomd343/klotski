@@ -3,8 +3,12 @@
 
 #include "py_exps.h"
 #include "py_codec.h"
+#include "py_cases.h"
 
 namespace py = pybind11;
+
+using klotski::ffi::PyCases;
+using klotski::ffi::PyCasesIter;
 
 using klotski::ffi::PyCodecExp;
 using klotski::ffi::PyShortCode;
@@ -64,8 +68,34 @@ void bind_short_code(const py::module_ &m) {
         .def_static("speed_up", &PyShortCode::speed_up, py::arg("fast_mode") = false);
 }
 
+#include "group/group.h"
+#include "all_cases/all_cases.h"
+
+static PyCases group_demo() {
+    auto group_union = klotski::cases::GroupUnion::unsafe_create(169);
+    auto cases = PyCases::from(group_union.cases());
+    return cases;
+}
+
+static PyCases all_cases() {
+    return PyCases::from_ref(klotski::cases::AllCases::instance().fetch());
+}
+
 PYBIND11_MODULE(klotski, m) {
     py::register_exception<PyCodecExp>(m, "CodecExp", PyExc_ValueError);
+
+    m.def("all_cases", &all_cases);
+    m.def("group_demo", &group_demo);
+
+    py::class_<PyCases>(m, "PyCases")
+        .def("size", &PyCases::size)
+        .def("__iter__", [](const PyCases &self) {
+            return PyCasesIter(self);
+        }, py::keep_alive<0, 1>());
+
+    py::class_<PyCasesIter>(m, "PyCasesIter")
+            .def("__iter__", [](PyCasesIter &it) -> PyCasesIter& { return it; })
+            .def("__next__", &PyCasesIter::next);
 
     bind_short_code(m);
     bind_common_code(m);
