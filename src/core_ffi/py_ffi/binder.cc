@@ -3,7 +3,8 @@
 #include <pybind11/stl.h>
 
 #include "py_exps.h"
-#include "py_codec.h"
+#include "py_common_code.h"
+#include "py_short_code.h"
 #include "py_cases.h"
 #include "py_group.h"
 
@@ -38,9 +39,11 @@ void bind_common_code(const py::module_ &m) {
         .def(py::self < uint64_t()).def(py::self <= uint64_t())
         .def(py::self > uint64_t()).def(py::self >= uint64_t())
 
-        .def_property_readonly("str", &PyCommonCode::string)
+//        .def_property_readonly("str", &PyCommonCode::string)
         .def_property_readonly("value", &PyCommonCode::value)
         .def_property_readonly("short_code", &PyCommonCode::short_code)
+
+        .def("to_string", &PyCommonCode::string, py::arg("shorten") = false)
 
         .def_static("check", static_cast<bool (*)(uint64_t)>(&PyCommonCode::check))
         .def_static("check", static_cast<bool (*)(std::string_view)>(&PyCommonCode::check));
