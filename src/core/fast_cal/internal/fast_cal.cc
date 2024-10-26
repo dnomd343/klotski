@@ -1,8 +1,12 @@
 #include <algorithm>
 
+#include <iostream>
+
 #include "utils/common.h"
 #include "fast_cal/fast_cal.h"
 #include "raw_code/raw_code.h"
+
+#include "group/group.h"
 
 FastCal::FastCal(const RawCode &code) {
     this->root = (uint64_t)code;
@@ -19,6 +23,51 @@ auto resolved = [](uint64_t code) {
 
 RawCode FastCal::solve() {
     return FastCal::target(resolved);
+}
+
+RawCode FastCal::demo() {
+
+    // max_group_size = 25955
+//    auto reserve = klotski::cases::GroupUnion::from_raw_code(RawCode::unsafe_create(root)).max_group_size();
+
+    cases.reserve(25955); // FAST !!! (about 5ms)
+//    cases.reserve(32768); // SLOW !!! (about 50ms)
+
+    // TODO: using prime number!
+
+    std::queue<fast_cal_t*>{}.swap(cache);
+
+    cache.emplace(&cases.emplace(root, fast_cal_t {
+        .code = root,
+        .mask = 0,
+        .last = nullptr, // without parent node
+    }).first->second);
+
+    auto core = MaskMover(
+        [this](uint64_t code, uint64_t mask) { // lambda as function pointer
+
+            auto current = cases.find(code);
+            if (current != cases.end()) { // find existed case
+                current->second.mask |= mask; // update mask info
+                return;
+            }
+            cache.emplace(&cases.emplace(code, fast_cal_t { // record new case
+                .code = code,
+                .mask = mask,
+                .last = cache.front(), // link parent case
+            }).first->second);
+
+        }
+    );
+
+    while (!cache.empty()) {
+        if (((cache.front()->code >> (3 * 0xD)) & 0b111) == BLOCK_2x2) {
+            return RawCode::unsafe_create(cache.front()->code); // match target
+        }
+        core.next_cases(cache.front()->code, cache.front()->mask);
+        cache.pop();
+    }
+    return FC_NOT_FOUND; // target not found
 }
 
 std::vector<RawCode> FastCal::solve_multi() {

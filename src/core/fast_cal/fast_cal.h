@@ -44,6 +44,8 @@ public:
     RawCode target(const match_t &match);
     std::vector<RawCode> target_multi(const match_t &match);
 
+    RawCode demo();
+
     /// static BFS search functions
     static std::vector<RawCode> resolve(const RawCode &start);
     static std::vector<std::vector<RawCode>> to_furthest(const RawCode &start);
