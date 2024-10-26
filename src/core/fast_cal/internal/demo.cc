@@ -16,64 +16,63 @@ using klotski::cases::RangesUnion;
 using klotski::mover::MaskMover;
 using klotski::cases::GroupUnion;
 
-using klotski::fast_cal::FCDemo;
+using klotski::fast_cal::FastCalPro;
 
-std::optional<RawCode> FCDemo::DoCal() {
-    uint64_t result = 0;
-    auto core = MaskMover([this, &result](uint64_t code, uint64_t mask) {
-        if (const auto match = cases_.find(code); match != cases_.end()) {
-            match->second.mask |= mask; // update mask
-            return;
-        }
-        cases_.emplace(code, data_t {
-            .mask = mask,
-            .back = codes_.current(),
-        });
-        codes_.emplace(code);
+static KLSK_INLINE bool is_solved(uint64_t raw_code) {
+    return ((raw_code >> 39) & 0b111) == 0b100;
+}
 
-        if (((code >> 39) & 0b111) == 0b100) {
-            result = code;
+std::optional<RawCode> FastCalPro::solve() {
+    // TODO: check root case
+
+    uint64_t solution = 0;
+    auto mover = MaskMover([this, &solution](uint64_t code, uint64_t mask) {
+        if (try_emplace(code, mask) && is_solved(code)) {
+            solution = code;
         }
     });
-
     while (!codes_.is_ending()) {
-        auto curr = codes_.current();
-        core.next_cases(curr, cases_.find(curr)->second.mask);
-
-        codes_.next();
-        if (result != 0) {
-            return RawCode::unsafe_create(result);
+        spawn_next(mover);
+        if (solution != 0) {
+            return RawCode::unsafe_create(solution);
         }
     }
     return std::nullopt;
 }
 
-std::vector<RawCode> FCDemo::DoCalMulti() {
+std::optional<RawCode> FastCalPro::achieve(std::function<bool(RawCode)> &&match) {
+    // TODO: check root case
+
+    uint64_t target = 0;
+    auto mover = MaskMover([this, &target, match = std::move(match)](uint64_t code, uint64_t mask) {
+        if (try_emplace(code, mask) && match(RawCode::unsafe_create(code))) {
+            target = code;
+        }
+    });
+    while (!codes_.is_ending()) {
+        spawn_next(mover);
+        if (target != 0) {
+            return RawCode::unsafe_create(target);
+        }
+    }
+    return std::nullopt;
+}
+
+std::vector<RawCode> FastCalPro::solve_multi() {
+    // TODO: check root case
+
     bool stop_flag = false;
     std::vector<RawCode> results {};
 
-    auto core = MaskMover([this, &stop_flag, &results](uint64_t code, uint64_t mask) {
-        if (const auto match = cases_.find(code); match != cases_.end()) {
-            match->second.mask |= mask; // update mask
-            return;
-        }
-        cases_.emplace(code, data_t {
-            .mask = mask,
-            .back = codes_.current(),
-        });
-        codes_.emplace(code);
-
-        if (((code >> 39) & 0b111) == 0b100) {
+    auto mover = MaskMover([this, &stop_flag, &results](uint64_t code, uint64_t mask) {
+        if (try_emplace(code, mask) && is_solved(code)) {
             stop_flag = true;
             results.emplace_back(RawCode::unsafe_create(code));
         }
     });
 
     while (!codes_.is_ending()) {
-        auto curr = codes_.current();
-        core.next_cases(curr, cases_.find(curr)->second.mask);
-
-        codes_.next();
+        spawn_next(mover);
         if (codes_.is_new_layer() && stop_flag) {
             // TODO: fix when solutions at last layer
             return results;
@@ -83,24 +82,12 @@ std::vector<RawCode> FCDemo::DoCalMulti() {
     return {};
 }
 
-std::vector<RawCode> FCDemo::DoCalFurthest() {
-    auto core = MaskMover([this](uint64_t code, uint64_t mask) {
-        if (const auto match = cases_.find(code); match != cases_.end()) {
-            match->second.mask |= mask; // update mask
-            return;
-        }
-        cases_.emplace(code, data_t {
-            .mask = mask,
-            .back = codes_.current(),
-        });
-        codes_.emplace(code);
+std::vector<RawCode> FastCalPro::furthest() {
+    auto mover = MaskMover([this](uint64_t code, uint64_t mask) {
+        try_emplace(code, mask);
     });
-
     while (true) {
-        auto curr = codes_.current();
-        core.next_cases(curr, cases_.find(curr)->second.mask);
-
-        codes_.next();
+        spawn_next(mover);
         if (codes_.is_ending()) {
             return codes_.layer_cases() | std::views::transform([](uint64_t code) {
                 return RawCode::unsafe_create(code);
@@ -110,21 +97,26 @@ std::vector<RawCode> FCDemo::DoCalFurthest() {
 }
 
 RawCode FastCal_demo(RawCode raw_code) {
-    klotski::fast_cal::FCDemo fc {raw_code};
-//    return fc.DoCal().value();
+    klotski::fast_cal::FastCalPro fc {raw_code};
+    return fc.solve().value();
 
-//    auto tmp = fc.DoCal();
+//    auto tmp = fc.solve();
 //    std::cout << tmp.value().to_common_code() << std::endl;
 
-//    auto tmp = fc.DoCalMulti();
+//    auto tmp = fc.solve_multi();
 //    for (const auto x : tmp) {
 //        std::cout << x.to_common_code() << std::endl;
 //    }
 
-    auto tmp = fc.DoCalFurthest();
+//    auto tmp = fc.furthest();
 //    for (const auto x : tmp) {
 //        std::cout << x.to_common_code() << std::endl;
 //    }
 
-    return RawCode::unsafe_create(0);
+//    auto tmp = fc.achieve([](RawCode r) {
+//        return r == 0x7F87E0E5BFFF492;
+//    });
+//    std::cout << tmp.value().to_common_code() << std::endl;
+
+//    return RawCode::unsafe_create(0);
 }

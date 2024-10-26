@@ -109,17 +109,39 @@ private:
 
 namespace klotski::fast_cal {
 
-class FCDemo {
+class FastCalPro {
 public:
-    explicit FCDemo(RawCode raw_code);
+    FastCalPro() = delete;
 
-    std::optional<RawCode> DoCal();
+    explicit FastCalPro(RawCode raw_code);
 
-    std::vector<RawCode> DoCalMulti();
+    // ------------------------------------------------------------------------------------- //
 
-    std::vector<RawCode> DoCalFurthest();
+    /// Calculate the case with minimum steps.
+    std::optional<RawCode> solve();
+
+    /// Calculate the cases with maximum steps.
+    std::vector<RawCode> furthest();
+
+    /// Calculate all of the minimum-step cases.
+    std::vector<RawCode> solve_multi();
+
+    /// Calculate the first case that meets the requirement.
+    std::optional<RawCode> achieve(std::function<bool(RawCode)> &&match);
+
+    // ------------------------------------------------------------------------------------- //
 
 private:
+    // ------------------------------------------------------------------------------------- //
+
+    /// Search next step cases and pop current.
+    KLSK_INLINE void spawn_next(MaskMover &mover);
+
+    /// Try to emplace the searched info into the cache.
+    KLSK_INLINE bool try_emplace(uint64_t code, uint64_t mask);
+
+    // ------------------------------------------------------------------------------------- //
+
     struct data_t {
         uint64_t mask;
         uint64_t back;
@@ -127,6 +149,8 @@ private:
 
     LayerQueue<uint64_t> codes_;
     phmap::flat_hash_map<uint64_t, data_t> cases_;
+
+    // ------------------------------------------------------------------------------------- //
 };
 
 } // namespace klotski::fast_cal
