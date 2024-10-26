@@ -68,7 +68,7 @@ public:
     explicit FCDemo(RawCode raw_code) : codes_(GroupUnion::from_raw_code(raw_code).max_group_size()) {
         auto reserve = GroupUnion::from_raw_code(raw_code).max_group_size();
 //        codes_.reserve(reserve);
-        cases_.reserve(reserve);
+        cases_.reserve(286730);
         codes_.emplace_back(raw_code.unwrap());
         cases_.emplace(raw_code, data_t {0, 0}); // without mask
     }
@@ -99,10 +99,14 @@ public:
             codes_.pop();
 
             if (result != 0) {
+//                std::cout << cases_.size() << std::endl;
+//                std::cout << cases_.load_factor() << std::endl;
                 return RawCode::unsafe_create(result);
             }
 
         }
+
+        std::cout << cases_.load_factor() << std::endl;
 
         return RawCode::unsafe_create(0);
 

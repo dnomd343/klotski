@@ -4,6 +4,8 @@
 
 #include "raw_code/raw_code.h"
 
+#include "group/group.h"
+
 using klotski::codec::CommonCode;
 
 static void FastCalBenchmark(benchmark::State &state) {
@@ -11,9 +13,10 @@ static void FastCalBenchmark(benchmark::State &state) {
     auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
 
     for (auto _ : state) {
-        auto fc = FastCal(code);
-        benchmark::DoNotOptimize(fc.demo());
+//        auto fc = FastCal(code);
+//        benchmark::DoNotOptimize(fc.demo());
 //        benchmark::DoNotOptimize(FastCal_demo(code));
+        auto tmp = klotski::cases::Group_extend(code);
     }
 
 }

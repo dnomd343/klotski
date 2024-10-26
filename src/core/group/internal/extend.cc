@@ -1,5 +1,7 @@
 #include <absl/container/flat_hash_map.h>
 
+#include <parallel_hashmap/phmap.h>
+
 #include "mover/mover.h"
 #include "group/group.h"
 
@@ -13,10 +15,12 @@ using klotski::cases::GroupUnion;
 
 std::vector<RawCode> klotski::cases::Group_extend(RawCode raw_code, uint32_t reserve) {
     std::vector<RawCode> codes;
-    absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
-    reserve = reserve ? reserve : GroupUnion::from_raw_code(raw_code).max_group_size();
-    codes.reserve(reserve);
-    cases.reserve(reserve);
+//    absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+    phmap::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+//    reserve = reserve ? reserve : GroupUnion::from_raw_code(raw_code).max_group_size();
+//    reserve = 25955;
+    codes.reserve(GroupUnion::from_raw_code(raw_code).max_group_size());
+    cases.reserve(25955 * 1.56);
 
     auto core = MaskMover([&codes, &cases](uint64_t code, uint64_t mask) {
         if (const auto match = cases.find(code); match != cases.end()) {
@@ -34,7 +38,40 @@ std::vector<RawCode> klotski::cases::Group_extend(RawCode raw_code, uint32_t res
         auto curr = codes[offset++].unwrap();
         core.next_cases(curr, cases.find(curr)->second);
     }
+//    std::cout << cases.size() << std::endl;
+//    std::cout << cases.load_factor() << std::endl;
     return codes;
+}
+
+double klotski::cases::Group_load_factor(RawCode raw_code, double coff) {
+    std::vector<RawCode> codes;
+    phmap::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+    const auto reserve = GroupUnion::from_raw_code(raw_code).max_group_size();
+    codes.reserve(reserve);
+    cases.reserve(static_cast<size_t>(coff * reserve));
+
+    auto core = MaskMover([&codes, &cases](uint64_t code, uint64_t mask) {
+        if (const auto match = cases.find(code); match != cases.end()) {
+            match->second |= mask; // update mask
+            return;
+        }
+        cases.emplace(code, mask);
+        codes.emplace_back(RawCode::unsafe_create(code)); // new case
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(raw_code);
+    cases.emplace(raw_code, 0); // without mask
+    while (offset != codes.size()) {
+        auto curr = codes[offset++].unwrap();
+        core.next_cases(curr, cases.find(curr)->second);
+    }
+
+//    if (cases.size() != reserve) {
+//        std::cout << "reserve size error" << std::endl;
+//        std::abort();
+//    }
+    return cases.load_factor();
 }
 
 //RangesUnion Group::cases() const {
