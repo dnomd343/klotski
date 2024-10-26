@@ -48,6 +48,7 @@ int main() {
 //        fc.solve();
 //        klotski::cases::Group_extend(code);
         FastCal_demo(code);
+        break;
     }
 
 //    for (int i = 0; i < 10000000; ++i) {
