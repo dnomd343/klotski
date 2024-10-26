@@ -13,6 +13,8 @@ using klotski::cases::RangesUnion;
 using klotski::mover::MaskMover;
 using klotski::cases::GroupUnion;
 
+// TODO: maybe we can perf with mirror cases
+
 std::vector<RawCode> klotski::cases::Group_extend(RawCode raw_code, uint32_t reserve) {
     std::vector<RawCode> codes;
 //    absl::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>

@@ -46,38 +46,38 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
-//    auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
-//    for (int i = 0; i < 100; ++i) {
+    auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    for (int i = 0; i < 100; ++i) {
 //        FastCal fc {code};
 //        fc.solve();
 //        klotski::cases::Group_extend(code);
-//        FastCal_demo(code);
-//        break;
-//    }
-
-    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        auto group_union = GroupUnion::unsafe_create(type_id);
-        for (uint32_t pattern_id = 0; pattern_id < group_union.pattern_num(); ++pattern_id) {
-            std::cout << std::format("[{}, {}]\n", type_id, pattern_id);
-            auto seed = CommonCode::unsafe_create(PATTERN_DATA[PATTERN_OFFSET[type_id] + pattern_id] >> 23);
-
-            double coff = 1.0;
-            double last_val = -1;
-            while (true) {
-                auto val = Group_load_factor(seed.to_raw_code(), coff);
-                if (int(val * 1000) != int(last_val * 1000)) {
-                    std::cout << std::format("{:.2f}, {:.6f}\n", coff, val);
-                    last_val = val;
-                }
-                if (coff >= 2.0) {
-                    break;
-                }
-                coff += 0.01;
-            }
-            std::cout << std::endl;
-        }
-
+        FastCal_demo(code);
+        break;
     }
+
+//    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+//        auto group_union = GroupUnion::unsafe_create(type_id);
+//        for (uint32_t pattern_id = 0; pattern_id < group_union.pattern_num(); ++pattern_id) {
+//            std::cout << std::format("[{}, {}]\n", type_id, pattern_id);
+//            auto seed = CommonCode::unsafe_create(PATTERN_DATA[PATTERN_OFFSET[type_id] + pattern_id] >> 23);
+//
+//            double coff = 1.0;
+//            double last_val = -1;
+//            while (true) {
+//                auto val = Group_load_factor(seed.to_raw_code(), coff);
+//                if (int(val * 1000) != int(last_val * 1000)) {
+//                    std::cout << std::format("{:.2f}, {:.6f}\n", coff, val);
+//                    last_val = val;
+//                }
+//                if (coff >= 2.0) {
+//                    break;
+//                }
+//                coff += 0.01;
+//            }
+//            std::cout << std::endl;
+//        }
+//
+//    }
 
 //    std::cout << Group_load_factor(code, 0.5) << std::endl;
 //    std::cout << Group_load_factor(code, 0.8) << std::endl;

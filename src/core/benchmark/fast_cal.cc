@@ -15,8 +15,8 @@ static void FastCalBenchmark(benchmark::State &state) {
     for (auto _ : state) {
 //        auto fc = FastCal(code);
 //        benchmark::DoNotOptimize(fc.demo());
-//        benchmark::DoNotOptimize(FastCal_demo(code));
-        auto tmp = klotski::cases::Group_extend(code);
+        benchmark::DoNotOptimize(FastCal_demo(code));
+//        auto tmp = klotski::cases::Group_extend(code);
     }
 
 }
