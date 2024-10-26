@@ -13,7 +13,13 @@
 #include "mover/mover.h"
 #include "raw_code/raw_code.h"
 
+#include "group/group.h"
+
 // #include <absl/container/flat_hash_map.h>
+
+#include <ranges>
+
+#include <parallel_hashmap/phmap.h>
 
 using klotski::codec::RawCode;
 using klotski::mover::MaskMover;
@@ -69,3 +75,61 @@ private:
 };
 
 RawCode FastCal_demo(RawCode code);
+
+namespace klotski {
+
+template <typename T>
+class LayerQueue {
+public:
+    LayerQueue(size_t reserve, std::initializer_list<T> first_layer);
+
+    void emplace(T item);
+
+    T current() const;
+
+    void next();
+
+    [[nodiscard]] bool is_ending() const;
+
+    [[nodiscard]] bool is_new_layer() const;
+
+    std::vector<T> layer_cases() const;
+
+private:
+    size_t queue_begin_ {0};
+    size_t queue_end_ {0};
+
+    size_t layer_begin_ {0};
+    size_t layer_end_ {0};
+
+    std::vector<T> data_ {};
+};
+
+} // namespace klotski
+
+namespace klotski::fast_cal {
+
+class FCDemo {
+public:
+    explicit FCDemo(RawCode raw_code);
+
+    std::optional<RawCode> DoCal();
+
+    std::vector<RawCode> DoCalMulti();
+
+    std::vector<RawCode> DoCalFurthest();
+
+private:
+    struct data_t {
+        uint64_t mask;
+        uint64_t back;
+    };
+
+    LayerQueue<uint64_t> codes_;
+    phmap::flat_hash_map<uint64_t, data_t> cases_;
+};
+
+} // namespace klotski::fast_cal
+
+#include "internal/layer_queue.inl"
+#include "internal/fast_cal.inl"

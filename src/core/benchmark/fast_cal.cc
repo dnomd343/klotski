@@ -11,6 +11,7 @@ using klotski::codec::CommonCode;
 static void FastCalBenchmark(benchmark::State &state) {
 
     auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+//    auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();
 
     for (auto _ : state) {
 //        auto fc = FastCal(code);
