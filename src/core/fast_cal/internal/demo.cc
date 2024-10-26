@@ -25,54 +25,54 @@ template <typename T>
 class MyQueue {
 public:
     explicit MyQueue(size_t reserve) {
-        vec_.resize(reserve);
+        data_.resize(reserve);
     }
 
     void emplace_back(T item) {
-        vec_[back_] = item;
-        ++back_;
+        data_[queue_end_] = item;
+        ++queue_end_;
     }
 
     T front() {
-        return vec_[front_];
+        return data_[queue_begin_];
     }
 
-    void pop() {
-        ++front_;
+    void pop_and_try_layer_switch() {
+        ++queue_begin_;
+        try_layer_switch();
     }
 
-    bool empty() {
-        return front_ == back_;
+    [[nodiscard]] bool is_ending() const {
+        return queue_begin_ == queue_end_;
     }
 
-    bool is_ending() {
-        return front_ == back_;
-    }
-
-    void layer_logic() {
-        if (front_ == layer_end_) {
-
-            // std::cout << std::format("[{}, {}) <- {}\n", layer_begin, layer_end, layer_end - layer_begin);
-
-            if (layer_end_ == back_) {
-                // maybe reach ending -> not switch
-//                std::cout << "reach ending" << std::endl;
-            } else {
-                layer_begin_ = layer_end_;
-                layer_end_ = back_;
-            }
-
+    void try_layer_switch() {
+        if (queue_begin_ == layer_end_ && !is_ending()) {
+            layer_begin_ = layer_end_;
+            layer_end_ = queue_end_;
         }
     }
 
-//private:
+    [[nodiscard]] bool is_layer_switched() const {
+        return queue_begin_ == layer_begin_;
+    }
+
+    std::vector<T> get_curr_layer() {
+        std::vector<T> layer_cases;
+        for (size_t offset = layer_begin_; offset < layer_end_; ++offset) {
+            layer_cases.emplace_back(data_[offset]);
+        }
+        return layer_cases;
+    }
+
+private:
+    size_t queue_begin_ {0};
+    size_t queue_end_ {0};
 
     size_t layer_begin_ {0};
     size_t layer_end_ {1};
 
-    size_t back_ {0};
-    size_t front_ {0};
-    std::vector<T> vec_ {};
+    std::vector<T> data_ {};
 };
 
 class FCDemo {
@@ -87,7 +87,7 @@ public:
         cases_.emplace(raw_code, data_t {0, 0}); // without mask
     }
 
-    RawCode DoCal() {
+    std::optional<RawCode> DoCal() {
         uint64_t result = 0;
         auto core = MaskMover([this, &result](uint64_t code, uint64_t mask) {
             if (const auto match = cases_.find(code); match != cases_.end()) {
@@ -105,17 +105,16 @@ public:
             }
         });
 
-        while (!codes_.empty()) {
+        while (!codes_.is_ending()) {
             auto curr = codes_.front();
             core.next_cases(curr, cases_.find(curr)->second.mask);
-            codes_.pop();
-            codes_.layer_logic();
 
+            codes_.pop_and_try_layer_switch();
             if (result != 0) {
                 return RawCode::unsafe_create(result);
             }
         }
-        return RawCode::unsafe_create(0);
+        return std::nullopt;
     }
 
     std::vector<RawCode> DoCalMulti() {
@@ -139,18 +138,14 @@ public:
             }
         });
 
-        while (!codes_.empty()) {
+        while (!codes_.is_ending()) {
             auto curr = codes_.front();
             core.next_cases(curr, cases_.find(curr)->second.mask);
-            codes_.pop();
 
-            if (codes_.front_ == codes_.layer_end_) {
-                if (stop_flag) {
-                    return results;
-                }
+            codes_.pop_and_try_layer_switch();
+            if (codes_.is_layer_switched() && stop_flag) {
+                return results;
             }
-
-            codes_.layer_logic();
 
         }
         return {};
@@ -170,25 +165,17 @@ public:
             codes_.emplace_back(code);
         });
 
-        while (!codes_.is_ending()) {
+        while (true) {
             auto curr = codes_.front();
             core.next_cases(curr, cases_.find(curr)->second.mask);
-            codes_.pop();
 
-            codes_.layer_logic();
-
-            if (codes_.front_ == codes_.layer_end_) {
-                if (codes_.layer_end_ == codes_.back_) {
-                    std::vector<RawCode> codes;
-                    for (size_t offset = codes_.layer_begin_; offset < codes_.layer_end_; ++offset) {
-                        codes.emplace_back(RawCode::unsafe_create(codes_.vec_[offset]));
-                    }
-                    return codes;
-                }
+            codes_.pop_and_try_layer_switch();
+            if (codes_.is_ending()) {
+                return codes_.get_curr_layer() | std::views::transform([](uint64_t code) {
+                    return RawCode::unsafe_create(code);
+                }) | std::ranges::to<std::vector>();
             }
-
         }
-        return {};
     }
 
 private:
@@ -198,20 +185,20 @@ private:
 
 RawCode FastCal_demo(RawCode raw_code) {
     FCDemo fc {raw_code};
-    return fc.DoCal();
+    return fc.DoCal().value();
 
 //    auto tmp = fc.DoCal();
-//    std::cout << tmp << std::endl;
+//    std::cout << tmp.to_common_code() << std::endl;
 
 //    auto tmp = fc.DoCalMulti();
-//    for (auto code : tmp) {
-//        std::cout << code << std::endl;
+//    for (const auto x : tmp) {
+//        std::cout << x.to_common_code() << std::endl;
 //    }
 
 //    auto tmp = fc.DoCalFurthest();
-//    for (auto x : tmp) {
-//        std::cout << x << std::endl;
+//    for (const auto x : tmp) {
+//        std::cout << x.to_common_code() << std::endl;
 //    }
 
-//    return RawCode::unsafe_create(0);
+    return RawCode::unsafe_create(0);
 }
