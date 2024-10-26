@@ -155,6 +155,51 @@ public:
         return {};
     }
 
+    std::vector<RawCode> DoCalFurthest() {
+
+        auto core = MaskMover([this](uint64_t code, uint64_t mask) {
+            if (const auto match = cases_.find(code); match != cases_.end()) {
+                match->second.mask |= mask; // update mask
+                return;
+            }
+            cases_.emplace(code, data_t {
+                .mask = mask,
+                .back = codes_.front(),
+            });
+            codes_.emplace_back(code);
+        });
+
+        size_t layer_begin = 0;
+        size_t layer_end = 1;
+
+        while (!codes_.empty()) {
+            auto curr = codes_.front();
+            core.next_cases(curr, cases_.find(curr)->second.mask);
+            codes_.pop();
+
+            if (codes_.offset_ == layer_end) {
+
+                // std::cout << std::format("[{}, {}) <- {}\n", layer_begin, layer_end, layer_end - layer_begin);
+
+                if (layer_end == codes_.iter_) {
+                    // std::cout << std::format("reach end: [{}, {})\n", layer_begin, layer_end);
+
+                    std::vector<RawCode> codes;
+                    for (size_t offset = layer_begin; offset < layer_end; ++offset) {
+                        codes.emplace_back(RawCode::unsafe_create(codes_.vec_[offset]));
+                    }
+                    return codes;
+                }
+
+                layer_begin = layer_end;
+                layer_end = codes_.iter_;
+
+            }
+
+        }
+        return {};
+    }
+
 private:
     MyQueue<uint64_t> codes_;
     phmap::flat_hash_map<uint64_t, data_t> cases_;
@@ -163,9 +208,14 @@ private:
 RawCode FastCal_demo(RawCode raw_code) {
     FCDemo fc {raw_code};
 //    return fc.DoCal();
-    auto tmp = fc.DoCalMulti();
+//    auto tmp = fc.DoCalMulti();
 //    for (auto code : tmp) {
 //        std::cout << code << std::endl;
 //    }
-    return tmp[0];
+//    return tmp[0];
+    auto tmp = fc.DoCalFurthest();
+    // for (auto x : tmp) {
+    //     std::cout << x << std::endl;
+    // }
+    return RawCode::unsafe_create(0);
 }
