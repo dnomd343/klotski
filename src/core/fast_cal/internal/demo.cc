@@ -2,16 +2,8 @@
 
 #include <iostream>
 
-#include <queue>
-
 //#include <absl/container/flat_hash_map.h>
 
-//#include <absl/hash/hash.h>
-//#define PHMAP_USE_ABSL_HASH
-
-//#include <robin_hood.h>
-//#include <ankerl/unordered_dense.h>
-//#include <tsl/robin_map.h>
 #include <parallel_hashmap/phmap.h>
 
 #include "mover/mover.h"
@@ -29,42 +21,57 @@ struct data_t {
     uint64_t back;
 };
 
-// TODO: try wrapper as custom `std::queue`
-
 template <typename T>
 class MyQueue {
 public:
-//    MyQueue() = default;
-
     explicit MyQueue(size_t reserve) {
         vec_.resize(reserve);
     }
 
-//    void reserve(size_t size) {
-//        vec_.resize(size);
-//    }
-
     void emplace_back(T item) {
-//        vec_.emplace_back(item);
-        vec_[iter_] = item;
-        ++iter_;
+        vec_[back_] = item;
+        ++back_;
     }
 
     T front() {
-        return vec_[offset_];
+        return vec_[front_];
     }
 
     void pop() {
-        ++offset_;
+        ++front_;
     }
 
     bool empty() {
-        return offset_ == iter_;
+        return front_ == back_;
+    }
+
+    bool is_ending() {
+        return front_ == back_;
+    }
+
+    void layer_logic() {
+        if (front_ == layer_end_) {
+
+            // std::cout << std::format("[{}, {}) <- {}\n", layer_begin, layer_end, layer_end - layer_begin);
+
+            if (layer_end_ == back_) {
+                // maybe reach ending -> not switch
+//                std::cout << "reach ending" << std::endl;
+            } else {
+                layer_begin_ = layer_end_;
+                layer_end_ = back_;
+            }
+
+        }
     }
 
 //private:
-    size_t iter_ {0};
-    size_t offset_ {0};
+
+    size_t layer_begin_ {0};
+    size_t layer_end_ {1};
+
+    size_t back_ {0};
+    size_t front_ {0};
     std::vector<T> vec_ {};
 };
 
@@ -102,6 +109,7 @@ public:
             auto curr = codes_.front();
             core.next_cases(curr, cases_.find(curr)->second.mask);
             codes_.pop();
+            codes_.layer_logic();
 
             if (result != 0) {
                 return RawCode::unsafe_create(result);
@@ -111,7 +119,6 @@ public:
     }
 
     std::vector<RawCode> DoCalMulti() {
-//        uint64_t result = 0;
         bool stop_flag = false;
         std::vector<RawCode> results {};
 
@@ -128,29 +135,23 @@ public:
 
             if (((code >> 39) & 0b111) == 0b100) {
                 stop_flag = true;
-//                result = code;
                 results.emplace_back(RawCode::unsafe_create(code));
             }
         });
-
-        size_t layer_end = 1;
 
         while (!codes_.empty()) {
             auto curr = codes_.front();
             core.next_cases(curr, cases_.find(curr)->second.mask);
             codes_.pop();
 
-            if (codes_.offset_ == layer_end) {
-//                std::cout << "layer: " << codes_.offset_ << std::endl;
-                layer_end = codes_.iter_;
+            if (codes_.front_ == codes_.layer_end_) {
                 if (stop_flag) {
                     return results;
                 }
             }
 
-//            if (result != 0) {
-//                return RawCode::unsafe_create(result);
-//            }
+            codes_.layer_logic();
+
         }
         return {};
     }
@@ -169,31 +170,21 @@ public:
             codes_.emplace_back(code);
         });
 
-        size_t layer_begin = 0;
-        size_t layer_end = 1;
-
-        while (!codes_.empty()) {
+        while (!codes_.is_ending()) {
             auto curr = codes_.front();
             core.next_cases(curr, cases_.find(curr)->second.mask);
             codes_.pop();
 
-            if (codes_.offset_ == layer_end) {
+            codes_.layer_logic();
 
-                // std::cout << std::format("[{}, {}) <- {}\n", layer_begin, layer_end, layer_end - layer_begin);
-
-                if (layer_end == codes_.iter_) {
-                    // std::cout << std::format("reach end: [{}, {})\n", layer_begin, layer_end);
-
+            if (codes_.front_ == codes_.layer_end_) {
+                if (codes_.layer_end_ == codes_.back_) {
                     std::vector<RawCode> codes;
-                    for (size_t offset = layer_begin; offset < layer_end; ++offset) {
+                    for (size_t offset = codes_.layer_begin_; offset < codes_.layer_end_; ++offset) {
                         codes.emplace_back(RawCode::unsafe_create(codes_.vec_[offset]));
                     }
                     return codes;
                 }
-
-                layer_begin = layer_end;
-                layer_end = codes_.iter_;
-
             }
 
         }
@@ -207,15 +198,20 @@ private:
 
 RawCode FastCal_demo(RawCode raw_code) {
     FCDemo fc {raw_code};
-//    return fc.DoCal();
+    return fc.DoCal();
+
+//    auto tmp = fc.DoCal();
+//    std::cout << tmp << std::endl;
+
 //    auto tmp = fc.DoCalMulti();
 //    for (auto code : tmp) {
 //        std::cout << code << std::endl;
 //    }
-//    return tmp[0];
-    auto tmp = fc.DoCalFurthest();
-    // for (auto x : tmp) {
-    //     std::cout << x << std::endl;
-    // }
-    return RawCode::unsafe_create(0);
+
+//    auto tmp = fc.DoCalFurthest();
+//    for (auto x : tmp) {
+//        std::cout << x << std::endl;
+//    }
+
+//    return RawCode::unsafe_create(0);
 }
