@@ -4,7 +4,7 @@
 
 #include "constant/group_union.h"
 
-namespace klotski::cases {
+namespace klotski::group {
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -138,4 +138,4 @@ constexpr GroupUnion GroupUnion::from_common_code(const codec::CommonCode common
 
 // ----------------------------------------------------------------------------------------- //
 
-} // namespace klotski::cases
+} // namespace klotski::group

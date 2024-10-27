@@ -27,19 +27,18 @@ using klotski::cases::BasicRanges;
 using klotski::codec::RawCode;
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
-using klotski::cases::GroupUnion;
+using klotski::group::GroupUnion;
 
-using klotski::cases::Group;
-using klotski::cases::GroupCases;
-using klotski::cases::GroupUnion;
+using klotski::group::Group;
+using klotski::group::GroupCases;
+using klotski::group::GroupUnion;
 
-using klotski::cases::TYPE_ID_LIMIT;
+using klotski::group::TYPE_ID_LIMIT;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::codec::SHORT_CODE_LIMIT;
 
-using klotski::cases::PATTERN_DATA;
-using klotski::cases::PATTERN_OFFSET;
-using klotski::cases::Group_load_factor;
+using klotski::group::PATTERN_DATA;
+using klotski::group::PATTERN_OFFSET;
 
 int main() {
     // const auto start = clock();

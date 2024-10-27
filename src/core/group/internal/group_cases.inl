@@ -2,7 +2,7 @@
 
 #include <format>
 
-namespace klotski::cases {
+namespace klotski::group {
 
 inline std::ostream& operator<<(std::ostream &out, GroupCases::CaseInfo self) {
     out << self.to_string();
@@ -21,14 +21,14 @@ constexpr uint32_t GroupCases::CaseInfo::case_id() const {
     return case_id_;
 }
 
-inline std::optional<GroupCases::CaseInfo> GroupCases::CaseInfo::create(klotski::cases::Group group, uint32_t case_id) {
+inline std::optional<GroupCases::CaseInfo> GroupCases::CaseInfo::create(klotski::group::Group group, uint32_t case_id) {
     if (case_id >= group.size()) {
         return std::nullopt;
     }
     return unsafe_create(group, case_id);
 }
 
-inline GroupCases::CaseInfo GroupCases::CaseInfo::unsafe_create(klotski::cases::Group group, uint32_t case_id) {
+inline GroupCases::CaseInfo GroupCases::CaseInfo::unsafe_create(klotski::group::Group group, uint32_t case_id) {
     return {group, case_id};
 }
 
@@ -67,4 +67,4 @@ inline GroupCases::CaseInfo GroupCases::obtain_info(codec::ShortCode short_code)
     return tiny_obtain_info(short_code.to_common_code());
 }
 
-} // namespace klotski::cases
+} // namespace klotski::group

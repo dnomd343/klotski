@@ -4,7 +4,7 @@
 
 #include "utils/utility.h"
 
-namespace klotski::cases {
+namespace klotski::group {
 
 /// The number of groups contained in GroupUnion.
 constexpr auto GROUP_NUM = std::to_array<uint16_t>({
@@ -187,4 +187,4 @@ constexpr auto GROUP_UNION_CASES_NUM = std::to_array<std::tuple<uint32_t, uint32
     {60   , 40   , 28   , 16   }, {42   , 42   , 15   , 15   },
 });
 
-} // namespace klotski::cases
+} // namespace klotski::group

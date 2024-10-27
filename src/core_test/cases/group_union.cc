@@ -15,11 +15,11 @@
 
 using klotski::codec::ShortCode;
 
-using klotski::cases::Group;
-using klotski::cases::GroupUnion;
+using klotski::group::Group;
+using klotski::group::GroupUnion;
 
-using klotski::cases::TYPE_ID_LIMIT;
-using klotski::cases::ALL_GROUP_NUM;
+using klotski::group::TYPE_ID_LIMIT;
+using klotski::group::ALL_GROUP_NUM;
 
 #define EXPECT_IOTA(R)           \
     EXPECT_FALSE(R.empty());     \

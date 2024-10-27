@@ -9,8 +9,8 @@
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
-//using klotski::cases::Group;
-using klotski::cases::GroupUnion;
+using klotski::group::Group;
+using klotski::group::GroupUnion;
 
 using klotski::codec::RawCode;
 using klotski::codec::ShortCode;
@@ -21,7 +21,7 @@ namespace helper {
 // ----------------------------------------------------------------------------------------- //
 
 /// Spawn all valid Groups in parallel.
-//void group_parallel(std::function<void(Group group)> &&func);
+void group_parallel(std::function<void(Group group)> &&func);
 
 /// Spawn all valid type_ids in parallel.
 void type_id_parallel(std::function<void(uint32_t type_id)> &&func);

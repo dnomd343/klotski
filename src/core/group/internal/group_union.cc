@@ -2,9 +2,14 @@
 #include "group/group.h"
 #include "constant/group_union.h"
 
+using klotski::cases::Ranges;
+using klotski::cases::RangesUnion;
+
 using klotski::codec::RawCode;
 using klotski::codec::CommonCode;
-using klotski::cases::GroupUnion;
+using klotski::group::GroupUnion;
+
+using klotski::cases::BASIC_RANGES_NUM;
 
 #define RANGE_DERIVE(HEAD) ranges.derive(HEAD, cases[HEAD])
 

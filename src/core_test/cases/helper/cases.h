@@ -14,7 +14,7 @@ using klotski::codec::CommonCode;
 using klotski::cases::BasicRanges;
 using klotski::cases::RangesUnion;
 
-using klotski::cases::BLOCK_NUM;
+using klotski::group::BLOCK_NUM;
 using klotski::cases::ALL_CASES_NUM;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::cases::BASIC_RANGES_NUM;

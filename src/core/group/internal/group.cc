@@ -5,11 +5,11 @@
 using klotski::codec::RawCode;
 using klotski::codec::CommonCode;
 
-using klotski::cases::Group;
+using klotski::group::Group;
 using klotski::cases::RangesUnion;
 
-using klotski::cases::GROUP_DATA;
-using klotski::cases::PATTERN_DATA;
+using klotski::group::GROUP_DATA;
+using klotski::group::PATTERN_DATA;
 
 RangesUnion Group::cases() const {
 

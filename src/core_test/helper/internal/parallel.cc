@@ -6,12 +6,12 @@
 #include "all_cases/all_cases.h"
 
 using klotski::cases::AllCases;
-using klotski::cases::TYPE_ID_LIMIT;
+using klotski::group::TYPE_ID_LIMIT;
 using klotski::cases::ALL_CASES_NUM_;
 
-//void helper::group_parallel(std::function<void(Group)> &&func) {
+void helper::group_parallel(std::function<void(Group)> &&func) {
     // TODO: spawn all Groups
-//}
+}
 
 void helper::type_id_parallel(std::function<void(uint32_t type_id)> &&func) {
 

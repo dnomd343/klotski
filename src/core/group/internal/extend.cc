@@ -1,21 +1,18 @@
-// #include <absl/container/flat_hash_map.h>
-
 #include <parallel_hashmap/phmap.h>
 
 #include "mover/mover.h"
 #include "group/group.h"
 
-//using klotski::cases::Group;
 using klotski::codec::RawCode;
 using klotski::codec::CommonCode;
 using klotski::cases::RangesUnion;
 
 using klotski::mover::MaskMover;
-using klotski::cases::GroupUnion;
+using klotski::group::GroupUnion;
 
 // TODO: maybe we can perf with mirror cases
 
-std::vector<RawCode> klotski::cases::Group_extend(RawCode raw_code, uint32_t reserve) {
+std::vector<RawCode> klotski::group::Group_extend(RawCode raw_code, uint32_t reserve) {
     std::vector<RawCode> codes;
     phmap::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
 //    reserve = reserve ? reserve : GroupUnion::from_raw_code(raw_code).max_group_size();

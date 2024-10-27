@@ -4,9 +4,9 @@
 #include "helper/cases.h"
 
 //using klotski::cases::Group;
-using klotski::cases::GroupUnion;
+using klotski::group::GroupUnion;
 
-using klotski::cases::TYPE_ID_LIMIT;
+using klotski::group::TYPE_ID_LIMIT;
 
 // TODO: basic type_id / group_id verify with create / unsafe_create
 

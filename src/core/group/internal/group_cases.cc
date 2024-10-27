@@ -7,16 +7,16 @@
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 
-using klotski::cases::Group;
-using klotski::cases::GroupCases;
-using klotski::cases::GroupUnion;
+using klotski::group::Group;
+using klotski::group::GroupCases;
+using klotski::group::GroupUnion;
 using klotski::cases::RangesUnion;
 
-using klotski::cases::ALL_GROUP_NUM;
-using klotski::cases::TYPE_ID_LIMIT;
+using klotski::group::ALL_GROUP_NUM;
+using klotski::group::TYPE_ID_LIMIT;
 using klotski::cases::ALL_CASES_NUM_;
 
-using klotski::cases::GROUP_DATA;
+using klotski::group::GROUP_DATA;
 
 struct case_info_t {
     uint32_t pattern_id : 10;

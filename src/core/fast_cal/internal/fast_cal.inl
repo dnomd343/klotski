@@ -5,8 +5,8 @@
 namespace klotski::fast_cal {
 
 inline FastCal::FastCal(const codec::RawCode code)
-        : seeker_({code}, cases::GroupUnion::from_raw_code(code).max_group_size()) {
-    const auto reserve = cases::GroupUnion::from_raw_code(code).max_group_size();
+        : seeker_({code}, group::GroupUnion::from_raw_code(code).max_group_size()) {
+    const auto reserve = group::GroupUnion::from_raw_code(code).max_group_size();
     cases_.reserve(static_cast<size_t>(reserve * 1.56));
     cases_.emplace(code, info_t {0, nil}); // without mask
 }

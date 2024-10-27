@@ -6,7 +6,7 @@
 
 using klotski::cases::Ranges;
 using klotski::cases::BasicRanges;
-using klotski::cases::TYPE_ID_LIMIT;
+using klotski::group::TYPE_ID_LIMIT;
 
 using RangesIter = Ranges::iterator ;
 using RangeType = std::tuple<int, int, int> ;

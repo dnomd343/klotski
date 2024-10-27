@@ -7,8 +7,8 @@
 
 #include "helper/parallel.h"
 
-using klotski::cases::Group;
-using klotski::cases::GroupUnion;
+using klotski::group::Group;
+using klotski::group::GroupUnion;
 
 TEST(Group, demo) {
 

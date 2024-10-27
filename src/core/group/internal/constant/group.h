@@ -2,7 +2,7 @@
 
 #include <array>
 
-namespace klotski::cases {
+namespace klotski::group {
 
 // seed(36) + size(20) + type(3)
 
@@ -16,4 +16,4 @@ constexpr auto GROUP_DATA = std::to_array<uint64_t>({
 #include "group.inc"
 });
 
-} // namespace klotski::cases
+} // namespace klotski::group

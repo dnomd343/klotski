@@ -11,8 +11,8 @@ using klotski::cases::Ranges;
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
 
-using klotski::cases::BLOCK_NUM;
-using klotski::cases::TYPE_ID_LIMIT;
+using klotski::group::BLOCK_NUM;
+using klotski::group::TYPE_ID_LIMIT;
 
 /// Forcibly modify private variables to reset state.
 EXPOSE_VAR(BasicRanges, bool, available_)

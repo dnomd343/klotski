@@ -2,7 +2,7 @@
 
 #include "constant/group.h"
 
-namespace klotski::cases {
+namespace klotski::group {
 
 constexpr uint32_t Group::type_id() const {
     return type_id_;
@@ -178,4 +178,4 @@ constexpr Group Group::to_horizontal_mirror() const {
     }
 }
 
-} // namespace klotski::cases
+} // namespace klotski::group

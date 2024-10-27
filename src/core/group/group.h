@@ -70,24 +70,20 @@
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
-namespace klotski::cases {
+namespace klotski::group {
 
+// TODO: move constants to `.inl` file
 constexpr uint32_t TYPE_ID_LIMIT = 203;
-constexpr uint32_t ALL_GROUP_NUM = 25422;
-constexpr uint32_t ALL_PATTERN_NUM = 6577;
+constexpr uint32_t ALL_GROUP_NUM = 25422; // TODO: from GROUP_NUM
+constexpr uint32_t ALL_PATTERN_NUM = 6577; // TODO: from PATTERN_NUM
 
 class Group;
 
 class GroupUnion {
 public:
-    GroupUnion() = delete;
-
-    using Groups = std::vector<Group>;
-
-#ifndef KLSK_NDEBUG
-    friend std::ostream& operator<<(std::ostream &out, GroupUnion self);
-#endif
     // ------------------------------------------------------------------------------------- //
+
+    GroupUnion() = delete;
 
     /// Get the original type id.
     [[nodiscard]] constexpr uint32_t unwrap() const;
@@ -114,11 +110,13 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Get all cases under the current type id.
-    [[nodiscard]] RangesUnion cases() const;
+    using Groups = std::vector<Group>;
 
     /// Get all groups under the current type id.
     [[nodiscard]] constexpr Groups groups() const;
+
+    /// Get all klotski cases under the current type id.
+    [[nodiscard]] cases::RangesUnion cases() const;
 
     /// Get the group instance with the specified pattern id.
     [[nodiscard]] constexpr std::optional<Groups> groups(uint32_t pattern_id) const;
@@ -136,13 +134,18 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
+#ifndef KLSK_NDEBUG
+    /// Output type_id value only for debug.
+    friend std::ostream& operator<<(std::ostream &out, GroupUnion self);
+#endif
+
     /// Compare the type_id values of two GroupUnion.
     friend constexpr auto operator==(const GroupUnion &lhs, const GroupUnion &rhs);
 
     // ------------------------------------------------------------------------------------- //
 
 private:
-    uint32_t type_id_;
+    uint32_t type_id_; // TODO: using uint_fast8_t
 
     // ------------------------------------------------------------------------------------- //
 
@@ -157,15 +160,9 @@ private:
 
 class Group {
 public:
-    Group() = delete;
-
-    [[nodiscard]] constexpr std::string to_string() const;
-
-#ifndef KLSK_NDEBUG
-    friend std::ostream& operator<<(std::ostream &out, Group self);
-#endif
     // ------------------------------------------------------------------------------------- //
 
+    // TODO: enum with uint_fast8_t
     enum class Toward {
         A = 0, // baseline
         B = 1, // horizontal mirror
@@ -195,7 +192,12 @@ public:
     /// Get the original pattern id.
     [[nodiscard]] constexpr uint32_t pattern_id() const;
 
+    /// Get the string form of current group.
+    [[nodiscard]] constexpr std::string to_string() const;
+
     // ------------------------------------------------------------------------------------- //
+
+    Group() = delete;
 
     /// Create Group without any check.
     static constexpr Group unsafe_create(uint32_t type_id,
@@ -207,11 +209,11 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Get all cases under current group.
-    [[nodiscard]] RangesUnion cases() const;
-
-    /// Get the number of klotski cases contained.
+    /// Get the number of cases contained.
     [[nodiscard]] constexpr uint32_t size() const;
+
+    /// Get all klotski cases under current group.
+    [[nodiscard]] cases::RangesUnion cases() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -232,16 +234,21 @@ public:
     /// Whether the group is vertically symmetrical.
     [[nodiscard]] constexpr bool is_vertical_mirror() const;
 
-    /// Whether the group is horizontally symmetrical.
-    [[nodiscard]] constexpr bool is_horizontal_mirror() const;
-
     /// Obtain the vertically symmetrical klotski group.
     [[nodiscard]] constexpr Group to_vertical_mirror() const;
+
+    /// Whether the group is horizontally symmetrical.
+    [[nodiscard]] constexpr bool is_horizontal_mirror() const;
 
     /// Obtain the horizontally symmetrical klotski group.
     [[nodiscard]] constexpr Group to_horizontal_mirror() const;
 
     // ------------------------------------------------------------------------------------- //
+
+#ifndef KLSK_NDEBUG
+    /// Output group info only for debug.
+    friend std::ostream& operator<<(std::ostream &out, Group self);
+#endif
 
     /// Compare the internal values of two Group.
     friend constexpr auto operator==(const Group &lhs, const Group &rhs);
@@ -249,7 +256,7 @@ public:
     // ------------------------------------------------------------------------------------- //
 
 private:
-    uint32_t type_id_;
+    uint32_t type_id_; // TODO: using uint_fast8_t
     Toward toward_;
     uint32_t pattern_id_;
 
@@ -270,6 +277,7 @@ class GroupCases {
 public:
     // ------------------------------------------------------------------------------------- //
 
+    // TODO: move to `::klotski::group::CaseInfo`
     class CaseInfo {
     public:
         CaseInfo() = delete;
@@ -323,8 +331,12 @@ public:
     // ------------------------------------------------------------------------------------- //
 
 private:
+    // ------------------------------------------------------------------------------------- //
+
+    /// Whether fast mode is available.
     static inline bool fast_ {false};
 
+    /// Mutex for protecting critical section.
     static inline std::mutex busy_ {};
 
     // ------------------------------------------------------------------------------------- //
@@ -366,7 +378,7 @@ static_assert(std::is_trivially_copyable_v<GroupUnion>);
 static_assert(std::is_standard_layout_v<GroupCases::CaseInfo>);
 static_assert(std::is_trivially_copyable_v<GroupCases::CaseInfo>);
 
-} // namespace klotski::cases
+} // namespace klotski::group
 
 #include "internal/group_union.inl"
 #include "internal/group_cases.inl"
@@ -377,19 +389,21 @@ static_assert(std::is_trivially_copyable_v<GroupCases::CaseInfo>);
 namespace std {
 
 template <>
-struct std::hash<klotski::cases::Group> {
-    constexpr std::size_t operator()(const klotski::cases::Group &g) const noexcept {
+struct std::hash<klotski::group::Group> {
+    constexpr std::size_t operator()(const klotski::group::Group &g) const noexcept {
         // TODO: perf hash alg
         return std::hash<uint64_t>{}(g.type_id() ^ g.pattern_id() ^ (int)g.toward());
     }
 };
 
 template <>
-struct std::hash<klotski::cases::GroupUnion> {
-    constexpr std::size_t operator()(const klotski::cases::GroupUnion &gu) const noexcept {
+struct std::hash<klotski::group::GroupUnion> {
+    constexpr std::size_t operator()(const klotski::group::GroupUnion &gu) const noexcept {
         return std::hash<uint32_t>{}(gu.unwrap());
     }
 };
+
+// TODO: add `std::hash` for CaseInfo
 
 } // namespace std
 
