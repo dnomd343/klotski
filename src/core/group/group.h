@@ -266,8 +266,6 @@ private:
 /// Spawn all the unsorted codes of the current group.
 std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reserve = 0);
 
-double Group_load_factor(codec::RawCode raw_code, double coff);
-
 class GroupCases {
 public:
     // ------------------------------------------------------------------------------------- //

@@ -49,64 +49,9 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
-    const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();
     // FastCal fc {code};
-
-    auto test_0 = [](const CommonCode code) {
-        std::cout << std::format("[{}]\n", code.to_string());
-        std::cout << "--------" << std::endl;
-    };
-
-    auto test_1 = [](const RawCode code) {
-        FastCal fc {code};
-        if (const auto solve = fc.solve(); solve.has_value()) {
-            std::cout << std::format("{} ({})\n",
-                solve.value().to_common_code().to_string(), fc.backtrack(solve.value()).size());
-        }
-        std::cout << "--------" << std::endl;
-        for (auto furthest : fc.furthest()) {
-            std::cout << std::format("{} ({})\n",
-                furthest.to_common_code().to_string(), fc.backtrack(furthest).size());
-        }
-        std::cout << "--------" << std::endl;
-    };
-
-    auto test_2 = [](const RawCode code) {
-        FastCal fc {code};
-        for (auto solve : fc.solve_multi()) {
-            std::cout << std::format("{} ({})\n",
-                solve.to_common_code().to_string(), fc.backtrack(solve).size());
-        }
-        std::cout << "--------" << std::endl;
-        for (auto furthest : fc.furthest()) {
-            std::cout << std::format("{} ({})\n",
-                furthest.to_common_code().to_string(), fc.backtrack(furthest).size());
-        }
-        std::cout << "--------" << std::endl;
-    };
-
-    auto test_3 = [](const RawCode code) {
-        for (FastCal fc {code}; auto furthest : fc.furthest()) {
-            std::cout << std::format("{} ({})\n",
-                furthest.to_common_code().to_string(), fc.backtrack(furthest).size());
-        }
-        std::cout << "--------" << std::endl;
-    };
-
-    // 149 / 154 / 159 / 164 / 169 / 174
-    const auto codes = GroupUnion::unsafe_create(174).cases().codes();
-    for (size_t index = 0; index < codes.size(); ++index) {
-        auto common_code = codes[index];
-        auto raw_code = common_code.to_raw_code();
-        test_0(common_code);
-        test_1(raw_code);
-        test_2(raw_code);
-        test_3(raw_code);
-        if (index % 100 == 0) {
-            std::cerr << index << "/" << codes.size() << std::endl;
-        }
-    }
 
     // std::cout << fc.solve().value() << std::endl;
 
@@ -123,14 +68,6 @@ int main() {
     //     std::cout << layer.size() << std::endl;
     // }
     // std::cout << "layer num: " << fc.exports().size() << std::endl;
-
-//    for (int i = 0; i < 10000000; ++i) {
-//        MaskMover mover([](uint64_t code, uint64_t mask) {
-//            volatile auto tmp_1 = code;
-//            volatile auto tmp_2 = mask;
-//        });
-//        mover.next_cases(0x1A9BF0C00, 0);
-//    }
 
 //    ShortCode::speed_up(true);
 //

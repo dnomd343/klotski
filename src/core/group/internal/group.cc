@@ -12,6 +12,10 @@ using klotski::cases::GROUP_DATA;
 using klotski::cases::PATTERN_DATA;
 
 RangesUnion Group::cases() const {
+
+    // TODO: add white list for single-group unions
+    //       return GroupUnion::cases directly
+
     auto seed = CommonCode::unsafe_create(PATTERN_DATA[flat_id()] >> 23);
 
     // NOTE: convert as RawCode directly
