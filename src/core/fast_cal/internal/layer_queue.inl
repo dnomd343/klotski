@@ -9,6 +9,8 @@ inline LayerQueue<T>::LayerQueue(size_t reserve, std::initializer_list<T> first_
         emplace(x);
     }
     layer_end_ = first_layer.size();
+    layers_.reserve(139);
+    layers_.emplace_back(0, layer_end_);
 }
 
 template <typename T>
@@ -28,6 +30,7 @@ void LayerQueue<T>::next() {
     if (queue_begin_ == layer_end_ && !is_ending()) {
         layer_begin_ = layer_end_;
         layer_end_ = queue_end_;
+        layers_.emplace_back(layer_begin_, layer_end_);
     }
 }
 

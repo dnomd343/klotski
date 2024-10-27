@@ -40,7 +40,7 @@ std::optional<RawCode> FastCalPro::solve() {
     return std::nullopt;
 }
 
-std::optional<RawCode> FastCalPro::achieve(std::function<bool(RawCode)> &&match) {
+std::optional<RawCode> FastCalPro::search(std::function<bool(RawCode)> &&match) {
     // TODO: check root case
 
     uint64_t target = 0;
@@ -96,7 +96,7 @@ std::vector<RawCode> FastCalPro::furthest() {
     }
 }
 
-std::vector<RawCode> FastCalPro::backtrack(RawCode code) {
+std::vector<RawCode> FastCalPro::backtrack(RawCode code) const {
     if (const auto match = cases_.find(code.unwrap()); match == cases_.end()) {
         return {}; // case not found
     }
@@ -109,15 +109,30 @@ std::vector<RawCode> FastCalPro::backtrack(RawCode code) {
     return path;
 }
 
-RawCode FastCal_demo(RawCode raw_code) {
-    klotski::fast_cal::FastCalPro fc {raw_code};
-//    return fc.solve().value();
+// std::vector<std::vector<RawCode>> FastCalPro::export_layers() const {
+    // auto layer = furthest();
+    //
+    // std::vector<std::vector<RawCode>> result;
+    // result.emplace_back(layer);
+    //
+    // for (auto code : layer) {
+    //     std::cout << code << std::endl;
+    // }
 
-    auto tmp = fc.solve();
-//    std::cout << tmp.value().to_common_code() << std::endl;
+    // return {};
+// }
 
-    auto path = fc.backtrack(tmp.value());
-    std::cout << path.size() << std::endl;
+// RawCode FastCal_demo(RawCode raw_code) {
+//     FastCalPro fc {raw_code};
+//     return fc.solve().value();
+
+    // auto tmp = fc.solve();
+    // std::cout << tmp.value().to_common_code() << std::endl;
+
+    // auto path = fc.backtrack(tmp.value());
+    // std::cout << path.size() << std::endl;
+
+    // fc.export_layers();
 
 //    auto tmp = fc.solve_multi();
 //    for (const auto x : tmp) {
@@ -134,5 +149,5 @@ RawCode FastCal_demo(RawCode raw_code) {
 //    });
 //    std::cout << tmp.value().to_common_code() << std::endl;
 
-    return RawCode::unsafe_create(0);
-}
+    // return RawCode::unsafe_create(0);
+// }
