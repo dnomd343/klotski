@@ -54,12 +54,12 @@ TEST(Core, core) {
     std::vector<uint64_t> codes;
     codes.reserve(402258220);
 
-    auto core = MaskMover([&codes](uint64_t ret, uint64_t) {
-        codes.emplace_back(klotski::codec::RawCode::unsafe_create(ret).to_common_code().unwrap());
+    auto core = MaskMover([&codes](RawCode ret, uint64_t) {
+        codes.emplace_back(ret.to_common_code().unwrap());
     });
 
     for (auto raw_code : raw_codes) {
-        core.next_cases(raw_code, 0);
+        core.next_cases(RawCode::unsafe_create(raw_code), 0);
     }
 
     // std::cout << codes.size() << std::endl;
@@ -82,7 +82,8 @@ TEST(Core, mask) {
 
     uint64_t src;
 
-    auto core = MaskMover([&src](uint64_t ret, uint64_t mask) {
+    auto core = MaskMover([&src](RawCode ret_, uint64_t mask) {
+        const uint64_t ret = ret_.unwrap();
 
         EXPECT_EQ(std::popcount(mask), 3);
 
@@ -161,7 +162,7 @@ TEST(Core, mask) {
 
         src = raw_code;
 
-        core.next_cases(raw_code, 0);
+        core.next_cases(RawCode::unsafe_create(raw_code), 0);
     }
 
 
@@ -184,15 +185,15 @@ TEST(Core, next_cases) {
     std::vector<CommonCode> result {};
 
     std::vector<CommonCode> tmp;
-    auto core = MaskMover([&tmp](uint64_t ret, uint64_t mask) {
-        tmp.emplace_back(CommonCode::from_raw_code(ret).value());
+    auto core = MaskMover([&tmp](RawCode ret, uint64_t mask) {
+        tmp.emplace_back(CommonCode::from_raw_code(ret));
     });
 
     for (const auto raw_code : raw_codes) {
 
         result.emplace_back(raw_code.to_common_code());
 //        std::cout << raw_code.to_common_code() << "->";
-        core.next_cases(raw_code.unwrap(), 0);
+        core.next_cases(raw_code, 0);
 
         std::stable_sort(tmp.begin(), tmp.end());
         for (uint64_t i = 0; i < tmp.size(); ++i) {
