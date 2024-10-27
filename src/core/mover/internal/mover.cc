@@ -73,6 +73,7 @@
 
 ///////////////////////////////////////////////
 
+using klotski::codec::RawCode;
 using klotski::mover::MaskMover;
 
 inline void MaskMover::cache_insert(cache_t next_case) { // try to insert into cache
@@ -162,7 +163,8 @@ void MaskMover::move_2x2(uint64_t code, int addr) { // try to move target 2x2 bl
     }
 }
 
-void MaskMover::next_cases(uint64_t code, uint64_t mask) { // search next step cases
+void MaskMover::next_cases(RawCode raw_code, uint64_t mask) { // search next step cases
+    const uint64_t code = raw_code.unwrap();
     cache_[0].filter = 0; // without filter
     cache_[0].code = code; // bfs root code
     auto range = code | mask;
@@ -186,7 +188,7 @@ void MaskMover::next_cases(uint64_t code, uint64_t mask) { // search next step c
         }
         if (cache_size_ != 1) { // found one or more next cases
             for (int i = 1; i < cache_size_; ++i) {
-                release_(cache_[i].code, cache_[i].mask); // release next cases
+                release_(RawCode::unsafe_create(cache_[i].code), cache_[i].mask); // release next cases
             }
             cache_size_ = 1; // reset cache size
         }

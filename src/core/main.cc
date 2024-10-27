@@ -14,6 +14,8 @@
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
+#include <parallel_hashmap/phmap.h>
+
 #include "../../third_party/thread-pool/include/BS_thread_pool.hpp"
 
 using klotski::mover::MaskMover;
@@ -49,7 +51,7 @@ int main() {
     auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     klotski::fast_cal::FastCalPro fc {code};
 
-    // std::cout << fc.solve().value() << std::endl;
+    std::cout << fc.solve().value() << std::endl;
 
     // for (auto x : fc.solve_multi()) {
     //     std::cout << x << std::endl;
@@ -59,11 +61,11 @@ int main() {
     //     std::cout << x.to_common_code() << std::endl;
     // }
 
-    fc.furthest();
-    for (const auto &layer : fc.exports()) {
-        std::cout << layer.size() << std::endl;
-    }
-    std::cout << "layer num: " << fc.exports().size() << std::endl;
+    // fc.furthest();
+    // for (const auto &layer : fc.exports()) {
+    //     std::cout << layer.size() << std::endl;
+    // }
+    // std::cout << "layer num: " << fc.exports().size() << std::endl;
 
 //    for (int i = 0; i < 10000000; ++i) {
 //        MaskMover mover([](uint64_t code, uint64_t mask) {

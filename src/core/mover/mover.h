@@ -61,6 +61,8 @@
 #include <utility>
 #include <functional>
 
+#include "raw_code/raw_code.h"
+
 namespace klotski::mover {
 
 // TODO: new version without mask
@@ -70,10 +72,10 @@ namespace klotski::mover {
 class MaskMover {
 public:
     /// Release with code and mask
-    typedef std::function<void(uint64_t, uint64_t)> release_t;
+    typedef std::function<void(codec::RawCode, uint64_t)> release_t;
 
     /// Core interface
-    void next_cases(uint64_t code, uint64_t mask);
+    void next_cases(codec::RawCode code, uint64_t mask);
     explicit MaskMover(release_t release_func) : release_(std::move(release_func)) {}
 
 private:

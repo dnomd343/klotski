@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <functional>
 
-#include "group/group.h"
 #include "mover/mover.h"
 #include "layer_queue.h"
 #include "raw_code/raw_code.h"
@@ -26,6 +25,8 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     // TODO: add global build
+
+    void build();
 
     /// Calculate a minimum-step case.
     std::optional<codec::RawCode> solve();
@@ -56,18 +57,20 @@ private:
     KLSK_INLINE void spawn_next(mover::MaskMover &mover);
 
     /// Try to emplace the searched info into the cache.
-    KLSK_INLINE bool try_emplace(uint64_t code, uint64_t mask);
+    KLSK_INLINE bool try_emplace(codec::RawCode code, uint64_t mask);
 
     // ------------------------------------------------------------------------------------- //
 
+    // TODO: add invalid RawCode constexpr var
+
     struct data_t {
         uint64_t mask;
-        uint64_t back;
+        codec::RawCode back;
     };
 
     // codec::RawCode root_;
     LayerQueue<codec::RawCode> codes_;
-    phmap::flat_hash_map<uint64_t, data_t> cases_;
+    phmap::flat_hash_map<codec::RawCode, data_t> cases_;
 
     // ------------------------------------------------------------------------------------- //
 };
