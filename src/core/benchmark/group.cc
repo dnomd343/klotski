@@ -13,6 +13,9 @@
 
 using klotski::cases::AllCases;
 
+using klotski::group::Group;
+using klotski::group::GroupUnion;
+
 /// Build all valid CommonCodes.
 static std::vector<uint64_t> all_common_codes() {
     std::vector<uint64_t> codes;
@@ -70,8 +73,7 @@ static void CommonCodeToTypeId(benchmark::State &state) {
     for (auto _ : state) {
 
         for (auto code : samples) {
-
-            volatile auto ret = klotski::cases::GroupUnion::type_id(code);
+            volatile auto ret = GroupUnion::type_id(code);
         }
 
     }
@@ -93,7 +95,7 @@ static void RawCodeToTypeId(benchmark::State &state) {
     for (auto _ : state) {
 
         for (auto code : samples) {
-            volatile auto ret = klotski::cases::GroupUnion::type_id(code);
+            volatile auto ret = GroupUnion::type_id(code);
         }
 
     }
@@ -108,7 +110,7 @@ static void GroupExtend(benchmark::State &state) {
 
     for (auto _ : state) {
 
-        volatile auto ret = klotski::cases::Group::extend(src, 0);
+        volatile auto ret = klotski::group::Group_extend(src, 0);
 
         // std::cout << ret.size() << std::endl;
     }
@@ -222,12 +224,12 @@ static void RangesDerive(benchmark::State &state) {
     // klotski::cases::Ranges results;
     // results.reserve(klotski::cases::ALL_CASES_NUM_);
 
-    auto group_union = klotski::cases::GroupUnion::unsafe_create(169);
+    auto group_union = klotski::group::GroupUnion::unsafe_create(169);
 
-    std::vector<klotski::cases::GroupUnion> unions;
-    unions.reserve(klotski::cases::TYPE_ID_LIMIT);
-    for (int type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-        unions.emplace_back(klotski::cases::GroupUnion::create(type_id).value());
+    std::vector<klotski::group::GroupUnion> unions;
+    unions.reserve(klotski::group::TYPE_ID_LIMIT);
+    for (int type_id = 0; type_id < klotski::group::TYPE_ID_LIMIT; ++type_id) {
+        unions.emplace_back(klotski::group::GroupUnion::create(type_id).value());
     }
 
     for (auto _ : state) {
@@ -249,7 +251,7 @@ static void RangesDerive(benchmark::State &state) {
 static void SpawnGroups(benchmark::State &state) {
 
     volatile auto val = 169;
-    auto group_union = klotski::cases::GroupUnion::create(val).value();
+    auto group_union = klotski::group::GroupUnion::create(val).value();
 
     for (auto _ : state) {
         volatile auto kk = group_union.groups();
@@ -257,10 +259,10 @@ static void SpawnGroups(benchmark::State &state) {
 
 }
 
-// BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
-// BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
-BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
+// BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(FilterFromAllCases)->Unit(benchmark::kMillisecond);
 

@@ -150,10 +150,10 @@ private:
     // ------------------------------------------------------------------------------------- //
 
     /// Get the type id of RawCode.
-    static KLSK_INLINE uint32_t type_id(codec::RawCode raw_code);
+    static KLSK_INLINE uint_fast8_t type_id(codec::RawCode raw_code);
 
     /// Get the type id of CommonCode.
-    static KLSK_INLINE uint32_t type_id(codec::CommonCode common_code);
+    static KLSK_INLINE uint_fast8_t type_id(codec::CommonCode common_code);
 
     // ------------------------------------------------------------------------------------- //
 };
