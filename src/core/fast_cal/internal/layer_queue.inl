@@ -10,7 +10,7 @@ LayerQueue<T>::LayerQueue(std::initializer_list<T> first_layer, const size_t max
     for (const auto node : first_layer) {
         emplace(node);
     }
-    layer_offset_.reserve(139); // TODO: confirm the max layer number
+    layer_offset_.reserve(232); // TODO: confirm the max layer number
     layer_offset_.emplace_back(layer_end_);
 }
 
@@ -66,9 +66,12 @@ template <typename T>
 requires std::is_trivial_v<T>
 std::vector<std::vector<T>> LayerQueue<T>::all_layers() const {
     std::vector<std::vector<T>> result;
+    result.reserve(layer_offset_.size() - 1);
     for (size_t i = 0; i < layer_offset_.size() - 1; ++i) {
-        std::vector<T> layer {data_ + layer_offset_[i], data_ + layer_offset_[i + 1]};
-        result.emplace_back(layer);
+        result.emplace_back(std::vector<T> {
+            data_ + layer_offset_[i],
+            data_ + layer_offset_[i + 1]
+        });
     }
     return result;
 }

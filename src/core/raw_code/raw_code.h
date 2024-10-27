@@ -80,7 +80,7 @@ public:
     explicit RawCode(CommonCode common_code);
 
     /// Create RawCode without any check.
-    static RawCode unsafe_create(uint64_t raw_code);
+    static constexpr RawCode unsafe_create(uint64_t raw_code);
 
     /// Create RawCode with validity check.
     static std::optional<RawCode> create(uint64_t raw_code);

@@ -21,6 +21,19 @@
 
 // TODO: using constexpr
 
+namespace klotski {
+
+// TODO: remove `CE` tag
+constexpr uint_fast8_t BLOCK_SPC    {0b000}; // space
+constexpr uint_fast8_t BLOCK_FIL    {0b111}; // fill
+constexpr uint_fast8_t BLOCK_CE_1x2 {0b001};
+constexpr uint_fast8_t BLOCK_CE_2x1 {0b010};
+constexpr uint_fast8_t BLOCK_CE_1x1 {0b011};
+constexpr uint_fast8_t BLOCK_CE_2x2 {0b100};
+constexpr uint_fast8_t BLOCK_MSK    {0b111}; // mask
+
+} // namespace klotski
+
 /// NOTE: 0b101 and 0b110 are reserved
 #define BLOCK_space 0b000
 #define BLOCK_fill  0b111

@@ -1,41 +1,38 @@
 /// Klotski Engine by Dnomd343 @2024
 
-// TODO: only copy from old implementation, the interfaces will change in future.
-
 #pragma once
 
-#include <vector>
 #include <cstdint>
 #include <functional>
+#include <parallel_hashmap/phmap.h>
 
 #include "mover/mover.h"
 #include "layer_queue.h"
 #include "raw_code/raw_code.h"
 
-#include <parallel_hashmap/phmap.h>
-
 namespace klotski::fast_cal {
 
-class FastCalPro {
+class FastCal {
 public:
-    FastCalPro() = delete;
+    FastCal() = delete;
 
-    explicit FastCalPro(codec::RawCode raw_code);
+    explicit FastCal(codec::RawCode code);
 
     // ------------------------------------------------------------------------------------- //
-
-    // TODO: add global build
-
-    void build();
 
     /// Calculate a minimum-step case.
     std::optional<codec::RawCode> solve();
 
-    /// Calculate all the maximum-step cases.
-    std::vector<codec::RawCode> furthest();
-
     /// Calculate all the minimum-step cases.
     std::vector<codec::RawCode> solve_multi();
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Calculate all cases.
+    void build_all();
+
+    /// Calculate all the maximum-step cases.
+    std::vector<codec::RawCode> furthest();
 
     /// Calculate the first case that meets the requirement.
     std::optional<codec::RawCode> search(std::function<bool(codec::RawCode)> &&match);
@@ -61,16 +58,18 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 
-    // TODO: add invalid RawCode constexpr var
+    /// Using non-existed RawCode value to represent NULL.
+    static constexpr auto nil = codec::RawCode::unsafe_create(0);
 
-    struct data_t {
+    // ------------------------------------------------------------------------------------- //
+
+    struct info_t {
         uint64_t mask;
-        codec::RawCode back;
+        codec::RawCode parent;
     };
 
-    // codec::RawCode root_;
-    LayerQueue<codec::RawCode> codes_;
-    phmap::flat_hash_map<codec::RawCode, data_t> cases_;
+    LayerQueue<codec::RawCode> seeker_;
+    phmap::flat_hash_map<codec::RawCode, info_t> cases_;
 
     // ------------------------------------------------------------------------------------- //
 };

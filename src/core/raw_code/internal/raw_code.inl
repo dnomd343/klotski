@@ -10,7 +10,7 @@ inline RawCode::RawCode(const CommonCode common_code) {
     code_ = extract(common_code.unwrap());
 }
 
-inline RawCode RawCode::unsafe_create(const uint64_t raw_code) {
+constexpr RawCode RawCode::unsafe_create(const uint64_t raw_code) {
     return std::bit_cast<RawCode>(raw_code); // init directly
 }
 
