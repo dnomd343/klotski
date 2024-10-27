@@ -7,12 +7,13 @@
 namespace klotski {
 
 template <typename T>
+requires std::is_trivial_v<T>
 class LayerQueue final {
 public:
     ~LayerQueue();
 
-    /// Construct from first layer cases and reserve size.
-    LayerQueue(std::initializer_list<T> first_layer, size_t reserve);
+    /// Construct from first layer nodes and reserve size.
+    LayerQueue(std::initializer_list<T> first_layer, size_t max_size);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -44,14 +45,10 @@ public:
     // ------------------------------------------------------------------------------------- //
 
 private:
-    size_t layer_begin_, layer_end_;
-    size_t queue_begin_, queue_end_;
-
-    // std::vector<T> data_ {};
     T *data_ {nullptr};
-
-    std::vector<size_t> layers_ {};
-    // std::vector<std::pair<size_t, size_t>> layers_ {};
+    size_t layer_begin_ {0}, layer_end_;
+    size_t queue_begin_ {0}, queue_end_;
+    std::vector<size_t> layer_offset_ {0};
 };
 
 } // namespace klotski

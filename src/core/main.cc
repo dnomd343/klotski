@@ -56,7 +56,7 @@ int main() {
     // }
 
     // for (auto x : fc.furthest()) {
-    //     std::cout << x << std::endl;
+    //     std::cout << x.to_common_code() << std::endl;
     // }
 
     fc.furthest();
