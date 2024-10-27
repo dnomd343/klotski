@@ -96,12 +96,28 @@ std::vector<RawCode> FastCalPro::furthest() {
     }
 }
 
+std::vector<RawCode> FastCalPro::backtrack(RawCode code) {
+    if (const auto match = cases_.find(code.unwrap()); match == cases_.end()) {
+        return {}; // case not found
+    }
+    std::vector<RawCode> path;
+    while (code != 0) {
+        path.emplace_back(code);
+        code = RawCode::unsafe_create(cases_.find(code.unwrap())->second.back);
+    }
+    std::reverse(path.begin(), path.end());
+    return path;
+}
+
 RawCode FastCal_demo(RawCode raw_code) {
     klotski::fast_cal::FastCalPro fc {raw_code};
-    return fc.solve().value();
+//    return fc.solve().value();
 
-//    auto tmp = fc.solve();
+    auto tmp = fc.solve();
 //    std::cout << tmp.value().to_common_code() << std::endl;
+
+    auto path = fc.backtrack(tmp.value());
+    std::cout << path.size() << std::endl;
 
 //    auto tmp = fc.solve_multi();
 //    for (const auto x : tmp) {
@@ -118,5 +134,5 @@ RawCode FastCal_demo(RawCode raw_code) {
 //    });
 //    std::cout << tmp.value().to_common_code() << std::endl;
 
-//    return RawCode::unsafe_create(0);
+    return RawCode::unsafe_create(0);
 }
