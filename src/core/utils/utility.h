@@ -31,6 +31,7 @@
 
 /// Force function declaration to be inline.
 #define KLSK_INLINE __attribute__ ((always_inline))
+#define KLSK_INLINE_CE KLSK_INLINE constexpr
 
 /// Prevent reordering for both compiler and processor.
 #define KLSK_MEM_BARRIER std::atomic_thread_fence(std::memory_order_seq_cst)

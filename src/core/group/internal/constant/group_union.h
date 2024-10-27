@@ -6,6 +6,10 @@
 
 namespace klotski::group {
 
+constexpr uint32_t TYPE_ID_LIMIT = 203;
+constexpr uint32_t ALL_GROUP_NUM = 25422; // TODO: from GROUP_NUM
+constexpr uint32_t ALL_PATTERN_NUM = 6577; // TODO: from PATTERN_NUM
+
 /// The number of groups contained in GroupUnion.
 constexpr auto GROUP_NUM = std::to_array<uint16_t>({
     1  , 1  , 1   , 1  , 1   , 1  , 1  , 1   , 1  , 1   , 1   , 1   , 1  , 1   , 1  , 1   ,

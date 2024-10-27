@@ -72,11 +72,6 @@
 
 namespace klotski::group {
 
-// TODO: move constants to `.inl` file
-constexpr uint32_t TYPE_ID_LIMIT = 203;
-constexpr uint32_t ALL_GROUP_NUM = 25422; // TODO: from GROUP_NUM
-constexpr uint32_t ALL_PATTERN_NUM = 6577; // TODO: from PATTERN_NUM
-
 class Group;
 
 class GroupUnion {
@@ -86,13 +81,13 @@ public:
     GroupUnion() = delete;
 
     /// Get the original type id.
-    [[nodiscard]] constexpr uint32_t unwrap() const;
+    [[nodiscard]] constexpr uint_fast8_t unwrap() const;
 
     /// Create GroupUnion without any check.
-    static constexpr GroupUnion unsafe_create(uint32_t type_id);
+    static constexpr GroupUnion unsafe_create(uint_fast8_t type_id);
 
     /// Create GroupUnion with validity check.
-    static constexpr std::optional<GroupUnion> create(uint32_t type_id);
+    static constexpr std::optional<GroupUnion> create(uint_fast8_t type_id);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -145,15 +140,15 @@ public:
     // ------------------------------------------------------------------------------------- //
 
 private:
-    uint32_t type_id_; // TODO: using uint_fast8_t
+    uint_fast8_t type_id_;
 
     // ------------------------------------------------------------------------------------- //
 
     /// Get the type id of RawCode.
-    static KLSK_INLINE uint_fast8_t type_id(codec::RawCode raw_code);
+    static KLSK_INLINE_CE uint_fast8_t type_id(codec::RawCode raw_code);
 
     /// Get the type id of CommonCode.
-    static KLSK_INLINE uint_fast8_t type_id(codec::CommonCode common_code);
+    static KLSK_INLINE_CE uint_fast8_t type_id(codec::CommonCode common_code);
 
     // ------------------------------------------------------------------------------------- //
 };
@@ -380,6 +375,7 @@ static_assert(std::is_trivially_copyable_v<GroupCases::CaseInfo>);
 
 } // namespace klotski::group
 
+#include "internal/type_id.inl"
 #include "internal/group_union.inl"
 #include "internal/group_cases.inl"
 #include "internal/group.inl"

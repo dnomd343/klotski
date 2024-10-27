@@ -3,40 +3,16 @@
 #include "constant/group_union.h"
 
 using klotski::cases::Ranges;
-using klotski::cases::RangesUnion;
-
 using klotski::codec::RawCode;
 using klotski::codec::CommonCode;
 using klotski::group::GroupUnion;
+using klotski::cases::RangesUnion;
 
 using klotski::cases::BASIC_RANGES_NUM;
 
 #define RANGE_DERIVE(HEAD) ranges.derive(HEAD, cases[HEAD])
 
-static KLSK_INLINE uint_fast8_t to_type_id(const int n, const int n_2x1, const int n_1x1) {
-    KLSK_ASSUME(n >= 0 && n <= 7);
-    KLSK_ASSUME(n_2x1 >= 0 && n_2x1 <= n);
-    KLSK_ASSUME(n_1x1 >= 0 && n_1x1 <= (14 - n * 2));
-    constexpr int offset[8] = {0, 15, 41, 74, 110, 145, 175, 196};
-    return offset[n] + (15 - n * 2) * n_2x1 + n_1x1;
-}
-
-uint_fast8_t GroupUnion::type_id(const CommonCode common_code) {
-    const auto range = static_cast<uint32_t>(common_code.unwrap());
-    const auto n_1x1 = std::popcount((range >> 1) & range & 0x55555555);
-    const auto n_2x1 = std::popcount((range >> 1) & ~range & 0x55555555);
-    return to_type_id(std::popcount(range) - n_1x1 * 2, n_2x1, n_1x1);
-}
-
-uint_fast8_t GroupUnion::type_id(const RawCode raw_code) {
-    const auto code = raw_code.unwrap();
-    const auto n = std::popcount(((code >> 1) ^ code) & 0x0249249249249249);
-    const auto n_2x1 = std::popcount((code >> 1) & ~code & 0x0249249249249249);
-    const auto n_1x1 = std::popcount((code >> 1) & code & 0x0249249249249249) - n - 3;
-    return to_type_id(n, n_2x1, n_1x1);
-}
-
-klotski::cases::RangesUnion GroupUnion::cases() const {
+RangesUnion GroupUnion::cases() const {
     auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id_];
     auto [s_a, s_b, s_c, s_d] = GROUP_UNION_CASES_NUM[type_id_];
 
