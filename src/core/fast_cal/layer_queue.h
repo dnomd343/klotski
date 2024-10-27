@@ -3,39 +3,55 @@
 #pragma once
 
 #include <vector>
-#include <cstdint>
 
 namespace klotski {
 
 template <typename T>
-class LayerQueue {
+class LayerQueue final {
 public:
-    LayerQueue(size_t reserve, std::initializer_list<T> first_layer);
+    ~LayerQueue();
 
-    void emplace(T item);
+    /// Construct from first layer cases and reserve size.
+    LayerQueue(std::initializer_list<T> first_layer, size_t reserve);
 
-    T current() const;
+    // ------------------------------------------------------------------------------------- //
 
+    /// Pop the head of the queue.
     void next();
 
+    /// Obtain the current working node.
+    T current() const;
+
+    /// Emplace new node at the end of the queue.
+    void emplace(T node);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Whether the queue is empty.
     [[nodiscard]] bool is_ending() const;
 
+    /// Whether the queue front is on new layer.
     [[nodiscard]] bool is_new_layer() const;
 
-    std::vector<T> layer_cases() const;
+    // ------------------------------------------------------------------------------------- //
 
-    // TODO: allow export all layers
+    /// Get the nodes of the last layer.
+    std::vector<T> last_layer() const;
+
+    /// Get all the nodes of each layer.
+    std::vector<std::vector<T>> all_layers() const;
+
+    // ------------------------------------------------------------------------------------- //
 
 private:
-    size_t queue_begin_ {0};
-    size_t queue_end_ {0};
+    size_t layer_begin_, layer_end_;
+    size_t queue_begin_, queue_end_;
 
-    size_t layer_begin_ {0};
-    size_t layer_end_ {0};
+    // std::vector<T> data_ {};
+    T *data_ {nullptr};
 
-    std::vector<T> data_ {};
-
-    std::vector<std::pair<size_t, size_t>> layers_ {};
+    std::vector<size_t> layers_ {};
+    // std::vector<std::pair<size_t, size_t>> layers_ {};
 };
 
 } // namespace klotski

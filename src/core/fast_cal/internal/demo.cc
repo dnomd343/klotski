@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-//#include <absl/container/flat_hash_map.h>
-
 #include <parallel_hashmap/phmap.h>
 
 #include "mover/mover.h"
@@ -23,7 +21,9 @@ static KLSK_INLINE bool is_solved(uint64_t raw_code) {
 }
 
 std::optional<RawCode> FastCalPro::solve() {
-    // TODO: check root case
+    // if (is_solved(root_.unwrap())) {
+    //     return root_;
+    // }
 
     uint64_t solution = 0;
     auto mover = MaskMover([this, &solution](uint64_t code, uint64_t mask) {
@@ -89,9 +89,7 @@ std::vector<RawCode> FastCalPro::furthest() {
     while (true) {
         spawn_next(mover);
         if (codes_.is_ending()) {
-            return codes_.layer_cases() | std::views::transform([](uint64_t code) {
-                return RawCode::unsafe_create(code);
-            }) | std::ranges::to<std::vector>();
+            return codes_.last_layer();
         }
     }
 }
@@ -109,45 +107,6 @@ std::vector<RawCode> FastCalPro::backtrack(RawCode code) const {
     return path;
 }
 
-// std::vector<std::vector<RawCode>> FastCalPro::export_layers() const {
-    // auto layer = furthest();
-    //
-    // std::vector<std::vector<RawCode>> result;
-    // result.emplace_back(layer);
-    //
-    // for (auto code : layer) {
-    //     std::cout << code << std::endl;
-    // }
-
-    // return {};
-// }
-
-// RawCode FastCal_demo(RawCode raw_code) {
-//     FastCalPro fc {raw_code};
-//     return fc.solve().value();
-
-    // auto tmp = fc.solve();
-    // std::cout << tmp.value().to_common_code() << std::endl;
-
-    // auto path = fc.backtrack(tmp.value());
-    // std::cout << path.size() << std::endl;
-
-    // fc.export_layers();
-
-//    auto tmp = fc.solve_multi();
-//    for (const auto x : tmp) {
-//        std::cout << x.to_common_code() << std::endl;
-//    }
-
-//    auto tmp = fc.furthest();
-//    for (const auto x : tmp) {
-//        std::cout << x.to_common_code() << std::endl;
-//    }
-
-//    auto tmp = fc.achieve([](RawCode r) {
-//        return r == 0x7F87E0E5BFFF492;
-//    });
-//    std::cout << tmp.value().to_common_code() << std::endl;
-
-    // return RawCode::unsafe_create(0);
-// }
+std::vector<std::vector<RawCode>> FastCalPro::exports() const {
+    return codes_.all_layers();
+}

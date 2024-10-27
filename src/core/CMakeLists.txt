@@ -20,8 +20,6 @@ set(KLOTSKI_CORE_SRC
 
         mover/internal/mover.cc
 
-        fast_cal/internal/cal_core.cc
-        fast_cal/internal/fast_cal.cc
         fast_cal/internal/demo.cc
 
         group/internal/group_union.cc
