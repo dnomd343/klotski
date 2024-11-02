@@ -253,15 +253,15 @@ public:
     // ------------------------------------------------------------------------------------- //
 
 private:
-    uint_fast8_t type_id_;
     Toward toward_;
+    uint_fast8_t type_id_;
     uint_fast16_t pattern_id_;
 
     /// Tiled merge of type_id and pattern_id.
     [[nodiscard]] constexpr uint32_t flat_id() const;
 
     /// Hidden constructor called from unsafe_create.
-    constexpr Group(uint_fast8_t type_id, Toward toward, uint_fast16_t pattern_id);
+    constexpr Group(Toward toward, uint_fast8_t type_id, uint_fast16_t pattern_id);
 
     // ------------------------------------------------------------------------------------- //
 };

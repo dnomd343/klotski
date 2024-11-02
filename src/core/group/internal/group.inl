@@ -68,7 +68,7 @@ constexpr auto operator==(const Group &lhs, const Group &rhs) {
 }
 
 constexpr Group Group::unsafe_create(uint_fast8_t type_id, uint_fast16_t pattern_id, Toward toward) {
-    return {type_id, toward, pattern_id};
+    return {toward, type_id, pattern_id};
 }
 
 constexpr std::optional<Group> Group::create(uint_fast8_t type_id, uint_fast16_t pattern_id, Toward toward) {
@@ -98,10 +98,6 @@ inline Group Group::from_common_code(codec::CommonCode common_code) {
     return from_raw_code(common_code.to_raw_code());
 }
 
-constexpr Group::Group(uint_fast8_t type_id, Toward toward, uint_fast16_t pattern_id) {
-    type_id_ = type_id;
-    pattern_id_ = pattern_id;
-    toward_ = toward;
-}
+constexpr Group::Group(const Toward toward, const uint_fast8_t type_id, const uint_fast16_t pattern_id) : toward_(toward), type_id_(type_id), pattern_id_(pattern_id) {}
 
 } // namespace klotski::group

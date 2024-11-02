@@ -250,17 +250,16 @@ static void RangesDerive(benchmark::State &state) {
 
 static void SpawnGroups(benchmark::State &state) {
 
-    volatile auto val = 169;
-    auto group_union = klotski::group::GroupUnion::create(val).value();
+    auto gu = GroupUnion::unsafe_create(169);
 
     for (auto _ : state) {
-        volatile auto kk = group_union.groups();
+        volatile auto kk = gu.groups();
     }
 
 }
 
-BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
-BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+// BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
+// BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
 // BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
 
@@ -274,6 +273,6 @@ BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
 // BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
 
-// BENCHMARK(SpawnGroups);
+BENCHMARK(SpawnGroups);
 
 BENCHMARK_MAIN();
