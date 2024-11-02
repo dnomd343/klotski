@@ -10,6 +10,14 @@
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
+// TODO: add constexpr test
+
+// TODO: add std::hash test
+
+// TODO: test `std::is_default_constructible`
+// TODO: test `std::is_copy_assignable` and `std::is_copy_constructible`
+// TODO: test `std::is_move_assignable` and `std::is_move_constructible`
+
 using klotski::codec::RawCode;
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;

@@ -1,5 +1,7 @@
 #include "cases.h"
 
+#include <algorithm>
+
 #include "helper/block_num.h"
 
 // TODO: multi-threads builder

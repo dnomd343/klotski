@@ -3,6 +3,7 @@
 #include "group/group.h"
 #include "helper/hash.h"
 #include "helper/cases.h"
+#include "helper/expect.h"
 #include "helper/fixture.h"
 #include "utility/exposer.h"
 

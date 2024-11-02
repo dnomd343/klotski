@@ -2,6 +2,7 @@
 
 #include "helper/hash.h"
 #include "helper/cases.h"
+#include "helper/expect.h"
 #include "ranges/ranges.h"
 
 constexpr std::string_view ALL_CASES_MD5 = "3888e9fab8d3cbb50908b12b147cfb23";

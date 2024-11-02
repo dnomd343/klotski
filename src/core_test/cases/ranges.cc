@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "helper/cases.h"
+#include "helper/expect.h"
 #include "helper/block_num.h"
 
 #include "group/group.h"
