@@ -9,7 +9,7 @@ inline std::ostream& operator<<(std::ostream &out, CaseInfo self) {
     return out;
 }
 
-constexpr std::string CaseInfo::to_string() const {
+inline std::string CaseInfo::to_string() const {
     return std::format("{}-{}", group_.to_string(), case_id_);
 }
 

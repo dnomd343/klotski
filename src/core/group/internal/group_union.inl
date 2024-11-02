@@ -8,6 +8,24 @@ namespace klotski::group {
 
 // ----------------------------------------------------------------------------------------- //
 
+constexpr uint32_t GroupUnion::size() const {
+    return GROUP_UNION_SIZE[type_id_];
+}
+
+constexpr uint32_t GroupUnion::group_num() const {
+    return GROUP_NUM[type_id_];
+}
+
+constexpr uint32_t GroupUnion::pattern_num() const {
+    return PATTERN_NUM[type_id_];
+}
+
+constexpr uint32_t GroupUnion::max_group_size() const {
+    return MAX_GROUP_SIZE[type_id_];
+}
+
+// ----------------------------------------------------------------------------------------- //
+
 constexpr uint_fast8_t GroupUnion::unwrap() const {
 	return type_id_;
 }
@@ -25,31 +43,29 @@ constexpr std::optional<GroupUnion> GroupUnion::create(const uint_fast8_t type_i
 
 // ----------------------------------------------------------------------------------------- //
 
-constexpr uint32_t GroupUnion::size() const {
-	return GROUP_UNION_SIZE[type_id_];
-}
-
-constexpr uint32_t GroupUnion::group_num() const {
-	return GROUP_NUM[type_id_];
-}
-
-constexpr uint32_t GroupUnion::pattern_num() const {
-    return PATTERN_NUM[type_id_];
-}
-
-constexpr uint32_t GroupUnion::max_group_size() const {
-	return MAX_GROUP_SIZE[type_id_];
-}
-
 #ifndef KLSK_NDEBUG
 inline std::ostream& operator<<(std::ostream &out, GroupUnion self) {
-    out << self.type_id_; // TODO: benchmark using `std::format`
+    out << self.type_id_;
     return out;
 }
 #endif
 
 constexpr auto operator==(const GroupUnion &lhs, const GroupUnion &rhs) {
     return lhs.type_id_ == rhs.type_id_;
+}
+
+// ----------------------------------------------------------------------------------------- //
+
+constexpr GroupUnion GroupUnion::from_raw_code(const codec::RawCode raw_code) {
+    return unsafe_create(type_id(raw_code));
+}
+
+constexpr GroupUnion GroupUnion::from_short_code(const codec::ShortCode short_code) {
+    return from_common_code(short_code.to_common_code());
+}
+
+constexpr GroupUnion GroupUnion::from_common_code(const codec::CommonCode common_code) {
+    return unsafe_create(type_id(common_code));
 }
 
 // ----------------------------------------------------------------------------------------- //
@@ -89,7 +105,7 @@ constexpr std::vector<Group> GroupUnion::groups() const {
     return groups;
 }
 
-constexpr std::optional<std::vector<Group>> GroupUnion::groups(uint32_t pattern_id) const {
+constexpr std::optional<std::vector<Group>> GroupUnion::groups(const uint_fast16_t pattern_id) const {
     if (pattern_id >= pattern_num()) {
         return std::nullopt;
     }
@@ -113,20 +129,6 @@ constexpr std::optional<std::vector<Group>> GroupUnion::groups(uint32_t pattern_
             break;
     }
     return groups;
-}
-
-// ----------------------------------------------------------------------------------------- //
-
-constexpr GroupUnion GroupUnion::from_raw_code(const codec::RawCode raw_code) {
-	return unsafe_create(type_id(raw_code));
-}
-
-constexpr GroupUnion GroupUnion::from_short_code(const codec::ShortCode short_code) {
-	return from_common_code(short_code.to_common_code());
-}
-
-constexpr GroupUnion GroupUnion::from_common_code(const codec::CommonCode common_code) {
-	return unsafe_create(type_id(common_code));
 }
 
 // ----------------------------------------------------------------------------------------- //

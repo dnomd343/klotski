@@ -114,7 +114,7 @@ public:
     [[nodiscard]] cases::RangesUnion cases() const;
 
     /// Get the group instance with the specified pattern id.
-    [[nodiscard]] constexpr std::optional<Groups> groups(uint32_t pattern_id) const;
+    [[nodiscard]] constexpr std::optional<Groups> groups(uint_fast16_t pattern_id) const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -153,19 +153,21 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+static_assert(std::is_standard_layout_v<GroupUnion>);
+static_assert(std::is_trivially_copyable_v<GroupUnion>);
+
 class Group {
 public:
     // ------------------------------------------------------------------------------------- //
 
-    // TODO: enum with uint_fast8_t
-    enum class Toward {
+    enum class Toward : uint_fast8_t {
         A = 0, // baseline
         B = 1, // horizontal mirror
         C = 2, // vertical mirror
         D = 3, // diagonal mirror
     };
 
-    enum class MirrorType {
+    enum class MirrorType : uint_fast8_t {
         Full = 0, // fully self-symmetry
         Horizontal = 1, // horizontal self-symmetry
         Centro = 2, // centrosymmetric
@@ -182,25 +184,22 @@ public:
     [[nodiscard]] constexpr char toward_char() const;
 
     /// Get the original type id.
-    [[nodiscard]] constexpr uint32_t type_id() const;
+    [[nodiscard]] constexpr uint_fast8_t type_id() const;
 
     /// Get the original pattern id.
-    [[nodiscard]] constexpr uint32_t pattern_id() const;
-
-    /// Get the string form of current group.
-    [[nodiscard]] constexpr std::string to_string() const;
+    [[nodiscard]] constexpr uint_fast16_t pattern_id() const;
 
     // ------------------------------------------------------------------------------------- //
 
     Group() = delete;
 
     /// Create Group without any check.
-    static constexpr Group unsafe_create(uint32_t type_id,
-                                         uint32_t pattern_id, Toward toward);
+    static constexpr Group unsafe_create(uint_fast8_t type_id,
+                                         uint_fast16_t pattern_id, Toward toward);
 
     /// Create Group with validity check.
-    static constexpr std::optional<Group> create(uint32_t type_id,
-                                                 uint32_t pattern_id, Toward toward);
+    static constexpr std::optional<Group> create(uint_fast8_t type_id,
+                                                 uint_fast16_t pattern_id, Toward toward);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -240,6 +239,9 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
+    /// Get the group in string form.
+    [[nodiscard]] std::string to_string() const;
+
 #ifndef KLSK_NDEBUG
     /// Output group info only for debug.
     friend std::ostream& operator<<(std::ostream &out, Group self);
@@ -251,18 +253,21 @@ public:
     // ------------------------------------------------------------------------------------- //
 
 private:
-    uint32_t type_id_; // TODO: using uint_fast8_t
+    uint_fast8_t type_id_;
     Toward toward_;
-    uint32_t pattern_id_;
+    uint_fast16_t pattern_id_;
 
     /// Tiled merge of type_id and pattern_id.
     [[nodiscard]] constexpr uint32_t flat_id() const;
 
     /// Hidden constructor called from unsafe_create.
-    constexpr Group(uint32_t type_id, uint32_t pattern_id, Toward toward);
+    constexpr Group(uint_fast8_t type_id, Toward toward, uint_fast16_t pattern_id);
 
     // ------------------------------------------------------------------------------------- //
 };
+
+static_assert(std::is_standard_layout_v<Group>);
+static_assert(std::is_trivially_copyable_v<Group>);
 
 class CaseInfo {
 public:
@@ -273,9 +278,6 @@ public:
 
     /// Get the original case id.
     [[nodiscard]] constexpr uint32_t case_id() const;
-
-    /// Get the string form of current case.
-    [[nodiscard]] constexpr std::string to_string() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -288,6 +290,9 @@ public:
     static constexpr std::optional<CaseInfo> create(Group group, uint32_t case_id);
 
     // ------------------------------------------------------------------------------------- //
+
+    /// Get case info in string form.
+    [[nodiscard]] std::string to_string() const;
 
 #ifndef KLSK_NDEBUG
     /// Output case info only for debug.
@@ -308,6 +313,9 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 };
+
+static_assert(std::is_standard_layout_v<CaseInfo>);
+static_assert(std::is_trivially_copyable_v<CaseInfo>);
 
 class GroupCases {
 public:
@@ -382,15 +390,6 @@ private:
 /// Spawn all the unsorted codes of the current group.
 std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reserve = 0);
 
-static_assert(std::is_standard_layout_v<Group>);
-static_assert(std::is_trivially_copyable_v<Group>);
-
-static_assert(std::is_standard_layout_v<GroupUnion>);
-static_assert(std::is_trivially_copyable_v<GroupUnion>);
-
-static_assert(std::is_standard_layout_v<CaseInfo>);
-static_assert(std::is_trivially_copyable_v<CaseInfo>);
-
 } // namespace klotski::group
 
 #include "internal/type_id.inl"
@@ -398,40 +397,5 @@ static_assert(std::is_trivially_copyable_v<CaseInfo>);
 #include "internal/group_cases.inl"
 #include "internal/group.inl"
 #include "internal/case_info.inl"
-
-// ----------------------------------------------------------------------------------------- //
-
-// TODO: move to `hash.inl`
-
-namespace std {
-
-template <>
-struct std::hash<klotski::group::Group> {
-    constexpr std::size_t operator()(const klotski::group::Group &g) const noexcept {
-        // TODO: perf hash alg
-        return std::hash<uint64_t>{}(g.type_id() ^ g.pattern_id() ^ (int)g.toward());
-    }
-};
-
-template <>
-struct std::hash<klotski::group::GroupUnion> {
-    constexpr std::size_t operator()(const klotski::group::GroupUnion &gu) const noexcept {
-        return std::hash<uint32_t>{}(gu.unwrap());
-    }
-};
-
-// TODO: add `std::hash` for CaseInfo
-
-template <>
-struct std::hash<klotski::group::CaseInfo> {
-    constexpr std::size_t operator()(const klotski::group::CaseInfo &info) const noexcept {
-        // TODO: perf hash alg
-        const auto h1 = std::hash<klotski::group::Group>{}(info.group());
-        const auto h2 = std::hash<uint32_t>{}(info.case_id());
-        return h1 ^ h2;
-    }
-};
-
-} // namespace std
-
-// ----------------------------------------------------------------------------------------- //
+#include "internal/group_mirror.inl"
+#include "internal/hash.inl"
