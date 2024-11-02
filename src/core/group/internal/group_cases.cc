@@ -12,6 +12,8 @@ using klotski::group::GroupCases;
 using klotski::group::GroupUnion;
 using klotski::cases::RangesUnion;
 
+using klotski::group::CaseInfo;
+
 using klotski::group::ALL_GROUP_NUM;
 using klotski::group::TYPE_ID_LIMIT;
 using klotski::cases::ALL_CASES_NUM_;
@@ -123,7 +125,7 @@ CommonCode GroupCases::fast_obtain_code(CaseInfo info) {
     return CommonCode::unsafe_create(head << 32 | range);
 }
 
-GroupCases::CaseInfo GroupCases::fast_obtain_info(ShortCode short_code) {
+CaseInfo GroupCases::fast_obtain_info(ShortCode short_code) {
     uint16_t type_id = GroupUnion::from_short_code(short_code).unwrap(); // NOTE: need to convert as CommonCode
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
     uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
@@ -133,7 +135,7 @@ GroupCases::CaseInfo GroupCases::fast_obtain_info(ShortCode short_code) {
     return CaseInfo::unsafe_create(group, case_id);
 }
 
-GroupCases::CaseInfo GroupCases::fast_obtain_info(CommonCode common_code) {
+CaseInfo GroupCases::fast_obtain_info(CommonCode common_code) {
     auto short_code = common_code.to_short_code();
     uint16_t type_id = GroupUnion::from_common_code(common_code).unwrap();
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
@@ -193,7 +195,7 @@ static std::unordered_map<uint64_t, Group> build_map_data() {
     return data;
 }
 
-GroupCases::CaseInfo GroupCases::tiny_obtain_info(CommonCode common_code) {
+CaseInfo GroupCases::tiny_obtain_info(CommonCode common_code) {
     auto raw_codes = Group_extend(common_code.to_raw_code());
     std::vector<CommonCode> common_codes;
     common_codes.reserve(raw_codes.size());

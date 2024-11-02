@@ -255,49 +255,62 @@ private:
     Toward toward_;
     uint32_t pattern_id_;
 
-    Group(uint32_t type_id, uint32_t pattern_id, Toward toward) {
-        type_id_ = type_id;
-        pattern_id_ = pattern_id;
-        toward_ = toward;
-    }
-
     /// Tiled merge of type_id and pattern_id.
     [[nodiscard]] constexpr uint32_t flat_id() const;
+
+    /// Hidden constructor called from unsafe_create.
+    constexpr Group(uint32_t type_id, uint32_t pattern_id, Toward toward);
+
+    // ------------------------------------------------------------------------------------- //
 };
 
-/// Spawn all the unsorted codes of the current group.
-std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reserve = 0);
-
-class GroupCases {
+class CaseInfo {
 public:
     // ------------------------------------------------------------------------------------- //
 
-    // TODO: move to `::klotski::group::CaseInfo`
-    class CaseInfo {
-    public:
-        CaseInfo() = delete;
+    /// Get the original group.
+    [[nodiscard]] constexpr Group group() const;
 
-        [[nodiscard]] constexpr Group group() const;
+    /// Get the original case id.
+    [[nodiscard]] constexpr uint32_t case_id() const;
 
-        [[nodiscard]] constexpr uint32_t case_id() const;
+    /// Get the string form of current case.
+    [[nodiscard]] constexpr std::string to_string() const;
 
-        static CaseInfo unsafe_create(Group group, uint32_t case_id);
+    // ------------------------------------------------------------------------------------- //
 
-        static std::optional<CaseInfo> create(Group group, uint32_t case_id);
+    CaseInfo() = delete;
 
-        [[nodiscard]] std::string to_string() const;
+    /// Create CaseInfo without any check.
+    static constexpr CaseInfo unsafe_create(Group group, uint32_t case_id);
+
+    /// Create CaseInfo with validity check.
+    static constexpr std::optional<CaseInfo> create(Group group, uint32_t case_id);
+
+    // ------------------------------------------------------------------------------------- //
 
 #ifndef KLSK_NDEBUG
-        friend std::ostream& operator<<(std::ostream &out, CaseInfo self);
+    /// Output case info only for debug.
+    friend std::ostream& operator<<(std::ostream &out, CaseInfo self);
 #endif
 
-    private:
-        CaseInfo(Group group, uint32_t case_id) : group_(group), case_id_(case_id) {}
+    /// Compare the internal values of two CaseInfo.
+    friend constexpr auto operator==(const CaseInfo &lhs, const CaseInfo &rhs);
 
-        Group group_;
-        uint32_t case_id_;
-    };
+    // ------------------------------------------------------------------------------------- //
 
+private:
+    Group group_;
+    uint32_t case_id_;
+
+    /// Hidden constructor called from unsafe_create.
+    constexpr CaseInfo(Group group, uint32_t case_id);
+
+    // ------------------------------------------------------------------------------------- //
+};
+
+class GroupCases {
+public:
     // ------------------------------------------------------------------------------------- //
 
     /// Execute the build process.
@@ -308,14 +321,16 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Get the CommonCode from CaseInfo.
-    static codec::CommonCode obtain_code(CaseInfo info);
-
     /// Get the Group which ShortCode is located.
     static Group obtain_group(codec::ShortCode short_code);
 
     /// Get the Group which CommonCode is located.
     static Group obtain_group(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
+
+    /// Get the CommonCode from CaseInfo.
+    static codec::CommonCode obtain_code(CaseInfo info);
 
     /// Get the CaseInfo corresponding to the ShortCode.
     static CaseInfo obtain_info(codec::ShortCode short_code);
@@ -364,14 +379,17 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+/// Spawn all the unsorted codes of the current group.
+std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reserve = 0);
+
 static_assert(std::is_standard_layout_v<Group>);
 static_assert(std::is_trivially_copyable_v<Group>);
 
 static_assert(std::is_standard_layout_v<GroupUnion>);
 static_assert(std::is_trivially_copyable_v<GroupUnion>);
 
-static_assert(std::is_standard_layout_v<GroupCases::CaseInfo>);
-static_assert(std::is_trivially_copyable_v<GroupCases::CaseInfo>);
+static_assert(std::is_standard_layout_v<CaseInfo>);
+static_assert(std::is_trivially_copyable_v<CaseInfo>);
 
 } // namespace klotski::group
 
@@ -379,8 +397,11 @@ static_assert(std::is_trivially_copyable_v<GroupCases::CaseInfo>);
 #include "internal/group_union.inl"
 #include "internal/group_cases.inl"
 #include "internal/group.inl"
+#include "internal/case_info.inl"
 
 // ----------------------------------------------------------------------------------------- //
+
+// TODO: move to `hash.inl`
 
 namespace std {
 
@@ -400,6 +421,16 @@ struct std::hash<klotski::group::GroupUnion> {
 };
 
 // TODO: add `std::hash` for CaseInfo
+
+template <>
+struct std::hash<klotski::group::CaseInfo> {
+    constexpr std::size_t operator()(const klotski::group::CaseInfo &info) const noexcept {
+        // TODO: perf hash alg
+        const auto h1 = std::hash<klotski::group::Group>{}(info.group());
+        const auto h2 = std::hash<uint32_t>{}(info.case_id());
+        return h1 ^ h2;
+    }
+};
 
 } // namespace std
 

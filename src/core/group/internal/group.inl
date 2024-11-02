@@ -178,4 +178,10 @@ constexpr Group Group::to_horizontal_mirror() const {
     }
 }
 
+constexpr Group::Group(uint32_t type_id, uint32_t pattern_id, Toward toward) {
+    type_id_ = type_id;
+    pattern_id_ = pattern_id;
+    toward_ = toward;
+}
+
 } // namespace klotski::group
