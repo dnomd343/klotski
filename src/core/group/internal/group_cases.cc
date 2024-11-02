@@ -2,8 +2,12 @@
 
 #include <algorithm>
 
-#include "group/group.h"
+#include <parallel_hashmap/phmap.h>
 
+#include "group/group.h"
+#include "mover/mover.h"
+
+using klotski::codec::RawCode;
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 
@@ -13,6 +17,8 @@ using klotski::group::GroupUnion;
 using klotski::cases::RangesUnion;
 
 using klotski::group::CaseInfo;
+
+using klotski::mover::MaskMover;
 
 using klotski::group::ALL_GROUP_NUM;
 using klotski::group::TYPE_ID_LIMIT;
@@ -195,8 +201,34 @@ static std::unordered_map<uint64_t, Group> build_map_data() {
     return data;
 }
 
+static std::vector<RawCode> Group_extend_for_obtain_info(RawCode raw_code) {
+    std::vector<RawCode> codes;
+    phmap::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+
+    codes.reserve(GroupUnion::from_raw_code(raw_code).max_group_size());
+    cases.reserve(GroupUnion::from_raw_code(raw_code).max_group_size() * 1.56);
+
+    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t mask) {
+        if (const auto match = cases.find(code.unwrap()); match != cases.end()) {
+            match->second |= mask; // update mask
+            return;
+        }
+        cases.emplace(code, mask);
+        codes.emplace_back(code); // new case
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(raw_code);
+    cases.emplace(raw_code, 0); // without mask
+    while (offset != codes.size()) {
+        auto curr = codes[offset++].unwrap();
+        core.next_cases(RawCode::unsafe_create(curr), cases.find(curr)->second);
+    }
+    return codes;
+}
+
 CaseInfo GroupCases::tiny_obtain_info(CommonCode common_code) {
-    auto raw_codes = Group_extend(common_code.to_raw_code());
+    auto raw_codes = Group_extend_for_obtain_info(common_code.to_raw_code());
     std::vector<CommonCode> common_codes;
     common_codes.reserve(raw_codes.size());
     for (auto raw_code : raw_codes) {

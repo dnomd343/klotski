@@ -16,6 +16,9 @@ using klotski::cases::AllCases;
 using klotski::group::Group;
 using klotski::group::GroupUnion;
 
+using klotski::codec::RawCode;
+using klotski::codec::CommonCode;
+
 /// Build all valid CommonCodes.
 static std::vector<uint64_t> all_common_codes() {
     std::vector<uint64_t> codes;
@@ -110,7 +113,7 @@ static void GroupExtend(benchmark::State &state) {
 
     for (auto _ : state) {
 
-        volatile auto ret = klotski::group::Group_extend(src, 0);
+        // volatile auto ret = klotski::group::Group_extend(src, 0);
 
         // std::cout << ret.size() << std::endl;
     }
@@ -263,6 +266,18 @@ static void SpawnGroups(benchmark::State &state) {
 
 }
 
+static void GroupFromRawCode(benchmark::State &state) {
+
+    auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+
+    for (auto _ : state) {
+
+        volatile auto g = Group::from_raw_code(code);
+
+    }
+
+}
+
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
@@ -278,6 +293,8 @@ static void SpawnGroups(benchmark::State &state) {
 
 // BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(SpawnGroups);
+// BENCHMARK(SpawnGroups);
+
+BENCHMARK(GroupFromRawCode)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_MAIN();

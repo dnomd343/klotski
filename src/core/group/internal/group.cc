@@ -2,14 +2,49 @@
 
 #include "group/group.h"
 
+#include <mover/mover.h>
+
+#include <parallel_hashmap/phmap.h>
+
 using klotski::codec::RawCode;
 using klotski::codec::CommonCode;
 
 using klotski::group::Group;
+using klotski::group::GroupUnion;
 using klotski::cases::RangesUnion;
+
+using klotski::mover::MaskMover;
 
 using klotski::group::GROUP_DATA;
 using klotski::group::PATTERN_DATA;
+
+// TODO: maybe we can perf with mirror cases
+
+/// Spawn all the unsorted codes of the current group.
+static std::vector<RawCode> Group_extend_for_cases(RawCode raw_code, uint32_t reserve) {
+    std::vector<RawCode> codes;
+    phmap::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+    codes.reserve(reserve);
+    cases.reserve(reserve * 1.56);
+
+    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t mask) {
+        if (const auto match = cases.find(code.unwrap()); match != cases.end()) {
+            match->second |= mask; // update mask
+            return;
+        }
+        cases.emplace(code, mask);
+        codes.emplace_back(code); // new case
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(raw_code);
+    cases.emplace(raw_code, 0); // without mask
+    while (offset != codes.size()) {
+        auto curr = codes[offset++].unwrap();
+        core.next_cases(RawCode::unsafe_create(curr), cases.find(curr)->second);
+    }
+    return codes;
+}
 
 RangesUnion Group::cases() const {
 
@@ -28,7 +63,7 @@ RangesUnion Group::cases() const {
         seed = seed.to_vertical_mirror().to_horizontal_mirror();
     }
 
-    auto codes = Group_extend(seed.to_raw_code(), size());
+    auto codes = Group_extend_for_cases(seed.to_raw_code(), size());
 
     RangesUnion data;
     for (auto raw_code : codes) {
@@ -57,10 +92,35 @@ static std::unordered_map<uint64_t, Group> build_map_data() {
     return data;
 }
 
-Group Group::from_raw_code(codec::RawCode raw_code) {
+static std::vector<RawCode> Group_extend_for_from_raw_code(RawCode raw_code) {
+    std::vector<RawCode> codes;
+    phmap::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+    codes.reserve(GroupUnion::from_raw_code(raw_code).max_group_size());
+    cases.reserve(GroupUnion::from_raw_code(raw_code).max_group_size() * 1.56);
+
+    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t mask) {
+        if (const auto match = cases.find(code.unwrap()); match != cases.end()) {
+            match->second |= mask; // update mask
+            return;
+        }
+        cases.emplace(code, mask);
+        codes.emplace_back(code); // new case
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(raw_code);
+    cases.emplace(raw_code, 0); // without mask
+    while (offset != codes.size()) {
+        auto curr = codes[offset++].unwrap();
+        core.next_cases(RawCode::unsafe_create(curr), cases.find(curr)->second);
+    }
+    return codes;
+}
+
+Group Group::from_raw_code(const RawCode raw_code) {
     static auto map_data = build_map_data();
 
-    auto raw_codes = Group_extend(raw_code);
+    auto raw_codes = Group_extend_for_from_raw_code(raw_code);
     auto common_codes = raw_codes | std::views::transform([](const RawCode r) {
         return r.to_common_code();
     }) | std::ranges::to<std::vector>(); // TODO: search min_element directly

@@ -390,9 +390,6 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
-/// Spawn all the unsorted codes of the current group.
-std::vector<codec::RawCode> Group_extend(codec::RawCode raw_code, uint32_t reserve = 0);
-
 } // namespace klotski::group
 
 #include "internal/type_id.inl"

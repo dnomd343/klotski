@@ -6,16 +6,16 @@ namespace klotski::group {
 
 // ----------------------------------------------------------------------------------------- //
 
+constexpr auto Group::toward() const -> Toward {
+    return toward_;
+}
+
 constexpr uint_fast8_t Group::type_id() const {
     return type_id_;
 }
 
 constexpr uint_fast16_t Group::pattern_id() const {
     return pattern_id_;
-}
-
-constexpr auto Group::toward() const -> Toward {
-    return toward_;
 }
 
 constexpr char Group::toward_char() const {
