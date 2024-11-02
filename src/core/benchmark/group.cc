@@ -253,7 +253,12 @@ static void SpawnGroups(benchmark::State &state) {
     auto gu = GroupUnion::unsafe_create(169);
 
     for (auto _ : state) {
-        volatile auto kk = gu.groups();
+        // volatile auto kk = gu.groups();
+
+        for (auto pattern_id = 0; pattern_id < gu.pattern_num(); ++pattern_id) {
+            volatile auto kk = gu.groups(pattern_id);
+        }
+
     }
 
 }

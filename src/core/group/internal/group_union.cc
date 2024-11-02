@@ -2,8 +2,6 @@
 #include "constant/group_union.h"
 
 using klotski::cases::Ranges;
-using klotski::codec::RawCode;
-using klotski::codec::CommonCode;
 using klotski::group::GroupUnion;
 using klotski::cases::RangesUnion;
 

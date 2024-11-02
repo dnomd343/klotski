@@ -29,6 +29,8 @@
     #define KLSK_ASSUME(expr) [[assume(expr)]]
 #endif
 
+#define KLSK_UNREACHABLE __builtin_unreachable() // TODO: using `std::unreachable`
+
 /// Force function declaration to be inline.
 #define KLSK_INLINE __attribute__ ((always_inline))
 #define KLSK_INLINE_CE KLSK_INLINE constexpr

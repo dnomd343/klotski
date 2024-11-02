@@ -70,6 +70,9 @@
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
+#include "internal/constant/group.h"
+#include "internal/constant/group_union.h"
+
 namespace klotski::group {
 
 class Group;
