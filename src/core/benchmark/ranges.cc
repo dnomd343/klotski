@@ -15,7 +15,7 @@ static void SpawnRanges(benchmark::State &state) {
         kk.reserve(7311921);
 
         // for (uint32_t type_id = 0; type_id < klotski::cases::TYPE_ID_LIMIT; ++type_id) {
-            for (auto [n, n_2x1, n_1x1] : klotski::cases::BLOCK_NUM) {
+            for (auto [n, n_2x1, n_1x1] : klotski::group::BLOCK_NUM) {
                 kk.spawn(n, n_2x1, n_1x1);
             }
         // }

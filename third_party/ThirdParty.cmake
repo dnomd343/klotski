@@ -1,11 +1,8 @@
 set(KLSK_THIRD_PARTY ${KLSK_ROOT_DIR}/third_party)
 
-# abseil library
-set(ABSL_PROPAGATE_CXX_STD ON)
-add_subdirectory(${KLSK_THIRD_PARTY}/abseil-cpp EXCLUDE_FROM_ALL)
-
 # parallel hashmap
 add_subdirectory(${KLSK_THIRD_PARTY}/parallel-hashmap EXCLUDE_FROM_ALL)
+add_library(phmap::phmap ALIAS phmap)
 
 if (KLSK_ENABLE_BENCHMARK)
   # google benchmark framework
