@@ -131,7 +131,7 @@ CommonCode GroupCases::fast_obtain_code(CaseInfo info) {
     return CommonCode::unsafe_create(head << 32 | range);
 }
 
-CaseInfo GroupCases::fast_obtain_info(ShortCode short_code) {
+CaseInfo GroupCases::fast_obtain_info(const ShortCode short_code) {
     uint16_t type_id = GroupUnion::from_short_code(short_code).unwrap(); // NOTE: need to convert as CommonCode
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
     uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
@@ -141,7 +141,7 @@ CaseInfo GroupCases::fast_obtain_info(ShortCode short_code) {
     return CaseInfo::unsafe_create(group, case_id);
 }
 
-CaseInfo GroupCases::fast_obtain_info(CommonCode common_code) {
+CaseInfo GroupCases::fast_obtain_info(const CommonCode common_code) {
     auto short_code = common_code.to_short_code();
     uint16_t type_id = GroupUnion::from_common_code(common_code).unwrap();
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
@@ -152,14 +152,14 @@ CaseInfo GroupCases::fast_obtain_info(CommonCode common_code) {
     return CaseInfo::unsafe_create(group, case_id);
 }
 
-Group GroupCases::fast_obtain_group(codec::ShortCode short_code) {
+Group GroupCases::fast_obtain_group(const ShortCode short_code) {
     uint16_t type_id = GroupUnion::from_short_code(short_code).unwrap();
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
     uint16_t toward_id = (*rev_data)[short_code.unwrap()].toward_id;
     return Group::unsafe_create(type_id, pattern_id, (Group::Toward)toward_id);
 }
 
-Group GroupCases::fast_obtain_group(codec::CommonCode common_code) {
+Group GroupCases::fast_obtain_group(const CommonCode common_code) {
     auto short_code = common_code.to_short_code();
     uint16_t type_id = GroupUnion::from_common_code(common_code).unwrap();
     uint16_t pattern_id = (*rev_data)[short_code.unwrap()].pattern_id;
@@ -227,7 +227,7 @@ static std::vector<RawCode> Group_extend_for_obtain_info(RawCode raw_code) {
     return codes;
 }
 
-CaseInfo GroupCases::tiny_obtain_info(CommonCode common_code) {
+CaseInfo GroupCases::tiny_obtain_info(const CommonCode common_code) {
     auto raw_codes = Group_extend_for_obtain_info(common_code.to_raw_code());
     std::vector<CommonCode> common_codes;
     common_codes.reserve(raw_codes.size());

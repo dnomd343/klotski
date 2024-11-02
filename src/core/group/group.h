@@ -394,8 +394,10 @@ private:
 
 #include "internal/type_id.inl"
 #include "internal/group_union.inl"
-#include "internal/group_cases.inl"
+
 #include "internal/group.inl"
-#include "internal/case_info.inl"
 #include "internal/group_mirror.inl"
+
+#include "internal/group_cases.inl"
+#include "internal/case_info.inl"
 #include "internal/hash.inl"

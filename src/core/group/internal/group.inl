@@ -26,20 +26,22 @@ constexpr char Group::toward_char() const {
         case MirrorType::Horizontal:
             return (toward_ == Toward::A) ? 'n' : 'u';
         case MirrorType::Centro:
-            return (toward_ == Toward::A) ? '?' : '!'; // TODO: select chars for centro
+            return (toward_ == Toward::A) ? 'h' : 's';
         case MirrorType::Vertical:
             return (toward_ == Toward::A) ? 'p' : 'q';
         case MirrorType::Ordinary:
             if (toward_ == Toward::A) {
                 return 'a';
-            } else if (toward_ == Toward::B) {
+            }
+            if (toward_ == Toward::B) {
                 return 'b';
-            } else if (toward_ == Toward::C) {
+            }
+            if (toward_ == Toward::C) {
                 return 'c';
-            } else if (toward_ == Toward::D) {
+            }
+            if (toward_ == Toward::D) {
                 return 'd';
             }
-            return '\0'; // TODO: never reach
     }
     return '\0'; // TODO: never reach
 }
@@ -47,7 +49,7 @@ constexpr char Group::toward_char() const {
 // ----------------------------------------------------------------------------------------- //
 
 #ifndef KLSK_NDEBUG
-inline std::ostream& operator<<(std::ostream &out, Group self) {
+inline std::ostream& operator<<(std::ostream &out, const Group self) {
     out << self.to_string();
     return out;
 }
@@ -62,16 +64,16 @@ inline std::string Group::to_string() const {
 }
 
 constexpr auto operator==(const Group &lhs, const Group &rhs) {
-    return lhs.type_id_ == rhs.type_id_
-        && lhs.pattern_id_ == rhs.pattern_id_
-        && lhs.toward_ == rhs.toward_;
+    return lhs.toward_ == rhs.toward_
+        && lhs.type_id_ == rhs.type_id_
+        && lhs.pattern_id_ == rhs.pattern_id_;
 }
 
-constexpr Group Group::unsafe_create(uint_fast8_t type_id, uint_fast16_t pattern_id, Toward toward) {
+constexpr Group Group::unsafe_create(const uint_fast8_t type_id, const uint_fast16_t pattern_id, const Toward toward) {
     return {toward, type_id, pattern_id};
 }
 
-constexpr std::optional<Group> Group::create(uint_fast8_t type_id, uint_fast16_t pattern_id, Toward toward) {
+constexpr std::optional<Group> Group::create(const uint_fast8_t type_id, const uint_fast16_t pattern_id, const Toward toward) {
     if (type_id >= TYPE_ID_LIMIT) {
         return std::nullopt;
     }
@@ -90,11 +92,11 @@ constexpr uint32_t Group::size() const {
     return (PATTERN_DATA[flat_id()] >> 3) & 0xFFFFF;
 }
 
-inline Group Group::from_short_code(codec::ShortCode short_code) {
+inline Group Group::from_short_code(const codec::ShortCode short_code) {
     return from_common_code(short_code.to_common_code());
 }
 
-inline Group Group::from_common_code(codec::CommonCode common_code) {
+inline Group Group::from_common_code(const codec::CommonCode common_code) {
     return from_raw_code(common_code.to_raw_code());
 }
 
