@@ -8,16 +8,51 @@
 #include <algorithm>
 
 #include <unordered_set>
+#include <mover/mover.h>
 
 using klotski::cases::AllCases;
 
+using klotski::codec::RawCode;
 using klotski::codec::CommonCode;
+
+using klotski::mover::MaskMover;
 
 #define STATIC_DATA(name, impl)         \
     static const auto& name() {         \
         static auto data = [] {impl}(); \
         return data;                    \
     }
+
+
+
+static std::vector<RawCode> Group_extend(RawCode raw_code) {
+    std::vector<RawCode> codes;
+    std::unordered_map<uint64_t, uint64_t> cases; // <code, mask>
+
+    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t mask) {
+        if (const auto match = cases.find(code.unwrap()); match != cases.end()) {
+            match->second |= mask; // update mask
+            return;
+        }
+        cases.emplace(code, mask);
+        codes.emplace_back(code); // new case
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(raw_code);
+    cases.emplace(raw_code, 0); // without mask
+    while (offset != codes.size()) {
+        auto curr = codes[offset++].unwrap();
+        core.next_cases(RawCode::unsafe_create(curr), cases.find(curr)->second);
+    }
+    return codes;
+}
+
+
+
+
+
+
 
 /// Filter cases with different type_id from AllCases.
 STATIC_DATA(group_union_data, {
@@ -53,7 +88,7 @@ const std::vector<CommonCode>& helper::group_union_cases(const uint32_t type_id)
 /// Extend ordered Group from the specified CommonCode seed.
 static std::vector<CommonCode> extend_cases(CommonCode seed) {
     // TODO: using inner build process -> only allow calling klotski::mover
-    auto raw_codes = klotski::group::Group_extend(seed.to_raw_code());
+    auto raw_codes = Group_extend(seed.to_raw_code());
     std::vector<CommonCode> common_codes {raw_codes.begin(), raw_codes.end()};
     std::ranges::sort(common_codes.begin(), common_codes.end());
     return common_codes;

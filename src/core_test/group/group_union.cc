@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <algorithm>
 
-#include "helper/cases.h"
 #include "helper/parallel.h"
 #include "helper/block_num.h"
 
@@ -65,11 +64,11 @@ TEST(GroupUnion, basic) {
 
 TEST(GroupUnion, constant) {
 
-    EXPECT_EQ(TYPE_ID_LIMIT, group_union_num());
+    EXPECT_EQ(TYPE_ID_LIMIT, helper::group_union_num());
 
     uint32_t sum = 0;
-    for (uint32_t i = 0; i < group_union_num(); ++i) {
-        sum += group_num(i);
+    for (uint32_t i = 0; i < helper::group_union_num(); ++i) {
+        sum += helper::group_union_group_num(i);
     }
     EXPECT_EQ(ALL_GROUP_NUM, sum);
 
@@ -77,22 +76,22 @@ TEST(GroupUnion, constant) {
     //       test from member function directly?
 }
 
+// TEST(GroupUnion, values) {
+//     GROUP_UNION_PARALLEL({
+//         auto type_id = group_union.unwrap();
+//         auto &cases = group_union_cases(type_id);
+//
+//         EXPECT_EQ(group_union.size(), cases.size());
+//         EXPECT_EQ(group_union.cases().codes(), cases);
+//         EXPECT_EQ(group_union.group_num(), helper::group_union_group_num(type_id));
+//
+//         auto get_group_size = [](auto g) { return g.size(); };
+//         const auto sizes = group_union.groups() | std::views::transform(get_group_size);
+//         EXPECT_EQ(group_union.max_group_size(), *std::ranges::max_element(sizes));
+//     });
+// }
+
 TEST(GroupUnion, values) {
-    GROUP_UNION_PARALLEL({
-        auto type_id = group_union.unwrap();
-        auto &cases = group_union_cases(type_id);
-
-        EXPECT_EQ(group_union.size(), cases.size());
-        EXPECT_EQ(group_union.cases().codes(), cases);
-        EXPECT_EQ(group_union.group_num(), group_num(type_id));
-
-        auto get_group_size = [](auto g) { return g.size(); };
-        const auto sizes = group_union.groups() | std::views::transform(get_group_size);
-        EXPECT_EQ(group_union.max_group_size(), *std::ranges::max_element(sizes));
-    });
-}
-
-TEST(GroupUnion, values_pro) {
     GROUP_UNION_PARALLEL({
         auto type_id = group_union.unwrap();
         auto &cases = helper::group_union_cases(type_id);

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "group/group.h"
-#include "helper/cases.h"
+// #include "helper/cases.h"
 
 //using klotski::cases::Group;
 using klotski::group::GroupUnion;
