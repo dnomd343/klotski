@@ -1,6 +1,5 @@
-#include "include/py_group.h"
-
-#include "include/py_exception.h"
+#include "exception.h"
+#include "py_ffi/group.h"
 
 using klotski::ffi::PyExc_GroupError;
 

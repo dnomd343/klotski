@@ -6,8 +6,8 @@
 #include <cstdint>
 #include <group/group.h>
 
-#include "py_cases.h"
-#include "py_common_code.h"
+#include "py_ffi/cases.h"
+#include "py_ffi/common_code.h"
 
 namespace klotski::ffi {
 

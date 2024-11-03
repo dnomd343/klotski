@@ -1,12 +1,4 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/operators.h>
-
-#include "include/py_cases.h"
-
-namespace py = pybind11;
-
-using klotski::ffi::PyCases;
-using klotski::ffi::PyCasesIter;
+#include "binder.h"
 
 void bind_cases(const py::module_ &m) {
     py::class_<PyCases>(m, "Cases")

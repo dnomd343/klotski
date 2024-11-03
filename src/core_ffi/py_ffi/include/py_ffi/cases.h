@@ -5,7 +5,7 @@
 #include <variant>
 #include <ranges/ranges.h>
 
-#include "py_common_code.h"
+#include "py_ffi/common_code.h"
 
 namespace klotski::ffi {
 
@@ -28,6 +28,8 @@ private:
 class PyCases {
 public:
     PyCases() = delete;
+
+    // TODO: add `all_cases` interface
 
     // ------------------------------------------------------------------------------------- //
 

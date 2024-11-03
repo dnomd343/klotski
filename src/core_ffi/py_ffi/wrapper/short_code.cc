@@ -1,7 +1,7 @@
 #include <format>
 
-#include "include/py_exception.h"
-#include "include/py_short_code.h"
+#include "exception.h"
+#include "py_ffi/short_code.h"
 
 using namespace klotski::ffi;
 

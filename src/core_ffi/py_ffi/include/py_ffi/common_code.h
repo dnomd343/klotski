@@ -4,7 +4,7 @@
 
 #include <common_code/common_code.h>
 
-#include "py_short_code.h"
+#include "py_ffi/short_code.h"
 
 namespace klotski::ffi {
 

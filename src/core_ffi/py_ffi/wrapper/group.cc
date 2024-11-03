@@ -1,4 +1,4 @@
-#include "include/py_group.h"
+#include "py_ffi/group.h"
 
 using namespace klotski::ffi;
 

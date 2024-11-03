@@ -1,7 +1,7 @@
 #include <format>
 #include <pybind11/pybind11.h>
 
-#include "include/py_cases.h"
+#include "py_ffi/cases.h"
 
 namespace py = pybind11;
 
