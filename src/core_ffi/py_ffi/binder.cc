@@ -2,13 +2,11 @@
 #include <pybind11/operators.h>
 #include <pybind11/stl.h>
 
-#include "py_exps.h"
-#include "py_common_code.h"
-#include "py_short_code.h"
-#include "py_cases.h"
-#include "py_group.h"
-
-#include "py_exception.h"
+#include "include/py_common_code.h"
+#include "include/py_short_code.h"
+#include "include/py_cases.h"
+#include "include/py_group.h"
+#include "include/py_exception.h"
 
 namespace py = pybind11;
 
@@ -86,7 +84,7 @@ void bind_short_code(const py::module_ &m) {
 #include "all_cases/all_cases.h"
 
 static PyCases group_demo() {
-    auto group_union = klotski::cases::GroupUnion::unsafe_create(169);
+    auto group_union = klotski::group::GroupUnion::unsafe_create(169);
     auto cases = PyCases::from(group_union.cases());
     return cases;
 }

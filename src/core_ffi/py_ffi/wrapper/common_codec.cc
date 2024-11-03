@@ -11,7 +11,7 @@ uint64_t PyCommonCode::value() const noexcept {
     return code_.unwrap();
 }
 
-std::string PyCommonCode::string(bool shorten) const noexcept {
+std::string PyCommonCode::string(const bool shorten) const noexcept {
     return code_.to_string(shorten);
 }
 

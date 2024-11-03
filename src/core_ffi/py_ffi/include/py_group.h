@@ -4,17 +4,15 @@
 
 #include <vector>
 #include <cstdint>
-
-#include "group/group.h"
+#include <group/group.h>
 
 #include "py_cases.h"
-
 #include "py_common_code.h"
 
 namespace klotski::ffi {
 
-using klotski::cases::Group;
-using klotski::cases::GroupUnion;
+using group::Group;
+using group::GroupUnion;
 
 class PyGroup {
 public:
@@ -68,4 +66,4 @@ private:
     GroupUnion group_union_;
 };
 
-} // namespace klotski
+} // namespace klotski::ffi

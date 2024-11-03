@@ -3,9 +3,9 @@
 #pragma once
 
 #include <variant>
+#include <ranges/ranges.h>
 
 #include "py_common_code.h"
-#include "ranges/ranges.h"
 
 namespace klotski::ffi {
 
@@ -64,7 +64,7 @@ private:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Get const reference of the cases data.
+    /// Get const reference of cases data.
     [[nodiscard]] const RangesUnion& data_ref() const noexcept;
 
     /// Stores actual cases data or its references.

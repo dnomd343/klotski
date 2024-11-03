@@ -2,8 +2,9 @@
 
 #pragma once
 
+#include <short_code/short_code.h>
+
 #include "py_common_code.h"
-#include "short_code/short_code.h"
 
 namespace klotski::ffi {
 
@@ -53,7 +54,7 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Build conversion index for ShortCode.
-    static void speed_up(bool fast_mode) { // TODO: move to `SpeedUp`
+    static void speed_up(const bool fast_mode) { // TODO: move to `SpeedUp`
         ShortCode::speed_up(fast_mode);
     }
 
@@ -85,15 +86,11 @@ constexpr auto operator<=>(const PyShortCode &lhs, const PyShortCode &rhs) {
 
 // ----------------------------------------------------------------------------------------- //
 
-namespace std {
-
-template<>
-struct std::hash<klotski::ffi::PyShortCode> {
+template <>
+struct ::std::hash<klotski::ffi::PyShortCode> {
     size_t operator()(const klotski::ffi::PyShortCode &short_code) const noexcept {
         return std::hash<uint32_t>{}(short_code.value());
     }
 };
-
-}
 
 // ----------------------------------------------------------------------------------------- //
