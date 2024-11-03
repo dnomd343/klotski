@@ -23,6 +23,8 @@ void bind_common_code(const py::module_ &m) {
         .def_property_readonly("value", &PyCommonCode::value)
         .def_property_readonly("short_code", &PyCommonCode::short_code)
 
+        .def("next_cases", &PyCommonCode::next_cases)
+
         .def("to_string", &PyCommonCode::string, py::arg("shorten") = false)
 
         .def_static("check", static_cast<bool (*)(uint64_t)>(&PyCommonCode::check))

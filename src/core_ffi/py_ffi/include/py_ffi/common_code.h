@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <mover/mover.h>
 #include <common_code/common_code.h>
 
 #include "py_ffi/short_code.h"
@@ -53,6 +54,17 @@ public:
 
     /// Wrapper of `__repr__` method in Python.
     static std::string repr(PyCommonCode code) noexcept;
+
+    // ------------------------------------------------------------------------------------- //
+
+    [[nodiscard]] std::vector<PyCommonCode> next_cases() const noexcept {
+        std::vector<PyCommonCode> cases;
+        auto mover = mover::MaskMover([&cases](const codec::RawCode code, uint64_t) {
+            cases.emplace_back(std::bit_cast<PyCommonCode>(code.to_common_code()));
+        });
+        mover.next_cases(code_.to_raw_code(), 0);
+        return cases;
+    }
 
     // ------------------------------------------------------------------------------------- //
 
