@@ -12,15 +12,8 @@
 
 namespace py = pybind11;
 
-// using klotski::ffi::PyCases;
-// using klotski::ffi::PyShortCode;
-// using klotski::ffi::PyCommonCode;
-
 using klotski::ffi::PyExc_CodecError;
 using klotski::ffi::PyExc_GroupError;
-
-// using klotski::ffi::PyGroup;
-// using klotski::ffi::PyGroupUnion;
 
 #include "group/group.h"
 #include "all_cases/all_cases.h"
@@ -47,6 +40,7 @@ PYBIND11_MODULE(klotski, m) {
     bind_common_code(m);
     bind_group(m);
     bind_group_union(m);
+    bind_fast_cal(m);
 
     m.attr("__version__") = "version field";
 }

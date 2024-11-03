@@ -11,12 +11,14 @@ pybind11_add_module(klotski_py
     binder/short_code.cc
     binder/group_union.cc
     binder/group.cc
+    binder/fast_cal.cc
 
     wrapper/short_code.cc
     wrapper/common_codec.cc
     wrapper/cases.cc
     wrapper/group_union.cc
     wrapper/group.cc
+    wrapper/fast_cal.cc
 )
 target_include_directories(klotski_py PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(klotski_py PRIVATE klotski::core)

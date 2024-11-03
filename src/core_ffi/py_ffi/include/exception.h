@@ -1,5 +1,3 @@
-/// Klotski Engine Python FFI by Dnomd343 @2024
-
 #pragma once
 
 #include <string>
