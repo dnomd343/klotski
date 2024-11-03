@@ -278,6 +278,50 @@ static void GroupFromRawCode(benchmark::State &state) {
 
 }
 
+static void IsVerticalMirror(benchmark::State &state) {
+    volatile int type_id = 169;
+    const auto groups = GroupUnion::unsafe_create(type_id).groups();
+
+    for (auto _ : state) {
+        for (auto group : groups) {
+            volatile auto kk = group.is_vertical_mirror();
+        }
+    }
+}
+
+static void IsHorizontalMirror(benchmark::State &state) {
+    volatile int type_id = 169;
+    const auto groups = GroupUnion::unsafe_create(type_id).groups();
+
+    for (auto _ : state) {
+        for (auto group : groups) {
+            volatile auto kk = group.is_horizontal_mirror();
+        }
+    }
+}
+
+static void ToVerticalMirror(benchmark::State &state) {
+    volatile int type_id = 169;
+    const auto groups = GroupUnion::unsafe_create(type_id).groups();
+
+    for (auto _ : state) {
+        for (auto group : groups) {
+            volatile auto kk = group.to_vertical_mirror();
+        }
+    }
+}
+
+static void ToHorizontalMirror(benchmark::State &state) {
+    volatile int type_id = 169;
+    const auto groups = GroupUnion::unsafe_create(type_id).groups();
+
+    for (auto _ : state) {
+        for (auto group : groups) {
+            volatile auto kk = group.to_horizontal_mirror();
+        }
+    }
+}
+
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
@@ -295,6 +339,11 @@ static void GroupFromRawCode(benchmark::State &state) {
 
 // BENCHMARK(SpawnGroups);
 
-BENCHMARK(GroupFromRawCode)->Unit(benchmark::kMillisecond);
+// BENCHMARK(GroupFromRawCode)->Unit(benchmark::kMillisecond);
+
+// BENCHMARK(IsVerticalMirror);
+// BENCHMARK(IsHorizontalMirror);
+BENCHMARK(ToVerticalMirror);
+BENCHMARK(ToHorizontalMirror);
 
 BENCHMARK_MAIN();

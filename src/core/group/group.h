@@ -111,7 +111,7 @@ public:
     using Groups = std::vector<Group>;
 
     /// Get all groups under the current type id.
-    [[nodiscard]] constexpr Groups groups() const;
+    [[nodiscard]] constexpr Groups groups() const; // TODO: constexpr not support `std::vector`
 
     /// Get all klotski cases under the current type id.
     [[nodiscard]] cases::RangesUnion cases() const;

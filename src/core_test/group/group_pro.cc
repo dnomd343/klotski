@@ -10,30 +10,6 @@
 using klotski::group::Group;
 using klotski::group::GroupUnion;
 
-TEST(Group, demo) {
-
-    std::cout << helper::group_union_num() << std::endl;
-
-    std::cout << helper::group_union_pattern_num(169) << std::endl;
-    std::cout << GroupUnion::unsafe_create(169).pattern_num() << std::endl;
-
-    std::cout << helper::group_union_group_num(169) << std::endl;
-    std::cout << GroupUnion::unsafe_create(169).group_num() << std::endl;
-
-    std::cout << (int)helper::pattern_mirror_type(169, 0) << std::endl;
-    std::cout << (int)Group::unsafe_create(169, 0, Group::Toward::A).mirror_type() << std::endl;
-
-    std::cout << std::format("{}", helper::pattern_toward_list(169, 0)) << std::endl;
-    std::cout << (int)GroupUnion::unsafe_create(169).groups()[0].toward() << std::endl;
-    std::cout << (int)GroupUnion::unsafe_create(169).groups()[1].toward() << std::endl;
-
-    auto group_1 = GroupUnion::unsafe_create(169).groups()[0];
-    EXPECT_EQ(group_1.cases().codes(), helper::group_cases(169, 0, (uint32_t)group_1.toward()));
-    auto group_2 = GroupUnion::unsafe_create(169).groups()[1];
-    EXPECT_EQ(group_2.cases().codes(), helper::group_cases(169, 0, (uint32_t)group_2.toward()));
-
-}
-
 TEST(Group, cases) {
     GROUP_UNION_PARALLEL({
         for (auto group : group_union.groups()) {
