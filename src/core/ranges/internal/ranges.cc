@@ -23,23 +23,44 @@ Ranges& Ranges::operator+=(const Ranges &ranges) {
 
 RangesUnion& RangesUnion::operator+=(const RangesUnion &ranges_union) {
     for (const auto head : heads) {
-        (*this)[head] += ranges_union[head];
+        // (*this)[head] += ranges_union[head];
+        std::array<Ranges, 16>::operator[](head) += ranges_union.std::array<Ranges, 16>::operator[](head);
     }
     return *this;
 }
 
 std::vector<CommonCode> RangesUnion::codes() const {
-    size_type size = 0;
-    for (const auto head : heads) {
-        size += (*this)[head].size();
-    }
-
     std::vector<CommonCode> codes;
-    codes.reserve(size);
+    codes.reserve(size());
     for (const auto head : heads) {
-        for (const auto range : (*this)[head]) {
+        // for (const auto range : (*this)[head]) {
+        for (const auto range : ranges(head)) {
             codes.emplace_back(CommonCode::unsafe_create(head << 32 | range));
         }
     }
+    // TODO: try using std::views
     return codes;
+}
+
+// TODO: move to `.inl` file
+size_t RangesUnion::size() const {
+    size_type size = 0;
+    for (const auto head : heads) {
+        size += std::array<Ranges, 16>::operator[](head).size();
+        // size += (*this)[head].size();
+    }
+    return size;
+}
+
+uint32_t RangesUnion::operator[](size_type index) const {
+    size_t head = 0;
+    for (;;) {
+        if (index >= std::array<Ranges, 16>::operator[](head).size()) {
+            index -= std::array<Ranges, 16>::operator[](head).size();
+            ++head;
+        } else {
+            break;
+        }
+    }
+    return std::array<Ranges, 16>::operator[](head)[index];
 }

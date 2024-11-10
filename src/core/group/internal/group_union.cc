@@ -7,7 +7,7 @@ using klotski::cases::RangesUnion;
 
 using klotski::cases::BASIC_RANGES_NUM;
 
-#define RANGE_DERIVE(HEAD) ranges.derive(HEAD, cases[HEAD])
+#define RANGE_DERIVE(HEAD) ranges.derive(HEAD, cases.ranges(HEAD))
 
 RangesUnion GroupUnion::cases() const {
     auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id_];
@@ -19,10 +19,10 @@ RangesUnion GroupUnion::cases() const {
     ranges.reverse();
 
     RangesUnion cases;
-    cases[0x0].reserve(s_a); cases[0x1].reserve(s_b); cases[0x2].reserve(s_a);
-    cases[0x4].reserve(s_c); cases[0x5].reserve(s_d); cases[0x6].reserve(s_c);
-    cases[0x8].reserve(s_c); cases[0x9].reserve(s_d); cases[0xA].reserve(s_c);
-    cases[0xC].reserve(s_a); cases[0xD].reserve(s_b); cases[0xE].reserve(s_a);
+    cases.ranges(0x0).reserve(s_a); cases.ranges(0x1).reserve(s_b); cases.ranges(0x2).reserve(s_a);
+    cases.ranges(0x4).reserve(s_c); cases.ranges(0x5).reserve(s_d); cases.ranges(0x6).reserve(s_c);
+    cases.ranges(0x8).reserve(s_c); cases.ranges(0x9).reserve(s_d); cases.ranges(0xA).reserve(s_c);
+    cases.ranges(0xC).reserve(s_a); cases.ranges(0xD).reserve(s_b); cases.ranges(0xE).reserve(s_a);
 
     RANGE_DERIVE(0x0); RANGE_DERIVE(0x1); RANGE_DERIVE(0x2);
     RANGE_DERIVE(0x4); RANGE_DERIVE(0x5); RANGE_DERIVE(0x6);

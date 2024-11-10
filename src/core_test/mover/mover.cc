@@ -38,7 +38,7 @@ TEST(Core, core) {
     // codes.reserve(klotski::cases::ALL_CASES_NUM_);
 
     for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto range : AllCases::instance().fetch()[head]) {
+        for (const auto range : AllCases::instance().fetch().ranges(head)) {
             auto common_code = CommonCode::unsafe_create(head << 32 | range);
             auto raw_code = common_code.to_raw_code().unwrap();
 
@@ -73,7 +73,7 @@ TEST(Core, mask) {
     raw_codes.reserve(klotski::cases::ALL_CASES_NUM_);
 
     for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto range : AllCases::instance().fetch()[head]) {
+        for (const auto range : AllCases::instance().fetch().ranges(head)) {
             auto common_code = CommonCode::unsafe_create(head << 32 | range);
             auto raw_code = common_code.to_raw_code().unwrap();
             raw_codes.emplace_back(raw_code);
@@ -173,7 +173,7 @@ TEST(Core, next_cases) {
     std::vector<RawCode> raw_codes;
 
     for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto range : AllCases::instance().fetch()[head]) {
+        for (const auto range : AllCases::instance().fetch().ranges(head)) {
             auto common_code = CommonCode::unsafe_create(head << 32 | range);
 
             auto raw_code = common_code.to_raw_code();

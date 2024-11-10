@@ -41,6 +41,18 @@ public:
 
     /// Export the RangesUnion as CommonCode list.
     [[nodiscard]] std::vector<codec::CommonCode> codes() const;
+
+    [[nodiscard]] const Ranges& ranges(const size_t head) const {
+        return std::array<Ranges, 16>::operator[](head);
+    }
+
+    Ranges& ranges(const size_t head) {
+        return std::array<Ranges, 16>::operator[](head);
+    }
+
+    [[nodiscard]] size_t size() const;
+
+    [[nodiscard]] uint32_t operator[](size_type) const;
 };
 
 } // namespace klotski::cases

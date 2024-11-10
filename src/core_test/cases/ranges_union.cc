@@ -27,14 +27,14 @@ TEST(RangesUnion, append) {
 
         RangesUnion ru;
         for (const auto head : Heads) {
-            r.derive(head, ru[head]);
+            r.derive(head, ru.ranges(head));
         }
         auto &tmp = cases += ru;
         EXPECT_EQ(tmp, cases); // reference of cases
     }
 
     for (const auto head : Heads) {
-        std::stable_sort(cases[head].begin(), cases[head].end());
+        std::stable_sort(cases.ranges(head).begin(), cases.ranges(head).end());
     }
     EXPECT_EQ(cases, AllCases::instance().fetch());
 }
