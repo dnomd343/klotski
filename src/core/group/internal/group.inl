@@ -80,8 +80,44 @@ constexpr std::optional<Group> Group::create(const uint_fast8_t type_id, const u
     if (pattern_id >= GroupUnion::unsafe_create(type_id).pattern_num()) {
         return std::nullopt;
     }
-    // TODO: toward check
-    return unsafe_create(type_id, pattern_id, toward);
+
+    if (toward == Toward::A) {
+        return unsafe_create(type_id, pattern_id, toward);
+    }
+
+    auto mirror_type = PATTERN_DATA[PATTERN_OFFSET[type_id] + pattern_id] & 0b111;
+
+    if (toward == Toward::B) {
+        switch ((MirrorType)mirror_type) {
+            case MirrorType::Full: return std::nullopt;
+            case MirrorType::Horizontal: return std::nullopt;
+            case MirrorType::Centro: return unsafe_create(type_id, pattern_id, toward);
+            case MirrorType::Vertical: return unsafe_create(type_id, pattern_id, toward);
+            case MirrorType::Ordinary: return unsafe_create(type_id, pattern_id, toward);
+        }
+    }
+
+    if (toward == Toward::C) {
+        switch ((MirrorType)mirror_type) {
+            case MirrorType::Full: return std::nullopt;
+            case MirrorType::Horizontal: return unsafe_create(type_id, pattern_id, toward);
+            case MirrorType::Centro: return std::nullopt;
+            case MirrorType::Vertical: return std::nullopt;
+            case MirrorType::Ordinary: return unsafe_create(type_id, pattern_id, toward);
+        }
+    }
+
+    if (toward == Toward::D) {
+        switch ((MirrorType)mirror_type) {
+            case MirrorType::Full: return std::nullopt;
+            case MirrorType::Horizontal: return std::nullopt;
+            case MirrorType::Centro: return std::nullopt;
+            case MirrorType::Vertical: return std::nullopt;
+            case MirrorType::Ordinary: return unsafe_create(type_id, pattern_id, toward);
+        }
+    }
+
+    return std::nullopt; // TODO: never reach
 }
 
 constexpr uint32_t Group::flat_id() const {
