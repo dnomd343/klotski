@@ -86,11 +86,15 @@ constexpr auto operator<=>(const PyShortCode &lhs, const PyShortCode &rhs) {
 
 // ----------------------------------------------------------------------------------------- //
 
+namespace std {
+
 template <>
-struct ::std::hash<klotski::ffi::PyShortCode> {
+struct hash<klotski::ffi::PyShortCode> {
     size_t operator()(const klotski::ffi::PyShortCode &short_code) const noexcept {
         return std::hash<uint32_t>{}(short_code.value());
     }
 };
+
+} // namespace std
 
 // ----------------------------------------------------------------------------------------- //

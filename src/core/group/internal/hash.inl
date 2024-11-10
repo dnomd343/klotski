@@ -3,7 +3,7 @@
 namespace std {
 
 template <>
-struct std::hash<klotski::group::Group> {
+struct hash<klotski::group::Group> {
     constexpr std::size_t operator()(const klotski::group::Group &g) const noexcept {
         // TODO: perf hash alg
         return std::hash<uint64_t>{}(g.type_id() ^ g.pattern_id() ^ (int)g.toward());
@@ -11,14 +11,14 @@ struct std::hash<klotski::group::Group> {
 };
 
 template <>
-struct std::hash<klotski::group::GroupUnion> {
+struct hash<klotski::group::GroupUnion> {
     constexpr std::size_t operator()(const klotski::group::GroupUnion &gu) const noexcept {
         return std::hash<uint32_t>{}(gu.unwrap());
     }
 };
 
 template <>
-struct std::hash<klotski::group::CaseInfo> {
+struct hash<klotski::group::CaseInfo> {
     constexpr std::size_t operator()(const klotski::group::CaseInfo &info) const noexcept {
         // TODO: perf hash alg
         const auto h1 = std::hash<klotski::group::Group>{}(info.group());
