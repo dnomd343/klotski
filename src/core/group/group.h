@@ -117,7 +117,7 @@ public:
     [[nodiscard]] cases::RangesUnion cases() const;
 
     /// Get the group instance with the specified pattern id.
-    [[nodiscard]] constexpr std::optional<Groups> groups(uint_fast16_t pattern_id) const;
+    [[nodiscard]] constexpr std::optional<Groups> groups(uint_least16_t pattern_id) const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -156,8 +156,23 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+// TODO: using macro for all likely-class
+
 static_assert(std::is_standard_layout_v<GroupUnion>);
 static_assert(std::is_trivially_copyable_v<GroupUnion>);
+static_assert(!std::is_default_constructible_v<GroupUnion>);
+static_assert(std::is_trivially_destructible_v<GroupUnion>);
+static_assert(std::is_nothrow_destructible_v<GroupUnion>);
+
+static_assert(std::is_nothrow_copy_assignable_v<GroupUnion>);
+static_assert(std::is_nothrow_move_assignable_v<GroupUnion>);
+static_assert(std::is_nothrow_copy_constructible_v<GroupUnion>);
+static_assert(std::is_nothrow_move_constructible_v<GroupUnion>);
+
+static_assert(std::is_trivially_copy_assignable_v<GroupUnion>);
+static_assert(std::is_trivially_move_assignable_v<GroupUnion>);
+static_assert(std::is_trivially_copy_constructible_v<GroupUnion>);
+static_assert(std::is_trivially_move_constructible_v<GroupUnion>);
 
 class Group {
 public:
@@ -198,11 +213,11 @@ public:
 
     /// Create Group without any check.
     static constexpr Group unsafe_create(uint_fast8_t type_id,
-                                         uint_fast16_t pattern_id, Toward toward);
+                                         uint_least16_t pattern_id, Toward toward);
 
     /// Create Group with validity check.
     static constexpr std::optional<Group> create(uint_fast8_t type_id,
-                                                 uint_fast16_t pattern_id, Toward toward);
+                                                 uint_least16_t pattern_id, Toward toward);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -258,13 +273,13 @@ public:
 private:
     Toward toward_;
     uint_fast8_t type_id_;
-    uint_fast16_t pattern_id_;
+    uint_least16_t pattern_id_;
 
     /// Tiled merge of type_id and pattern_id.
     [[nodiscard]] constexpr uint32_t flat_id() const;
 
     /// Hidden constructor called from unsafe_create.
-    constexpr Group(Toward toward, uint_fast8_t type_id, uint_fast16_t pattern_id);
+    constexpr Group(Toward toward, uint_fast8_t type_id, uint_least16_t pattern_id);
 
     // ------------------------------------------------------------------------------------- //
 };

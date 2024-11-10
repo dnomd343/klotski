@@ -253,7 +253,8 @@ static void RangesDerive(benchmark::State &state) {
 
 static void SpawnGroups(benchmark::State &state) {
 
-    auto gu = GroupUnion::unsafe_create(169);
+    volatile int type_id = 169;
+    auto gu = GroupUnion::unsafe_create(type_id);
 
     for (auto _ : state) {
         // volatile auto kk = gu.groups();
@@ -337,13 +338,13 @@ static void ToHorizontalMirror(benchmark::State &state) {
 
 // BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
 
-// BENCHMARK(SpawnGroups);
+BENCHMARK(SpawnGroups);
 
 // BENCHMARK(GroupFromRawCode)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(IsVerticalMirror);
 // BENCHMARK(IsHorizontalMirror);
-BENCHMARK(ToVerticalMirror);
-BENCHMARK(ToHorizontalMirror);
+// BENCHMARK(ToVerticalMirror);
+// BENCHMARK(ToHorizontalMirror);
 
 BENCHMARK_MAIN();

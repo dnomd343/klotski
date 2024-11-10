@@ -81,7 +81,7 @@ constexpr auto GroupUnion::groups() const -> Groups {
          | std::ranges::to<std::vector>();
 }
 
-constexpr auto GroupUnion::groups(const uint_fast16_t pattern_id) const -> std::optional<Groups> {
+constexpr auto GroupUnion::groups(const uint_least16_t pattern_id) const -> std::optional<Groups> {
     if (pattern_id >= pattern_num()) {
         return std::nullopt;
     }
