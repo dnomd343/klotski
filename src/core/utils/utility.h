@@ -33,6 +33,7 @@
 
 /// Force function declaration to be inline.
 #define KLSK_INLINE __attribute__ ((always_inline))
+#define KLSK_INLINE_H KLSK_INLINE inline
 #define KLSK_INLINE_CE KLSK_INLINE constexpr
 
 /// Prevent reordering for both compiler and processor.

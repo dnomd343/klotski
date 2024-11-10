@@ -55,10 +55,26 @@ static void RangesSize(benchmark::State &state) {
     }
 }
 
+static void RangesAt(benchmark::State &state) {
+    auto &all_cases = AllCases::instance().fetch();
+    for (auto _ : state) {
+        volatile auto k0 = all_cases[1035968];
+        volatile auto k1 = all_cases[3778871];
+        volatile auto k2 = all_cases[7489354];
+        volatile auto k3 = all_cases[10398492];
+        volatile auto k4 = all_cases[19091276];
+        volatile auto k5 = all_cases[21373726];
+        volatile auto k6 = all_cases[27296711];
+        volatile auto k7 = all_cases[28214648];
+    }
+}
+
 // BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(RangesUnionExport)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(RangesSize);
+// BENCHMARK(RangesSize);
+
+BENCHMARK(RangesAt);
 
 BENCHMARK_MAIN();
