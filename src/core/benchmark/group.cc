@@ -13,7 +13,10 @@
 
 using klotski::cases::AllCases;
 
+using klotski::group::CaseInfo;
+
 using klotski::group::Group;
+using klotski::group::GroupCases;
 using klotski::group::GroupUnion;
 
 using klotski::codec::RawCode;
@@ -323,6 +326,75 @@ static void ToHorizontalMirror(benchmark::State &state) {
     }
 }
 
+static void FastObtainCode(benchmark::State &state) {
+    // GroupCases::build();
+
+    // std::vector<CaseInfo> infos;
+    // for (auto code : common_code_samples(64)) {
+    //     infos.emplace_back(GroupCases::tiny_obtain_info(code));
+    // }
+    // infos.emplace_back(CaseInfo::unsafe_create())
+
+    const auto group = Group::unsafe_create(169, 0, Group::Toward::C);
+    const klotski::cases::RangesUnion data = group.cases();
+
+    std::array<size_t, 16> sizes {};
+    size_t offset = 0;
+    for (int i = 0; i < 16; ++i) {
+        sizes[i] = offset;
+        offset += data[i].size();
+    }
+
+    std::vector infos {
+        CaseInfo::unsafe_create(group, 2631),
+        CaseInfo::unsafe_create(group, 4203),
+        CaseInfo::unsafe_create(group, 4504),
+        CaseInfo::unsafe_create(group, 5178),
+        CaseInfo::unsafe_create(group, 5411),
+        CaseInfo::unsafe_create(group, 7208),
+        CaseInfo::unsafe_create(group, 8385),
+        CaseInfo::unsafe_create(group, 9821),
+        CaseInfo::unsafe_create(group, 14220),
+        CaseInfo::unsafe_create(group, 16159),
+        CaseInfo::unsafe_create(group, 16224),
+        CaseInfo::unsafe_create(group, 18027),
+        CaseInfo::unsafe_create(group, 20271),
+        CaseInfo::unsafe_create(group, 20980),
+        CaseInfo::unsafe_create(group, 21130),
+        CaseInfo::unsafe_create(group, 22794),
+    };
+
+    for (auto _ : state) {
+        // for (auto info : infos) {
+        //     volatile auto kk = GroupCases::fast_obtain_code(info);
+        // }
+        // volatile auto kk = GroupCases::fast_obtain_code(info);
+
+        for (auto info : infos) {
+            /// about 35ns
+            auto &cases = data;
+            uint64_t head = 0;
+            auto case_id = info.case_id();
+            for (;;) {
+                if (case_id >= cases[head].size()) {
+                    case_id -= cases[head].size();
+                    ++head;
+                } else {
+                    break;
+                }
+            }
+            auto range = cases[head][case_id];
+            volatile auto kk = CommonCode::unsafe_create(head << 32 | range);
+
+            /// about 117ns
+            // uint64_t head = std::upper_bound(sizes.begin(), sizes.end(), info.case_id()) - sizes.begin() - 1;
+            // uint32_t range = data[head][info.case_id() - sizes[head]];
+            // volatile auto kk = CommonCode::unsafe_create(head << 32 | range);
+        }
+
+    }
+}
+
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
@@ -338,9 +410,11 @@ static void ToHorizontalMirror(benchmark::State &state) {
 
 // BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(SpawnGroups);
+// BENCHMARK(SpawnGroups);
 
 // BENCHMARK(GroupFromRawCode)->Unit(benchmark::kMillisecond);
+
+BENCHMARK(FastObtainCode);
 
 // BENCHMARK(IsVerticalMirror);
 // BENCHMARK(IsHorizontalMirror);
