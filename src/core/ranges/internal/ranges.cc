@@ -7,8 +7,7 @@ using klotski::cases::RangesUnion;
 
 RangesUnion& RangesUnion::operator+=(const RangesUnion &ranges_union) {
     for (const auto head : Heads) {
-        // (*this)[head] += ranges_union[head];
-        std::array<Ranges, 16>::operator[](head) += ranges_union.std::array<Ranges, 16>::operator[](head);
+        ranges(head) += ranges_union.ranges(head);
     }
     return *this;
 }
@@ -27,107 +26,29 @@ std::vector<CommonCode> RangesUnion::codes() const {
 }
 
 KLSK_INLINE CommonCode RangesUnion::operator[](size_type n) const {
-    uint64_t head = 0;
-    while (n >= ranges(head).size()) {
-        n -= ranges(head).size();
-        ++head;
-    }
-    KLSK_ASSUME(head < 16);
-    return CommonCode::unsafe_create(head << 32 | ranges(head)[n]);
+    // uint64_t head = 0;
+    // while (n >= ranges(head).size()) {
+    //     n -= ranges(head).size();
+    //     ++head;
+    // }
+    // KLSK_ASSUME(head < 16);
+    // return CommonCode::unsafe_create(head << 32 | ranges(head)[n]);
 
-    // size_t head = 0;
-    // if (n < ranges(head).size()) {
-    //     return CommonCode::unsafe_create(head << 32 | ranges(head)[n]); // 0
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 1
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 2
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 3
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 4
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 5
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 6
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 7
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 8
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 9
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 10
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 11
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 12
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 13
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 14
-    // }
-    //
-    // n -= ranges(head).size();
-    // ++head;
-    // if (n < ranges(head).size()) {
-    //     return ranges(head)[n]; // 15
-    // }
+    if (n < ranges(0).size()) {
+        return CommonCode::unsafe_create(ranges(0)[n]);
+    }
+    n -= ranges(0).size();
+
+    #pragma unroll
+    for (const uint64_t head : std::to_array({0x1, 0x2, 0x4, 0x5, 0x6, 0x8, 0x9, 0xA, 0xC, 0xD})) {
+        if (n < ranges(head).size()) {
+            return CommonCode::unsafe_create(head << 32 | ranges(head)[n]);
+        }
+        n -= ranges(head).size();
+    }
+
+    return CommonCode::unsafe_create((uint64_t)0xE << 32 | ranges(0xE)[n]);
+
+    // std::unreachable();
 
 }
