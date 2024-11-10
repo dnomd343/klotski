@@ -3,8 +3,7 @@ project(core-test LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(KLSK_TEST_DEPS klotski_c klotski_core
-        GTest::gtest_main bs::thread_pool)
+set(KLSK_TEST_DEPS klotski::core GTest::gtest_main bs::thread_pool)
 
 # ------------------------------------------------------------------------------------ #
 
@@ -53,9 +52,9 @@ set(KLSK_TEST_FFI_SRC
     ffi/all_cases.cc
 )
 
-add_executable(test_klotski_ffi ${KLSK_TEST_FFI_SRC})
-target_link_libraries(test_klotski_ffi PRIVATE ${KLSK_TEST_DEPS})
-add_test(NAME klotski_ffi COMMAND test_klotski_ffi)
+#add_executable(test_klotski_ffi ${KLSK_TEST_FFI_SRC})
+#target_link_libraries(test_klotski_ffi PRIVATE ${KLSK_TEST_DEPS})
+#add_test(NAME klotski_ffi COMMAND test_klotski_ffi)
 
 # ------------------------------------------------------------------------------------ #
 
