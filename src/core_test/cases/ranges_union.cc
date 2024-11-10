@@ -38,3 +38,22 @@ TEST(RangesUnion, append) {
     }
     EXPECT_EQ(cases, AllCases::instance().fetch());
 }
+
+TEST(RangesUnion, index) {
+    auto &all_cases = AllCases::instance().fetch();
+
+    // EXPECT_EQ(all_cases[1035968], 0x03F7FBC40);
+    // EXPECT_EQ(all_cases[3778871], 0x13CD00030);
+    // EXPECT_EQ(all_cases[7489354], 0x2CF0F3B30);
+    // EXPECT_EQ(all_cases[10398492], 0x4FE81C000);
+    // EXPECT_EQ(all_cases[19091276], 0xA0C4CEF40);
+    // EXPECT_EQ(all_cases[21373726], 0xC06BF3100);
+    // EXPECT_EQ(all_cases[27296711], 0xE384E4400);
+    // EXPECT_EQ(all_cases[28214648], 0xEBBC10800);
+
+    const auto codes = all_cases.codes();
+    for (size_t i = 0; i < codes.size(); ++i) {
+        EXPECT_EQ(codes[i], all_cases[i]);
+    }
+
+}
