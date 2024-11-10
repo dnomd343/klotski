@@ -1,18 +1,37 @@
-#[cxx::bridge]
-pub mod ffi {
+#[cxx::bridge(namespace = "klotski::ffi")]
+mod ffi {
     #[derive(Debug)]
-    pub struct CommonCode {
+    struct RsCommonCode {
         code: u64
     }
 
-    extern "Rust" {}
-
     unsafe extern "C++" {
-        include!("klotski/src/klotski.h");
+        include!("rust_ffi/include/common_code.h");
 
-        // fn unwrap(self: &CommonCode) -> u64;
+        fn to_string(self: &RsCommonCode) -> String;
 
-        // fn from_string(s: &str) -> CommonCode;
-        fn from_string() -> CommonCode;
+        fn from_string(s: &str) -> RsCommonCode;
+    }
+}
+
+pub use ffi::RsCommonCode as CommonCode;
+
+impl CommonCode {
+    pub fn unsafe_create(code: u64) -> CommonCode {
+        CommonCode { code }
+    }
+
+    pub fn unwrap(self: &CommonCode) -> u64 {
+        self.code
+    }
+
+    pub fn from_string(s: &str) -> CommonCode {
+        ffi::from_string(s)
+    }
+}
+
+impl PartialEq for CommonCode {
+    fn eq(&self, other: &Self) -> bool {
+        self.code == other.code
     }
 }

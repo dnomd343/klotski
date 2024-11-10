@@ -1,12 +1,11 @@
 mod common_code;
 
-use common_code::ffi::CommonCode;
+use common_code::CommonCode;
 
 fn main() {
-    // let code = CommonCode { code: 123 };
-    // let val = code.unwrap();
-    // println!("val = {}", val);
+    let code = CommonCode::from_string("1A9BF0C");
+    println!("code: {:?}", code.unwrap());
+    println!("str: {}", code.to_string());
 
-    let code = common_code::ffi::from_string();
-    println!("code = {:?}", code);
+    println!("{}", code == CommonCode::unsafe_create(0x1A9BF0C00));
 }
