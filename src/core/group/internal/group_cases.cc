@@ -119,15 +119,15 @@ CommonCode GroupCases::fast_obtain_code(CaseInfo info) {
 
     auto case_id = info.case_id();
     for (;;) {
-        if (case_id >= cases[head].size()) {
-            case_id -= cases[head].size();
+        if (case_id >= cases.ranges(head).size()) {
+            case_id -= cases.ranges(head).size();
             ++head;
         } else {
             break;
         }
     }
 
-    auto range = cases[head][case_id];
+    auto range = cases.ranges(head)[case_id];
     return CommonCode::unsafe_create(head << 32 | range);
 }
 
@@ -173,15 +173,15 @@ CommonCode GroupCases::tiny_obtain_code(CaseInfo info) {
 
     auto case_id = info.case_id();
     for (;;) {
-        if (case_id >= cases[head].size()) {
-            case_id -= cases[head].size();
+        if (case_id >= cases.ranges(head).size()) {
+            case_id -= cases.ranges(head).size();
             ++head;
         } else {
             break;
         }
     }
 
-    auto range = cases[head][case_id];
+    auto range = cases.ranges(head)[case_id];
     return CommonCode::unsafe_create(head << 32 | range);
 }
 

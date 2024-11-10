@@ -68,11 +68,11 @@ RangesUnion Group::cases() const {
     RangesUnion data;
     for (auto raw_code : codes) {
         auto common_code = raw_code.to_common_code().unwrap();
-        data[common_code >> 32].emplace_back(static_cast<uint32_t>(common_code));
+        data.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
     }
 
     for (int head = 0; head < 16; ++head) {
-        std::stable_sort(data[head].begin(), data[head].end());
+        std::stable_sort(data.ranges(head).begin(), data.ranges(head).end());
     }
     return data;
 }

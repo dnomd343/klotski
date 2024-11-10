@@ -16,7 +16,7 @@ TEST(Ranges, check) {
     for (const auto head : Heads) {
         for (auto range : BasicRanges::instance().fetch()) {
             if (Ranges::check(head, range_reverse(range)) == 0) {
-                all_cases[head].emplace_back(range); // found valid cases
+                all_cases.ranges(head).emplace_back(range); // found valid cases
             }
         }
     }
@@ -45,14 +45,14 @@ TEST(Ranges, derive) {
 
         RangesUnion cases;
         for (const auto head : Heads) {
-            ranges.derive(head, cases[head]);
-            EXPECT_SORTED_AND_UNIQUE(cases[head]); // sorted and unique
-            EXPECT_COMMON_CODES(head, cases[head]); // verify common codes
+            ranges.derive(head, cases.ranges(head));
+            EXPECT_SORTED_AND_UNIQUE(cases.ranges(head)); // sorted and unique
+            EXPECT_COMMON_CODES(head, cases.ranges(head)); // verify common codes
         }
 
         ranges.reverse();
         for (const auto head : Heads) {
-            EXPECT_SUBSET(ranges, cases[head]); // derive ranges is subset
+            EXPECT_SUBSET(ranges, cases.ranges(head)); // derive ranges is subset
         }
     }
 }
@@ -83,7 +83,7 @@ TEST(Ranges, combine) {
     RangesUnion all_cases;
     all_ranges.reserve(BASIC_RANGES_NUM_); // pre reserve
     for (const auto head : Heads) {
-        all_cases[head].reserve(ALL_CASES_NUM[head]); // pre reserve
+        all_cases.ranges(head).reserve(ALL_CASES_NUM[head]); // pre reserve
     }
 
     for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
@@ -92,21 +92,21 @@ TEST(Ranges, combine) {
         all_ranges += ranges;
         ranges.reverse(); // reverse ranges for derive
         for (const auto head : Heads) {
-            ranges.derive(head, all_cases[head]); // derive from sub ranges
+            ranges.derive(head, all_cases.ranges(head)); // derive from sub ranges
         }
     }
 
     std::ranges::stable_sort(all_ranges.begin(), all_ranges.end());
     for (const auto head : Heads) {
-        std::ranges::stable_sort(all_cases[head].begin(), all_cases[head].end());
+        std::ranges::stable_sort(all_cases.ranges(head).begin(), all_cases.ranges(head).end());
     }
     EXPECT_EQ(all_ranges, BasicRanges::instance().fetch()); // verify all ranges
     EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify all cases
 
     all_ranges.reverse(); // reverse ranges for derive
     for (const auto head : Heads) {
-        all_cases[head].clear();
-        all_ranges.derive(head, all_cases[head]); // derive from all ranges
+        all_cases.ranges(head).clear();
+        all_ranges.derive(head, all_cases.ranges(head)); // derive from all ranges
     }
     EXPECT_EQ(all_cases, AllCases::instance().fetch()); // verify content
 }

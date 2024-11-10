@@ -51,15 +51,15 @@ protected:
     static void Verify() {
         const auto &all_cases = AllCases::instance().fetch();
         for (int head = 0; head < 16; ++head) {
-            EXPECT_EQ(all_cases[head].size(), ALL_CASES_NUM[head]); // verify all cases size
-            EXPECT_EQ(helper::xxh3(all_cases[head]), ALL_CASES_XXH3[head]); // verify all cases checksum
+            EXPECT_EQ(all_cases.ranges(head).size(), ALL_CASES_NUM[head]); // verify all cases size
+            EXPECT_EQ(helper::xxh3(all_cases.ranges(head)), ALL_CASES_XXH3[head]); // verify all cases checksum
         }
     }
 };
 
 TEST_FF(AllCases, content) {
     for (auto head : Heads) {
-        auto &cases = AllCases::instance().fetch()[head];
+        auto &cases = AllCases::instance().fetch().ranges(head);
         EXPECT_SORTED_AND_UNIQUE(cases);
         EXPECT_EQ(cases.size(), ALL_CASES_NUM[head]); // size verify
         EXPECT_EQ(helper::xxh3(cases), ALL_CASES_XXH3[head]); // checksum verify

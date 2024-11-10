@@ -65,7 +65,7 @@ void AllCases::build() {
         x = range_reverse(x);
     }
     for (const auto head : get_heads()) {
-        build_cases(ranges, reversed, get_cases()[head], head);
+        build_cases(ranges, reversed, get_cases().ranges(head), head);
     }
     available_ = true;
     KLSK_MEM_BARRIER;
@@ -92,7 +92,7 @@ void AllCases::build_async(Executor &&executor, Notifier &&callback) {
     Worker worker {executor};
     for (const auto head : get_heads()) {
         worker.post([head, reversed] {
-            build_cases(BasicRanges::instance().fetch(), *reversed, get_cases()[head], head);
+            build_cases(BasicRanges::instance().fetch(), *reversed, get_cases().ranges(head), head);
         });
     }
 

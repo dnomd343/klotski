@@ -31,8 +31,34 @@ static void RangesUnionExport(benchmark::State &state) {
     }
 }
 
-BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
+static void RangesSize(benchmark::State &state) {
+    auto &all_cases = AllCases::instance().fetch();
+    // std::cout << all_cases.size() << std::endl;
+    for (auto _ : state) {
+        volatile auto k1 = all_cases.size();
+        volatile auto k2 = all_cases.size();
+        volatile auto k3 = all_cases.size();
+        volatile auto k4 = all_cases.size();
+        volatile auto k5 = all_cases.size();
+        volatile auto k6 = all_cases.size();
+        volatile auto k7 = all_cases.size();
+        volatile auto k8 = all_cases.size();
+
+        volatile auto p1 = all_cases.size();
+        volatile auto p2 = all_cases.size();
+        volatile auto p3 = all_cases.size();
+        volatile auto p4 = all_cases.size();
+        volatile auto p5 = all_cases.size();
+        volatile auto p6 = all_cases.size();
+        volatile auto p7 = all_cases.size();
+        volatile auto p8 = all_cases.size();
+    }
+}
+
+// BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(RangesUnionExport)->Unit(benchmark::kMillisecond);
+
+BENCHMARK(RangesSize);
 
 BENCHMARK_MAIN();

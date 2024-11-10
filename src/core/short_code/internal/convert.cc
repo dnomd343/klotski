@@ -52,7 +52,7 @@ static uint32_t check_range(uint32_t head, uint32_t range) noexcept {
 
 uint32_t ShortCode::fast_encode(uint64_t common_code) {
     auto head = common_code >> 32;
-    auto &ranges = (*cases_)[head]; // match available ranges
+    const auto &ranges = (*cases_).ranges(head); // match available ranges
     // TODO: try to narrow the scope by prefix
     auto target = std::lower_bound(ranges.begin(), ranges.end(), (uint32_t)common_code);
     return ALL_CASES_OFFSET[head] + (target - ranges.begin());
@@ -62,7 +62,7 @@ uint64_t ShortCode::fast_decode(uint32_t short_code) {
     auto offset = std::upper_bound(ALL_CASES_OFFSET.begin(), ALL_CASES_OFFSET.end(), short_code) - 1;
     uint64_t head = offset - ALL_CASES_OFFSET.begin();
     // return (head << 32) | AllCases::instance().fetch()[head][short_code - *offset];
-    return (head << 32) | (*cases_)[head][short_code - *offset];
+    return (head << 32) | (*cases_).ranges(head)[short_code - *offset];
 }
 
 uint32_t ShortCode::tiny_encode(uint64_t common_code) {
