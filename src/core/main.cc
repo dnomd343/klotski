@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <thread>
 #include <iostream>
 #include <format>
 #include <map>
@@ -15,8 +14,6 @@
 #include "common_code/common_code.h"
 
 #include <parallel_hashmap/phmap.h>
-
-#include "../../third_party/thread-pool/include/BS_thread_pool.hpp"
 
 using klotski::mover::MaskMover;
 using klotski::fast_cal::FastCal;

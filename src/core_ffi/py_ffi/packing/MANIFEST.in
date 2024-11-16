@@ -1,8 +1,18 @@
-include CMakeLists.txt
-include README.md
 include pyproject.toml
 include setup.py
-include src/klotski/__init__.py
-recursive-include src/project *
-recursive-exclude src/project/src/core_ffi/py_ffi/packing *
+include README.md
 exclude MANIFEST.in
+
+include src/klotski/*.py
+
+include CMakeLists.txt
+include src/CMakeLists.txt
+include src/core_ffi/CMakeLists.txt
+
+recursive-include src/core *
+recursive-include src/core_ffi/py_ffi *
+recursive-exclude src/core_ffi/py_ffi/packing *
+
+include third_party/ThirdParty.cmake
+recursive-include third_party/pybind11 *
+recursive-include third_party/parallel-hashmap *
