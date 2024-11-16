@@ -6,8 +6,10 @@
 /// They do not guarantee the security of the hash algorithm, as this scenario
 /// is only used to verify the correctness of the data.
 
+#include <string>
 #include <vector>
 #include <cstdint>
+#include <string_view>
 
 namespace helper {
 
