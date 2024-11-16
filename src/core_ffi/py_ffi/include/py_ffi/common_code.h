@@ -96,11 +96,15 @@ constexpr auto operator<=>(const PyCommonCode &lhs, const PyCommonCode &rhs) {
 
 // ----------------------------------------------------------------------------------------- //
 
+namespace std {
+
 template <>
-struct ::std::hash<klotski::ffi::PyCommonCode> {
+struct hash<klotski::ffi::PyCommonCode> {
     size_t operator()(const klotski::ffi::PyCommonCode &common_code) const noexcept {
         return std::hash<uint64_t>{}(common_code.value());
     }
 };
+
+} // namespace std
 
 // ----------------------------------------------------------------------------------------- //

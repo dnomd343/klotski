@@ -122,7 +122,7 @@ constexpr auto operator<=>(const ShortCode &lhs, const ShortCode &rhs) {
 namespace std {
 
 template <>
-struct std::hash<klotski::codec::ShortCode> {
+struct hash<klotski::codec::ShortCode> {
     constexpr std::size_t operator()(const klotski::codec::ShortCode &s) const noexcept {
         return std::hash<uint32_t>{}(s.unwrap());
     }

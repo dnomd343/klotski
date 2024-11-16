@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <list>
+#include <utility>
 #include <cstdint>
 #include <numeric>
 #include <functional>
@@ -32,9 +33,15 @@
 #define KLSK_UNREACHABLE __builtin_unreachable() // TODO: using `std::unreachable`
 
 /// Force function declaration to be inline.
-#define KLSK_INLINE __attribute__ ((always_inline))
+#if defined(__clang__)
+  #define KLSK_INLINE __attribute__ ((always_inline))
+#else
+  #define KLSK_INLINE // NOTE: make sure that function can be inline
+#endif
 #define KLSK_INLINE_H KLSK_INLINE inline
 #define KLSK_INLINE_CE KLSK_INLINE constexpr
+
+// TODO: using `#pragma GCC unroll`
 
 /// Prevent reordering for both compiler and processor.
 #define KLSK_MEM_BARRIER std::atomic_thread_fence(std::memory_order_seq_cst)

@@ -100,7 +100,7 @@ constexpr auto operator<=>(const RawCode &lhs, const RawCode &rhs) {
 namespace std {
 
 template <>
-struct std::hash<klotski::codec::RawCode> {
+struct hash<klotski::codec::RawCode> {
     constexpr std::size_t operator()(const klotski::codec::RawCode &r) const noexcept {
         return std::hash<uint64_t>{}(r.unwrap());
     }
