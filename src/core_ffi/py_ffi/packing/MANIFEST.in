@@ -1,0 +1,8 @@
+include CMakeLists.txt
+include README.md
+include pyproject.toml
+include setup.py
+include src/klotski/__init__.py
+recursive-include src/project *
+recursive-exclude src/project/src/core_ffi/py_ffi/packing *
+exclude MANIFEST.in

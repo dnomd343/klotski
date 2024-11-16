@@ -28,7 +28,7 @@ using klotski::ffi::PyExc_GroupError;
 //     return PyCases::from_ref(klotski::cases::AllCases::instance().fetch());
 // }
 
-PYBIND11_MODULE(klotski, m) {
+PYBIND11_MODULE(_klotski, m) {
     py::register_exception<PyExc_GroupError>(m, "GroupError", PyExc_ValueError);
     py::register_exception<PyExc_CodecError>(m, "CodecError", PyExc_ValueError);
 

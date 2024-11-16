@@ -24,7 +24,7 @@ add_compile_options(-Wall -Wextra)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     add_compile_options(-flto=full)
 else ()
-    add_compile_options(-flto)  # TODO: only for g++
+    #add_compile_options(-flto)  # TODO: only for g++
 endif ()
 
 # TODO: for python-ffi
