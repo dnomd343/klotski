@@ -1,3 +1,5 @@
+extern crate cmake;
+
 use cxx_build::CFG;
 
 // NOTE: add `CC=clang-20 CXX=clang++-20 CXXFLAGS="-stdlib=libc++"` for cargo command
@@ -5,28 +7,30 @@ use cxx_build::CFG;
 
 // NOTE: also, `RUSTFLAGS="-C linker=clang-20"` should be add to cargo env for using lld
 
-fn main() {
-    CFG.include_prefix = "rust_ffi";
+// NOTE: add `CC=clang-20 CXX=clang++-20 CXXFLAGS="-stdlib=libc++" RUSTFLAGS="-C linker=clang-20 -C link-arg=-fuse-ld=lld-20 -C link-arg=-stdlib=libc++"` for using llvm toolchain
 
-    // std::env::set_var("CC", "clang-20");
-    // std::env::set_var("CXX", "clang++-20");
+fn main() {
+    let dst = cmake::Config::new("klotski")
+        // .build_target("klotski_core")
+        .define("CARGO_BUILD:BOOL", "ON")
+        .define("KLSK_ENABLE_TESTING:BOOL", "OFF")
+        .define("KLSK_ENABLE_BENCHMARK:BOOL", "OFF")
+        .define("KLSK_C_FFI:BOOL", "OFF")
+        .define("KLSK_PYTHON_FFI:BOOL", "OFF")
+        .build();
+
+    CFG.include_prefix = "rust_ffi";
 
     cxx_build::bridge("src/common_code.rs")
         .file("adapter/common_code.cc")
         .flag("-std=c++23")
         .flag("-fno-rtti")
         .flag("-fno-exceptions")
-        // .flag("-stdlib=libc++")
-        .include("../../core")
-        // .cpp_set_stdlib("c++")
-        // .cpp_link_stdlib("c++")
+        .include("klotski/src/core")
         .compile("klotski");
 
-    println!("cargo:rustc-link-search=native=../../../cmake-build-release/src/core");
+    println!("cargo:rustc-link-search=native={}", dst.display());
     println!("cargo:rustc-link-lib=static=klotski_core");
-
-    println!("cargo:rustc-link-arg=-fuse-ld=lld-20");
-    println!("cargo:rustc-link-arg=-stdlib=libc++");
 
     println!("cargo:rerun-if-changed=adapter/common_code.cc");
     println!("cargo:rerun-if-changed=src/common_code.rs");
