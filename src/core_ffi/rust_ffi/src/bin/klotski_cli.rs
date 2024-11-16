@@ -1,7 +1,5 @@
-mod bridge;
-
-use bridge::ShortCode;
-use bridge::CommonCode;
+use klotski::ShortCode;
+use klotski::CommonCode;
 
 fn short_code_demo() {
     ShortCode::speed_up(false);
