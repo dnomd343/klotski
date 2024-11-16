@@ -4,7 +4,6 @@
 #include <common_code/common_code.h>
 
 using klotski::codec::RawCode;
-using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
 
 using klotski::mover::MaskMover;
@@ -13,15 +12,15 @@ using klotski::ffi::RsShortCode;
 using klotski::ffi::RsCommonCode;
 
 // TODO: it seems that cxx.rs not support `std::optional`
-uint64_t klotski::ffi::common_code_from_str(rust::Str s) {
-    std::string_view sv {s.data(), s.length()};
+uint64_t klotski::ffi::common_code_from_str(const rust::Str s) {
+    const std::string_view sv {s.data(), s.length()};
     if (const auto ret = CommonCode::from_string(sv); ret.has_value()) {
         return ret.value().unwrap();
     }
     return 0x10FFFFFFFF; // return invalid value for now
 }
 
-bool klotski::ffi::common_code_check(uint64_t val) {
+bool klotski::ffi::common_code_check(const uint64_t val) {
     return CommonCode::check(val);
 }
 

@@ -45,11 +45,22 @@ mod ffi {
     }
 
     unsafe extern "C++" {
-        // include!("rust_ffi/include/short_code.h");
+        include!("rust_ffi/include/short_code.h");
 
-        // fn short_code_from_str(s: &str) -> RsShortCode;
+        /// only for internal use
+        fn short_code_check(val: u32) -> bool;
 
-        // TODO: speed_up interface
+        /// only for internal use
+        fn short_code_from_str(s: &str) -> u32;
+
+        /// Convert ShortCode to string form.
+        fn to_string(self: &RsShortCode) -> String;
+
+        /// Convert ShortCode to CommonCode.
+        fn to_common_code(self: &RsShortCode) -> RsCommonCode;
+
+        /// Build the conversion index for ShortCode.
+        fn short_code_speed_up(fast_mode: bool);
     }
 }
 
@@ -63,12 +74,12 @@ impl CommonCode {
     }
 
     /// Create CommonCode without any check.
-    pub fn unsafe_create(code: u64) -> CommonCode {
-        CommonCode { code }
+    pub fn unsafe_create(code: u64) -> Self {
+        Self { code }
     }
 
     /// Create CommonCode with validity check.
-    pub fn create(code: u64) -> Option<CommonCode> {
+    pub fn create(code: u64) -> Option<Self> {
         if Self::check(code) {
             return Some(Self::unsafe_create(code));
         }
@@ -76,17 +87,55 @@ impl CommonCode {
     }
 
     /// Get the original u64 code.
-    pub fn unwrap(self: &CommonCode) -> u64 {
+    pub fn unwrap(self: &Self) -> u64 {
         self.code
     }
 
     /// Create CommonCode from string form.
-    pub fn from_string(s: &str) -> Option<CommonCode> {
+    pub fn from_string(s: &str) -> Option<Self> {
         let val = ffi::common_code_from_str(s);
         if val < 0x10_FFFF_FFFF {
             return Some(Self::unsafe_create(val));
         }
         None
+    }
+}
+
+impl ShortCode {
+    /// Check the validity of the original ShortCode.
+    pub fn check(code: u32) -> bool {
+        ffi::short_code_check(code)
+    }
+
+    /// Create ShortCode without any check.
+    pub fn unsafe_create(code: u32) -> Self {
+        Self { code }
+    }
+
+    /// Create ShortCode with validity check.
+    pub fn create(code: u32) -> Option<Self> {
+        if Self::check(code) {
+            return Some(Self::unsafe_create(code));
+        }
+        None
+    }
+
+    /// Get the original u32 code.
+    pub fn unwrap(self: &Self) -> u32 {
+        self.code
+    }
+
+    /// Create ShortCode from string form.
+    pub fn from_string(s: &str) -> Option<Self> {
+        let val = ffi::short_code_from_str(s);
+        if val != 0xFFFF_FFFF {
+            return Some(Self::unsafe_create(val));
+        }
+        None
+    }
+
+    pub fn speed_up(fast_mode: bool) {
+        ffi::short_code_speed_up(fast_mode)
     }
 }
 
