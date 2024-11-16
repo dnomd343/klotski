@@ -18,7 +18,7 @@ using klotski::codec::CommonCode;
 static std::vector<uint64_t> all_common_codes() {
     std::vector<uint64_t> codes;
     for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto range : AllCases::instance().fetch()[head]) {
+        for (const auto range : AllCases::instance().fetch().ranges(head)) {
             codes.emplace_back(head << 32 | range);
         }
     }

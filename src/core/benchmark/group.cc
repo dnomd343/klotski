@@ -26,7 +26,7 @@ using klotski::codec::CommonCode;
 static std::vector<uint64_t> all_common_codes() {
     std::vector<uint64_t> codes;
     for (uint64_t head = 0; head < 16; ++head) {
-        for (const auto range : AllCases::instance().fetch()[head]) {
+        for (const auto range : AllCases::instance().fetch().ranges(head)) {
             codes.emplace_back(head << 32 | range);
         }
     }
@@ -342,7 +342,7 @@ static void FastObtainCode(benchmark::State &state) {
     size_t offset = 0;
     for (int i = 0; i < 16; ++i) {
         sizes[i] = offset;
-        offset += data[i].size();
+        offset += data.ranges(i).size();
     }
 
     std::vector infos {
@@ -376,14 +376,14 @@ static void FastObtainCode(benchmark::State &state) {
             uint64_t head = 0;
             auto case_id = info.case_id();
             for (;;) {
-                if (case_id >= cases[head].size()) {
-                    case_id -= cases[head].size();
+                if (case_id >= cases.ranges(head).size()) {
+                    case_id -= cases.ranges(head).size();
                     ++head;
                 } else {
                     break;
                 }
             }
-            auto range = cases[head][case_id];
+            auto range = cases.ranges(head)[case_id];
             volatile auto kk = CommonCode::unsafe_create(head << 32 | range);
 
             /// about 117ns
