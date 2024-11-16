@@ -9,6 +9,8 @@ if (KLSK_ENABLE_BENCHMARK)
   set(BENCHMARK_ENABLE_TESTING OFF)
   set(BENCHMARK_ENABLE_EXCEPTIONS OFF)
   add_subdirectory(${KLSK_THIRD_PARTY}/benchmark EXCLUDE_FROM_ALL)
+
+  # TODO: enable bs::thread_pool
 endif()
 
 if (KLSK_ENABLE_TESTING)

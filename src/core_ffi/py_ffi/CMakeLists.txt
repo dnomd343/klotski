@@ -23,3 +23,7 @@ pybind11_add_module(klotski_py
 target_include_directories(klotski_py PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(klotski_py PRIVATE klotski::core)
 set_target_properties(klotski_py PROPERTIES OUTPUT_NAME _klotski)
+
+if (SKBUILD)
+  install(TARGETS klotski_py DESTINATION .)
+endif()
