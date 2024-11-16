@@ -41,7 +41,7 @@ inline std::ostream& operator<<(std::ostream &out, const CommonCode self) {
 
 // ----------------------------------------------------------------------------------------- //
 
-inline uint64_t CommonCode::unwrap() const {
+constexpr uint64_t CommonCode::unwrap() const {
     return code_;
 }
 
