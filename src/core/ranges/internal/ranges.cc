@@ -39,7 +39,7 @@ KLSK_INLINE CommonCode RangesUnion::operator[](size_type n) const {
     }
     n -= ranges(0).size();
 
-    #pragma unroll
+    KLSK_UNROLL(sizeof(Heads) - 2)
     for (const uint64_t head : std::to_array({0x1, 0x2, 0x4, 0x5, 0x6, 0x8, 0x9, 0xA, 0xC, 0xD})) {
         if (n < ranges(head).size()) {
             return CommonCode::unsafe_create(head << 32 | ranges(head)[n]);
@@ -48,7 +48,4 @@ KLSK_INLINE CommonCode RangesUnion::operator[](size_type n) const {
     }
 
     return CommonCode::unsafe_create((uint64_t)0xE << 32 | ranges(0xE)[n]);
-
-    // std::unreachable();
-
 }

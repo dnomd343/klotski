@@ -12,7 +12,7 @@ inline const Ranges& RangesUnion::ranges(const size_t head) const {
 
 KLSK_INLINE_H size_t RangesUnion::size() const {
     size_type size = 0;
-    #pragma unroll
+    KLSK_UNROLL(sizeof(Heads))
     for (const auto head : Heads) {
         size += ranges(head).size();
     }
