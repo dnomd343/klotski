@@ -13,7 +13,7 @@ PyCasesIter::PyCasesIter(const RangesUnion &data) : data_(data) {}
 
 PyCommonCode PyCasesIter::next() {
     while (head_ < 16) {
-        const auto &ranges = data_[head_];
+        const auto &ranges = data_.ranges(head_);
         if (index_ < ranges.size()) {
             auto code = (static_cast<uint64_t>(head_) << 32) | ranges[index_++];
             return std::bit_cast<PyCommonCode>(code);
@@ -44,14 +44,14 @@ PyCommonCode PyCases::at(size_t index) const {
 
     uint64_t head = 0;
     for (;;) {
-        if (index >= data_ref()[head].size()) {
-            index -= data_ref()[head].size();
+        if (index >= data_ref().ranges(head).size()) {
+            index -= data_ref().ranges(head).size();
             ++head;
         } else {
             break;
         }
     }
-    uint32_t range = data_ref()[head][index];
+    uint32_t range = data_ref().ranges(head)[index];
 
     // TODO: fetch from RangesUnion[]
     const auto code = CommonCode::unsafe_create(head << 32 | range);
