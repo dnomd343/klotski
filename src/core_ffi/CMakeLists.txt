@@ -20,8 +20,9 @@ if (KLSK_RUST_FFI)
   else()
     # just for IDE highlight
     add_library(klotski_rust
-        rust_ffi/adapter/common_code.cc
-        rust_ffi/target/cxxbridge/rust_ffi/src/common_code.rs.cc
+      rust_ffi/adapter/short_code.cc
+      rust_ffi/adapter/common_code.cc
+      rust_ffi/target/cxxbridge/rust_ffi/src/bridge.rs.cc
     )
     target_include_directories(klotski_rust PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
     target_include_directories(klotski_rust PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/rust_ffi/target/cxxbridge)

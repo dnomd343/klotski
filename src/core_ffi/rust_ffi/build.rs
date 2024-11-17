@@ -13,7 +13,6 @@ use cxx_build::CFG;
 
 fn main() {
     let dst = cmake::Config::new("klotski")
-        // .build_target("klotski_core")
         .define("CARGO_BUILD:BOOL", "ON")
         .define("KLSK_ENABLE_TESTING:BOOL", "OFF")
         .define("KLSK_ENABLE_BENCHMARK:BOOL", "OFF")
@@ -23,17 +22,19 @@ fn main() {
 
     CFG.include_prefix = "rust_ffi";
 
-    cxx_build::bridge("src/common_code.rs")
+    cxx_build::bridge("src/bridge.rs")
+        .file("adapter/short_code.cc")
         .file("adapter/common_code.cc")
+        .include("klotski/src/core")
         .flag("-std=c++23")
         .flag("-fno-rtti")
         .flag("-fno-exceptions")
-        .include("klotski/src/core")
         .compile("klotski");
 
     println!("cargo:rustc-link-search=native={}", dst.display());
     println!("cargo:rustc-link-lib=static=klotski_core");
 
+    println!("cargo:rerun-if-changed=src/bridge.rs");
+    println!("cargo:rerun-if-changed=adapter/short_code.cc");
     println!("cargo:rerun-if-changed=adapter/common_code.cc");
-    println!("cargo:rerun-if-changed=src/common_code.rs");
 }
