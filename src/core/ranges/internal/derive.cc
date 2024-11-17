@@ -39,7 +39,7 @@ void Ranges::derive(const int head, Ranges &output) const {
             /// ( xx xx xx ) xx xx xx ... [reversed range]
             ///         +1   00 00 00 ...     (delta)
             const uint32_t delta = 1U << (32 - offset * 2); // distance to next possible range
-            const auto min_next = delta + range_reverse((*this)[index]) & ~(delta - 1);
+            const auto min_next = delta + (range_reverse((*this)[index]) & ~(delta - 1));
             if (min_next > max_val) {
                 break; // index has overflowed
             }

@@ -41,7 +41,15 @@
 #define KLSK_INLINE_H KLSK_INLINE inline
 #define KLSK_INLINE_CE KLSK_INLINE constexpr
 
-// TODO: using `#pragma GCC unroll`
+#define KLSK_STRING(x) #x
+
+#if defined(__clang__)
+  #define KLSK_UNROLL(N) _Pragma(KLSK_STRING(unroll N))
+#elif defined(__GNUC__)
+  #define KLSK_UNROLL(N) _Pragma(KLSK_STRING(GCC unroll N))
+#else
+  #define KLSK_UNROLL(N)
+#endif
 
 /// Prevent reordering for both compiler and processor.
 #define KLSK_MEM_BARRIER std::atomic_thread_fence(std::memory_order_seq_cst)
