@@ -37,7 +37,7 @@ const std::vector<block_num_t>& block_nums();
 namespace std {
 
 template <>
-struct std::hash<helper::block_num_t> {
+struct hash<helper::block_num_t> {
     size_t operator()(const helper::block_num_t val) const noexcept {
         return (val.n_1x1 << 6) ^ (val.n_1x2 << 3) ^ val.n_2x1;
     }
