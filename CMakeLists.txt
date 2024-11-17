@@ -15,20 +15,22 @@ option(KLSK_RUST_FFI "" ON)
 # ------------------------------------------------------------------------------------ #
 
 if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
+  set(CMAKE_BUILD_TYPE Release)
 endif()
 
 add_compile_options(-Wall -Wextra)
 
 # TODO: enabled by LTO option
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    add_compile_options(-flto=full)
+  add_compile_options(-flto=full)
 else ()
-    #add_compile_options(-flto)  # TODO: only for g++
+  #add_compile_options(-flto)  # TODO: only for g++
 endif ()
 
 # TODO: for python-ffi
-#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+if (SKBUILD)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
 
 get_filename_component(KLSK_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
 
