@@ -38,8 +38,10 @@ target_link_libraries(klotski_core PUBLIC phmap::phmap)
 add_library(klotski::core ALIAS klotski_core)
 
 # TODO: just for dev testing
-add_executable(klotski_core_bin main.cc)
-target_link_libraries(klotski_core_bin PRIVATE klotski_core)
+if (KLSK_DEV_MODE)
+  add_executable(klotski_core_bin main.cc)
+  target_link_libraries(klotski_core_bin PRIVATE klotski_core)
+endif()
 
 if (KLSK_ENABLE_BENCHMARK)
   set(KLSK_BENCHMARK_OPTS -fno-rtti -fno-exceptions -fno-access-control)
