@@ -101,7 +101,7 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Get the original u64 code.
-    [[nodiscard]] uint64_t unwrap() const;
+    [[nodiscard]] constexpr uint64_t unwrap() const;
 
     /// Convert RawCode to CommonCode.
     [[nodiscard]] CommonCode to_common_code() const;

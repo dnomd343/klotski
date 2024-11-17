@@ -125,7 +125,7 @@ public:
     static constexpr GroupUnion from_raw_code(codec::RawCode raw_code);
 
     /// Create GroupUnion from ShortCode.
-    static constexpr GroupUnion from_short_code(codec::ShortCode short_code);
+    static GroupUnion from_short_code(codec::ShortCode short_code);
 
     /// Create GroupUnion from CommonCode.
     static constexpr GroupUnion from_common_code(codec::CommonCode common_code);

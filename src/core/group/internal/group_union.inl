@@ -43,7 +43,7 @@ constexpr std::optional<GroupUnion> GroupUnion::create(const uint_fast8_t type_i
 
 #ifndef KLSK_NDEBUG
 inline std::ostream& operator<<(std::ostream &out, GroupUnion self) {
-    out << self.type_id_;
+    out << static_cast<int>(self.type_id_);
     return out;
 }
 #endif
@@ -58,7 +58,7 @@ constexpr GroupUnion GroupUnion::from_raw_code(const codec::RawCode raw_code) {
     return unsafe_create(type_id(raw_code));
 }
 
-constexpr GroupUnion GroupUnion::from_short_code(const codec::ShortCode short_code) {
+inline GroupUnion GroupUnion::from_short_code(const codec::ShortCode short_code) {
     return from_common_code(short_code.to_common_code());
 }
 

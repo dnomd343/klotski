@@ -27,7 +27,7 @@ inline RawCode::operator uint64_t() const {
     return code_;
 }
 
-inline uint64_t RawCode::unwrap() const {
+constexpr uint64_t RawCode::unwrap() const {
     return code_;
 }
 
