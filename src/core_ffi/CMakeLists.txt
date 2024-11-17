@@ -19,13 +19,13 @@ if (KLSK_RUST_FFI)
     install(TARGETS klotski_core DESTINATION .)
   else()
     # just for IDE highlight
-    add_library(klotski_rust
+    add_library(klotski_rs
       rust_ffi/adapter/short_code.cc
       rust_ffi/adapter/common_code.cc
       rust_ffi/target/cxxbridge/rust_ffi/src/bridge.rs.cc
     )
-    target_include_directories(klotski_rust PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-    target_include_directories(klotski_rust PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/rust_ffi/target/cxxbridge)
-    target_link_libraries(klotski_rust PRIVATE klotski_core)
+    target_include_directories(klotski_rs PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(klotski_rs PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/rust_ffi/target/cxxbridge)
+    target_link_libraries(klotski_rs PRIVATE klotski_core)
   endif()
 endif()

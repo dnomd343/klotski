@@ -44,7 +44,7 @@ void helper::common_code_parallel(std::function<void(std::span<CommonCode>)> &&f
 
     // TODO: enhance performance
 
-    pool.detach_blocks((uint64_t)0, codes.size(), [&func](auto start, auto end) {
+    pool.detach_blocks((size_t)0, codes.size(), [&func](auto start, auto end) {
 
         func(std::span<CommonCode> {codes.data() + start, end - start});
 
@@ -60,7 +60,7 @@ void helper::raw_code_parallel(std::function<void(std::span<RawCode>)> &&func) {
     static auto codes = std::vector<RawCode> {common_codes.begin(), common_codes.end()};
 
     BS::thread_pool pool;
-    pool.detach_blocks((uint64_t)0, codes.size(), [&func](auto start, auto end) {
+    pool.detach_blocks((size_t)0, codes.size(), [&func](auto start, auto end) {
 
         func(std::span<RawCode> {codes.data() + start, end - start});
 
@@ -78,7 +78,7 @@ void helper::short_code_parallel(std::function<void(std::span<ShortCode>)> &&fun
     }();
 
     BS::thread_pool pool;
-    pool.detach_blocks((uint64_t)0, codes.size(), [&func](auto start, auto end) {
+    pool.detach_blocks((size_t)0, codes.size(), [&func](auto start, auto end) {
 
         auto span = std::span<uint32_t> {codes.data() + start, end - start};
         func(std::bit_cast<std::span<ShortCode>>(span));

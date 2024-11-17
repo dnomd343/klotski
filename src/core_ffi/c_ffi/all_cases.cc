@@ -64,7 +64,7 @@ const uint32_t* all_cases_export(const int head) {
     if (all_cases_num(head) < 0) {
         return nullptr;
     }
-    return AllCases::instance().fetch()[head].data();
+    return AllCases::instance().fetch().ranges(head).data();
 }
 
 // ------------------------------------------------------------------------------------- //
