@@ -4,6 +4,8 @@
 
 namespace klotski::ffi {
 
-RsCommonCode from_string(rust::Str s);
+bool common_code_check(uint64_t val);
+
+uint64_t common_code_from_str(rust::Str s);
 
 } // namespace klotski::ffi
