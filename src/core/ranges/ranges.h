@@ -73,4 +73,3 @@ private:
 } // namespace klotski::cases
 
 #include "internal/ranges.inl"
-#include "internal/ranges_union.inl"

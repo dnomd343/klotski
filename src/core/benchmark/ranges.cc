@@ -5,6 +5,7 @@
 #include "all_cases/all_cases.h"
 
 using klotski::cases::AllCases;
+using klotski::cases::BasicRanges;
 
 static void SpawnRanges(benchmark::State &state) {
     // constexpr auto nums = target_nums();
@@ -21,6 +22,13 @@ static void SpawnRanges(benchmark::State &state) {
         // }
     }
 
+}
+
+static void RangesReverse(benchmark::State &state) {
+    auto ranges = BasicRanges::instance().fetch();
+    for (auto _ : state) {
+        ranges.reverse();
+    }
 }
 
 static void RangesUnionExport(benchmark::State &state) {
@@ -70,6 +78,8 @@ static void RangesAt(benchmark::State &state) {
 }
 
 // BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
+
+// BENCHMARK(RangesReverse)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(RangesUnionExport)->Unit(benchmark::kMillisecond);
 
