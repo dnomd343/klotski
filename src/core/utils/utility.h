@@ -25,9 +25,9 @@
 
 /// Marking compiler assumptions.
 #if defined(__clang__)
-    #define KLSK_ASSUME(expr) __builtin_assume(expr)
+  #define KLSK_ASSUME(expr) __builtin_assume(expr)
 #elif defined(__GNUC__)
-    #define KLSK_ASSUME(expr) [[assume(expr)]]
+  #define KLSK_ASSUME(expr) [[assume(expr)]]
 #endif
 
 #define KLSK_UNREACHABLE __builtin_unreachable() // TODO: using `std::unreachable`
@@ -47,8 +47,12 @@
   #define KLSK_UNROLL(N) _Pragma(KLSK_STRING(unroll N))
 #elif defined(__GNUC__)
   #define KLSK_UNROLL(N) _Pragma(KLSK_STRING(GCC unroll N))
-#else
-  #define KLSK_UNROLL(N)
+#endif
+
+#if defined(__clang__)
+  #define KLSK_IVDEP _Pragma("clang loop vectorize(enable)")
+#elif defined(__GNUC__)
+  #define KLSK_IVDEP _Pragma("GCC ivdep")
 #endif
 
 /// Prevent reordering for both compiler and processor.

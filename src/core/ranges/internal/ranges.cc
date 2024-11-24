@@ -1,5 +1,3 @@
-#include <span>
-
 #include "ranges/ranges.h"
 #include "common_code/common_code.h"
 
@@ -19,20 +17,22 @@ std::vector<CommonCode> RangesUnion::codes() const {
     return codes;
 }
 
-KLSK_INLINE CommonCode RangesUnion::operator[](size_type n) const {
-    if (n < ranges(0).size()) {
-        return CommonCode::unsafe_create(ranges(0)[n]);
-    }
-    n -= ranges(0).size();
-
-    KLSK_UNROLL(Heads.size() - 2)
-    for (const uint64_t head : std::span {Heads.data() + 1, Heads.size() - 2}) {
-        if (n < ranges(head).size()) {
-            return CommonCode::unsafe_create(head << 32 | ranges(head)[n]);
+void Ranges::derive(const int head, Ranges &output) const {
+    const uint32_t max_val = range_reverse(this->back());
+    for (uint32_t index = 0; index < size(); ++index) {
+        if (const auto offset = check(head, (*this)[index])) { // invalid case
+            ///         !! <- broken
+            /// ( xx xx xx ) xx xx xx ... [reversed range]
+            ///         +1   00 00 00 ...     (delta)
+            const uint32_t delta = 1U << (32 - offset * 2); // distance to next possible range
+            const auto min_next = delta + (range_reverse((*this)[index]) & ~(delta - 1));
+            if (min_next > max_val) {
+                break; // index has overflowed
+            }
+            while (range_reverse((*this)[++index]) < min_next) {} // located next range
+            --index;
+            continue;
         }
-        n -= ranges(head).size();
+        output.emplace_back(range_reverse((*this)[index])); // release valid case
     }
-
-    constexpr auto head = static_cast<uint64_t>(0xE);
-    return CommonCode::unsafe_create(head << 32 | ranges(0xE)[n]);
 }
