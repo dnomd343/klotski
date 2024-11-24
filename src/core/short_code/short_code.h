@@ -60,16 +60,25 @@
 
 #pragma once
 
+#include <mutex>
 #include <string>
 #include <cstdint>
 #include <ostream>
 #include <optional>
 
-#include "all_cases/all_cases.h"
+#include "utils/utility.h"
+// #include "all_cases/all_cases.h"
+
+namespace klotski::cases {
+class AllCases;
+class Ranges;
+class RangesUnion;
+} // namespace klotski::cases
 
 namespace klotski::codec {
 
-constexpr uint32_t SHORT_CODE_LIMIT = cases::ALL_CASES_NUM_;
+constexpr uint32_t SHORT_CODE_LIMIT = 29334498;
+// constexpr uint32_t SHORT_CODE_LIMIT = cases::ALL_CASES_NUM_;
 
 class CommonCode;
 

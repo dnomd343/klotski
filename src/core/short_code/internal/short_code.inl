@@ -1,5 +1,6 @@
 #pragma once
 
+#include "all_cases/all_cases.h"
 #include "common_code/common_code.h"
 
 namespace klotski::codec {

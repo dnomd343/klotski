@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ranges/ranges.h"
+
 namespace klotski::cases {
 
 inline Ranges& BasicRanges::get_ranges() {

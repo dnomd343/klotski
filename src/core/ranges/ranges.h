@@ -12,7 +12,7 @@
 ///   3. n_space >= 2
 ///
 /// That is:
-///   n_1x1 + (n_2x1 + n_1x2) * 2 <= 14  (n_2x1 != 7)
+///   n_1x1 + (n_2x1 + n_1x2) * 2 <= 14   (n_2x1 != 7)
 ///
 /// In the above inequality, the variables are all positive integers, so we can
 /// get 203 combinations. In each combination, four kinds of 2-bit items can be
@@ -38,10 +38,7 @@
 #include <cstdint>
 
 #include "utils/utility.h"
-
-namespace klotski::codec {
-class CommonCode;
-} // namespace klotski::codec
+#include "common_code/common_code_fwd.h"
 
 namespace klotski::cases {
 
@@ -62,7 +59,7 @@ public:
     void derive(int head, Ranges &output) const;
 
     /// Check whether the combination of head and reversed range is valid.
-    static KLSK_INLINE int check(int head, uint32_t range);
+    static KLSK_INLINE_CE int check(int head, uint32_t range);
 
     // ------------------------------------------------------------------------------------- //
 };
@@ -95,10 +92,11 @@ public:
 
 private:
     static constexpr auto Heads = std::to_array<uint64_t>({
-        0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x8, 0x9, 0xA, 0xC, 0xD, 0xE,
+        0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x8, 0x9, 0xA, 0xC, 0xD, 0xE
     });
 };
 
 } // namespace klotski::cases
 
 #include "internal/ranges.inl"
+#include "internal/check.inl"

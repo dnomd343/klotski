@@ -42,8 +42,12 @@
 #include <mutex>
 
 #include "utils/utility.h"
-#include "ranges/ranges.h"
 #include "internal/constant.inl"
+
+namespace klotski::cases {
+class Ranges;
+class RangesUnion;
+} // namespace klotski::cases
 
 namespace klotski::cases {
 
