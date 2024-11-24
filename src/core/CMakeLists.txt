@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
-project(core VERSION 0.0.1 LANGUAGES CXX)
+project(klotski_core VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(KLOTSKI_CORE_SRC
+set(KLSK_CORE_SRC
     ranges/internal/spawn.cc
     ranges/internal/ranges.cc
     ranges/internal/derive.cc
@@ -31,16 +31,15 @@ set(KLOTSKI_CORE_SRC
     fast_cal/internal/fast_cal.cc
 )
 
-add_library(klotski_core STATIC ${KLOTSKI_CORE_SRC})
+add_library(klotski_core STATIC ${KLSK_CORE_SRC})
 target_compile_options(klotski_core PRIVATE -fno-rtti -fno-exceptions)  # option for `-fvisibility=hidden`
 target_include_directories(klotski_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(klotski_core PUBLIC phmap::phmap)
 add_library(klotski::core ALIAS klotski_core)
 
-# TODO: just for dev testing
 if (KLSK_DEV_MODE)
   add_executable(klotski_core_bin main.cc)
-  target_link_libraries(klotski_core_bin PRIVATE klotski_core)
+  target_link_libraries(klotski_core_bin PRIVATE klotski::core)
 endif()
 
 if (KLSK_ENABLE_BENCHMARK)
