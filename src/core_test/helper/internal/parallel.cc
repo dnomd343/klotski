@@ -9,6 +9,28 @@ using klotski::cases::AllCases;
 using klotski::group::TYPE_ID_LIMIT;
 using klotski::cases::ALL_CASES_NUM_;
 
+using klotski::cases::RangesUnion;
+
+void helper::head_parallel(std::function<void(uint64_t head)> &&func) {
+    BS::thread_pool pool;
+    for (auto head : RangesUnion::Heads) {
+        pool.detach_task([head, &func] {
+            func(head);
+        });
+    }
+    pool.wait();
+}
+
+void helper::block_num_parallel(std::function<void(int n, int n_2x1, int n_1x1)> &&func) {
+    BS::thread_pool pool;
+    for (auto [n, n_2x1, n_1x1] : klotski::group::BLOCK_NUM) {
+        pool.detach_task([n, n_2x1, n_1x1, &func] {
+            func(n, n_2x1, n_1x1);
+        });
+    }
+    pool.wait();
+}
+
 void helper::group_parallel(std::function<void(Group)> &&func) {
     // TODO: spawn all Groups
 }

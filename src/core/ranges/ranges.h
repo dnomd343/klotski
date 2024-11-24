@@ -90,11 +90,15 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-private:
     static constexpr auto Heads = std::to_array<uint64_t>({
         0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x8, 0x9, 0xA, 0xC, 0xD, 0xE
     });
+
+    // ------------------------------------------------------------------------------------- //
 };
+
+static_assert(sizeof(Ranges) == sizeof(std::vector<uint32_t>));
+static_assert(sizeof(Ranges) * 16 == sizeof(RangesUnion));
 
 } // namespace klotski::cases
 
