@@ -10,8 +10,8 @@ include src/CMakeLists.txt
 include src/core_ffi/CMakeLists.txt
 
 recursive-include src/core *
-recursive-include src/core_ffi/py_ffi *
-recursive-exclude src/core_ffi/py_ffi/packing *
+recursive-include src/core_ffi/python_ffi *
+recursive-exclude src/core_ffi/python_ffi/packing *
 
 include third_party/ThirdParty.cmake
 recursive-include third_party/pybind11 *
