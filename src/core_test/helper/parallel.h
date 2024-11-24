@@ -20,6 +20,18 @@ namespace helper {
 
 // ----------------------------------------------------------------------------------------- //
 
+void head_parallel(std::function<void(uint64_t head)> &&func);
+
+void block_num_parallel(std::function<void(int n, int n_2x1, int n_1x1)> &&func);
+
+#define HEAD_PARALLEL(impl) \
+    ::helper::head_parallel([](uint64_t head) {impl})
+
+#define BLOCK_NUM_PARALLEL(impl) \
+    ::helper::block_num_parallel([](int n, int n_2x1, int n_1x1) {impl})
+
+// ----------------------------------------------------------------------------------------- //
+
 /// Spawn all valid Groups in parallel.
 void group_parallel(std::function<void(Group group)> &&func);
 
