@@ -1,6 +1,35 @@
 /// Klotski Engine by Dnomd343 @2024
 
-// TODO: A stable Ranges or RangesUnion must be ordered and non-repeating.
+/// Range is the lower 32-bit of CommonCode, which is a combination of space,
+/// 1x2, 2x1 and 1x1. They each occupy 2-bit, corresponding to binary 00, 01,
+/// 10 and 11, note that the remaining positions will be filled with 0.
+
+/// Since there is only one 2x2 block, and there are at least two spaces, this
+/// means that they satisfy the following formula in number:
+///
+///   1. n_space + n_1x1 + (n_2x1 + n_1x2) * 2 = 5 * 4 - 2 * 2
+///   2. n_2x1 != 7 (not exist on 5x4 board)
+///   3. n_space >= 2
+///
+/// That is:
+///   n_1x1 + (n_2x1 + n_1x2) * 2 <= 14  (n_2x1 != 7)
+///
+/// In the above inequality, the variables are all positive integers, so we can
+/// get 203 combinations. In each combination, four kinds of 2-bit items can be
+/// arranged in different ways to get a Range list.
+
+/// The Range list is called Ranges, which is an array of `uint32_t`. Given the
+/// specified number of n_1x2, n_2x1 and n_1x1, which can get the corresponding
+/// Ranges. Normally, the Ranges is non-duplicate and sequential, but it does
+/// not guarantee this to provide optimal performance.
+
+/// Obviously, Range can be combined with 12 different head values to generate
+/// [0, 12) valid CommonCodes. For a Ranges, we can match each element with all
+/// head values and store the Range that can generate CommonCode according to
+/// the head value. Since the head value is in [0, 16), we can store the result
+/// in a Ranges array of length 16. This structure is called RangesUnion, which
+/// is essentially a CommonCode array, but it can save half the space compared
+/// to directly storing the `uint64_t` structure.
 
 #pragma once
 
