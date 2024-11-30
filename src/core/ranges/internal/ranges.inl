@@ -28,6 +28,7 @@ inline Ranges& Ranges::operator+=(const Ranges &ranges) {
 }
 
 KLSK_INLINE_H RangesUnion& RangesUnion::operator+=(const RangesUnion &ranges_union) {
+    KLSK_UNROLL(Heads.size())
     for (const auto head : Heads) {
         ranges(head) += ranges_union.ranges(head);
     }
@@ -36,7 +37,7 @@ KLSK_INLINE_H RangesUnion& RangesUnion::operator+=(const RangesUnion &ranges_uni
 
 KLSK_INLINE_H size_t RangesUnion::size() const {
     size_type size = 0;
-    KLSK_UNROLL(sizeof(Heads))
+    KLSK_UNROLL(Heads.size())
     for (const auto head : Heads) {
         size += ranges(head).size();
     }
