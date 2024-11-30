@@ -2,12 +2,9 @@
 
 namespace klotski::cases {
 
-KLSK_INLINE_CE int Ranges::check(const int head, uint32_t range) {
-    KLSK_ASSUME(head >= 0 && head < 16 && head % 4 != 3);
-    const int limit = 16 - (std::countl_zero(range) >> 1);
-    uint32_t flags = 0b110011 << head; // fill 2x2 block
-
-    for (int offset = 0, addr = 0; offset < limit; ++offset, range >>= 2) { // traverse every 2-bit
+template <int N>
+KLSK_INLINE_CE int check_range(uint32_t flags, uint32_t range) {
+    for (int offset = 0, addr = 0; offset < N; ++offset, range >>= 2) { // traverse every 2-bit
         addr += std::countr_one(flags); // next unfilled block
         flags >>= std::countr_one(flags);
         switch (range & 0b11) {
@@ -32,6 +29,31 @@ KLSK_INLINE_CE int Ranges::check(const int head, uint32_t range) {
         }
     }
     return 0; // pass check
+}
+
+KLSK_INLINE_CE int Ranges::check(const int head, const uint32_t range) {
+    KLSK_ASSUME(head >= 0 && head < 16 && head % 4 != 3);
+    const uint32_t flags = 0b110011 << head; // fill 2x2 block
+    switch (std::countl_zero(range) >> 1) {
+        case 0: return check_range<16>(flags, range);
+        case 1: return check_range<15>(flags, range);
+        case 2: return check_range<14>(flags, range);
+        case 3: return check_range<13>(flags, range);
+        case 4: return check_range<12>(flags, range);
+        case 5: return check_range<11>(flags, range);
+        case 6: return check_range<10>(flags, range);
+        case 7: return check_range<9>(flags, range);
+        case 8: return check_range<8>(flags, range);
+        case 9: return check_range<7>(flags, range);
+        case 10: return check_range<6>(flags, range);
+        case 11: return check_range<5>(flags, range);
+        case 12: return check_range<4>(flags, range);
+        case 13: return check_range<3>(flags, range);
+        case 14: return check_range<2>(flags, range);
+        case 15: return check_range<1>(flags, range);
+        case 16: return check_range<0>(flags, range);
+        default: std::unreachable();
+    }
 }
 
 } // namespace klotski::cases
