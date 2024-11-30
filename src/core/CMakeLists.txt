@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
-project(klotski_core VERSION 0.0.1 LANGUAGES CXX)
+project(klotski_core VERSION 0.0.2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
 set(KLSK_CORE_SRC
     ranges/internal/spawn.cc
     ranges/internal/ranges.cc
-    ranges/internal/derive.cc
 
     all_cases/internal/basic_ranges.cc
     all_cases/internal/all_cases.cc
