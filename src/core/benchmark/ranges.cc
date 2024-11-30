@@ -11,6 +11,7 @@ using klotski::cases::RangesUnion;
 
 using klotski::group::BLOCK_NUM;
 using klotski::cases::ALL_CASES_NUM;
+using klotski::cases::ALL_CASES_NUM_;
 using klotski::cases::BASIC_RANGES_NUM_;
 
 Ranges ranges_samples(const size_t num) {
@@ -19,13 +20,33 @@ Ranges ranges_samples(const size_t num) {
     const size_t offset = part_size / 2;
 
     Ranges result;
+    result.reserve(num);
     for (size_t i = 0; i < num; ++i) {
         result.emplace_back(ranges[i * part_size + offset]);
     }
     return result;
 }
 
-static void CheckRanges(benchmark::State &state) {
+std::vector<size_t> all_cases_index_samples(const size_t num) {
+    const size_t part_size = ALL_CASES_NUM_ / num;
+    const size_t offset = part_size / 2;
+
+    std::vector<size_t> result;
+    result.reserve(num);
+    for (size_t i = 0; i < num; ++i) {
+        result.emplace_back(i * part_size + offset);
+    }
+    return result;
+}
+
+static void RangesReverse(benchmark::State &state) {
+    auto ranges = BasicRanges::instance().fetch();
+    for (auto _ : state) {
+        ranges.reverse();
+    }
+}
+
+static void RangesCheck(benchmark::State &state) {
     auto ranges = ranges_samples(state.range(0));
     ranges.reverse();
     for (auto _ : state) {
@@ -38,14 +59,7 @@ static void CheckRanges(benchmark::State &state) {
     state.SetItemsProcessed(state.iterations() * state.range(0) * 12);
 }
 
-static void ReverseRanges(benchmark::State &state) {
-    auto ranges = BasicRanges::instance().fetch();
-    for (auto _ : state) {
-        ranges.reverse();
-    }
-}
-
-static void SpawnRanges(benchmark::State &state) {
+static void RangesSpawn(benchmark::State &state) {
     for (auto _ : state) {
         Ranges ranges {};
         ranges.reserve(BASIC_RANGES_NUM_);
@@ -55,7 +69,7 @@ static void SpawnRanges(benchmark::State &state) {
     }
 }
 
-static void DeriveRanges(benchmark::State &state) {
+static void RangesDerive(benchmark::State &state) {
     auto ranges = BasicRanges::instance().fetch();
     ranges.reverse();
     for (auto _ : state) {
@@ -67,6 +81,27 @@ static void DeriveRanges(benchmark::State &state) {
     }
 }
 
+static void RangesUnionAt(benchmark::State &state) {
+    const auto &all_cases = AllCases::instance().fetch();
+    const auto samples = all_cases_index_samples(state.range(0));
+    for (auto _ : state) {
+        for (const auto index : samples) {
+            benchmark::DoNotOptimize(all_cases[index]);
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+}
+
+static void RangesUnionSize(benchmark::State &state) {
+    auto &all_cases = AllCases::instance().fetch();
+    for (auto _ : state) {
+        for (int i = 0; i < state.range(0); ++i) {
+            benchmark::DoNotOptimize(all_cases.size());
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+}
+
 static void RangesUnionExport(benchmark::State &state) {
     auto &all_cases = AllCases::instance().fetch();
     for (auto _ : state) {
@@ -75,56 +110,14 @@ static void RangesUnionExport(benchmark::State &state) {
     }
 }
 
-static void RangesSize(benchmark::State &state) {
-    auto &all_cases = AllCases::instance().fetch();
-    // std::cout << all_cases.size() << std::endl;
-    for (auto _ : state) {
-        volatile auto k1 = all_cases.size();
-        volatile auto k2 = all_cases.size();
-        volatile auto k3 = all_cases.size();
-        volatile auto k4 = all_cases.size();
-        volatile auto k5 = all_cases.size();
-        volatile auto k6 = all_cases.size();
-        volatile auto k7 = all_cases.size();
-        volatile auto k8 = all_cases.size();
+BENCHMARK(RangesReverse)->Unit(benchmark::kMillisecond);
+BENCHMARK(RangesCheck)->Unit(benchmark::kMicrosecond)->Range(16, 256);
 
-        volatile auto p1 = all_cases.size();
-        volatile auto p2 = all_cases.size();
-        volatile auto p3 = all_cases.size();
-        volatile auto p4 = all_cases.size();
-        volatile auto p5 = all_cases.size();
-        volatile auto p6 = all_cases.size();
-        volatile auto p7 = all_cases.size();
-        volatile auto p8 = all_cases.size();
-    }
-}
+BENCHMARK(RangesSpawn)->Unit(benchmark::kMillisecond);
+BENCHMARK(RangesDerive)->Unit(benchmark::kMillisecond);
 
-static void RangesAt(benchmark::State &state) {
-    auto &all_cases = AllCases::instance().fetch();
-    for (auto _ : state) {
-        volatile auto k0 = all_cases[1035968];
-        volatile auto k1 = all_cases[3778871];
-        volatile auto k2 = all_cases[7489354];
-        volatile auto k3 = all_cases[10398492];
-        volatile auto k4 = all_cases[19091276];
-        volatile auto k5 = all_cases[21373726];
-        volatile auto k6 = all_cases[27296711];
-        volatile auto k7 = all_cases[28214648];
-    }
-}
-
-BENCHMARK(CheckRanges)->Unit(benchmark::kMicrosecond)->Range(16, 256);
-
-// BENCHMARK(ReverseRanges)->Unit(benchmark::kMillisecond);
-
-// BENCHMARK(SpawnRanges)->Unit(benchmark::kMillisecond);
-
-// BENCHMARK(DeriveRanges)->Unit(benchmark::kMillisecond);
-
-// BENCHMARK(RangesUnionExport)->Unit(benchmark::kMillisecond);
-
-// BENCHMARK(RangesSize);
-
-// BENCHMARK(RangesAt);
+BENCHMARK(RangesUnionAt)->Range(16, 256);
+BENCHMARK(RangesUnionSize)->Range(16, 256);
+BENCHMARK(RangesUnionExport)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_MAIN();
