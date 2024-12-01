@@ -1,24 +1,29 @@
 #include <gtest/gtest.h>
+#include <utility/exposer.h>
 
-#include "helper/hash.h"
-#include "helper/cases.h"
-#include "helper/expect.h"
-#include "helper/fixture.h"
-#include "utility/exposer.h"
-
+#include "ranges/ranges.h"
+#include "all_cases/all_cases.h"
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
+
+#include "helper/hash.h"
+#include "helper/expect.h"
+#include "helper/fixture.h"
 
 using klotski::array_sum;
 using klotski::cases::Ranges;
 using klotski::cases::AllCases;
-using klotski::cases::BasicRanges;
-
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
+using klotski::cases::BasicRanges;
+using klotski::cases::RangesUnion;
 
+using klotski::cases::ALL_CASES_NUM;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::codec::SHORT_CODE_LIMIT;
+
+constexpr auto Heads = RangesUnion::Heads;
+constexpr auto NonHeads = std::to_array<uint64_t>({3, 7, 11, 15});
 
 /// Forcibly modify private variables to reset state.
 EXPOSE_VAR(AllCases, bool, available_)
@@ -51,14 +56,15 @@ protected:
     static void Verify() {
         const auto &all_cases = AllCases::instance().fetch();
         for (int head = 0; head < 16; ++head) {
-            EXPECT_EQ(all_cases.ranges(head).size(), ALL_CASES_NUM[head]); // verify all cases size
-            EXPECT_EQ(helper::xxh3(all_cases.ranges(head)), ALL_CASES_XXH3[head]); // verify all cases checksum
+            const auto &ranges = all_cases.ranges(head);
+            EXPECT_EQ(ranges.size(), ALL_CASES_NUM[head]); // verify all cases size
+            EXPECT_EQ(helper::xxh3(ranges), ALL_CASES_XXH3[head]); // verify all cases checksum
         }
     }
 };
 
 TEST_FF(AllCases, content) {
-    for (auto head : Heads) {
+    for (const auto head : Heads) {
         auto &cases = AllCases::instance().fetch().ranges(head);
         EXPECT_SORTED_AND_UNIQUE(cases);
         EXPECT_EQ(cases.size(), ALL_CASES_NUM[head]); // size verify
@@ -73,9 +79,7 @@ TEST_FF(AllCases, content) {
     for (const auto code : AllCases::instance().fetch().codes()) {
         short_codes.emplace_back(code.to_short_code().unwrap());
     }
-    EXPECT_EQ(short_codes.front(), 0);
-    EXPECT_SORTED_AND_UNIQUE(short_codes);
-    EXPECT_EQ(short_codes.back(), SHORT_CODE_LIMIT - 1);
+    EXPECT_IOTA(short_codes);
 }
 
 TEST_FF(AllCases, constant) {
@@ -83,17 +87,16 @@ TEST_FF(AllCases, constant) {
     EXPECT_EQ(ALL_CASES_NUM.size(), 16);
     EXPECT_EQ(array_sum(ALL_CASES_NUM), ALL_CASES_NUM_);
 
-    EXPECT_EQ(ALL_CASES_NUM[3], 0);
-    EXPECT_EQ(ALL_CASES_NUM[7], 0);
-    EXPECT_EQ(ALL_CASES_NUM[11], 0);
-    EXPECT_EQ(ALL_CASES_NUM[15], 0);
-
     auto ranges = BasicRanges::instance().fetch();
     ranges.reverse();
     for (const auto head : Heads) {
         Ranges release;
-        ranges.derive(head, release);
+        ranges.derive(static_cast<int>(head), release);
         EXPECT_EQ(release.size(), ALL_CASES_NUM[head]);
+    }
+
+    for (const auto head : NonHeads) {
+        EXPECT_EQ(ALL_CASES_NUM[head], 0);
     }
 }
 

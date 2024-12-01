@@ -33,3 +33,11 @@ std::string ostream_capture(T obj) {
         EXPECT_TRUE(CommonCode::check(static_cast<uint64_t>(head) << 32 | range))
 
 // ----------------------------------------------------------------------------------------- //
+
+#define EXPECT_IOTA(R)           \
+    EXPECT_FALSE(R.empty());     \
+    EXPECT_EQ(R.front(), 0);     \
+    EXPECT_SORTED_AND_UNIQUE(R); \
+    EXPECT_EQ(R.back(), R.size() - 1)
+
+// ----------------------------------------------------------------------------------------- //

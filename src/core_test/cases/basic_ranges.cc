@@ -1,19 +1,23 @@
 #include <gtest/gtest.h>
+#include <utility/exposer.h>
 
 #include "group/group.h"
+#include "ranges/ranges.h"
+#include "all_cases/all_cases.h"
+
 #include "helper/hash.h"
-#include "helper/cases.h"
 #include "helper/expect.h"
 #include "helper/fixture.h"
-#include "utility/exposer.h"
+#include "helper/parallel.h"
 
 using klotski::array_sum;
 using klotski::cases::Ranges;
-using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
 
 using klotski::group::BLOCK_NUM;
 using klotski::group::TYPE_ID_LIMIT;
+using klotski::cases::BASIC_RANGES_NUM;
+using klotski::cases::BASIC_RANGES_NUM_;
 
 /// Forcibly modify private variables to reset state.
 EXPOSE_VAR(BasicRanges, bool, available_)
@@ -57,12 +61,12 @@ TEST_FF(BasicRanges, constant) {
     EXPECT_EQ(BASIC_RANGES_NUM.size(), TYPE_ID_LIMIT);
     EXPECT_EQ(array_sum(BASIC_RANGES_NUM), BASIC_RANGES_NUM_);
 
-    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        const auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id];
+    TYPE_ID_PARALLEL({
         Ranges ranges;
-        ranges.spawn(n, n_2x1, n_1x1);
+        const auto num = BLOCK_NUM[type_id];
+        ranges.spawn(std::get<0>(num), std::get<1>(num), std::get<2>(num));
         EXPECT_EQ(ranges.size(), BASIC_RANGES_NUM[type_id]);
-    }
+    });
 }
 
 TEST_FF(BasicRanges, basic_ranges) {
