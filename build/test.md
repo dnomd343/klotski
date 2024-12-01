@@ -107,7 +107,7 @@ index f4722c3b352d..735ef62a520b 100644
     -DLIBCXX_ENABLE_WIDE_CHARACTERS=OFF \
     -DLIBCXX_ENABLE_FILESYSTEM=OFF \
     -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18
-> ninja -C build cxx cxxabi unwind
+> ninja -C build cxx cxxabi
 
 > clang++-18 -O3 -flto=full -fno-exceptions -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-ident -nostdinc++ -isystem /root/llvm-project/build/include/c++/v1 -nostdlib++ -c main.cc -v
 > clang++-18 main.o -flto=full -fuse-ld=lld-18 -nostdlib++ -L /root/llvm-project/build/lib -Wl,-Bstatic -lc++ -lc++abi -Wl,-Bdynamic -Wl,--gc-sections -o demo -v
@@ -119,4 +119,73 @@ index f4722c3b352d..735ef62a520b 100644
 
 > llvm-objcopy-18 --remove-section .eh_frame --remove-section .eh_frame_hdr demo
 > llvm-readelf-18 -S demo
+```
+
+## Zig Build
+
+```bash
+> zig c++ -O3 -fno-exceptions -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-ident -c main.cc -v
+> zig c++ main.o -Wl,--gc-sections -o demo -v
+
+> zig c++ -O3 -fno-exceptions -fno-rtti -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-ident main.cc -o demo
+```
+
+## Zig build klotski
+
+```bash
+# FILE: /usr/local/bin/zig-cc
+
+#!/usr/bin/env sh
+eval zig cc $@
+
+# FILE: /usr/local/bin/zig-c++
+
+#!/usr/bin/env sh
+eval zig c++ $@
+
+# FILE: /usr/local/bin/zig-ar
+
+#!/usr/bin/env sh
+eval zig ar $@
+
+# FILE: /usr/local/bin/zig-ranlib
+
+#!/usr/bin/env sh
+eval zig ranlib $@
+```
+
+```bash
+> cmake -DCMAKE_TOOLCHAIN_FILE=build/zig.toolchain.cmake -GNinja -Bcmake-build
+> cmake --build cmake-build -v
+```
+
+## Clang build klotski
+
+```bash
+> cmake -DCMAKE_TOOLCHAIN_FILE=build/clang.toolchain.cmake -GNinja -Bcmake-build
+> cmake --build cmake-build -v
+```
+
+```bash
+> cmake -G Ninja -S runtimes -B build \
+    -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+    -DCMAKE_CXX_FLAGS="-ffunction-sections -fdata-sections -flto=full" \
+    -DCMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld-18" \
+    -DLIBCXX_ENABLE_RTTI=OFF \
+    -DLIBCXX_ENABLE_EXCEPTIONS=OFF \
+    -DLIBCXXABI_ENABLE_EXCEPTIONS=OFF \
+    -DLIBCXX_ENABLE_TIME_ZONE_DATABASE=OFF \
+    -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18
+> ninja -C build cxx cxxabi
+```
+
+```bash
+> cmake -DCMAKE_TOOLCHAIN_FILE=build/fast.toolchain.cmake -GNinja -Bcmake-build
+> cmake --build cmake-build --target klotski_core -v
+> cmake --build cmake-build --target bm_klsk_all_cases -v
+> cmake --build cmake-build --target bm_klsk_codec -v
+> cmake --build cmake-build --target bm_klsk_fast_cal -v
+> cmake --build cmake-build --target bm_klsk_group -v
+> cmake --build cmake-build --target bm_klsk_ranges -v
+> cmake --build cmake-build --target bm_klsk_utility -v
 ```
