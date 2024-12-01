@@ -7,6 +7,8 @@
 #include "helper/parallel.h"
 #include "helper/block_num.h"
 
+#include "helper/expect.h"
+
 #include "helper/group.h"
 
 #include "group/group.h"
@@ -19,12 +21,6 @@ using klotski::group::GroupUnion;
 
 using klotski::group::TYPE_ID_LIMIT;
 using klotski::group::ALL_GROUP_NUM;
-
-#define EXPECT_IOTA(R)           \
-    EXPECT_FALSE(R.empty());     \
-    EXPECT_EQ(R.front(), 0);     \
-    EXPECT_SORTED_AND_UNIQUE(R); \
-    EXPECT_EQ(R.back(), R.size() - 1)
 
 #define EXPECT_REPEAT(R, val)  \
     EXPECT_FALSE(R.empty());   \
