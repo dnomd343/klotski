@@ -1,0 +1,17 @@
+set(CMAKE_C_COMPILER             "zig-cc")
+set(CMAKE_C_FLAGS                "-march=x86_64")
+set(CMAKE_C_FLAGS_DEBUG          "-g")
+set(CMAKE_C_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
+set(CMAKE_C_FLAGS_RELEASE        "-O4 -DNDEBUG")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O4 -g -DNDEBUG")
+
+set(CMAKE_CXX_COMPILER             "zig-c++")
+set(CMAKE_CXX_FLAGS                "-march=x86_64")
+set(CMAKE_CXX_FLAGS_DEBUG          "-g")
+set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O4 -g -DNDEBUG")
+
+set(CMAKE_AR     "zig-ar")
+set(CMAKE_LINKER "zig-c++")
+set(CMAKE_RANLIB "zig-ranlib")
