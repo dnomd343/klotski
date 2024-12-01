@@ -1,27 +1,21 @@
+#include "ranges/ranges.h"
 #include "all_cases/all_cases.h"
 
-using klotski::range_reverse;
 using klotski::cases::Ranges;
 using klotski::cases::AllCases;
 using klotski::cases::BasicRanges;
+
+using klotski::range_reverse;
 using klotski::cases::ALL_CASES_NUM;
 
-typedef std::array<int, 12> Heads;
-
 /// Generate all possible klotski heads.
-static consteval Heads get_heads() {
-    Heads heads {};
-    for (int i = 0, head = 0; head < 15; ++head) {
-        if (head % 4 != 3) {
-            heads[i++] = head;
-        }
-    }
-    return heads;
+static consteval std::array<int, 12> get_heads() {
+    // TODO: why faster than using `constexpr` directly
+    return {0x0, 0x1, 0x2, 0x4, 0x5, 0x6, 0x8, 0x9, 0xA, 0xC, 0xD, 0xE};
 }
 
 /// Build all valid ranges of the specified head.
-static void build_cases(const std::vector<uint32_t> &ranges,
-                        const std::vector<uint32_t> &reversed, Ranges &release, const int head) {
+static void build_cases(const Ranges &ranges, const Ranges &reversed, Ranges &release, const int head) {
     release.clear();
     release.reserve(ALL_CASES_NUM[head]);
 
@@ -60,7 +54,7 @@ void AllCases::build() {
     }
 
     const auto &ranges = BasicRanges::instance().fetch();
-    std::vector reversed {ranges};
+    Ranges reversed {ranges};
     for (auto &x : reversed) {
         x = range_reverse(x);
     }
@@ -84,7 +78,7 @@ void AllCases::build_async(Executor &&executor, Notifier &&callback) {
     }
 
     auto &ranges = BasicRanges::instance().fetch();
-    auto reversed = std::make_shared<std::vector<uint32_t>>(ranges);
+    auto reversed = std::make_shared<Ranges>(ranges);
     for (auto &x : *reversed) {
         x = range_reverse(x);
     }
