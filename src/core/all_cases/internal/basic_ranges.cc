@@ -6,31 +6,15 @@
 
 using klotski::cases::Ranges;
 using klotski::cases::BasicRanges;
+
+using klotski::group::BLOCK_NUM;
 using klotski::group::TYPE_ID_LIMIT;
 
-using RangesIter = Ranges::iterator ;
-using RangeType = std::tuple<int, int, int> ;
-using RangeTypeUnion = std::array<RangeType, TYPE_ID_LIMIT>;
-
-/// Generate all possible basic-ranges permutations.
-consteval static RangeTypeUnion range_types() {
-    RangeTypeUnion data;
-    for (int i = 0, n = 0; n <= 7; ++n) { // 1x2 + 2x1 -> 0 ~ 7
-        for (int n_2x1 = 0; n_2x1 <= n; ++n_2x1) { // 2x1 -> 0 ~ n
-            if (n_2x1 == 7) {
-                break;
-            }
-            for (int n_1x1 = 0; n_1x1 <= (14 - n * 2); ++n_1x1) { // 1x1 -> 0 ~ (14 - 2n)
-                data[i++] = {n, n_2x1, n_1x1};
-            }
-        }
-    }
-    return data;
-}
+using RangesIter = Ranges::iterator;
 
 /// Combine two consecutive sorted arrays into one sorted arrays.
 static void inplace_merge(RangesIter begin, RangesIter mid, const RangesIter end) {
-    std::vector<uint32_t> tmp {begin, mid}; // left array backup
+    std::vector<Ranges::value_type> tmp {begin, mid}; // left array backup
     for (auto p = tmp.begin();;) {
         if (*p <= *mid) {
             *(begin++) = *(p++); // stored in original span
@@ -59,7 +43,7 @@ void BasicRanges::build() {
     auto &ranges = get_ranges();
     ranges.clear();
     ranges.reserve(BASIC_RANGES_NUM_);
-    for (auto [n, n_2x1, n_1x1] : range_types()) {
+    for (auto [n, n_2x1, n_1x1] : BLOCK_NUM) {
         ranges.spawn(n, n_2x1, n_1x1);
     }
 
@@ -106,7 +90,7 @@ void BasicRanges::build_async(Executor &&executor, Notifier &&callback) {
     for (uint32_t i = 0; i < TYPE_ID_LIMIT; ++i) {
         (*cache)[i].reserve(BASIC_RANGES_NUM[i]);
         worker.post([cache, i] {
-            auto [n, n_2x1, n_1x1] = range_types()[i];
+            auto [n, n_2x1, n_1x1] = BLOCK_NUM[i];
             (*cache)[i].spawn(n, n_2x1, n_1x1);
         });
     }
@@ -146,6 +130,6 @@ void BasicRanges::build_async(Executor &&executor, Notifier &&callback) {
                 self(self); // next sort round
             });
         };
-        inner_sort(inner_sort); // TODO: using `this auto &&self` in new version
+        inner_sort(inner_sort); // TODO: using `this auto &&self` in new compiler
     });
 }
