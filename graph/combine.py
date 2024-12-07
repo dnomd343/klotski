@@ -91,7 +91,7 @@ def combine_split_result(data_a: list[set[ig.Vertex]], data_b: list[set[ig.Verte
 def split_layers(g: ig.Graph) -> list[list[set[ig.Vertex]]]:
     assert min(g.vs['step']) == 0
     layer_num = max(g.vs['step']) + 1
-    print(layer_num)
+    print(f'layer_num: {layer_num}')
 
     layers = [{'up': [], 'down': []} for x in range(layer_num)]
     layers[0]['up'] = [set(g.vs.select(step=0))]
@@ -159,6 +159,7 @@ def export_new_graph(g: ig.Graph, split_data: list[list[set[ig.Vertex]]]) -> ig.
 
 if __name__ == '__main__':
     raw = ig.Graph.Read_Pickle('data/DAA7F30.pkl')
+    # raw = ig.Graph.Read_Pickle('data/DBAB4CC.pkl')
     # raw = ig.Graph.Read_Pickle('main_combined.pkl')
     print(raw.summary())
     gg = export_new_graph(raw, split_layers(raw))
