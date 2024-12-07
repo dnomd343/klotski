@@ -1,175 +1,104 @@
-import marimo
+#!/usr/bin/env python3
 
-__generated_with = "0.9.27"
-app = marimo.App(width="medium")
-
-
-@app.cell
-def __():
-    import klotski
-
-    code = klotski.CommonCode(0x1A9BF0C00)
-
-    code.to_string(shorten=True)  # just demo
-    return code, klotski
+import igraph as ig
+from itertools import takewhile
 
 
-@app.cell(hide_code=True)
-def __():
-    import igraph as ig
-
-    g = ig.Graph.Read_Pickle('main_combined.pkl')
-
-    for i in range(g.vcount()):
-        g.vs[i]['codes'] = ['|'.join(g.vs[i]['codes'])]
-
-    g.summary()
-    return g, i, ig
+def load_graph(pkl_file: str) -> ig.Graph:
+    graph = ig.Graph.Read_Pickle(pkl_file)
+    for i in range(graph.vcount()):
+        graph.vs[i]['codes'] = ['|'.join(graph.vs[i]['codes'])]
+    print(graph.summary())
+    return graph
 
 
-@app.cell
-def __():
-    # loop = g.girth(return_shortest_circle=True)
+def find_fold_points(step_list: list[int], degree_list: list[int]) -> list[tuple[int, int]]:
+    size = len(step_list)
+    assert size == len(degree_list) and size > 0 and size % 2 == 0
+    half_size = size // 2
 
-    # [(g.vs[x].degree(), g.vs[x]) for x in loop]  # 8852(78) / 8923(79) / 8848(78) / 8922(79)
-    return
+    def fix_index(raw_id: int) -> int:
+        if raw_id < 0:
+            return raw_id + size
+        elif raw_id >= size:
+            return raw_id - size
+        return raw_id
 
+    fold_info = []
+    for index in range(size):
+        right_ids = [fix_index(x) for x in range(index + 1, index + half_size)]
+        left_ids = [fix_index(x) for x in range(index - 1, index - half_size, -1)]
+        assert len(left_ids) == len(right_ids)
 
-@app.cell
-def __():
-    # print(g.vs[8852].degree() + g.vs[8848].degree())  # endpoint pattern 1 -> 10
-    # print(g.vs[8923].degree() + g.vs[8922].degree())  # endpoint pattern 2 -> 8
-    return
+        steps = ((step_list[a], step_list[b]) for a, b in zip(left_ids, right_ids))
+        fold_len = len(list(takewhile(lambda x: x[0] == x[1], steps)))
+        fold_ids = list(zip(left_ids[:fold_len], right_ids[:fold_len]))
+        fold_degree = sum(degree_list[a] + degree_list[b] for a, b in fold_ids)
 
+        assert fold_len < half_size
+        assert fold_degree >= 4 * fold_len
+        assert len(fold_ids) == fold_len
+        fold_info.append({
+            'index': index,
+            'fold_len': fold_len,
+            'fold_degree': fold_degree,
+            'fold_ids': fold_ids,
+        })
+        # print(f'{index}: {fold_degree} {fold_ids} ({fold_len})')
 
-@app.cell(hide_code=True)
-def __():
-    import marimo as mo
-    return (mo,)
-
-
-@app.cell(hide_code=True)
-def __(mo):
-    mo.md(
-        r"""
-        `endpoints: 8852 <---> 8848`
-
-        So, we should try to combine `8923` and `8922`, the step are both `79`.
-        """
-    )
-    return
-
-
-@app.cell
-def __():
-    # neigh_a = g.vs[8923].neighbors()
-    # neigh_b = g.vs[8922].neighbors()
-    # neigh = sorted(set(neigh_a) | set(neigh_b))
-
-    # print([x.index for x in neigh_a])
-    # print([x.index for x in neigh_b])
-    # print([x.index for x in neigh])
-
-    # new_point = g.add_vertex()
-
-    # assert g.vs[8923]['step'] == g.vs[8922]['step']
-
-    # new_point['step'] = g.vs[8923]['step']
-    # new_point['codes'] = g.vs[8923]['codes'] + g.vs[8922]['codes']
-
-    # new_point
-    return
+    # need larger `fold_len` and smaller `fold_degree`
+    fold_info.sort(key=lambda x: (-x['fold_len'], x['fold_degree']))  # maybe we need min_common_code
+    return fold_info[0]['fold_ids']
 
 
-@app.cell
-def __(g):
-    # edges = [(x.index, new_point.index) for x in neigh]
+def combine_points(graph: ig.Graph, pairs: list[tuple[int, int]]) -> None:
+    graph.vs['id'] = range(graph.vcount())
+    for id_a, id_b in pairs:
+        points_a = [x for x in graph.vs if x['id'] == id_a]
+        points_b = [x for x in graph.vs if x['id'] == id_b]
+        assert len(points_a) == 1 and len(points_b) == 1
 
-    # print(edges)
+        point_a, point_b = points_a[0], points_b[0]
+        assert point_a['step'] == point_b['step']
 
-    # g.add_edges(edges)
+        neighs_a = point_a.neighbors()
+        neighs_b = point_b.neighbors()
+        neighs = sorted(set(neighs_a) | set(neighs_b))
+        assert len(neighs_a) >= 2 and len(neighs_b) >= 2
 
-    # g.delete_vertices([8923, 8922])
-
-    g.summary()
-    return
-
-
-@app.cell
-def __(g):
-    def find_combine_points(circle_points: list[int]) -> list[tuple[int, int]]:
-        step_list = [g.vs[x]['step'] for x in circle_points]
-
-        # step_list = [53, 52, 51, 52, 53, 54, 55, 56, 57, 56, 55, 54]
-        size = len(step_list)
-        assert size % 2 == 0
-        half_size = int(size / 2)
-
-        target = -1
-        search_list = step_list + step_list + step_list
-        for index in range(size, size * 2):
-            right = search_list[index+1:index+half_size]
-            left = list(reversed(search_list[index+1-half_size:index]))
-            # print(f'{search_list[index]}: {left} vs {right} ({left == right})')
-            if left == right:
-                target = index - size
-                break
-
-        # TODO: check degree() value
-        assert target != -1
-        # print(target, step_list[target])
-
-        def fix_index(val: int):
-            if val < 0:
-                return val + size
-            if val >= size:
-                return val - size
-            return val
-
-        combine_points = []
-        for index in range(target + 1, target + half_size):
-            mirror = target * 2 - index
-            combine_points.append((fix_index(index), fix_index(mirror)))
-
-        return [(circle_points[x], circle_points[y]) for x, y in combine_points]
-
-    # find_combine_points([8852, 8923, 8848, 8922])
-    return (find_combine_points,)
+        point_new = graph.add_vertex()
+        point_new['step'] = point_a['step']
+        point_new['codes'] = point_a['codes'] + point_b['codes']
+        # print(point_new)
+        graph.add_edges([(neigh.index, point_new.index) for neigh in neighs])
+        graph.delete_vertices([point_a.index, point_b.index])
 
 
-@app.cell
-def __(find_combine_points, g):
-    # NOTE: only for mirror circle pattern
-    def combine_points(point_pairs: list[tuple[int, int]]):
-        g.vs['id'] = range(g.vcount())
-
-        for id_a, id_b in point_pairs:
-            point_a = [x for x in g.vs if x['id'] == id_a][0]
-            point_b = [x for x in g.vs if x['id'] == id_b][0]
-            assert point_a['step'] == point_b['step']
-            print('combine:', point_a, point_b)
-
-            neigh_a = point_a.neighbors()
-            neigh_b = point_b.neighbors()
-            neigh = sorted(set(neigh_a) | set(neigh_b))
-
-            new_point = g.add_vertex()
-            new_point['step'] = point_a['step']
-            new_point['codes'] = point_a['codes'] + point_b['codes']
-            # print(new_point)
-            g.add_edges([(x.index, new_point.index) for x in neigh])
-            g.delete_vertices([point_a.index, point_b.index])
-
-    for i_ in range(146):
+def fold_circle(graph: ig.Graph) -> None:
+    while True:
         print(g.summary())
-        loop = g.girth(return_shortest_circle=True)
-        print('circle:', loop)
-        combine_points(find_combine_points(loop))
+        if g.is_tree():
+            break
+        circle = g.girth(return_shortest_circle=True)
+        circle = [graph.vs[x] for x in circle]
+        fold_pairs = find_fold_points([x['step'] for x in circle], [x.degree() for x in circle])
+        fold_pairs = [(circle[a].index, circle[b].index) for a, b in fold_pairs]
+        print('fold:', fold_pairs)
+        combine_points(graph, fold_pairs)
 
-    print(g.summary())
+
+if __name__ == '__main__':
+    # val = find_fold_point([53, 52, 51, 52, 53, 54, 55, 56, 57, 56, 55, 54], [2, 2, 3, 2, 2, 2, 2, 2, 3, 2, 2, 2])
+    # val = find_fold_point([65, 66, 67, 66, 65, 64, 65, 66, 67, 66, 65, 64, 63, 64], [2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 3, 2])
+    # val = find_fold_point([53, 54, 55, 54, 53, 54, 53, 52, 51, 52], [2, 2, 2, 2, 3, 2, 2, 2, 3, 2])
+    # print(val)
+
+    g = load_graph('main_combined.pkl')
+    fold_circle(g)
     g.write_pickle('main_circle.pkl')
-    return combine_points, i_, loop
+    # g.write_graphml('main_circle.graphml')
 
-
-if __name__ == "__main__":
-    app.run()
+    # g = load_graph('main_cut.pkl')
+    # fold_circle(g)
+    # g.write_pickle('main_cut_circle.pkl')
+    # g.write_graphml('main_cut_circle.graphml')

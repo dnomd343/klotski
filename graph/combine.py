@@ -159,18 +159,11 @@ def export_new_graph(g: ig.Graph, split_data: list[list[set[ig.Vertex]]]) -> ig.
 
 if __name__ == '__main__':
     raw = ig.Graph.Read_Pickle('data/DAA7F30.pkl')
-    # raw = ig.Graph.Read_Pickle('data/DBAB4CC.pkl')
     # raw = ig.Graph.Read_Pickle('main_combined.pkl')
     print(raw.summary())
     gg = export_new_graph(raw, split_layers(raw))
     print(gg.summary())
     # print(gg.isomorphic(raw))
-
-    # for x in gg.vs:
-    #     x['color'] = 'yellow'
-    # gg.vs[0]['color'] = 'red'
-    # print(gg)
-    # ig.plot(gg, 'demo.png', vertex_size=10)
 
     gg.write_pickle('main_combined.pkl')
     # gg.write_graphml('main_combined.graphml')
