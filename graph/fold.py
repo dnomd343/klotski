@@ -74,31 +74,32 @@ def combine_points(graph: ig.Graph, pairs: list[tuple[int, int]]) -> None:
         graph.delete_vertices([point_a.index, point_b.index])
 
 
-def fold_circle(graph: ig.Graph) -> None:
+def fold_circle(graph: ig.Graph, limit: int | None) -> None:
     while True:
-        print(g.summary())
-        if g.is_tree():
+        # print(graph.summary())
+        if graph.is_tree():
             break
-        circle = g.girth(return_shortest_circle=True)
-        circle = [graph.vs[x] for x in circle]
-        fold_pairs = find_fold_points([x['step'] for x in circle], [x.degree() for x in circle])
-        fold_pairs = [(circle[a].index, circle[b].index) for a, b in fold_pairs]
-        print('fold:', fold_pairs)
+        ring = [graph.vs[x] for x in graph.girth(return_shortest_circle=True)]
+        if limit is not None:
+            if len(ring) > limit:
+                break
+
+        fold_pairs = find_fold_points([x['step'] for x in ring], [x.degree() for x in ring])
+        fold_pairs = [(ring[a].index, ring[b].index) for a, b in fold_pairs]
+        print(f'fold: {fold_pairs}')
         combine_points(graph, fold_pairs)
+    del graph.vs['id']
+
+
+def export_graph(graph: ig.Graph, pkl_file: str) -> None:
+    for i in range(graph.vcount()):
+        graph.vs[i]['num'] = sum(len(x.split('|')) for x in graph.vs[i]['codes'])
+        graph.vs[i]['codes'] = '-'.join(graph.vs[i]['codes'])
+    graph.write_pickle(pkl_file)
 
 
 if __name__ == '__main__':
-    # val = find_fold_point([53, 52, 51, 52, 53, 54, 55, 56, 57, 56, 55, 54], [2, 2, 3, 2, 2, 2, 2, 2, 3, 2, 2, 2])
-    # val = find_fold_point([65, 66, 67, 66, 65, 64, 65, 66, 67, 66, 65, 64, 63, 64], [2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 3, 2])
-    # val = find_fold_point([53, 54, 55, 54, 53, 54, 53, 52, 51, 52], [2, 2, 2, 2, 3, 2, 2, 2, 3, 2])
-    # print(val)
-
-    g = load_graph('main_combined.pkl')
-    fold_circle(g)
-    g.write_pickle('main_circle.pkl')
-    # g.write_graphml('main_circle.graphml')
-
-    # g = load_graph('main_cut.pkl')
-    # fold_circle(g)
-    # g.write_pickle('main_cut_circle.pkl')
-    # g.write_graphml('main_cut_circle.graphml')
+    raw = load_graph('main_combined.pkl')
+    fold_circle(raw, None)
+    # fold_circle(raw, 32)
+    export_graph(raw, 'main_folded.pkl')
