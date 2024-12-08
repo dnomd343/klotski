@@ -53,6 +53,10 @@ if (KLSK_ENABLE_BENCHMARK)
   target_compile_options(bm_klsk_common_code PRIVATE ${KLSK_BENCHMARK_OPTS})
   target_link_libraries(bm_klsk_common_code PRIVATE ${KLSK_BENCHMARK_LIBS})
 
+  add_executable(bm_klsk_raw_code benchmark/raw_code.cc)
+  target_compile_options(bm_klsk_raw_code PRIVATE ${KLSK_BENCHMARK_OPTS})
+  target_link_libraries(bm_klsk_raw_code PRIVATE ${KLSK_BENCHMARK_LIBS})
+
   add_executable(bm_klsk_group benchmark/group.cc)
   target_compile_options(bm_klsk_group PRIVATE ${KLSK_BENCHMARK_OPTS})
   target_link_libraries(bm_klsk_group PRIVATE ${KLSK_BENCHMARK_LIBS})
