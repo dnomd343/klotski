@@ -6,17 +6,16 @@
 namespace py = pybind11;
 
 using namespace klotski::ffi;
+using klotski::cases::AllCases;
 
 // ----------------------------------------------------------------------------------------- //
 
-PyCasesIter::PyCasesIter(const RangesUnion &data) : data_(data) {}
+PyCasesIter::PyCasesIter(const RangesUnion &data) noexcept : data_(data) {}
 
 PyCommonCode PyCasesIter::next() {
     while (head_ < 16) {
-        const auto &ranges = data_.ranges(head_);
-        if (index_ < ranges.size()) {
-            auto code = (static_cast<uint64_t>(head_) << 32) | ranges[index_++];
-            return std::bit_cast<PyCommonCode>(code);
+        if (const auto &ranges = data_.ranges(head_); index_ < ranges.size()) {
+            return std::bit_cast<PyCommonCode>((head_ << 32) | ranges[index_++]);
         }
         index_ = 0, ++head_;
     }
@@ -26,36 +25,26 @@ PyCommonCode PyCasesIter::next() {
 // ----------------------------------------------------------------------------------------- //
 
 size_t PyCases::size() const noexcept {
-    size_t num = 0;
-    for (const auto &x : data_ref()) { // TODO: fetch from RangesUnion.size()
-        num += x.size();
-    }
-    return num;
+    return data_ref().size();
 }
 
-PyCasesIter PyCases::codes() const noexcept {
+PyCasesIter PyCases::iter() const noexcept {
     return PyCasesIter(data_ref());
 }
 
-PyCommonCode PyCases::at(size_t index) const {
-    if (index >= size()) {
+PyCommonCode PyCases::at(const int32_t index) const {
+    const auto size_ = static_cast<int32_t>(size());
+    if (index >= size_ || index < -size_) {
         throw py::index_error("cases index out of range");
     }
-
-    uint64_t head = 0;
-    for (;;) {
-        if (index >= data_ref().ranges(head).size()) {
-            index -= data_ref().ranges(head).size();
-            ++head;
-        } else {
-            break;
-        }
-    }
-    uint32_t range = data_ref().ranges(head)[index];
-
-    // TODO: fetch from RangesUnion[]
-    const auto code = CommonCode::unsafe_create(head << 32 | range);
+    const auto code = data_ref()[index < 0 ? index + size_ : index];
     return std::bit_cast<PyCommonCode>(code);
+}
+
+// ----------------------------------------------------------------------------------------- //
+
+PyCases PyCases::all_cases() noexcept {
+    return from_ref(AllCases::instance().fetch());
 }
 
 std::string PyCases::repr(const PyCases &cases) noexcept {

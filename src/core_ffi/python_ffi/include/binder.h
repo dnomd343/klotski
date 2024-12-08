@@ -20,7 +20,7 @@ using klotski::ffi::PyGroupUnion;
 using klotski::ffi::PyGroup;
 using klotski::ffi::PyFastCal;
 
-void bind_cases(const py::module_ &m);
+void bind_cases(const py::module_ &mod);
 void bind_short_code(const py::module_ &m);
 void bind_common_code(const py::module_ &m);
 
