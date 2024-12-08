@@ -3,7 +3,8 @@
 #pragma once
 
 #include <variant>
-#include <ranges/ranges.h>
+
+#include "ranges/ranges.h"
 
 #include "py_ffi/common_code.h"
 
@@ -14,22 +15,20 @@ using cases::RangesUnion;
 class PyCasesIter {
 public:
     /// Construct from RangesUnion reference.
-    explicit PyCasesIter(const RangesUnion &data);
+    explicit PyCasesIter(const RangesUnion &data) noexcept;
 
-    /// Get the next CommonCode or throw a stop_iteration exception.
+    /// Get the next CommonCode or throw `stop_iteration` exception.
     PyCommonCode next();
 
 private:
-    uint8_t head_ {0};
-    uint32_t index_ {0};
+    size_t index_ {0};
+    uint64_t head_ {0};
     const RangesUnion &data_;
 };
 
 class PyCases {
 public:
     PyCases() = delete;
-
-    // TODO: add `all_cases` interface
 
     // ------------------------------------------------------------------------------------- //
 
@@ -45,18 +44,21 @@ public:
     [[nodiscard]] size_t size() const noexcept;
 
     /// Get CommonCode iterator of cases.
-    [[nodiscard]] PyCasesIter codes() const noexcept;
+    [[nodiscard]] PyCasesIter iter() const noexcept;
 
     /// Get the CommonCode of the specified index.
-    [[nodiscard]] PyCommonCode at(size_t index) const; // TODO: allow `-1` index
+    [[nodiscard]] PyCommonCode at(int32_t index) const;
 
     // ------------------------------------------------------------------------------------- //
+
+    /// Export all klotski cases.
+    static PyCases all_cases() noexcept;
 
     /// Wrapper of `__repr__` method in Python.
     static std::string repr(const PyCases &cases) noexcept;
 
     /// Compare the cases contents of two PyCases.
-    friend constexpr auto operator==(const PyCases &lhs, const PyCases &rhs);
+    friend constexpr auto operator==(const PyCases &lhs, const PyCases &rhs) noexcept;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -75,7 +77,7 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
-constexpr auto operator==(const PyCases &lhs, const PyCases &rhs) {
+constexpr auto operator==(const PyCases &lhs, const PyCases &rhs) noexcept {
     return lhs.data_ref() == rhs.data_ref();
 }
 
