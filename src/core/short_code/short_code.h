@@ -63,7 +63,6 @@
 #include <mutex>
 #include <string>
 #include <cstdint>
-#include <ostream>
 #include <optional>
 
 #include "utils/utility.h"
@@ -194,6 +193,7 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+static_assert(sizeof(ShortCode) == 4);
 static_assert(std::is_standard_layout_v<ShortCode>);
 static_assert(std::is_trivially_copyable_v<ShortCode>);
 

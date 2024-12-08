@@ -10,13 +10,13 @@ set(KLSK_CORE_SRC
     all_cases/internal/basic_ranges.cc
     all_cases/internal/all_cases.cc
 
-    common_code/internal/common_code.cc
+#    common_code/internal/common_code.cc
     common_code/internal/serialize.cc
-    common_code/internal/mirror.cc
+#    common_code/internal/mirror.cc
 
-    raw_code/internal/raw_code.cc
-    raw_code/internal/convert.cc
-    raw_code/internal/mirror.cc
+#    raw_code/internal/raw_code.cc
+#    raw_code/internal/convert.cc
+#    raw_code/internal/mirror.cc
 
     short_code/internal/convert.cc
     short_code/internal/serialize.cc
