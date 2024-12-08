@@ -7,7 +7,7 @@ namespace klotski::codec {
 
 // ----------------------------------------------------------------------------------------- //
 
-inline CommonCode::CommonCode(const RawCode raw_code) {
+constexpr CommonCode::CommonCode(const RawCode raw_code) {
     code_ = raw_code.to_common_code().code_;
 }
 
@@ -15,11 +15,11 @@ inline CommonCode::CommonCode(const ShortCode short_code) {
     code_ = short_code.to_common_code().code_;
 }
 
-inline CommonCode CommonCode::unsafe_create(const uint64_t common_code) {
+constexpr CommonCode CommonCode::unsafe_create(const uint64_t common_code) {
     return std::bit_cast<CommonCode>(common_code); // init directly
 }
 
-inline std::optional<CommonCode> CommonCode::create(const uint64_t common_code) {
+constexpr std::optional<CommonCode> CommonCode::create(const uint64_t common_code) {
     if (!check(common_code)) {
         return std::nullopt; // invalid common code
     }
@@ -28,7 +28,7 @@ inline std::optional<CommonCode> CommonCode::create(const uint64_t common_code) 
 
 // ----------------------------------------------------------------------------------------- //
 
-inline CommonCode::operator uint64_t() const {
+constexpr CommonCode::operator uint64_t() const {
     return code_;
 }
 
@@ -45,7 +45,7 @@ constexpr uint64_t CommonCode::unwrap() const {
     return code_;
 }
 
-inline RawCode CommonCode::to_raw_code() const {
+constexpr RawCode CommonCode::to_raw_code() const {
     return RawCode(*this);
 }
 
@@ -68,11 +68,11 @@ inline std::optional<CommonCode> CommonCode::from_string(const std::string_view 
 
 // ----------------------------------------------------------------------------------------- //
 
-inline CommonCode CommonCode::from_raw_code(const RawCode raw_code) {
+constexpr CommonCode CommonCode::from_raw_code(const RawCode raw_code) {
     return raw_code.to_common_code();
 }
 
-inline std::optional<CommonCode> CommonCode::from_raw_code(const uint64_t raw_code) {
+constexpr std::optional<CommonCode> CommonCode::from_raw_code(const uint64_t raw_code) {
     const auto convert = [](const RawCode code) {
         return code.to_common_code();
     };
@@ -101,19 +101,19 @@ inline std::optional<CommonCode> CommonCode::from_short_code(const std::string_v
 
 // ----------------------------------------------------------------------------------------- //
 
-inline bool CommonCode::is_vertical_mirror() const {
+constexpr bool CommonCode::is_vertical_mirror() const {
     return false;
 }
 
-inline bool CommonCode::is_horizontal_mirror() const {
+constexpr bool CommonCode::is_horizontal_mirror() const {
     return check_mirror(code_);
 }
 
-inline CommonCode CommonCode::to_vertical_mirror() const {
+constexpr CommonCode CommonCode::to_vertical_mirror() const {
     return unsafe_create(get_vertical_mirror(code_));
 }
 
-inline CommonCode CommonCode::to_horizontal_mirror() const {
+constexpr CommonCode CommonCode::to_horizontal_mirror() const {
     return unsafe_create(get_horizontal_mirror(code_));
 }
 

@@ -45,6 +45,40 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
+    static_assert(CommonCode::check(0x1A9BF0C00));
+    constexpr auto common_code = CommonCode::unsafe_create(0x1A9BF0C00);
+
+    static_assert(common_code.unwrap() == 0x1A9BF0C00);
+    static_assert(static_cast<uint64_t>(common_code) == 0x1A9BF0C00);
+    static_assert(common_code == CommonCode::create(0x1A9BF0C00)->unwrap());
+
+    static_assert(common_code.to_raw_code() == 0x603EDF5CAFFF5E2);
+    static_assert(CommonCode::from_raw_code(0x603EDF5CAFFF5E2).value() == 0x1A9BF0C00);
+    static_assert(CommonCode(RawCode::unsafe_create(0x603EDF5CAFFF5E2)) == 0x1A9BF0C00);
+    static_assert(CommonCode::from_raw_code(RawCode::unsafe_create(0x603EDF5CAFFF5E2)) == 0x1A9BF0C00);
+
+    static_assert(!common_code.is_vertical_mirror());
+    static_assert(common_code.is_horizontal_mirror());
+    static_assert(common_code.to_vertical_mirror() == 0xDC3BE6800);
+    static_assert(common_code.to_horizontal_mirror() == 0x1A9BF0C00);
+
+    static_assert(RawCode::check(0x603EDF5CAFFF5E2));
+    constexpr auto raw_code = RawCode::unsafe_create(0x603EDF5CAFFF5E2);
+
+    static_assert(raw_code.unwrap() == 0x603EDF5CAFFF5E2);
+    static_assert(static_cast<uint64_t>(raw_code) == 0x603EDF5CAFFF5E2);
+    static_assert(raw_code == RawCode::create(0x603EDF5CAFFF5E2)->unwrap());
+
+    static_assert(raw_code.to_common_code() == 0x1A9BF0C00);
+    static_assert(RawCode::from_common_code(0x1A9BF0C00).value() == 0x603EDF5CAFFF5E2);
+    static_assert(RawCode(CommonCode::unsafe_create(0x1A9BF0C00)) == 0x603EDF5CAFFF5E2);
+    static_assert(RawCode::from_common_code(CommonCode::unsafe_create(0x1A9BF0C00)) == 0x603EDF5CAFFF5E2);
+
+    static_assert(!raw_code.is_vertical_mirror());
+    static_assert(raw_code.is_horizontal_mirror());
+    static_assert(raw_code.to_vertical_mirror() == 0xFFF5E2FCF4DA603);
+    static_assert(raw_code.to_horizontal_mirror() == 0x603EDF5CAFFF5E2);
+
     // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();
     // FastCal fc {code};

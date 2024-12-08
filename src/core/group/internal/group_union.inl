@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ranges>
+#include <ostream> // TODO: only for debug output
 
 namespace klotski::group {
 

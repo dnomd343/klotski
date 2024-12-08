@@ -64,13 +64,12 @@
 #pragma once
 
 #include <string>
-#include <ostream>
 #include <cstdint>
 #include <optional>
 
-namespace klotski::codec {
+#include "common_code/common_code_fwd.h"
 
-class CommonCode;
+namespace klotski::codec {
 
 class RawCode {
 public:
@@ -79,21 +78,21 @@ public:
     RawCode() = delete;
 
     /// Construct RawCode from CommonCode.
-    explicit RawCode(CommonCode common_code);
+    explicit constexpr RawCode(CommonCode common_code);
 
     /// Create RawCode without any check.
     static constexpr RawCode unsafe_create(uint64_t raw_code);
 
     /// Create RawCode with validity check.
-    static std::optional<RawCode> create(uint64_t raw_code);
+    static constexpr std::optional<RawCode> create(uint64_t raw_code);
 
     // ------------------------------------------------------------------------------------- //
 
     /// Explicit conversion to u64 code.
-    explicit operator uint64_t() const;
+    explicit constexpr operator uint64_t() const;
 
     /// Check the validity of the original RawCode.
-    static bool check(uint64_t raw_code);
+    static constexpr bool check(uint64_t raw_code);
 
 #ifndef KLSK_NDEBUG
     /// Output string encoding of RawCode only for debug.
@@ -106,15 +105,15 @@ public:
     [[nodiscard]] constexpr uint64_t unwrap() const;
 
     /// Convert RawCode to CommonCode.
-    [[nodiscard]] CommonCode to_common_code() const;
+    [[nodiscard]] constexpr CommonCode to_common_code() const;
 
     // ------------------------------------------------------------------------------------- //
 
     /// Create RawCode from CommonCode.
-    static RawCode from_common_code(CommonCode common_code);
+    static constexpr RawCode from_common_code(CommonCode common_code);
 
     /// Create RawCode from CommonCode in u64.
-    static std::optional<RawCode> from_common_code(uint64_t common_code);
+    static constexpr std::optional<RawCode> from_common_code(uint64_t common_code);
 
     /// Create RawCode from CommonCode in string form.
     static std::optional<RawCode> from_common_code(std::string_view common_code);
@@ -122,16 +121,16 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Whether the layout is vertically symmetrical.
-    [[nodiscard]] bool is_vertical_mirror() const;
+    [[nodiscard]] constexpr bool is_vertical_mirror() const;
 
     /// Whether the layout is horizontally symmetrical.
-    [[nodiscard]] bool is_horizontal_mirror() const;
+    [[nodiscard]] constexpr bool is_horizontal_mirror() const;
 
     /// Calculate the vertically symmetrical klotski layout.
-    [[nodiscard]] RawCode to_vertical_mirror() const;
+    [[nodiscard]] constexpr RawCode to_vertical_mirror() const;
 
     /// Calculate the horizontally symmetrical klotski layout.
-    [[nodiscard]] RawCode to_horizontal_mirror() const;
+    [[nodiscard]] constexpr RawCode to_horizontal_mirror() const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -151,28 +150,32 @@ private:
     // ------------------------------------------------------------------------------------- //
 
     /// Compact RawCode as CommonCode.
-    static uint64_t compact(uint64_t raw_code);
+    static constexpr uint64_t compact(uint64_t raw_code);
 
     /// Extract CommonCode as RawCode.
-    static uint64_t extract(uint64_t common_code);
+    static constexpr uint64_t extract(uint64_t common_code);
 
     // ------------------------------------------------------------------------------------- //
 
     /// Check the horizontally symmetrical.
-    static bool check_mirror(uint64_t raw_code);
+    static constexpr bool check_mirror(uint64_t raw_code);
 
     /// Get the vertically symmetrical layout.
-    static uint64_t get_vertical_mirror(uint64_t raw_code);
+    static constexpr uint64_t get_vertical_mirror(uint64_t raw_code);
 
     /// Get the horizontally symmetrical layout.
-    static uint64_t get_horizontal_mirror(uint64_t raw_code);
+    static constexpr uint64_t get_horizontal_mirror(uint64_t raw_code);
 
     // ------------------------------------------------------------------------------------- //
 };
 
+static_assert(sizeof(RawCode) == 8);
 static_assert(std::is_standard_layout_v<RawCode>);
 static_assert(std::is_trivially_copyable_v<RawCode>);
 
 } // namespace klotski::codec
 
 #include "internal/raw_code.inl"
+#include "internal/convert.inl"
+#include "internal/mirror.inl"
+#include "internal/check.inl"

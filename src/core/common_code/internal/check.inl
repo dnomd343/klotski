@@ -1,9 +1,10 @@
+#pragma once
+
 #include "utils/utility.h"
-#include "common_code/common_code.h"
 
-using klotski::codec::CommonCode;
+namespace klotski::codec {
 
-bool CommonCode::check(const uint64_t common_code) {
+constexpr bool CommonCode::check(const uint64_t common_code) {
     // TODO: optimization of synchronizing all_cases.
 
     ///   M_1x1   |   M_1x2   |   M_2x1   |   M_2x2
@@ -56,3 +57,5 @@ bool CommonCode::check(const uint64_t common_code) {
         }
     }
 }
+
+} // namespace klotski::codec

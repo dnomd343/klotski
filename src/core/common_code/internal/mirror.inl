@@ -1,11 +1,9 @@
-#include <format>
+#pragma once
 
-#include "common_code/common_code.h"
-
-using klotski::codec::CommonCode;
+namespace klotski::codec {
 
 // TODO: performance optimization.
-bool CommonCode::check_mirror(uint64_t common_code) {
+constexpr bool CommonCode::check_mirror(uint64_t common_code) {
 
     int head = common_code >> 32;
     uint32_t ranges = range_reverse(common_code);
@@ -134,13 +132,15 @@ bool CommonCode::check_mirror(uint64_t common_code) {
 }
 
 // TODO: temporarily use RawCode conversion.
-uint64_t CommonCode::get_vertical_mirror(uint64_t common_code) {
+constexpr uint64_t CommonCode::get_vertical_mirror(uint64_t common_code) {
     auto raw_code = unsafe_create(common_code).to_raw_code();
     return raw_code.to_vertical_mirror().to_common_code().unwrap();
 }
 
 // TODO: temporarily use RawCode conversion.
-uint64_t CommonCode::get_horizontal_mirror(uint64_t common_code) {
+constexpr uint64_t CommonCode::get_horizontal_mirror(uint64_t common_code) {
     auto raw_code = unsafe_create(common_code).to_raw_code();
     return raw_code.to_horizontal_mirror().to_common_code().unwrap();
 }
+
+} // namespace klotski::codec

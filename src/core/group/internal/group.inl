@@ -1,5 +1,7 @@
 #pragma once
 
+#include <format>
+
 #include "constant/group.h"
 
 namespace klotski::group {
