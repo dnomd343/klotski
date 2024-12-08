@@ -56,7 +56,7 @@ static void CommonCodeCheck(benchmark::State &state) {
     const auto samples = common_code_samples(state.range(0));
     for (auto _ : state) {
         for (const auto code : samples) {
-            volatile auto tmp = CommonCode::check(code);
+            benchmark::DoNotOptimize(CommonCode::check(code));
         }
     }
     state.SetItemsProcessed(state.iterations() * state.range(0));
@@ -66,7 +66,6 @@ static void CommonCodeSerialize(benchmark::State &state) {
     const auto samples = common_code_samples(state.range(0));
     for (auto _ : state) {
         for (const auto code : samples) {
-            // volatile auto ret = CommonCode::string_encode(code);
             benchmark::DoNotOptimize(CommonCode::string_encode(code));
         }
     }
@@ -89,7 +88,6 @@ static void CommonCodeSerializeShorten(benchmark::State &state) {
     const auto samples = common_code_samples(state.range(0));
     for (auto _ : state) {
         for (const auto code : samples) {
-            // volatile auto ret = CommonCode::string_encode_shorten(code);
             benchmark::DoNotOptimize(CommonCode::string_encode_shorten(code));
         }
     }
@@ -108,11 +106,46 @@ static void CommonCodeDeserializeShorten(benchmark::State &state) {
     state.SetItemsProcessed(state.iterations() * state.range(0));
 }
 
-// BENCHMARK(CommonCodeCheck)->Range(64, 1024);
+static void CommonCodeCheckMirror(benchmark::State &state) {
+    const auto samples = common_code_samples(state.range(0));
+    for (auto _ : state) {
+        for (const auto code : samples) {
+            benchmark::DoNotOptimize(CommonCode::check_mirror(code));
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+}
+
+static void CommonCodeVerticalMirror(benchmark::State &state) {
+    const auto samples = common_code_samples(state.range(0));
+    for (auto _ : state) {
+        for (const auto code : samples) {
+            benchmark::DoNotOptimize(CommonCode::get_vertical_mirror(code));
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+}
+
+static void CommonCodeHorizontalMirror(benchmark::State &state) {
+    const auto samples = common_code_samples(state.range(0));
+    for (auto _ : state) {
+        for (const auto code : samples) {
+            benchmark::DoNotOptimize(CommonCode::get_horizontal_mirror(code));
+        }
+    }
+    state.SetItemsProcessed(state.iterations() * state.range(0));
+}
+
+// BENCHMARK(CommonCodeCheck)->Range(8, 256);
 
 // BENCHMARK(CommonCodeSerialize)->Range(8, 256);
 // BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
 // BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
-BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
+// BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
+
+// BENCHMARK(CommonCodeCheckMirror)->Range(64, 1024);
+
+BENCHMARK(CommonCodeVerticalMirror)->Range(8, 256);
+BENCHMARK(CommonCodeHorizontalMirror)->Range(8, 256);
 
 BENCHMARK_MAIN();
