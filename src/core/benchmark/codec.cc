@@ -2,11 +2,9 @@
 
 #include <benchmark/benchmark.h>
 
-// #define private public
 #include "group/group.h"
 #include "all_cases/all_cases.h"
 #include "common_code/common_code.h"
-// #undef private
 
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
@@ -100,64 +98,6 @@ std::vector<std::string> str_short_codes(uint64_t num) {
     }
 
     return codes;
-}
-
-static void CommonCodeSerialize(benchmark::State &state) {
-
-    // common_code_samples(8);
-
-    auto samples = common_code_samples(state.range(0));
-
-    for (auto _ : state) {
-
-        for (auto code : samples) {
-
-            volatile auto ret = klotski::codec::CommonCode::string_encode(code);
-        }
-
-    }
-
-    state.SetItemsProcessed(state.iterations() * state.range(0));
-}
-
-static void CommonCodeDeserialize(benchmark::State &state) {
-    const auto tmp = str_common_codes(state.range(0), false);
-    const std::vector<std::string_view> samples {tmp.begin(), tmp.end()};
-
-    for (auto _ : state) {
-        for (const auto code : samples) {
-            benchmark::DoNotOptimize(CommonCode::string_decode(code));
-        }
-    }
-    state.SetItemsProcessed(state.iterations() * state.range(0));
-
-}
-
-static void CommonCodeSerializeShorten(benchmark::State &state) {
-
-    // auto samples = select_codes(state.range(0));
-    auto samples = common_code_samples(state.range(0));
-
-    for (auto _ : state) {
-        for (auto code : samples) {
-            volatile auto ret = klotski::codec::CommonCode::string_encode_shorten(code);
-        }
-    }
-    state.SetItemsProcessed(state.iterations() * state.range(0));
-
-}
-
-static void CommonCodeDeserializeShorten(benchmark::State &state) {
-    const auto tmp = str_common_codes(state.range(0), true);
-    const std::vector<std::string_view> samples {tmp.begin(), tmp.end()};
-
-    for (auto _ : state) {
-        for (const auto code : samples) {
-            benchmark::DoNotOptimize(CommonCode::string_decode(code));
-        }
-    }
-    state.SetItemsProcessed(state.iterations() * state.range(0));
-
 }
 
 static void ShortCodeSerialize(benchmark::State &state) {
@@ -259,26 +199,6 @@ static void IsMirrorCompare(benchmark::State &state) {
         }
     }
 }
-
-static void CommonCodeCheck(benchmark::State &state) {
-
-    std::vector<uint64_t> samples = common_code_samples(state.range(0));
-
-    for (auto _ : state) {
-        for (auto code : samples) {
-            volatile auto tmp = CommonCode::check(code);
-        }
-    }
-
-    state.SetItemsProcessed(state.iterations() * state.range(0));
-}
-
-BENCHMARK(CommonCodeCheck)->Range(64, 1024);
-
-// BENCHMARK(CommonCodeSerialize)->Range(8, 256);
-//BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
-// BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
-// BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
 
 //BENCHMARK(ShortCodeSerialize)->Range(8, 256);
 // BENCHMARK(ShortCodeDeserialize)->Range(8, 256);
