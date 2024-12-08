@@ -15,11 +15,11 @@ inline ShortCode::ShortCode(const CommonCode common_code) {
     }
 }
 
-inline ShortCode ShortCode::unsafe_create(const uint32_t short_code) {
+constexpr ShortCode ShortCode::unsafe_create(const uint32_t short_code) {
     return std::bit_cast<ShortCode>(short_code); // init directly
 }
 
-inline std::optional<ShortCode> ShortCode::create(const uint32_t short_code) {
+constexpr std::optional<ShortCode> ShortCode::create(const uint32_t short_code) {
     if (!check(short_code)) {
         return std::nullopt; // invalid short code
     }
@@ -28,11 +28,11 @@ inline std::optional<ShortCode> ShortCode::create(const uint32_t short_code) {
 
 // ----------------------------------------------------------------------------------------- //
 
-inline ShortCode::operator uint32_t() const {
+constexpr ShortCode::operator uint32_t() const {
     return code_;
 }
 
-inline bool ShortCode::check(const uint32_t short_code) {
+constexpr bool ShortCode::check(const uint32_t short_code) {
     return short_code < SHORT_CODE_LIMIT; // [0, SHORT_CODE_LIMIT)
 }
 
@@ -55,7 +55,7 @@ inline std::ostream& operator<<(std::ostream &out, const ShortCode self) {
 
 // ----------------------------------------------------------------------------------------- //
 
-inline uint32_t ShortCode::unwrap() const {
+constexpr uint32_t ShortCode::unwrap() const {
     return code_;
 }
 
