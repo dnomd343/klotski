@@ -19,7 +19,7 @@ set(KLSK_CORE_SRC
 #    raw_code/internal/mirror.cc
 
     short_code/internal/convert.cc
-    short_code/internal/serialize.cc
+#    short_code/internal/serialize.cc
 
     mover/internal/mover.cc
 

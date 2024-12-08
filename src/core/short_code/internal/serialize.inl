@@ -1,13 +1,13 @@
+#pragma once
+
 #include <ranges>
 
 #include "serialize_chars.h"
-#include "short_code/short_code.h"
 
-using klotski::codec::ShortCode;
-using klotski::cases::ALL_CASES_NUM_;
+namespace klotski::codec {
 
-std::string ShortCode::string_encode(uint32_t short_code) {
-    KLSK_ASSUME(short_code < ALL_CASES_NUM_);
+KLSK_INLINE_H std::string ShortCode::string_encode(uint32_t short_code) {
+    KLSK_ASSUME(short_code < cases::ALL_CASES_NUM_);
     std::array<char, 5> arr {};
     for (auto &c : arr | std::views::reverse) {
         c = SHORT_CODE_TABLE[short_code & 0b11111]; // table convert
@@ -16,7 +16,7 @@ std::string ShortCode::string_encode(uint32_t short_code) {
     return {arr.begin(), arr.end()};
 }
 
-std::optional<uint32_t> ShortCode::string_decode(const std::string_view short_code) {
+KLSK_INLINE_H std::optional<uint32_t> ShortCode::string_decode(const std::string_view short_code) {
     if (short_code.length() != 5) {
         return std::nullopt; // invalid string length
     }
@@ -36,3 +36,5 @@ std::optional<uint32_t> ShortCode::string_decode(const std::string_view short_co
     }
     return code; // apply convert result
 }
+
+} // namespace klotski::codec

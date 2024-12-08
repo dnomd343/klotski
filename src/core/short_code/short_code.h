@@ -66,20 +66,13 @@
 #include <optional>
 
 #include "utils/utility.h"
-// #include "all_cases/all_cases.h"
-
-namespace klotski::cases {
-class AllCases;
-class Ranges;
-class RangesUnion;
-} // namespace klotski::cases
+#include "ranges/ranges_fwd.h"
+#include "all_cases/all_cases_fwd.h"
+#include "common_code/common_code_fwd.h"
 
 namespace klotski::codec {
 
-constexpr uint32_t SHORT_CODE_LIMIT = 29334498;
-// constexpr uint32_t SHORT_CODE_LIMIT = cases::ALL_CASES_NUM_;
-
-class CommonCode;
+constexpr uint32_t SHORT_CODE_LIMIT = cases::ALL_CASES_NUM_;
 
 class ShortCode {
 public:
@@ -91,18 +84,18 @@ public:
     explicit ShortCode(CommonCode common_code);
 
     /// Create ShortCode without any check.
-    static ShortCode unsafe_create(uint32_t short_code);
+    static constexpr ShortCode unsafe_create(uint32_t short_code);
 
     /// Create ShortCode with validity check.
-    static std::optional<ShortCode> create(uint32_t short_code);
+    static constexpr std::optional<ShortCode> create(uint32_t short_code);
 
     // ------------------------------------------------------------------------------------- //
 
     /// Explicit conversion to u32 code.
-    explicit operator uint32_t() const;
+    explicit constexpr operator uint32_t() const;
 
     /// Check the validity of the original ShortCode.
-    static bool check(uint32_t short_code);
+    static constexpr bool check(uint32_t short_code);
 
     /// Build the conversion index for ShortCode.
     static void speed_up(bool fast_mode = false);
@@ -115,7 +108,7 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Get the original u32 code.
-    [[nodiscard]] uint32_t unwrap() const;
+    [[nodiscard]] constexpr uint32_t unwrap() const;
 
     /// Convert ShortCode to string form.
     [[nodiscard]] std::string to_string() const;
@@ -200,3 +193,5 @@ static_assert(std::is_trivially_copyable_v<ShortCode>);
 } // namespace klotski::codec
 
 #include "internal/short_code.inl"
+#include "internal/serialize.inl"
+#include "internal/convert.inl"
