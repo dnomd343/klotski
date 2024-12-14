@@ -1,4 +1,4 @@
-#include "common_code/common_code.h"
+#pragma once
 
 namespace klotski::codec {
 
@@ -53,7 +53,7 @@ constexpr auto CONVERT_TABLE = std::to_array<char>({
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 });
 
-std::string CommonCode::string_encode(uint64_t common_code) {
+inline std::string CommonCode::string_encode(uint64_t common_code) {
     char code_str[9];
     for (int i = 0; i < 9; ++i) {
         code_str[8 - i] = to_hex_char(common_code & 0b1111);
@@ -62,7 +62,7 @@ std::string CommonCode::string_encode(uint64_t common_code) {
     return std::string{code_str, code_str + 9};
 }
 
-std::string CommonCode::string_encode_shorten(const uint64_t common_code) {
+inline std::string CommonCode::string_encode_shorten(const uint64_t common_code) {
     if (common_code == 0) {
         return "0"; // special case
     }
@@ -71,7 +71,7 @@ std::string CommonCode::string_encode_shorten(const uint64_t common_code) {
     return code;
 }
 
-std::optional<uint64_t> CommonCode::string_decode(const std::string_view common_code) {
+inline std::optional<uint64_t> CommonCode::string_decode(const std::string_view common_code) {
     if (common_code.length() > 9 || common_code.empty()) {
         return std::nullopt; // invalid string length
     }

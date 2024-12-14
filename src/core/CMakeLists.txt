@@ -11,7 +11,7 @@ set(KLSK_CORE_SRC
     all_cases/internal/all_cases.cc
 
 #    common_code/internal/common_code.cc
-    common_code/internal/serialize.cc
+#    common_code/internal/serialize.cc
 #    common_code/internal/mirror.cc
 
 #    raw_code/internal/raw_code.cc
