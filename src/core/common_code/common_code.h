@@ -63,6 +63,7 @@
 #include <string>
 #include <cstdint>
 #include <optional>
+#include <type_traits>
 
 #include "raw_code/raw_code_fwd.h"
 #include "short_code/short_code_fwd.h"
@@ -195,6 +196,7 @@ private:
 static_assert(sizeof(CommonCode) == 8);
 static_assert(std::is_standard_layout_v<CommonCode>);
 static_assert(std::is_trivially_copyable_v<CommonCode>);
+static_assert(std::has_unique_object_representations_v<CommonCode>);
 
 } // namespace klotski::codec
 

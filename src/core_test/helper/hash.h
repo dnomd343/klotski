@@ -41,6 +41,18 @@ std::string md5(const std::vector<T> &data);
 
 // ----------------------------------------------------------------------------------------- //
 
+template <typename, typename = std::void_t<>>
+struct is_hashable : std::false_type {};
+
+template <typename T>
+struct is_hashable<T, std::void_t<decltype(
+    std::declval<std::hash<T>>()(std::declval<T>()))>> : std::true_type {};
+
+template <typename T>
+constexpr bool is_hashable_v = is_hashable<T>::value;
+
+// ----------------------------------------------------------------------------------------- //
+
 } // namespace helper
 
 #include "internal/hash.inl"

@@ -1,7 +1,8 @@
-#include <algorithm>
 #include <gtest/gtest.h>
 
 #include "test_samples.h"
+
+#include "helper/hash.h"
 #include "helper/expect.h"
 #include "helper/mirror.h"
 #include "helper/parallel.h"
@@ -11,14 +12,6 @@
 #include "short_code/short_code.h"
 #include "common_code/common_code.h"
 
-// TODO: add constexpr test
-
-// TODO: add std::hash test
-
-// TODO: test `std::is_default_constructible`
-// TODO: test `std::is_copy_assignable` and `std::is_copy_constructible`
-// TODO: test `std::is_move_assignable` and `std::is_move_constructible`
-
 using klotski::codec::RawCode;
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;
@@ -26,11 +19,20 @@ using klotski::codec::CommonCode;
 using klotski::cases::AllCases;
 using klotski::cases::ALL_CASES_NUM_;
 
+static_assert(helper::is_hashable_v<CommonCode>);
+static_assert(!std::is_default_constructible_v<CommonCode>);
+
+static_assert(std::is_trivially_destructible_v<CommonCode>);
+static_assert(std::is_trivially_copy_assignable_v<CommonCode>);
+static_assert(std::is_trivially_move_assignable_v<CommonCode>);
+static_assert(std::is_trivially_copy_constructible_v<CommonCode>);
+static_assert(std::is_trivially_move_constructible_v<CommonCode>);
+
 TEST(CommonCode, basic) {
-    EXPECT_NE(CommonCode::check(0x3'A9'BF'0C'00), true); // invalid 2x2 block
-    EXPECT_NE(CommonCode::check(0x1'D9'BF'0C'00), true); // invalid block range
-    EXPECT_NE(CommonCode::check(0x1'A9'BF'FC'00), true); // less than 2 space
-    EXPECT_NE(CommonCode::check(0x1'A0'BF'0C'01), true); // low bits not fill zero
+    EXPECT_FALSE(CommonCode::check(0x3'A9'BF'0C'00)); // invalid 2x2 block
+    EXPECT_FALSE(CommonCode::check(0x1'D9'BF'0C'00)); // invalid block range
+    EXPECT_FALSE(CommonCode::check(0x1'A9'BF'FC'00)); // less than 2 space
+    EXPECT_FALSE(CommonCode::check(0x1'A0'BF'0C'01)); // low bits not fill zero
 
     EXPECT_FALSE(CommonCode::from_string("0123456789").has_value()); // length > 9
     EXPECT_FALSE(CommonCode::from_string("123J432A9").has_value()); // with invalid `J`
@@ -52,21 +54,21 @@ TEST(CommonCode, basic) {
 }
 
 TEST(CommonCode, exporter) {
-    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+    const auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
     EXPECT_EQ(common_code.unwrap(), TEST_C_CODE);
     EXPECT_EQ(common_code.to_string(), TEST_C_CODE_STR);
     EXPECT_EQ(common_code.to_raw_code(), TEST_R_CODE);
     EXPECT_EQ(common_code.to_short_code(), TEST_S_CODE);
 
-    auto code_shorten = common_code.to_string(true);
+    const auto code_shorten = common_code.to_string(true);
     EXPECT_EQ(CommonCode::from_string(code_shorten), common_code);
 
-    auto code_normal = common_code.to_string(false);
+    const auto code_normal = common_code.to_string(false);
     EXPECT_EQ(CommonCode::from_string(code_normal), common_code);
 }
 
 TEST(CommonCode, operators) {
-    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+    const auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
     EXPECT_EQ(static_cast<uint64_t>(common_code), TEST_C_CODE); // uint64_t cast
 
     EXPECT_NE(0, common_code); // uint64_t != CommonCode
@@ -102,14 +104,44 @@ TEST(CommonCode, operators) {
     EXPECT_GT(CommonCode::unsafe_create(TEST_C_CODE + 1), common_code); // CommonCode > CommonCode
 }
 
+TEST(CommonCode, constexpr) {
+    static_assert(CommonCode::check(TEST_C_CODE));
+    static_assert(!CommonCode::check(TEST_C_CODE_ERR));
+
+    static_assert(CommonCode::create(TEST_C_CODE).has_value());
+    static_assert(!CommonCode::create(TEST_C_CODE_ERR).has_value());
+    static_assert(CommonCode::create(TEST_C_CODE).value() == TEST_C_CODE);
+
+    constexpr auto code = CommonCode::unsafe_create(TEST_C_CODE);
+    static_assert(static_cast<uint64_t>(code) == TEST_C_CODE);
+    static_assert(code.unwrap() == TEST_C_CODE);
+
+    static_assert(code.to_raw_code() == TEST_R_CODE);
+    static_assert(CommonCode(RawCode::unsafe_create(TEST_R_CODE)) == TEST_C_CODE);
+    static_assert(CommonCode::from_raw_code(TEST_R_CODE).value() == TEST_C_CODE);
+    static_assert(CommonCode::from_raw_code(RawCode::unsafe_create(TEST_R_CODE)) == TEST_C_CODE);
+
+    constexpr auto mirror_1 = CommonCode::unsafe_create(TEST_MIRROR_C1);
+    static_assert(!mirror_1.is_vertical_mirror());
+    static_assert(mirror_1.is_horizontal_mirror());
+    static_assert(mirror_1.to_vertical_mirror() == TEST_MIRROR_C1_VM);
+    static_assert(mirror_1.to_horizontal_mirror() == TEST_MIRROR_C1_HM);
+
+    constexpr auto mirror_2 = CommonCode::unsafe_create(TEST_MIRROR_C2);
+    static_assert(!mirror_2.is_vertical_mirror());
+    static_assert(!mirror_2.is_horizontal_mirror());
+    static_assert(mirror_2.to_vertical_mirror() == TEST_MIRROR_C2_VM);
+    static_assert(mirror_2.to_horizontal_mirror() == TEST_MIRROR_C2_HM);
+}
+
 TEST(CommonCode, initialize) {
-    auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
-    auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
-    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+    const auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
+    const auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
+    const auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
     // operator=
-    auto c1 = common_code;
-    auto c2 = CommonCode {common_code};
+    const auto c1 = common_code;
+    const auto c2 = CommonCode {common_code};
     EXPECT_EQ(c1, TEST_C_CODE); // l-value
     EXPECT_EQ(c2, TEST_C_CODE); // r-value
 
@@ -198,21 +230,21 @@ TEST(CommonCode, code_string) {
             EXPECT_NE(code_shorten.back(), '0');
         }
         EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test upper cases
-        std::transform(code_shorten.begin(), code_shorten.end(), code_shorten.begin(), ::tolower);
+        std::ranges::transform(code_shorten.begin(), code_shorten.end(), code_shorten.begin(), ::tolower);
         EXPECT_EQ(CommonCode::from_string(code_shorten), code); // test lower cases
 
         EXPECT_EQ(code_normal.size(), 9); // length = 9
-        for (auto c : code_normal) {
+        for (const auto c : code_normal) {
             EXPECT_TRUE((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
         }
         EXPECT_EQ(CommonCode::from_string(code_normal), code); // test upper cases
-        std::transform(code_normal.begin(), code_normal.end(), code_normal.begin(), ::tolower);
+        std::ranges::transform(code_normal.begin(), code_normal.end(), code_normal.begin(), ::tolower);
         EXPECT_EQ(CommonCode::from_string(code_normal), code); // test lower cases
     });
 }
 
 TEST(CommonCode, DISABLED_global_verify) {
-    const auto result = SCOPE_PARALLEL(0x10'0000'0000ULL, [](uint64_t start, uint64_t end) {
+    const auto result = SCOPE_PARALLEL(0x10'0000'0000ULL, [](const uint64_t start, const uint64_t end) {
         std::vector<CommonCode> codes;
         for (uint64_t common_code = start; common_code < end; ++common_code) { // brute-force search
             if (CommonCode::check(common_code)) {
