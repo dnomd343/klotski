@@ -17,6 +17,7 @@ add_library(test_helper
     helper/internal/parallel.cc
     helper/internal/hash.cc
     helper/internal/group.cc
+    helper/internal/mirror.cc
 )
 target_link_libraries(test_helper PRIVATE klotski_core bs::thread_pool md5sum::md5 xxHash::xxh3)
 
