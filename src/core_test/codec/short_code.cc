@@ -1,10 +1,11 @@
-#include <algorithm>
 #include <gtest/gtest.h>
+#include <utility/exposer.h>
 
 #include "test_samples.h"
+
+#include "helper/hash.h"
 #include "helper/expect.h"
 #include "helper/parallel.h"
-#include "utility/exposer.h"
 #include "helper/concurrent.h"
 
 #include "all_cases/all_cases.h"
@@ -23,6 +24,15 @@ using klotski::cases::ALL_CASES_NUM;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::codec::SHORT_CODE_LIMIT;
 
+static_assert(helper::is_hashable_v<ShortCode>);
+static_assert(!std::is_default_constructible_v<ShortCode>);
+
+static_assert(std::is_trivially_destructible_v<ShortCode>);
+static_assert(std::is_trivially_copy_assignable_v<ShortCode>);
+static_assert(std::is_trivially_move_assignable_v<ShortCode>);
+static_assert(std::is_trivially_copy_constructible_v<ShortCode>);
+static_assert(std::is_trivially_move_constructible_v<ShortCode>);
+
 /// Forcibly modify private variables to reset state.
 EXPOSE_VAR(AllCases, bool, available_)
 EXPOSE_VAR(BasicRanges, bool, available_)
@@ -31,7 +41,7 @@ EXPOSE_STATIC_VAR(ShortCode, const RangesUnion*, cases_)
 EXPOSE_STATIC_VAR(ShortCode, std::atomic<const Ranges*>, ranges_)
 
 /// Reset ShortCode speed up state, note it is thread-unsafe.
-void speed_up_reset() {
+static void speed_up_reset() {
     exposer::ShortCode_fast_() = false;
     exposer::ShortCode_cases_() = nullptr;
     exposer::ShortCode_ranges_() = nullptr;
@@ -47,7 +57,7 @@ TEST(ShortCode, basic) {
     EXPECT_FALSE(ShortCode::from_string("123456").has_value()); // length != 5
     EXPECT_FALSE(ShortCode::from_string("Z9EFV").has_value()); // out of short code range
 
-    const auto sum = std::accumulate(ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0);
+    constexpr auto sum = std::accumulate(ALL_CASES_NUM.begin(), ALL_CASES_NUM.end(), 0);
     EXPECT_EQ(sum, SHORT_CODE_LIMIT);
 
 #ifndef KLSK_NDEBUG
@@ -57,7 +67,7 @@ TEST(ShortCode, basic) {
 }
 
 TEST(ShortCode, operators) {
-    auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
+    const auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
     EXPECT_EQ(static_cast<uint32_t>(short_code), TEST_S_CODE); // uint32_t cast
 
     EXPECT_NE(0, short_code); // uint32_t != ShortCode
@@ -94,7 +104,7 @@ TEST(ShortCode, operators) {
 }
 
 TEST(ShortCode, exporter) {
-    auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
+    const auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
     EXPECT_EQ(short_code.unwrap(), TEST_S_CODE);
     EXPECT_EQ(short_code.to_string(), TEST_S_CODE_STR);
 
@@ -104,13 +114,26 @@ TEST(ShortCode, exporter) {
     EXPECT_EQ(short_code.to_common_code(), TEST_C_CODE);
 }
 
+TEST(ShortCode, constexpr) {
+    static_assert(ShortCode::check(TEST_S_CODE));
+    static_assert(!ShortCode::check(TEST_S_CODE_ERR));
+
+    static_assert(ShortCode::create(TEST_S_CODE).has_value());
+    static_assert(!ShortCode::create(TEST_S_CODE_ERR).has_value());
+    static_assert(ShortCode::create(TEST_S_CODE).value() == TEST_S_CODE);
+
+    constexpr auto code = ShortCode::unsafe_create(TEST_S_CODE);
+    static_assert(static_cast<uint32_t>(code) == TEST_S_CODE);
+    static_assert(code.unwrap() == TEST_S_CODE);
+}
+
 TEST(ShortCode, initialize) {
-    auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
-    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+    const auto short_code = ShortCode::unsafe_create(TEST_S_CODE);
+    const auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
     // operator=
-    auto s1 = short_code;
-    auto s2 = ShortCode {short_code};
+    const auto s1 = short_code;
+    const auto s2 = ShortCode {short_code};
     EXPECT_EQ(s1, TEST_S_CODE); // l-value
     EXPECT_EQ(s2, TEST_S_CODE); // r-value
 
@@ -199,7 +222,7 @@ TEST(ShortCode, code_verify) {
     ShortCode::speed_up(true); // enter fast mode
     SHORT_CODE_PARALLEL({
         EXPECT_TRUE(ShortCode::check(code.unwrap()));
-        auto common_code = code.to_common_code(); // ShortCode::fast_decode
+        const auto common_code = code.to_common_code(); // ShortCode::fast_decode
         EXPECT_EQ(ShortCode::from_common_code(common_code), code); // ShortCode::fast_encode
     });
 }
@@ -208,23 +231,23 @@ TEST(ShortCode, code_string) {
     SHORT_CODE_PARALLEL({
         auto code_str = code.to_string();
         EXPECT_EQ(code_str.size(), 5); // length = 5
-        for (auto c : code_str) {
+        for (const auto c : code_str) {
             EXPECT_TRUE((c >= '1' && c <= '9') || (c >= 'A' && c <= 'Z'));
             EXPECT_TRUE(c != 'I' && c != 'L' && c != 'O');
         }
         EXPECT_EQ(ShortCode::from_string(code_str), code); // test upper cases
-        std::transform(code_str.begin(), code_str.end(), code_str.begin(), ::tolower);
+        std::ranges::transform(code_str.begin(), code_str.end(), code_str.begin(), ::tolower);
         EXPECT_EQ(ShortCode::from_string(code_str), code); // test lower cases
     });
 }
 
 TEST(ShortCode, DISABLED_global_verify) {
     speed_up_reset();
-    const auto result = SCOPE_PARALLEL(SHORT_CODE_LIMIT, [](uint32_t start, uint32_t end) {
+    const auto result = SCOPE_PARALLEL(SHORT_CODE_LIMIT, [](const uint32_t start, const uint32_t end) {
         std::vector<CommonCode> codes;
         codes.reserve(end - start);
         for (uint32_t short_code = start; short_code < end; ++short_code) {
-            auto common_code = CommonCode::from_short_code(short_code).value(); // ShortCode::tiny_decode
+            const auto common_code = CommonCode::from_short_code(short_code).value(); // ShortCode::tiny_decode
             EXPECT_EQ(common_code.to_short_code(), short_code); // ShortCode::tiny_encode
             codes.emplace_back(common_code);
         }

@@ -45,13 +45,6 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
-    static_assert(ShortCode::check(4091296));
-    constexpr auto short_code = ShortCode::unsafe_create(4091296);
-
-    static_assert(short_code.unwrap() == 4091296);
-    static_assert(static_cast<uint32_t>(short_code) == 4091296);
-    static_assert(short_code == ShortCode::create(4091296)->unwrap());
-
     // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();
     // FastCal fc {code};
