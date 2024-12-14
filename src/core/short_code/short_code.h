@@ -91,14 +91,14 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
+    /// Build the conversion index.
+    static void speed_up(bool fast_mode);
+
     /// Explicit conversion to u32 code.
     explicit constexpr operator uint32_t() const;
 
     /// Check the validity of the original ShortCode.
     static constexpr bool check(uint32_t short_code);
-
-    /// Build the conversion index for ShortCode.
-    static void speed_up(bool fast_mode = false);
 
 #ifndef KLSK_NDEBUG
     /// Output string encoding of ShortCode only for debug.
@@ -195,3 +195,10 @@ static_assert(std::is_trivially_copyable_v<ShortCode>);
 #include "internal/short_code.inl"
 #include "internal/serialize.inl"
 #include "internal/convert.inl"
+
+template <>
+struct std::hash<klotski::codec::ShortCode> {
+    constexpr std::size_t operator()(const klotski::codec::ShortCode &s) const noexcept {
+        return std::hash<uint32_t>{}(s.unwrap());
+    }
+};

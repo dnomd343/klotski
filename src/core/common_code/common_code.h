@@ -201,3 +201,10 @@ static_assert(std::is_trivially_copyable_v<CommonCode>);
 #include "internal/common_code.inl"
 #include "internal/mirror.inl"
 #include "internal/check.inl"
+
+template <>
+struct std::hash<klotski::codec::CommonCode> {
+    constexpr std::size_t operator()(const klotski::codec::CommonCode &c) const noexcept {
+        return std::hash<uint64_t>{}(c.unwrap());
+    }
+};

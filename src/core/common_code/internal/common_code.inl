@@ -53,14 +53,14 @@ inline ShortCode CommonCode::to_short_code() const {
     return ShortCode(*this);
 }
 
+// ----------------------------------------------------------------------------------------- //
+
 inline std::string CommonCode::to_string(const bool shorten) const {
     if (!shorten) {
         return string_encode(code_); // with full length
     }
     return string_encode_shorten(code_); // without trailing zero
 }
-
-// ----------------------------------------------------------------------------------------- //
 
 inline std::optional<CommonCode> CommonCode::from_string(const std::string_view common_code) {
     return string_decode(common_code).transform(unsafe_create);
@@ -138,18 +138,3 @@ constexpr auto operator<=>(const CommonCode &lhs, const CommonCode &rhs) {
 // ----------------------------------------------------------------------------------------- //
 
 } // namespace klotski::codec
-
-// ----------------------------------------------------------------------------------------- //
-
-namespace std {
-
-template <>
-struct hash<klotski::codec::CommonCode> {
-    constexpr std::size_t operator()(const klotski::codec::CommonCode &c) const noexcept {
-        return std::hash<uint64_t>{}(c.unwrap());
-    }
-};
-
-} // namespace std
-
-// ----------------------------------------------------------------------------------------- //

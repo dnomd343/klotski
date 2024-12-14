@@ -1,5 +1,7 @@
 #pragma once
 
+#include <format>
+
 #include "common_code/common_code.h"
 
 namespace klotski::codec {
@@ -93,19 +95,28 @@ constexpr auto operator<=>(const RawCode &lhs, const RawCode &rhs) {
 
 // ----------------------------------------------------------------------------------------- //
 
-} // namespace klotski::codec
+#ifndef KLSK_NDEBUG
+inline std::ostream& operator<<(std::ostream &out, const RawCode self) {
+    auto show = [code = self.code_](const int offset) {
+        constexpr auto char_map = std::to_array({
+            '.', // space
+            '~', '|', // 1x2 | 2x1
+            '*', '@', // 1x1 | 2x2
+            '?', '?', // unknown
+            '+', // fill
+        });
+        return char_map[(code >> (offset * 3)) & 0b111];
+    };
 
-// ----------------------------------------------------------------------------------------- //
-
-namespace std {
-
-template <>
-struct hash<klotski::codec::RawCode> {
-    constexpr std::size_t operator()(const klotski::codec::RawCode &r) const noexcept {
-        return std::hash<uint64_t>{}(r.unwrap());
+    out << std::format("{:015X}\n", self.code_);
+    for (int offset = 0; offset < 20; offset += 4) {
+        out << std::format("{} {} {} {}\n",
+            show(offset), show(offset + 1), show(offset + 2), show(offset + 3));
     }
-};
-
-} // namespace std
+    return out;
+}
+#endif
 
 // ----------------------------------------------------------------------------------------- //
+
+} // namespace klotski::codec
