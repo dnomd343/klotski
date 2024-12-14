@@ -117,18 +117,3 @@ constexpr auto operator<=>(const ShortCode &lhs, const ShortCode &rhs) {
 // ----------------------------------------------------------------------------------------- //
 
 } // namespace klotski::codec
-
-// ----------------------------------------------------------------------------------------- //
-
-namespace std {
-
-template <>
-struct hash<klotski::codec::ShortCode> {
-    constexpr std::size_t operator()(const klotski::codec::ShortCode &s) const noexcept {
-        return std::hash<uint32_t>{}(s.unwrap());
-    }
-};
-
-} // namespace std
-
-// ----------------------------------------------------------------------------------------- //

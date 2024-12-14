@@ -179,3 +179,10 @@ static_assert(std::is_trivially_copyable_v<RawCode>);
 #include "internal/convert.inl"
 #include "internal/mirror.inl"
 #include "internal/check.inl"
+
+template <>
+struct std::hash<klotski::codec::RawCode> {
+    constexpr std::size_t operator()(const klotski::codec::RawCode &r) const noexcept {
+        return std::hash<uint64_t>{}(r.unwrap());
+    }
+};

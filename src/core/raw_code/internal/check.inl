@@ -1,32 +1,8 @@
 #pragma once
 
-#ifndef KLSK_NDEBUG
-// TODO: only for debug output -> move to other header
-#include <format>
-#include <ostream>
-#endif
-
 #include "utils/common.h"
 
 namespace klotski::codec {
-
-#ifndef KLSK_NDEBUG
-inline std::ostream& operator<<(std::ostream &out, const RawCode self) {
-    constexpr auto char_map = std::to_array({
-        '.', // space
-        '~', '|', // 1x2 | 2x1
-        '*', '@', // 1x1 | 2x2
-        '?', '?', // unknown
-        '+', // fill
-    });
-    out << std::format("{:015X}\n", self.code_);
-    for (int addr = 0; addr < 60; addr += 3) {
-        out << char_map[(self.code_ >> addr) & 0b111];
-        out << &" "[(addr & 0b11) == 0b01] << &"\n"[(addr & 0b11) != 0b01];
-    }
-    return out;
-}
-#endif
 
 constexpr bool RawCode::check(uint64_t raw_code) {
     ///     MASK_1x1      |     MASK_1x2      |     MASK_2x1      |     MASK_2x2
