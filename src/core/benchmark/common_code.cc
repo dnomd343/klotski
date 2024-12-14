@@ -138,14 +138,14 @@ static void CommonCodeHorizontalMirror(benchmark::State &state) {
 
 // BENCHMARK(CommonCodeCheck)->Range(8, 256);
 
-// BENCHMARK(CommonCodeSerialize)->Range(8, 256);
-// BENCHMARK(CommonCodeDeserialize)->Range(8, 256);
-// BENCHMARK(CommonCodeSerializeShorten)->Range(8, 256);
-// BENCHMARK(CommonCodeDeserializeShorten)->Range(8, 256);
+BENCHMARK(CommonCodeSerialize)->Range(16, 1024);
+BENCHMARK(CommonCodeDeserialize)->Range(16, 1024);
+BENCHMARK(CommonCodeSerializeShorten)->Range(16, 1024);
+BENCHMARK(CommonCodeDeserializeShorten)->Range(16, 1024);
 
 // BENCHMARK(CommonCodeCheckMirror)->Range(64, 1024);
 
-BENCHMARK(CommonCodeVerticalMirror)->Range(8, 256);
-BENCHMARK(CommonCodeHorizontalMirror)->Range(8, 256);
+// BENCHMARK(CommonCodeVerticalMirror)->Range(8, 256);
+// BENCHMARK(CommonCodeHorizontalMirror)->Range(8, 256);
 
 BENCHMARK_MAIN();

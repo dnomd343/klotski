@@ -199,6 +199,7 @@ static_assert(std::is_trivially_copyable_v<CommonCode>);
 } // namespace klotski::codec
 
 #include "internal/common_code.inl"
+#include "internal/serialize.inl"
 #include "internal/mirror.inl"
 #include "internal/check.inl"
 
