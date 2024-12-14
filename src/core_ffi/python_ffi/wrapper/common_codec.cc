@@ -4,6 +4,8 @@
 #include "py_ffi/common_code.h"
 
 using namespace klotski::ffi;
+using klotski::codec::ShortCode;
+using klotski::codec::CommonCode;
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -31,12 +33,23 @@ bool PyCommonCode::check(const std::string_view code) noexcept {
 
 // ----------------------------------------------------------------------------------------- //
 
+[[nodiscard]] std::vector<PyCommonCode> PyCommonCode::next_cases() const noexcept {
+    std::vector<PyCommonCode> cases;
+    auto mover = mover::MaskMover([&cases](const codec::RawCode code, uint64_t) {
+        cases.emplace_back(std::bit_cast<PyCommonCode>(code.to_common_code()));
+    });
+    mover.next_cases(code_.to_raw_code(), 0);
+    return cases;
+}
+
+// ----------------------------------------------------------------------------------------- //
+
 std::string PyCommonCode::str(const PyCommonCode code) noexcept {
     return code.code_.to_string();
 }
 
 std::string PyCommonCode::repr(const PyCommonCode code) noexcept {
-    return std::format("<klotski.CommonCode 0x{}>", str(code));
+    return std::format("<klotski.Code 0x{}>", str(code));
 }
 
 // ----------------------------------------------------------------------------------------- //
@@ -49,14 +62,14 @@ static CommonCode convert(const uint64_t code) {
     if (CommonCode::check(code)) {
         return CommonCode::unsafe_create(code);
     }
-    throw PyExc_CodecError(std::format("invalid common code -> {}", code));
+    throw PyExc_CodecError(std::format("invalid code: {}", code));
 }
 
 static CommonCode convert(const std::string_view code) {
     if (const auto str = CommonCode::from_string(code)) {
         return str.value();
     }
-    throw PyExc_CodecError(std::format("invalid common code -> `{}`", code));
+    throw PyExc_CodecError(std::format("invalid code: `{}`", code));
 }
 
 PyCommonCode::PyCommonCode(const uint64_t code) : code_(convert(code)) {}

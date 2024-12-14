@@ -2,8 +2,11 @@
 
 #include "exception.h"
 #include "py_ffi/short_code.h"
+#include "py_ffi/common_code.h"
 
 using namespace klotski::ffi;
+using klotski::codec::ShortCode;
+using klotski::codec::CommonCode;
 
 // ----------------------------------------------------------------------------------------- //
 

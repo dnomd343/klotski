@@ -4,11 +4,7 @@
 
 #include <short_code/short_code.h>
 
-#include "py_ffi/common_code.h"
-
 namespace klotski::ffi {
-
-using codec::ShortCode;
 
 class PyCommonCode;
 
@@ -55,11 +51,11 @@ public:
 
     /// Build conversion index for ShortCode.
     static void speed_up(const bool fast_mode) { // TODO: move to `SpeedUp`
-        ShortCode::speed_up(fast_mode);
+        codec::ShortCode::speed_up(fast_mode);
     }
 
 private:
-    ShortCode code_;
+    codec::ShortCode code_;
 };
 
 // ----------------------------------------------------------------------------------------- //
@@ -84,17 +80,9 @@ constexpr auto operator<=>(const PyShortCode &lhs, const PyShortCode &rhs) {
 
 } // namespace klotski::ffi
 
-// ----------------------------------------------------------------------------------------- //
-
-namespace std {
-
 template <>
-struct hash<klotski::ffi::PyShortCode> {
-    size_t operator()(const klotski::ffi::PyShortCode &short_code) const noexcept {
-        return std::hash<uint32_t>{}(short_code.value());
+struct std::hash<klotski::ffi::PyShortCode> {
+    size_t operator()(const klotski::ffi::PyShortCode &code) const noexcept {
+        return std::hash<uint32_t>{}(code.value());
     }
 };
-
-} // namespace std
-
-// ----------------------------------------------------------------------------------------- //

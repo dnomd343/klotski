@@ -7,11 +7,9 @@
 
 #include "py_ffi/short_code.h"
 
+// TODO: maybe using `PyLayout` instead of `PyCommonCode`
+
 namespace klotski::ffi {
-
-using codec::CommonCode;
-
-class PyShortCode;
 
 class PyCommonCode {
 public:
@@ -57,20 +55,16 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    [[nodiscard]] std::vector<PyCommonCode> next_cases() const noexcept {
-        std::vector<PyCommonCode> cases;
-        auto mover = mover::MaskMover([&cases](const codec::RawCode code, uint64_t) {
-            cases.emplace_back(std::bit_cast<PyCommonCode>(code.to_common_code()));
-        });
-        mover.next_cases(code_.to_raw_code(), 0);
-        return cases;
-    }
+    [[nodiscard]] std::vector<PyCommonCode> next_cases() const noexcept;
 
     // ------------------------------------------------------------------------------------- //
 
 private:
-    CommonCode code_;
+    codec::CommonCode code_;
 };
+
+static_assert(std::is_trivially_copyable_v<PyCommonCode>);
+static_assert(sizeof(PyCommonCode) == sizeof(codec::CommonCode));
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -94,17 +88,9 @@ constexpr auto operator<=>(const PyCommonCode &lhs, const PyCommonCode &rhs) {
 
 } // namespace klotski::ffi
 
-// ----------------------------------------------------------------------------------------- //
-
-namespace std {
-
 template <>
-struct hash<klotski::ffi::PyCommonCode> {
-    size_t operator()(const klotski::ffi::PyCommonCode &common_code) const noexcept {
-        return std::hash<uint64_t>{}(common_code.value());
+struct std::hash<klotski::ffi::PyCommonCode> {
+    size_t operator()(const klotski::ffi::PyCommonCode &code) const noexcept {
+        return std::hash<uint64_t>{}(code.value());
     }
 };
-
-} // namespace std
-
-// ----------------------------------------------------------------------------------------- //

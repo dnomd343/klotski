@@ -1,6 +1,12 @@
-#include "binder.h"
+#include <pybind11/operators.h>
 
-void bind_cases(const py::module_ &mod) {
+#include "binder.h"
+#include "py_ffi/cases.h"
+
+using klotski::ffi::PyCases;
+using klotski::ffi::PyCasesIter;
+
+static void bind_cases(const py::module_ &mod) {
     py::class_<PyCases>(mod, "Cases")
         .def(py::self == py::self)
         .def("__len__", &PyCases::size)
@@ -10,7 +16,14 @@ void bind_cases(const py::module_ &mod) {
         .def_property_readonly_static("all_cases", [](const py::object&) {
             return PyCases::all_cases();
         });
+}
 
+static void bind_cases_iter(const py::module_ &mod) {
     py::class_<PyCasesIter>(mod, "CasesIter")
         .def("__next__", &PyCasesIter::next);
+}
+
+void bind_klsk_cases(const py::module_ &mod) {
+    bind_cases(mod);
+    bind_cases_iter(mod);
 }
