@@ -2,6 +2,7 @@
 
 #include "test_samples.h"
 #include "helper/expect.h"
+#include "helper/mirror.h"
 #include "helper/parallel.h"
 
 #include "utils/common.h"
@@ -131,18 +132,23 @@ TEST(RawCode, code_verify) {
 TEST(RawCode, code_mirror) {
     RAW_CODE_PARALLEL({
         const auto mirror_v = code.to_vertical_mirror();
-        EXPECT_TRUE(RawCode::check(mirror_v.unwrap()));
+        EXPECT_EQ(mirror_v, helper::get_vertical_mirror(code));
         EXPECT_EQ(mirror_v.to_vertical_mirror(), code);
-        EXPECT_FALSE(mirror_v.is_vertical_mirror()); // not exist
-        EXPECT_NE(mirror_v, code);
-
-        const auto mirror_h = code.to_horizontal_mirror();
-        EXPECT_TRUE(RawCode::check(mirror_h.unwrap()));
-        EXPECT_EQ(mirror_h.to_horizontal_mirror(), code);
-        if (mirror_h.is_horizontal_mirror()) {
-            EXPECT_EQ(mirror_h, code);
+        if (mirror_v == code) {
+            EXPECT_TRUE(code.is_vertical_mirror());
         } else {
-            EXPECT_NE(mirror_h, code);
+            EXPECT_FALSE(code.is_vertical_mirror());
+        }
+    });
+
+    RAW_CODE_PARALLEL({
+        const auto mirror_h = code.to_horizontal_mirror();
+        EXPECT_EQ(mirror_h, helper::get_horizontal_mirror(code));
+        EXPECT_EQ(mirror_h.to_horizontal_mirror(), code);
+        if (mirror_h == code) {
+            EXPECT_TRUE(code.is_horizontal_mirror());
+        } else {
+            EXPECT_FALSE(code.is_horizontal_mirror());
         }
     });
 }
