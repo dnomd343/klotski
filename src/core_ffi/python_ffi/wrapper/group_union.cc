@@ -1,6 +1,9 @@
 #include "exception.h"
 #include "py_ffi/group.h"
 
+using klotski::codec::ShortCode;
+using klotski::codec::CommonCode;
+
 using klotski::ffi::PyExc_GroupError;
 
 using klotski::ffi::PyGroupUnion;

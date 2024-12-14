@@ -6,9 +6,8 @@ set(CMAKE_CXX_STANDARD 23)
 set(KLSK_PYTHON_FFI_SRC
     klotski.cc
 
-    binder/cases.cc
-    binder/common_code.cc
-    binder/short_code.cc
+    binder/klsk_cases.cc
+    binder/klsk_code.cc
     binder/group_union.cc
     binder/group.cc
     binder/fast_cal.cc

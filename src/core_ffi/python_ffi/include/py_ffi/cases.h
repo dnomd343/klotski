@@ -3,8 +3,7 @@
 #pragma once
 
 #include <variant>
-
-#include "ranges/ranges.h"
+#include <ranges/ranges.h>
 
 #include "py_ffi/common_code.h"
 
@@ -29,6 +28,8 @@ private:
 class PyCases {
 public:
     PyCases() = delete;
+
+    // TODO: add pickle support
 
     // ------------------------------------------------------------------------------------- //
 

@@ -13,7 +13,7 @@ using fast_cal::FastCal;
 class PyFastCal {
 public:
     explicit PyFastCal(PyCommonCode code)
-        : fast_cal_(FastCal(std::bit_cast<CommonCode>(code).to_raw_code())) {}
+        : fast_cal_(FastCal(std::bit_cast<codec::CommonCode>(code).to_raw_code())) {}
 
     // TODO: export solution path directly
     std::optional<PyCommonCode> solve() {
@@ -32,7 +32,7 @@ public:
 
     [[nodiscard]] std::vector<PyCommonCode> backtrack(PyCommonCode code) const {
         std::vector<PyCommonCode> path;
-        for (auto x : fast_cal_.backtrack(std::bit_cast<CommonCode>(code).to_raw_code())) {
+        for (auto x : fast_cal_.backtrack(std::bit_cast<codec::CommonCode>(code).to_raw_code())) {
             path.emplace_back(std::bit_cast<PyCommonCode>(x.to_common_code()));
         }
         return path;
