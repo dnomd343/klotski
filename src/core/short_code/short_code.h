@@ -189,6 +189,7 @@ private:
 static_assert(sizeof(ShortCode) == 4);
 static_assert(std::is_standard_layout_v<ShortCode>);
 static_assert(std::is_trivially_copyable_v<ShortCode>);
+static_assert(std::has_unique_object_representations_v<ShortCode>);
 
 } // namespace klotski::codec
 
