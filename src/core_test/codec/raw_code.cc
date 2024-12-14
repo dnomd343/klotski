@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "test_samples.h"
+
+#include "helper/hash.h"
 #include "helper/expect.h"
 #include "helper/mirror.h"
 #include "helper/parallel.h"
@@ -17,6 +19,15 @@ using klotski::codec::CommonCode;
 
 using klotski::cases::AllCases;
 using klotski::cases::ALL_CASES_NUM_;
+
+static_assert(helper::is_hashable_v<RawCode>);
+static_assert(!std::is_default_constructible_v<RawCode>);
+
+static_assert(std::is_trivially_destructible_v<RawCode>);
+static_assert(std::is_trivially_copy_assignable_v<RawCode>);
+static_assert(std::is_trivially_move_assignable_v<RawCode>);
+static_assert(std::is_trivially_copy_constructible_v<RawCode>);
+static_assert(std::is_trivially_move_constructible_v<RawCode>);
 
 TEST(RawCode, basic) {
     EXPECT_FALSE(RawCode::check(0x0A34'182B'3810'2D21)); // invalid code
@@ -41,14 +52,14 @@ TEST(RawCode, basic) {
 }
 
 TEST(RawCode, exporter) {
-    auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
+    const auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
     EXPECT_EQ(raw_code.unwrap(), TEST_R_CODE);
     EXPECT_EQ(raw_code.to_common_code(), TEST_C_CODE);
 }
 
 TEST(RawCode, operators) {
-    auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
-    EXPECT_EQ((uint64_t)raw_code, TEST_R_CODE); // uint64_t cast
+    const auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
+    EXPECT_EQ(static_cast<uint64_t>(raw_code), TEST_R_CODE); // uint64_t cast
 
     EXPECT_NE(0, raw_code); // uint64_t != RawCode
     EXPECT_NE(raw_code, 0); // RawCode != uint64_t
@@ -83,13 +94,43 @@ TEST(RawCode, operators) {
     EXPECT_GT(RawCode::unsafe_create(TEST_R_CODE + 1), raw_code); // RawCode > RawCode
 }
 
+TEST(RawCode, constexpr) {
+    static_assert(RawCode::check(TEST_R_CODE));
+    static_assert(!RawCode::check(TEST_R_CODE_ERR));
+
+    static_assert(RawCode::create(TEST_R_CODE).has_value());
+    static_assert(!RawCode::create(TEST_R_CODE_ERR).has_value());
+    static_assert(RawCode::create(TEST_R_CODE).value() == TEST_R_CODE);
+
+    constexpr auto code = RawCode::unsafe_create(TEST_R_CODE);
+    static_assert(static_cast<uint64_t>(code) == TEST_R_CODE);
+    static_assert(code.unwrap() == TEST_R_CODE);
+
+    static_assert(code.to_common_code() == TEST_C_CODE);
+    static_assert(RawCode(CommonCode::unsafe_create(TEST_C_CODE)) == TEST_R_CODE);
+    static_assert(RawCode::from_common_code(TEST_C_CODE).value() == TEST_R_CODE);
+    static_assert(RawCode::from_common_code(CommonCode::unsafe_create(TEST_C_CODE)) == TEST_R_CODE);
+
+    constexpr auto mirror_1 = RawCode::unsafe_create(TEST_MIRROR_R1);
+    static_assert(!mirror_1.is_vertical_mirror());
+    static_assert(mirror_1.is_horizontal_mirror());
+    static_assert(mirror_1.to_vertical_mirror() == TEST_MIRROR_R1_VM);
+    static_assert(mirror_1.to_horizontal_mirror() == TEST_MIRROR_R1_HM);
+
+    constexpr auto mirror_2 = RawCode::unsafe_create(TEST_MIRROR_R2);
+    static_assert(!mirror_2.is_vertical_mirror());
+    static_assert(!mirror_2.is_horizontal_mirror());
+    static_assert(mirror_2.to_vertical_mirror() == TEST_MIRROR_R2_VM);
+    static_assert(mirror_2.to_horizontal_mirror() == TEST_MIRROR_R2_HM);
+}
+
 TEST(RawCode, initialize) {
-    auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
-    auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
+    const auto raw_code = RawCode::unsafe_create(TEST_R_CODE);
+    const auto common_code = CommonCode::unsafe_create(TEST_C_CODE);
 
     // operator=
-    auto r1 = raw_code;
-    auto r2 = RawCode {raw_code};
+    const auto r1 = raw_code;
+    const auto r2 = RawCode {raw_code};
     EXPECT_EQ(r1, TEST_R_CODE); // l-value
     EXPECT_EQ(r2, TEST_R_CODE); // r-value
 
@@ -154,26 +195,27 @@ TEST(RawCode, code_mirror) {
 }
 
 TEST(RawCode, DISABLED_global_verify) {
-    // convert to RawCode and ignore errors
-    static auto force_convert = +[](uint64_t common_code) -> uint64_t {
+    // convert CommonCode to RawCode and ignore errors
+    static const auto force_convert = +[](const uint64_t common_code) -> uint64_t {
         auto range = range_reverse(static_cast<uint32_t>(common_code));
-        auto raw_code = K_MASK_2x2 << (common_code >> 32) * 3;
+        auto raw_code = K_MASK_2x2 << (common_code >> 32) * 3; // block 2x2
         for (int addr = 0; range; range >>= 2) {
             while ((raw_code >> addr) & 0b111 && addr < 60) // found next space
                 addr += 3;
             if (addr >= 60) // invalid address
                 return 0;
             switch (range & 0b11) {
-                case 0b01: raw_code |= K_MASK_1x2 << addr; break;
-                case 0b10: raw_code |= K_MASK_2x1 << addr; break;
-                case 0b11: raw_code |= K_MASK_1x1 << addr; break;
-                case 0b00: addr += 3;
+                case 0b01: raw_code |= K_MASK_1x2 << addr; addr += 6; continue;
+                case 0b10: raw_code |= K_MASK_2x1 << addr; addr += 3; continue;
+                case 0b11: raw_code |= K_MASK_1x1 << addr; addr += 3; continue;
+                case 0b00: addr += 3; continue;
+                default: std::unreachable();
             }
         }
         return raw_code;
     };
 
-    const auto result = SCOPE_PARALLEL(0x10'0000'0000ULL, [](uint64_t start, uint64_t end) {
+    const auto result = SCOPE_PARALLEL(0x10'0000'0000ULL, [](const uint64_t start, const uint64_t end) {
         std::vector<CommonCode> codes;
         for (uint64_t common_code = start; common_code < end; ++common_code) {
             if (RawCode::check(force_convert(common_code))) {
