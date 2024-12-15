@@ -150,9 +150,12 @@
 
 #pragma once
 
-#include "raw_code/raw_code.h"
-#include "short_code/short_code.h"
-#include "common_code/common_code.h"
+#include <mutex>
+
+#include "ranges/ranges_fwd.h"
+#include "raw_code/raw_code_fwd.h"
+#include "short_code/short_code_fwd.h"
+#include "common_code/common_code_fwd.h"
 
 #include "internal/constant/group.h"
 #include "internal/constant/group_union.h"
@@ -195,13 +198,13 @@ public:
     using Groups = std::vector<Group>;
 
     /// Get all groups under the current type id.
-    [[nodiscard]] constexpr Groups groups() const; // TODO: constexpr not support `std::vector`
+    [[nodiscard]] Groups groups() const;
 
     /// Get all klotski cases under the current type id.
     [[nodiscard]] cases::RangesUnion cases() const;
 
     /// Get the group instance with the specified pattern id.
-    [[nodiscard]] constexpr std::optional<Groups> groups(uint_least16_t pattern_id) const;
+    [[nodiscard]] std::optional<Groups> groups(uint_least16_t pattern_id) const;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -240,23 +243,21 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
-// TODO: using macro for all likely-class
-
+static_assert(sizeof(GroupUnion) == 1);
 static_assert(std::is_standard_layout_v<GroupUnion>);
 static_assert(std::is_trivially_copyable_v<GroupUnion>);
-static_assert(!std::is_default_constructible_v<GroupUnion>);
-static_assert(std::is_trivially_destructible_v<GroupUnion>);
-static_assert(std::is_nothrow_destructible_v<GroupUnion>);
+static_assert(std::has_unique_object_representations_v<GroupUnion>);
 
-static_assert(std::is_nothrow_copy_assignable_v<GroupUnion>);
-static_assert(std::is_nothrow_move_assignable_v<GroupUnion>);
-static_assert(std::is_nothrow_copy_constructible_v<GroupUnion>);
-static_assert(std::is_nothrow_move_constructible_v<GroupUnion>);
+} // namespace klotski::group
 
-static_assert(std::is_trivially_copy_assignable_v<GroupUnion>);
-static_assert(std::is_trivially_move_assignable_v<GroupUnion>);
-static_assert(std::is_trivially_copy_constructible_v<GroupUnion>);
-static_assert(std::is_trivially_move_constructible_v<GroupUnion>);
+template <>
+struct std::hash<klotski::group::GroupUnion> {
+    constexpr std::size_t operator()(const klotski::group::GroupUnion &gu) const noexcept {
+        return std::hash<uint_fast8_t>{}(gu.unwrap());
+    }
+};
+
+namespace klotski::group {
 
 class Group {
 public:
@@ -274,7 +275,7 @@ public:
         Horizontal = 1, // horizontal self-symmetry
         Centro = 2, // centrosymmetric
         Vertical = 3, // vertical self-symmetry
-        Ordinary = 4, // non self-symmetric
+        Ordinary = 4, // non-self-symmetric
     };
 
     // ------------------------------------------------------------------------------------- //
@@ -342,7 +343,7 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Get the group in string form.
-    [[nodiscard]] std::string to_string() const;
+    [[nodiscard]] KLSK_INLINE std::string to_string() const;
 
 #ifndef KLSK_NDEBUG
     /// Output group info only for debug.
@@ -368,8 +369,21 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+static_assert(sizeof(Group) == 4);
 static_assert(std::is_standard_layout_v<Group>);
 static_assert(std::is_trivially_copyable_v<Group>);
+static_assert(std::has_unique_object_representations_v<Group>);
+
+} // namespace klotski::group
+
+template <>
+struct std::hash<klotski::group::Group> {
+    constexpr std::size_t operator()(const klotski::group::Group &g) const noexcept {
+        return std::hash<uint32_t>{}(std::bit_cast<uint32_t>(g));
+    }
+};
+
+namespace klotski::group {
 
 class CaseInfo {
 public:
@@ -394,7 +408,7 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     /// Get case info in string form.
-    [[nodiscard]] std::string to_string() const;
+    [[nodiscard]] KLSK_INLINE std::string to_string() const;
 
 #ifndef KLSK_NDEBUG
     /// Output case info only for debug.
@@ -416,8 +430,21 @@ private:
     // ------------------------------------------------------------------------------------- //
 };
 
+static_assert(sizeof(CaseInfo) == 8);
 static_assert(std::is_standard_layout_v<CaseInfo>);
 static_assert(std::is_trivially_copyable_v<CaseInfo>);
+static_assert(std::has_unique_object_representations_v<CaseInfo>);
+
+} // namespace klotski::group
+
+template <>
+struct std::hash<klotski::group::CaseInfo> {
+    constexpr std::size_t operator()(const klotski::group::CaseInfo &info) const noexcept {
+        return std::hash<uint64_t>{}(std::bit_cast<uint64_t>(info));
+    }
+};
+
+namespace klotski::group {
 
 class GroupCases {
 public:
@@ -491,12 +518,10 @@ private:
 
 } // namespace klotski::group
 
-#include "internal/type_id.inl"
+#include "internal/group.inl"
+#include "internal/group_cases.inl"
 #include "internal/group_union.inl"
 
-#include "internal/group.inl"
-#include "internal/group_mirror.inl"
-
-#include "internal/group_cases.inl"
+#include "internal/mirror.inl"
+#include "internal/type_id.inl"
 #include "internal/case_info.inl"
-#include "internal/hash.inl"

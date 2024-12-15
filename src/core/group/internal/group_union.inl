@@ -1,7 +1,10 @@
 #pragma once
 
 #include <ranges>
-#include <ostream> // TODO: only for debug output
+
+#include "raw_code/raw_code.h"
+#include "short_code/short_code.h"
+#include "common_code/common_code.h"
 
 namespace klotski::group {
 
@@ -44,7 +47,7 @@ constexpr std::optional<GroupUnion> GroupUnion::create(const uint_fast8_t type_i
 
 #ifndef KLSK_NDEBUG
 inline std::ostream& operator<<(std::ostream &out, GroupUnion self) {
-    out << static_cast<int>(self.type_id_);
+    out << std::format("{}", self.type_id_);
     return out;
 }
 #endif
@@ -69,8 +72,9 @@ constexpr GroupUnion GroupUnion::from_common_code(const codec::CommonCode common
 
 // ----------------------------------------------------------------------------------------- //
 
-constexpr auto GroupUnion::groups() const -> Groups {
-    auto build = [this](size_t offset) {
+// TODO: benchmark of force-inline
+inline auto GroupUnion::groups() const -> Groups {
+    auto build = [this](const size_t offset) {
         const auto raw = GROUP_DATA[offset];
         const uint_fast16_t pattern_id = (raw >> 2) & 0x3FF;
         const auto toward = static_cast<Group::Toward>(raw & 0b11);
@@ -82,12 +86,13 @@ constexpr auto GroupUnion::groups() const -> Groups {
          | std::ranges::to<std::vector>();
 }
 
-constexpr auto GroupUnion::groups(const uint_least16_t pattern_id) const -> std::optional<Groups> {
+// TODO: benchmark of force-inline
+inline auto GroupUnion::groups(const uint_least16_t pattern_id) const -> std::optional<Groups> {
     if (pattern_id >= pattern_num()) {
         return std::nullopt;
     }
 
-    auto flat_id = PATTERN_OFFSET[type_id_] + pattern_id;
+    const auto flat_id = PATTERN_OFFSET[type_id_] + pattern_id;
     switch (static_cast<Group::MirrorType>(PATTERN_DATA[flat_id] & 0b111)) {
         case Group::MirrorType::Full:
             return Groups {

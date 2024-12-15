@@ -18,7 +18,7 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-add_compile_options(-Wall -Wextra)
+add_compile_options(-Wall -Wextra -g)
 
 # TODO: enabled by LTO option
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
