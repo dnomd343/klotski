@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common_code/common_code.h"
+
 namespace klotski::group {
 
 KLSK_INLINE_CE uint_fast8_t to_type_id(const int n, const int n_2x1, const int n_1x1) {

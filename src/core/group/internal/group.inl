@@ -2,9 +2,20 @@
 
 #include <format>
 
-#include "constant/group.h"
+#include "short_code/short_code.h"
+#include "common_code/common_code.h"
 
 namespace klotski::group {
+
+// ----------------------------------------------------------------------------------------- //
+
+constexpr uint32_t Group::flat_id() const {
+    return PATTERN_OFFSET[type_id_] + pattern_id_;
+}
+
+constexpr uint32_t Group::size() const {
+    return (PATTERN_DATA[flat_id()] >> 3) & 0xFFFFF;
+}
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -24,11 +35,11 @@ constexpr char Group::toward_char() const {
     // TODO: select chars from pre-build std::array
     switch (mirror_type()) {
         case MirrorType::Full:
-            return '\0';
+            return 'x';
         case MirrorType::Horizontal:
             return (toward_ == Toward::A) ? 'n' : 'u';
         case MirrorType::Centro:
-            return (toward_ == Toward::A) ? 'h' : 's';
+            return (toward_ == Toward::A) ? 's' : 'o';
         case MirrorType::Vertical:
             return (toward_ == Toward::A) ? 'p' : 'q';
         case MirrorType::Ordinary:
@@ -50,6 +61,16 @@ constexpr char Group::toward_char() const {
 
 // ----------------------------------------------------------------------------------------- //
 
+inline Group Group::from_short_code(const codec::ShortCode short_code) {
+    return from_common_code(short_code.to_common_code());
+}
+
+inline Group Group::from_common_code(const codec::CommonCode common_code) {
+    return from_raw_code(common_code.to_raw_code());
+}
+
+// ----------------------------------------------------------------------------------------- //
+
 #ifndef KLSK_NDEBUG
 inline std::ostream& operator<<(std::ostream &out, const Group self) {
     out << self.to_string();
@@ -57,12 +78,8 @@ inline std::ostream& operator<<(std::ostream &out, const Group self) {
 }
 #endif
 
-inline std::string Group::to_string() const {
-    auto c = toward_char();
-    if (c == '\0') {
-        return std::format("{}-{}", type_id_, pattern_id_);
-    }
-    return std::format("{}-{}{}", type_id_, pattern_id_, c);
+KLSK_INLINE_H std::string Group::to_string() const {
+    return std::format("{}-{}{}", type_id_, pattern_id_, toward_char());
 }
 
 constexpr auto operator==(const Group &lhs, const Group &rhs) {
@@ -71,18 +88,27 @@ constexpr auto operator==(const Group &lhs, const Group &rhs) {
         && lhs.pattern_id_ == rhs.pattern_id_;
 }
 
-constexpr Group Group::unsafe_create(const uint_fast8_t type_id, const uint_least16_t pattern_id, const Toward toward) {
+// ----------------------------------------------------------------------------------------- //
+
+constexpr Group::Group(const Toward toward,
+                       const uint_fast8_t type_id,
+                       const uint_least16_t pattern_id)
+    : toward_(toward), type_id_(type_id), pattern_id_(pattern_id) {}
+
+constexpr Group Group::unsafe_create(const uint_fast8_t type_id,
+                                     const uint_least16_t pattern_id,
+                                     const Toward toward) {
     return {toward, type_id, pattern_id};
 }
 
-constexpr std::optional<Group> Group::create(const uint_fast8_t type_id, const uint_least16_t pattern_id, const Toward toward) {
-    if (type_id >= TYPE_ID_LIMIT) {
-        return std::nullopt;
-    }
-    if (pattern_id >= GroupUnion::unsafe_create(type_id).pattern_num()) {
+constexpr std::optional<Group> Group::create(const uint_fast8_t type_id,
+                                             const uint_least16_t pattern_id,
+                                             const Toward toward) {
+    if (type_id >= TYPE_ID_LIMIT || pattern_id >= PATTERN_NUM[type_id]) {
         return std::nullopt;
     }
 
+    // TODO: perf check process
     if (toward == Toward::A) {
         return unsafe_create(type_id, pattern_id, toward);
     }
@@ -122,22 +148,6 @@ constexpr std::optional<Group> Group::create(const uint_fast8_t type_id, const u
     return std::nullopt; // TODO: never reach
 }
 
-constexpr uint32_t Group::flat_id() const {
-    return PATTERN_OFFSET[type_id_] + pattern_id_;
-}
-
-constexpr uint32_t Group::size() const {
-    return (PATTERN_DATA[flat_id()] >> 3) & 0xFFFFF;
-}
-
-inline Group Group::from_short_code(const codec::ShortCode short_code) {
-    return from_common_code(short_code.to_common_code());
-}
-
-inline Group Group::from_common_code(const codec::CommonCode common_code) {
-    return from_raw_code(common_code.to_raw_code());
-}
-
-constexpr Group::Group(const Toward toward, const uint_fast8_t type_id, const uint_least16_t pattern_id) : toward_(toward), type_id_(type_id), pattern_id_(pattern_id) {}
+// ----------------------------------------------------------------------------------------- //
 
 } // namespace klotski::group

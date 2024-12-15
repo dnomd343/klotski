@@ -22,6 +22,22 @@ using klotski::group::GroupUnion;
 using klotski::group::TYPE_ID_LIMIT;
 using klotski::group::ALL_GROUP_NUM;
 
+static_assert(std::is_standard_layout_v<GroupUnion>);
+static_assert(std::is_trivially_copyable_v<GroupUnion>);
+static_assert(!std::is_default_constructible_v<GroupUnion>);
+static_assert(std::is_trivially_destructible_v<GroupUnion>);
+static_assert(std::is_nothrow_destructible_v<GroupUnion>);
+
+static_assert(std::is_nothrow_copy_assignable_v<GroupUnion>);
+static_assert(std::is_nothrow_move_assignable_v<GroupUnion>);
+static_assert(std::is_nothrow_copy_constructible_v<GroupUnion>);
+static_assert(std::is_nothrow_move_constructible_v<GroupUnion>);
+
+static_assert(std::is_trivially_copy_assignable_v<GroupUnion>);
+static_assert(std::is_trivially_move_assignable_v<GroupUnion>);
+static_assert(std::is_trivially_copy_constructible_v<GroupUnion>);
+static_assert(std::is_trivially_move_constructible_v<GroupUnion>);
+
 #define EXPECT_REPEAT(R, val)  \
     EXPECT_FALSE(R.empty());   \
     EXPECT_EQ(R.front(), val); \

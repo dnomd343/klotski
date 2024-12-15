@@ -7,8 +7,6 @@
 namespace klotski::group {
 
 constexpr uint32_t TYPE_ID_LIMIT = 203;
-constexpr uint32_t ALL_GROUP_NUM = 25422; // TODO: from GROUP_NUM
-constexpr uint32_t ALL_PATTERN_NUM = 6577; // TODO: from PATTERN_NUM
 
 /// The number of groups contained in GroupUnion.
 constexpr auto GROUP_NUM = std::to_array<uint16_t>({
@@ -27,8 +25,11 @@ constexpr auto GROUP_NUM = std::to_array<uint16_t>({
     214, 6  , 18  , 54 , 2   , 44 , 40 , 124 , 84 , 70  , 18  ,
 });
 
+constexpr uint32_t ALL_GROUP_NUM = array_sum(GROUP_NUM);
+
 constexpr auto GROUP_OFFSET = to_offset<uint16_t, 203>(GROUP_NUM);
 
+/// The number of patterns contained in GroupUnion.
 constexpr auto PATTERN_NUM = std::to_array<uint16_t>({
     1 , 1  , 1  , 1  , 1  , 1  , 1 , 1  , 1  , 1  , 1  , 1  , 1 , 1  , 1  , 1  ,
     1 , 1  , 1  , 1  , 1  , 1  , 1 , 1  , 1  , 1  , 1  , 4  , 1 , 1  , 1  , 1  ,
@@ -45,7 +46,9 @@ constexpr auto PATTERN_NUM = std::to_array<uint16_t>({
     58, 2  , 6  , 15 , 1  , 11 , 12, 31 , 24 , 19 , 6  ,
 });
 
-const auto PATTERN_OFFSET = to_offset<uint16_t, 203>(PATTERN_NUM);
+constexpr uint32_t ALL_PATTERN_NUM = array_sum(PATTERN_NUM);
+
+constexpr auto PATTERN_OFFSET = to_offset<uint16_t, 203>(PATTERN_NUM);
 
 /// The maximum Group size in each GroupUnion.
 constexpr auto MAX_GROUP_SIZE = std::to_array<uint32_t>({
@@ -119,7 +122,7 @@ constexpr auto BLOCK_NUM = std::to_array<std::tuple<uint8_t, uint8_t, uint8_t>>(
     {7, 4, 0 }, {7, 5, 0 }, {7, 6, 0 },
 });
 
-/// The number of cases with different heads in GroupUnion.
+/// The number of cases with different heads in GroupUnion. (0/2/12/14, 1/13, 4/6/8/10, 5/9)
 constexpr auto GROUP_UNION_CASES_NUM = std::to_array<std::tuple<uint32_t, uint32_t, uint32_t, uint32_t>>({
     {1    , 1    , 1    , 1    }, {16   , 16   , 16   , 16   }, {120  , 120  , 120  , 120  },
     {560  , 560  , 560  , 560  }, {1820 , 1820 , 1820 , 1820 }, {4368 , 4368 , 4368 , 4368 },

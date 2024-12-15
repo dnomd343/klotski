@@ -38,6 +38,7 @@ add_library(klotski::core ALIAS klotski_core)
 
 if (KLSK_DEV_MODE)
   add_executable(klotski_core_bin main.cc)
+  target_compile_options(klotski_core_bin PRIVATE -fno-rtti -fno-exceptions)
   target_link_libraries(klotski_core_bin PRIVATE klotski::core)
 endif()
 
