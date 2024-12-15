@@ -32,6 +32,8 @@ uint8_t pattern_mirror_type(uint32_t type_id, uint32_t pattern_id);
 
 std::vector<uint8_t> pattern_toward_list(uint32_t type_id, uint32_t pattern_id);
 
+uint32_t pattern_group_size(uint32_t type_id, uint32_t pattern_id);
+
 const std::vector<CommonCode>& group_cases(uint32_t type_id, uint32_t pattern_id, uint8_t toward);
 
 } // namespace helper
