@@ -152,6 +152,7 @@
 
 #include <mutex>
 
+#include "group/group_fwd.h"
 #include "ranges/ranges_fwd.h"
 #include "raw_code/raw_code_fwd.h"
 #include "short_code/short_code_fwd.h"
@@ -160,9 +161,9 @@
 #include "internal/constant/group.h"
 #include "internal/constant/group_union.h"
 
-namespace klotski::group {
+// TODO: using `uint_fast8_t` is no needed (just using `uint8_t`)
 
-class Group;
+namespace klotski::group {
 
 class GroupUnion {
 public:
@@ -458,28 +459,28 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Get the Group which ShortCode is located.
-    static Group obtain_group(codec::ShortCode short_code);
-
-    /// Get the Group which CommonCode is located.
-    static Group obtain_group(codec::CommonCode common_code);
+    /// Get the CommonCode from CaseInfo.
+    static KLSK_INLINE codec::CommonCode obtain_code(CaseInfo info);
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Get the CommonCode from CaseInfo.
-    static codec::CommonCode obtain_code(CaseInfo info);
+    /// Get the Group which ShortCode is located.
+    static KLSK_INLINE Group obtain_group(codec::ShortCode short_code);
+
+    /// Get the Group which CommonCode is located.
+    static KLSK_INLINE Group obtain_group(codec::CommonCode common_code);
+
+    // ------------------------------------------------------------------------------------- //
 
     /// Get the CaseInfo corresponding to the ShortCode.
-    static CaseInfo obtain_info(codec::ShortCode short_code);
+    static KLSK_INLINE CaseInfo obtain_info(codec::ShortCode short_code);
 
     /// Get the CaseInfo corresponding to the CommonCode.
-    static CaseInfo obtain_info(codec::CommonCode common_code);
+    static KLSK_INLINE CaseInfo obtain_info(codec::CommonCode common_code);
 
     // ------------------------------------------------------------------------------------- //
 
 private:
-    // ------------------------------------------------------------------------------------- //
-
     /// Whether fast mode is available.
     static inline bool fast_ {false};
 

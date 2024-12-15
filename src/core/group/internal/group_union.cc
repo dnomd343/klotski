@@ -17,11 +17,11 @@ RangesUnion GroupUnion::cases() const {
     ranges.reverse();
 
     RangesUnion cases;
-    const auto [s_a, s_b, s_c, s_d] = GROUP_UNION_CASES_NUM[type_id_];
-    RANGE_RESERVE(0x0, s_a); RANGE_RESERVE(0x1, s_b); RANGE_RESERVE(0x2, s_a);
-    RANGE_RESERVE(0x4, s_c); RANGE_RESERVE(0x5, s_d); RANGE_RESERVE(0x6, s_c);
-    RANGE_RESERVE(0x8, s_c); RANGE_RESERVE(0x9, s_d); RANGE_RESERVE(0xA, s_c);
-    RANGE_RESERVE(0xC, s_a); RANGE_RESERVE(0xD, s_b); RANGE_RESERVE(0xE, s_a);
+    const auto [na, nb, nc, nd] = GROUP_UNION_CASES_NUM[type_id_];
+    RANGE_RESERVE(0x0, na); RANGE_RESERVE(0x1, nb); RANGE_RESERVE(0x2, na);
+    RANGE_RESERVE(0x4, nc); RANGE_RESERVE(0x5, nd); RANGE_RESERVE(0x6, nc);
+    RANGE_RESERVE(0x8, nc); RANGE_RESERVE(0x9, nd); RANGE_RESERVE(0xA, nc);
+    RANGE_RESERVE(0xC, na); RANGE_RESERVE(0xD, nb); RANGE_RESERVE(0xE, na);
 
     RANGE_DERIVE(0x0); RANGE_DERIVE(0x1); RANGE_DERIVE(0x2);
     RANGE_DERIVE(0x4); RANGE_DERIVE(0x5); RANGE_DERIVE(0x6);

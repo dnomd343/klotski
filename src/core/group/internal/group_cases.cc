@@ -34,9 +34,8 @@ struct case_info_t {
 
 static_assert(sizeof(case_info_t) == 4);
 
-// TODO: we need multi-thread support (Executor)
-
-static std::vector<std::vector<RangesUnion>> *ru_data = nullptr;
+// TODO: benchmark of `phmap<Group>` structure
+static std::vector<std::vector<RangesUnion>> *ru_data = nullptr; // group_offset + toward
 static std::vector<case_info_t> *rev_data = nullptr;
 
 std::vector<std::vector<RangesUnion>> build_ranges_unions() {
@@ -44,6 +43,8 @@ std::vector<std::vector<RangesUnion>> build_ranges_unions() {
     unions.reserve(ALL_GROUP_NUM);
 
     // TODO: add white list for single-group unions
+
+    // TODO: helper with mirror
 
     for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         auto group_union = GroupUnion::unsafe_create(type_id);
@@ -92,16 +93,23 @@ static std::vector<case_info_t> build_tmp_data() {
 }
 
 void GroupCases::build() {
+    if (fast_) {
+        return;
+    }
+    std::lock_guard guard {busy_};
+
+    // TODO: make `data` as class member
     static auto data_1 = build_ranges_unions();
     static auto data_2 = build_tmp_data();
     ru_data = &data_1;
     rev_data = &data_2;
 
-    // TODO: using std::mutex `busy_`
+    KLSK_MEM_BARRIER;
     fast_ = true;
 }
 
 void GroupCases::build_async(Executor &&executor, Notifier &&callback) {
+    // TODO: real multi-thread build
     executor([callback = std::move(callback)] {
         build();
         callback();
