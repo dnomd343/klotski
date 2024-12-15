@@ -40,7 +40,7 @@ set(KLSK_TEST_GROUP_SRC
     group/group_union.cc
     group/group_legacy.cc
     group/group_pro.cc
-    group/helper/group_impl.cc
+#    group/helper/group_impl.cc
 )
 
 add_executable(test_klotski_group ${KLSK_TEST_GROUP_SRC})

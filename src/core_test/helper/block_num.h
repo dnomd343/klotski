@@ -24,6 +24,10 @@ block_num_t cal_block_num(uint32_t range);
 /// Calculate type id value from the block number.
 uint32_t to_type_id(block_num_t block_num);
 
+inline uint32_t to_type_id(const uint32_t range) {
+    return to_type_id(cal_block_num(range));
+}
+
 /// Calculate the block number value from type id.
 block_num_t to_block_num(uint32_t type_id);
 

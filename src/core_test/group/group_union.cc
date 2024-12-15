@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <algorithm>
 
+#include "helper/hash.h"
+#include "helper/expect.h"
 #include "helper/parallel.h"
 #include "helper/block_num.h"
 
@@ -22,26 +24,23 @@ using klotski::group::GroupUnion;
 using klotski::group::TYPE_ID_LIMIT;
 using klotski::group::ALL_GROUP_NUM;
 
-static_assert(std::is_standard_layout_v<GroupUnion>);
-static_assert(std::is_trivially_copyable_v<GroupUnion>);
+using klotski::group::GROUP_NUM;
+using klotski::group::PATTERN_NUM;
+
+using klotski::group::ALL_GROUP_NUM;
+using klotski::group::ALL_PATTERN_NUM;
+
+using klotski::group::MAX_GROUP_SIZE;
+using klotski::group::GROUP_UNION_SIZE;
+using klotski::group::BLOCK_NUM;
+using klotski::group::GROUP_UNION_CASES_NUM;
+
+using klotski::group::GROUP_OFFSET;
+using klotski::group::PATTERN_OFFSET;
+
+EXPECT_PLAIN_DATA(GroupUnion); // TODO: using concept without macro
+static_assert(helper::is_hashable_v<GroupUnion>);
 static_assert(!std::is_default_constructible_v<GroupUnion>);
-static_assert(std::is_trivially_destructible_v<GroupUnion>);
-static_assert(std::is_nothrow_destructible_v<GroupUnion>);
-
-static_assert(std::is_nothrow_copy_assignable_v<GroupUnion>);
-static_assert(std::is_nothrow_move_assignable_v<GroupUnion>);
-static_assert(std::is_nothrow_copy_constructible_v<GroupUnion>);
-static_assert(std::is_nothrow_move_constructible_v<GroupUnion>);
-
-static_assert(std::is_trivially_copy_assignable_v<GroupUnion>);
-static_assert(std::is_trivially_move_assignable_v<GroupUnion>);
-static_assert(std::is_trivially_copy_constructible_v<GroupUnion>);
-static_assert(std::is_trivially_move_constructible_v<GroupUnion>);
-
-#define EXPECT_REPEAT(R, val)  \
-    EXPECT_FALSE(R.empty());   \
-    EXPECT_EQ(R.front(), val); \
-    EXPECT_EQ(std::adjacent_find(R.begin(), R.end(), std::not_equal_to<>()), R.end())
 
 TEST(GroupUnion, basic) {
     TYPE_ID_PARALLEL({
@@ -74,48 +73,97 @@ TEST(GroupUnion, basic) {
     });
 }
 
+#define EXPECT_SUM_EQ(ARR, SUM) \
+    EXPECT_EQ(std::accumulate(ARR.begin(), ARR.end(), 0), SUM)
+
+#define EXPECT_OFFSET(ARR, OFFSET) \
+    EXPECT_EQ(ARR.size(), OFFSET.size()); \
+    EXPECT_FALSE(ARR.empty()) \
+    // TODO: offset test
+
 TEST(GroupUnion, constant) {
 
     EXPECT_EQ(TYPE_ID_LIMIT, helper::group_union_num());
 
-    uint32_t sum = 0;
-    for (uint32_t i = 0; i < helper::group_union_num(); ++i) {
-        sum += helper::group_union_group_num(i);
+    // GROUP_NUM / ALL_GROUP_NUM
+    // PATTERN_NUM / ALL_PATTERN_NUM
+    // MAX_GROUP_SIZE
+    // GROUP_UNION_SIZE
+    // BLOCK_NUM
+    // GROUP_UNION_CASES_NUM
+
+    EXPECT_EQ(GROUP_NUM.size(), TYPE_ID_LIMIT);
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) { // TODO: add `TYPE_ID_LOOP` macro
+        EXPECT_EQ(GROUP_NUM[type_id], helper::group_union_group_num(type_id));
     }
-    EXPECT_EQ(ALL_GROUP_NUM, sum);
+    EXPECT_OFFSET(GROUP_NUM, GROUP_OFFSET);
+    EXPECT_SUM_EQ(GROUP_NUM, ALL_GROUP_NUM);
 
-    // TODO: verify GROUP_UNION_SIZE (size) / GROUP_NUM (group_num) / MAX_GROUP_SIZE (max_group_size)
-    //       test from member function directly?
+    EXPECT_EQ(PATTERN_NUM.size(), TYPE_ID_LIMIT);
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        EXPECT_EQ(PATTERN_NUM[type_id], helper::group_union_pattern_num(type_id));
+    }
+    EXPECT_OFFSET(PATTERN_NUM, PATTERN_OFFSET);
+    EXPECT_SUM_EQ(PATTERN_NUM, ALL_PATTERN_NUM);
+
+    EXPECT_EQ(MAX_GROUP_SIZE.size(), TYPE_ID_LIMIT);
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        const auto sizes = GroupUnion::unsafe_create(type_id).groups()
+            | std::views::transform([](const auto g) { return g.size(); });
+        EXPECT_EQ(MAX_GROUP_SIZE[type_id], *std::ranges::max_element(sizes)); // TODO: maybe test with `max_group_size()`
+    }
+
+    static_assert(GROUP_UNION_SIZE.size() == TYPE_ID_LIMIT);
+    // TODO: test GROUP_UNION_SIZE
+
+    static_assert(BLOCK_NUM.size() == TYPE_ID_LIMIT);
+    for (auto type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id];
+        auto val = helper::cal_block_num(type_id);
+        EXPECT_EQ(n, val.n_1x2 + val.n_2x1);
+        EXPECT_EQ(n_2x1, val.n_2x1);
+        EXPECT_EQ(n_1x1, val.n_1x1);
+    }
+
+    static_assert(GROUP_UNION_CASES_NUM.size() == TYPE_ID_LIMIT);
+    for (auto type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        auto [a, b, c, d] = GROUP_UNION_CASES_NUM[type_id];
+
+        auto cases = GroupUnion::unsafe_create(type_id).cases();
+        EXPECT_EQ(a, cases.ranges(0).size());
+        // TODO: move value compare
+    }
+
 }
-
-// TEST(GroupUnion, values) {
-//     GROUP_UNION_PARALLEL({
-//         auto type_id = group_union.unwrap();
-//         auto &cases = group_union_cases(type_id);
-//
-//         EXPECT_EQ(group_union.size(), cases.size());
-//         EXPECT_EQ(group_union.cases().codes(), cases);
-//         EXPECT_EQ(group_union.group_num(), helper::group_union_group_num(type_id));
-//
-//         auto get_group_size = [](auto g) { return g.size(); };
-//         const auto sizes = group_union.groups() | std::views::transform(get_group_size);
-//         EXPECT_EQ(group_union.max_group_size(), *std::ranges::max_element(sizes));
-//     });
-// }
 
 TEST(GroupUnion, values) {
     GROUP_UNION_PARALLEL({
-        auto type_id = group_union.unwrap();
-        auto &cases = helper::group_union_cases(type_id);
-
-        EXPECT_EQ(group_union.size(), cases.size());
-        EXPECT_EQ(group_union.cases().codes(), cases);
+        const auto type_id = group_union.unwrap();
+        EXPECT_EQ(group_union.size(), helper::group_union_cases(type_id).size());
         EXPECT_EQ(group_union.group_num(), helper::group_union_group_num(type_id));
         EXPECT_EQ(group_union.pattern_num(), helper::group_union_pattern_num(type_id));
 
-        auto get_group_size = [](auto g) { return g.size(); };
-        const auto sizes = group_union.groups() | std::views::transform(get_group_size);
+        const auto sizes = group_union.groups()
+                         | std::views::transform([](const auto g) { return g.size(); });
         EXPECT_EQ(group_union.max_group_size(), *std::ranges::max_element(sizes));
+    });
+}
+
+TEST(GroupUnion, cases) {
+    GROUP_UNION_PARALLEL({
+        const auto type_id = group_union.unwrap();
+        auto &cases = helper::group_union_cases(type_id);
+
+        EXPECT_EQ(group_union.cases().codes(), cases);
+    });
+    // TODO: combine all cases and compare with AllCases
+}
+
+// TODO: add `EXPECT_DIFF(...)` helper
+
+TEST(GroupUnion, groups) {
+    GROUP_UNION_PARALLEL({
+        const auto type_id = group_union.unwrap();
 
         auto groups = group_union.groups();
         for (uint32_t pattern_id = 0; pattern_id < group_union.pattern_num(); ++pattern_id) {
@@ -131,13 +179,14 @@ TEST(GroupUnion, values) {
                 EXPECT_EQ(towards[i], exp_towards[i]);
             }
         }
+        // TODO: test two `groups()` interfaces
     });
 }
 
 TEST(GroupUnion, type_id) {
     ShortCode::speed_up(true);
     COMMON_CODE_PARALLEL({
-         auto type_id = to_type_id(helper::cal_block_num(code.unwrap()));
+         const auto type_id = helper::to_type_id(code.unwrap());
          EXPECT_EQ(GroupUnion::from_common_code(code).unwrap(), type_id);
          EXPECT_EQ(GroupUnion::from_raw_code(code.to_raw_code()).unwrap(), type_id);
          EXPECT_EQ(GroupUnion::from_short_code(code.to_short_code()).unwrap(), type_id);

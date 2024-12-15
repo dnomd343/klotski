@@ -40,4 +40,21 @@ std::string ostream_capture(T obj) {
     EXPECT_SORTED_AND_UNIQUE(R); \
     EXPECT_EQ(R.back(), R.size() - 1)
 
+#define EXPECT_REPEAT(R, val)  \
+    EXPECT_FALSE(R.empty());   \
+    EXPECT_EQ(R.front(), val); \
+    EXPECT_EQ(std::adjacent_find(R.begin(), R.end(), std::not_equal_to<>{}), R.end())
+
 // ----------------------------------------------------------------------------------------- //
+
+#define EXPECT_PLAIN_DATA(T) static_assert(      \
+    std::is_nothrow_destructible_v<T>         && \
+    std::is_nothrow_copy_assignable_v<T>      && \
+    std::is_nothrow_move_assignable_v<T>      && \
+    std::is_nothrow_copy_constructible_v<T>   && \
+    std::is_nothrow_move_constructible_v<T>   && \
+    std::is_trivially_destructible_v<T>       && \
+    std::is_trivially_copy_assignable_v<T>    && \
+    std::is_trivially_move_assignable_v<T>    && \
+    std::is_trivially_copy_constructible_v<T> && \
+    std::is_trivially_move_constructible_v<T>)
