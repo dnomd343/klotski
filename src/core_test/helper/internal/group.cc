@@ -312,3 +312,11 @@ const std::vector<CommonCode> &helper::group_cases(uint32_t type_id, uint32_t pa
         std::abort();
     }
 }
+
+uint32_t helper::pattern_group_size(uint32_t type_id, uint32_t pattern_id) {
+    if (type_id >= group_union_data().size() || pattern_id >= pattern_data()[type_id].size()) {
+        std::abort();
+    }
+    const auto &pattern = pattern_data()[type_id][pattern_id];
+    return pattern.group_size;
+}

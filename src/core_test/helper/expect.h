@@ -47,14 +47,31 @@ std::string ostream_capture(T obj) {
 
 // ----------------------------------------------------------------------------------------- //
 
-#define EXPECT_PLAIN_DATA(T) static_assert(      \
-    std::is_nothrow_destructible_v<T>         && \
-    std::is_nothrow_copy_assignable_v<T>      && \
-    std::is_nothrow_move_assignable_v<T>      && \
-    std::is_nothrow_copy_constructible_v<T>   && \
-    std::is_nothrow_move_constructible_v<T>   && \
-    std::is_trivially_destructible_v<T>       && \
-    std::is_trivially_copy_assignable_v<T>    && \
-    std::is_trivially_move_assignable_v<T>    && \
-    std::is_trivially_copy_constructible_v<T> && \
-    std::is_trivially_move_constructible_v<T>)
+// #define EXPECT_PLAIN_DATA(T) static_assert(      \
+//     std::is_nothrow_destructible_v<T>         && \
+//     std::is_nothrow_copy_assignable_v<T>      && \
+//     std::is_nothrow_move_assignable_v<T>      && \
+//     std::is_nothrow_copy_constructible_v<T>   && \
+//     std::is_nothrow_move_constructible_v<T>   && \
+//     std::is_trivially_destructible_v<T>       && \
+//     std::is_trivially_copy_assignable_v<T>    && \
+//     std::is_trivially_move_assignable_v<T>    && \
+//     std::is_trivially_copy_constructible_v<T> && \
+//     std::is_trivially_move_constructible_v<T>)
+
+namespace helper {
+
+template <typename T>
+concept is_plain_class_v = std::is_class_v<T>
+    && std::is_nothrow_destructible_v<T>
+    && std::is_nothrow_copy_assignable_v<T>
+    && std::is_nothrow_move_assignable_v<T>
+    && std::is_nothrow_copy_constructible_v<T>
+    && std::is_nothrow_move_constructible_v<T>
+    && std::is_trivially_destructible_v<T>
+    && std::is_trivially_copy_assignable_v<T>
+    && std::is_trivially_move_assignable_v<T>
+    && std::is_trivially_copy_constructible_v<T>
+    && std::is_trivially_move_constructible_v<T>;
+
+} // namespace helper
