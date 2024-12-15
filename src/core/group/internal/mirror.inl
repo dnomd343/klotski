@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: class functions force inline
+
 namespace klotski::group {
 
 constexpr auto Group::mirror_type() const -> MirrorType {

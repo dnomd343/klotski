@@ -18,7 +18,9 @@ using klotski::mover::MaskMover;
 using klotski::group::GROUP_DATA;
 using klotski::group::PATTERN_DATA;
 
-// TODO: maybe we can perf with mirror cases
+// NOTE: This code implements two time-consuming functions:
+//       1. Calculate all cases included in Group based on type_id/pattern_id/toward.
+//       2. Calculate the Group information it belongs to based on RawCode.
 
 /// Spawn all the unsorted codes of the current group.
 static std::vector<RawCode> Group_extend_for_cases(RawCode raw_code, uint32_t reserve) {
@@ -46,6 +48,7 @@ static std::vector<RawCode> Group_extend_for_cases(RawCode raw_code, uint32_t re
     return codes;
 }
 
+// TODO: maybe we can perf with mirror cases
 RangesUnion Group::cases() const {
 
     // TODO: add white list for single-group unions
@@ -117,6 +120,7 @@ static std::vector<RawCode> Group_extend_for_from_raw_code(RawCode raw_code) {
     return codes;
 }
 
+// TODO: maybe we can search new cases in `map_data`
 Group Group::from_raw_code(const RawCode raw_code) {
     static auto map_data = build_map_data();
 
