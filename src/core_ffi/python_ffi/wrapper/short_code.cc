@@ -1,8 +1,8 @@
 #include <format>
 
 #include "exception.h"
+#include "py_ffi/layout.h"
 #include "py_ffi/short_code.h"
-#include "py_ffi/common_code.h"
 
 using namespace klotski::ffi;
 using klotski::codec::ShortCode;
@@ -14,8 +14,8 @@ uint32_t PyShortCode::value() const noexcept {
     return code_.unwrap();
 }
 
-PyCommonCode PyShortCode::common_code() const noexcept {
-    return std::bit_cast<PyCommonCode>(code_.to_common_code());
+PyLayout PyShortCode::layout() const noexcept {
+    return std::bit_cast<PyLayout>(code_.to_common_code());
 }
 
 // ----------------------------------------------------------------------------------------- //
@@ -40,8 +40,8 @@ std::string PyShortCode::repr(const PyShortCode code) noexcept {
 
 // ----------------------------------------------------------------------------------------- //
 
-static ShortCode convert(const PyCommonCode code) noexcept {
-    return std::bit_cast<CommonCode>(code).to_short_code();
+static ShortCode convert(const PyLayout layout) noexcept {
+    return std::bit_cast<CommonCode>(layout).to_short_code();
 }
 
 static ShortCode convert(const uint32_t code) {
@@ -60,6 +60,6 @@ static ShortCode convert(const std::string_view code) {
 
 PyShortCode::PyShortCode(const uint32_t code) : code_(convert(code)) {}
 PyShortCode::PyShortCode(const std::string_view code) : code_(convert(code)) {}
-PyShortCode::PyShortCode(const PyCommonCode code) noexcept : code_(convert(code)) {}
+PyShortCode::PyShortCode(const PyLayout code) noexcept : code_(convert(code)) {}
 
 // ----------------------------------------------------------------------------------------- //

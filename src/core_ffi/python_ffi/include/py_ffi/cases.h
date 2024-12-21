@@ -5,7 +5,7 @@
 #include <variant>
 #include <ranges/ranges.h>
 
-#include "py_ffi/common_code.h"
+#include "py_ffi/layout.h"
 
 namespace klotski::ffi {
 
@@ -17,7 +17,7 @@ public:
     explicit PyCasesIter(const RangesUnion &data) noexcept;
 
     /// Get the next CommonCode or throw `stop_iteration` exception.
-    PyCommonCode next();
+    PyLayout next();
 
 private:
     size_t index_ {0};
@@ -25,11 +25,11 @@ private:
     const RangesUnion &data_;
 };
 
+// TODO: add `copy` and `pickle` support
+
 class PyCases {
 public:
     PyCases() = delete;
-
-    // TODO: add pickle support
 
     // ------------------------------------------------------------------------------------- //
 
@@ -48,7 +48,9 @@ public:
     [[nodiscard]] PyCasesIter iter() const noexcept;
 
     /// Get the CommonCode of the specified index.
-    [[nodiscard]] PyCommonCode at(int32_t index) const;
+    [[nodiscard]] PyLayout at(int32_t index) const;
+
+    // TODO: add `contain` interface
 
     // ------------------------------------------------------------------------------------- //
 

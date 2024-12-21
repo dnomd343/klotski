@@ -6,7 +6,7 @@
 
 namespace klotski::ffi {
 
-class PyCommonCode;
+class PyLayout;
 
 class PyShortCode {
 public:
@@ -20,8 +20,8 @@ public:
     /// Construct from origin string form.
     explicit PyShortCode(std::string_view code);
 
-    /// Construct from PyCommonCode object.
-    explicit PyShortCode(PyCommonCode code) noexcept;
+    /// Construct from PyLayout object.
+    explicit PyShortCode(PyLayout code) noexcept;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -36,8 +36,8 @@ public:
     /// Get original value.
     [[nodiscard]] uint32_t value() const noexcept;
 
-    /// Convert ShortCode as CommonCode.
-    [[nodiscard]] PyCommonCode common_code() const noexcept;
+    /// Convert ShortCode as Layout.
+    [[nodiscard]] PyLayout layout() const noexcept;
 
     // ------------------------------------------------------------------------------------- //
 

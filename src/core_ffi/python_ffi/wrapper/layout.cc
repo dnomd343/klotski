@@ -1,7 +1,7 @@
 #include <format>
 
 #include "exception.h"
-#include "py_ffi/common_code.h"
+#include "py_ffi/layout.h"
 
 using namespace klotski::ffi;
 using klotski::codec::ShortCode;
@@ -9,34 +9,34 @@ using klotski::codec::CommonCode;
 
 // ----------------------------------------------------------------------------------------- //
 
-uint64_t PyCommonCode::value() const noexcept {
+uint64_t PyLayout::value() const noexcept {
     return code_.unwrap();
 }
 
-std::string PyCommonCode::string(const bool shorten) const noexcept {
+std::string PyLayout::string(const bool shorten) const noexcept {
     return code_.to_string(shorten);
 }
 
-PyShortCode PyCommonCode::short_code() const noexcept {
+PyShortCode PyLayout::short_code() const noexcept {
     return std::bit_cast<PyShortCode>(code_.to_short_code());
 }
 
 // ----------------------------------------------------------------------------------------- //
 
-bool PyCommonCode::check(const uint64_t code) noexcept {
+bool PyLayout::check(const uint64_t code) noexcept {
     return CommonCode::check(code);
 }
 
-bool PyCommonCode::check(const std::string_view code) noexcept {
+bool PyLayout::check(const std::string_view code) noexcept {
     return CommonCode::from_string(code).has_value();
 }
 
 // ----------------------------------------------------------------------------------------- //
 
-[[nodiscard]] std::vector<PyCommonCode> PyCommonCode::next_cases() const noexcept {
-    std::vector<PyCommonCode> cases;
+[[nodiscard]] std::vector<PyLayout> PyLayout::next_cases() const noexcept {
+    std::vector<PyLayout> cases;
     auto mover = mover::MaskMover([&cases](const codec::RawCode code, uint64_t) {
-        cases.emplace_back(std::bit_cast<PyCommonCode>(code.to_common_code()));
+        cases.emplace_back(std::bit_cast<PyLayout>(code.to_common_code()));
     });
     mover.next_cases(code_.to_raw_code(), 0);
     return cases;
@@ -44,12 +44,12 @@ bool PyCommonCode::check(const std::string_view code) noexcept {
 
 // ----------------------------------------------------------------------------------------- //
 
-std::string PyCommonCode::str(const PyCommonCode code) noexcept {
+std::string PyLayout::str(const PyLayout code) noexcept {
     return code.code_.to_string();
 }
 
-std::string PyCommonCode::repr(const PyCommonCode code) noexcept {
-    return std::format("<klotski.Code 0x{}>", str(code));
+std::string PyLayout::repr(const PyLayout code) noexcept {
+    return std::format("<klotski.Layout 0x{}>", str(code));
 }
 
 // ----------------------------------------------------------------------------------------- //
@@ -72,8 +72,8 @@ static CommonCode convert(const std::string_view code) {
     throw PyExc_CodecError(std::format("invalid code: `{}`", code));
 }
 
-PyCommonCode::PyCommonCode(const uint64_t code) : code_(convert(code)) {}
-PyCommonCode::PyCommonCode(const std::string_view code) : code_(convert(code)) {}
-PyCommonCode::PyCommonCode(const PyShortCode code) noexcept : code_(convert(code)) {}
+PyLayout::PyLayout(const uint64_t code) : code_(convert(code)) {}
+PyLayout::PyLayout(const std::string_view code) : code_(convert(code)) {}
+PyLayout::PyLayout(const PyShortCode code) noexcept : code_(convert(code)) {}
 
 // ----------------------------------------------------------------------------------------- //

@@ -12,10 +12,10 @@ using klotski::cases::AllCases;
 
 PyCasesIter::PyCasesIter(const RangesUnion &data) noexcept : data_(data) {}
 
-PyCommonCode PyCasesIter::next() {
+PyLayout PyCasesIter::next() {
     while (head_ < 16) {
         if (const auto &ranges = data_.ranges(head_); index_ < ranges.size()) {
-            return std::bit_cast<PyCommonCode>((head_ << 32) | ranges[index_++]);
+            return std::bit_cast<PyLayout>((head_ << 32) | ranges[index_++]);
         }
         index_ = 0, ++head_;
     }
@@ -32,13 +32,13 @@ PyCasesIter PyCases::iter() const noexcept {
     return PyCasesIter(data_ref());
 }
 
-PyCommonCode PyCases::at(const int32_t index) const {
+PyLayout PyCases::at(const int32_t index) const {
     const auto size_ = static_cast<int32_t>(size());
     if (index >= size_ || index < -size_) {
         throw py::index_error("cases index out of range");
     }
     const auto code = data_ref()[index < 0 ? index + size_ : index];
-    return std::bit_cast<PyCommonCode>(code);
+    return std::bit_cast<PyLayout>(code);
 }
 
 // ----------------------------------------------------------------------------------------- //
