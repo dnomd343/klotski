@@ -5,10 +5,20 @@
 #include "py_ffi/layout.h"
 #include "py_ffi/short_code.h"
 
+using klotski::ffi::PyBlock;
 using klotski::ffi::PyLayout;
 using klotski::ffi::PyShortCode;
 
 static void bind_layout(const py::module_ &mod) {
+    py::enum_<PyBlock>(mod, "Block")
+        .value("SPACE", PyBlock::SPACE)
+        .value("B_1x1", PyBlock::B_1x1)
+        .value("B_1x2", PyBlock::B_1x2)
+        .value("B_2x1", PyBlock::B_2x1)
+        .value("B_2x2", PyBlock::B_2x2)
+        .value("FILL", PyBlock::FILL)
+        .export_values();
+
     py::class_<PyLayout>(mod, "Layout")
         .def(py::init<uint64_t>())
         .def(py::init<PyShortCode>())
@@ -27,6 +37,7 @@ static void bind_layout(const py::module_ &mod) {
         .def("__repr__", &PyLayout::repr)
 
         .def("next_cases", &PyLayout::next_cases)
+        .def("dump_seq", &PyLayout::dump_seq)
         // TODO: add fast_cal / fast_cal_multi / ...
 
         .def("to_short_code", &PyLayout::short_code)

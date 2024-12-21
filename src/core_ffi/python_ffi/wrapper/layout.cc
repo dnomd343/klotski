@@ -42,6 +42,16 @@ bool PyLayout::check(const std::string_view code) noexcept {
     return cases;
 }
 
+std::array<PyBlock, 20> PyLayout::dump_seq() const noexcept {
+    std::array<PyBlock, 20> seq {};
+    auto raw_code = code_.to_raw_code().unwrap();
+    for (int i = 0; i < 20; ++i) {
+        auto tmp = (raw_code >> (i * 3)) & 0b111;
+        seq[i] = (PyBlock)(tmp);
+    }
+    return seq;
+}
+
 // ----------------------------------------------------------------------------------------- //
 
 std::string PyLayout::str(const PyLayout code) noexcept {
