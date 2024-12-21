@@ -11,6 +11,15 @@
 
 namespace klotski::ffi {
 
+enum class PyBlock : uint8_t {
+    SPACE = 0b000,
+    B_1x2 = 0b001,
+    B_2x1 = 0b010,
+    B_1x1 = 0b011,
+    B_2x2 = 0b100,
+    FILL = 0b111,
+};
+
 class PyLayout {
 public:
     PyLayout() = delete;
@@ -56,6 +65,8 @@ public:
     // ------------------------------------------------------------------------------------- //
 
     [[nodiscard]] std::vector<PyLayout> next_cases() const noexcept;
+
+    [[nodiscard]] std::array<PyBlock, 20> dump_seq() const noexcept;
 
     // ------------------------------------------------------------------------------------- //
 
