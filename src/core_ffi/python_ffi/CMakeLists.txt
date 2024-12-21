@@ -13,7 +13,7 @@ set(KLSK_PYTHON_FFI_SRC
     binder/fast_cal.cc
 
     wrapper/short_code.cc
-    wrapper/common_codec.cc
+    wrapper/layout.cc
     wrapper/cases.cc
     wrapper/group_union.cc
     wrapper/group.cc

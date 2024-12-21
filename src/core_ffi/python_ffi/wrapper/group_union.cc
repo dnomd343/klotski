@@ -11,7 +11,7 @@ using klotski::ffi::PyGroupUnion;
 static klotski::group::GroupUnion convert(uint8_t type_id) {
     auto group_union = klotski::group::GroupUnion::create(type_id);
     if (!group_union.has_value()) {
-        throw PyExc_GroupError(std::format("invalid type id -> {}", type_id));
+        throw PyExc_GroupError(std::format("invalid type id: {}", type_id));
     }
     return group_union.value();
 }
@@ -22,8 +22,8 @@ PyGroupUnion::PyGroupUnion(const uint8_t type_id) :
 PyGroupUnion::PyGroupUnion(const PyShortCode short_code) :
     group_union_(GroupUnion::from_short_code(std::bit_cast<ShortCode>(short_code))) {}
 
-PyGroupUnion::PyGroupUnion(const PyCommonCode common_code) :
-    group_union_(GroupUnion::from_common_code(std::bit_cast<CommonCode>(common_code))) {}
+PyGroupUnion::PyGroupUnion(const PyLayout layout) :
+    group_union_(GroupUnion::from_common_code(std::bit_cast<CommonCode>(layout))) {}
 
 uint32_t PyGroupUnion::value() const {
     return group_union_.unwrap();

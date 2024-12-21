@@ -7,7 +7,8 @@
 #include <group/group.h>
 
 #include "py_ffi/cases.h"
-#include "py_ffi/common_code.h"
+#include "py_ffi/layout.h"
+#include "py_ffi/short_code.h"
 
 namespace klotski::ffi {
 
@@ -44,9 +45,9 @@ private:
 
 class PyGroupUnion {
 public:
-    PyGroupUnion(uint8_t type_id);
-    PyGroupUnion(PyShortCode short_code);
-    PyGroupUnion(PyCommonCode common_code);
+    explicit PyGroupUnion(uint8_t type_id);
+    explicit PyGroupUnion(PyLayout layout);
+    explicit PyGroupUnion(PyShortCode short_code);
 
     [[nodiscard]] uint32_t value() const;
 

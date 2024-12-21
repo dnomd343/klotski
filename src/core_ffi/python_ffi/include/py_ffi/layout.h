@@ -7,24 +7,24 @@
 
 #include "py_ffi/short_code.h"
 
-// TODO: maybe using `PyLayout` instead of `PyCommonCode`
+// TODO: add `copy` and `pickle` support
 
 namespace klotski::ffi {
 
-class PyCommonCode {
+class PyLayout {
 public:
-    PyCommonCode() = delete;
+    PyLayout() = delete;
 
     // ------------------------------------------------------------------------------------- //
 
     /// Construct from origin u64 value.
-    explicit PyCommonCode(uint64_t code);
+    explicit PyLayout(uint64_t code);
 
     /// Construct from origin string form.
-    explicit PyCommonCode(std::string_view code);
+    explicit PyLayout(std::string_view code);
 
     /// Construct from PyShortCode object.
-    explicit PyCommonCode(PyShortCode code) noexcept;
+    explicit PyLayout(PyShortCode code) noexcept;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -39,23 +39,23 @@ public:
     /// Get original value.
     [[nodiscard]] uint64_t value() const noexcept;
 
-    /// Convert CommonCode as ShortCode.
+    /// Convert Layout as ShortCode.
     [[nodiscard]] PyShortCode short_code() const noexcept;
 
-    /// Convert CommonCode as string form.
+    /// Convert Layout as string form.
     [[nodiscard]] std::string string(bool shorten) const noexcept;
 
     // ------------------------------------------------------------------------------------- //
 
     /// Wrapper of `__str__` method in Python.
-    static std::string str(PyCommonCode code) noexcept;
+    static std::string str(PyLayout code) noexcept;
 
     /// Wrapper of `__repr__` method in Python.
-    static std::string repr(PyCommonCode code) noexcept;
+    static std::string repr(PyLayout code) noexcept;
 
     // ------------------------------------------------------------------------------------- //
 
-    [[nodiscard]] std::vector<PyCommonCode> next_cases() const noexcept;
+    [[nodiscard]] std::vector<PyLayout> next_cases() const noexcept;
 
     // ------------------------------------------------------------------------------------- //
 
@@ -63,24 +63,24 @@ private:
     codec::CommonCode code_;
 };
 
-static_assert(std::is_trivially_copyable_v<PyCommonCode>);
-static_assert(sizeof(PyCommonCode) == sizeof(codec::CommonCode));
+static_assert(std::is_trivially_copyable_v<PyLayout>);
+static_assert(sizeof(PyLayout) == sizeof(codec::CommonCode));
 
 // ----------------------------------------------------------------------------------------- //
 
-constexpr auto operator==(const PyCommonCode &lhs, const uint64_t rhs) {
+constexpr auto operator==(const PyLayout &lhs, const uint64_t rhs) {
     return lhs.value() == rhs;
 }
 
-constexpr auto operator<=>(const PyCommonCode &lhs, const uint64_t rhs) {
+constexpr auto operator<=>(const PyLayout &lhs, const uint64_t rhs) {
     return lhs.value() <=> rhs;
 }
 
-constexpr auto operator==(const PyCommonCode &lhs, const PyCommonCode &rhs) {
+constexpr auto operator==(const PyLayout &lhs, const PyLayout &rhs) {
     return lhs.value() == rhs.value();
 }
 
-constexpr auto operator<=>(const PyCommonCode &lhs, const PyCommonCode &rhs) {
+constexpr auto operator<=>(const PyLayout &lhs, const PyLayout &rhs) {
     return lhs.value() <=> rhs.value();
 }
 
@@ -89,8 +89,8 @@ constexpr auto operator<=>(const PyCommonCode &lhs, const PyCommonCode &rhs) {
 } // namespace klotski::ffi
 
 template <>
-struct std::hash<klotski::ffi::PyCommonCode> {
-    size_t operator()(const klotski::ffi::PyCommonCode &code) const noexcept {
-        return std::hash<uint64_t>{}(code.value());
+struct std::hash<klotski::ffi::PyLayout> {
+    size_t operator()(const klotski::ffi::PyLayout &layout) const noexcept {
+        return std::hash<uint64_t>{}(layout.value());
     }
 };
