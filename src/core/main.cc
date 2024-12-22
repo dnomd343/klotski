@@ -7,6 +7,7 @@
 
 #include "group/group.h"
 #include "mover/mover.h"
+#include "analyse/analyse.h"
 #include "raw_code/raw_code.h"
 #include "fast_cal/fast_cal.h"
 #include "all_cases/all_cases.h"
@@ -14,6 +15,8 @@
 #include "common_code/common_code.h"
 
 #include <parallel_hashmap/phmap.h>
+
+using klotski::Analyse;
 
 using klotski::mover::MaskMover;
 using klotski::fast_cal::FastCal;
@@ -44,6 +47,18 @@ int main() {
     // std::cout << ret.size() << std::endl;
 
     const auto start = std::chrono::system_clock::now();
+
+    // TODO: maybe we can support `std::format`
+
+    const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    const auto solve_1 = CommonCode::unsafe_create(0xDAAF4CC00).to_raw_code();
+    const auto solve_2 = CommonCode::unsafe_create(0xDAA7F3000).to_raw_code();
+
+    Analyse analyse {code};
+    analyse.build();
+    const auto backtrack = analyse.backtrack({solve_1, solve_2});
+    std::cout << backtrack.size() << std::endl;
+    std::cout << backtrack[0].size() << ", " << backtrack[81].size() << std::endl;
 
     // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();

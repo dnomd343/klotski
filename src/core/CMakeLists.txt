@@ -28,6 +28,9 @@ set(KLSK_CORE_SRC
     group/internal/group_cases.cc
 
     fast_cal/internal/fast_cal.cc
+
+    analyse/analyse.cc
+    analyse/backtrack.cc
 )
 
 add_library(klotski_core STATIC ${KLSK_CORE_SRC})
