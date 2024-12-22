@@ -65,7 +65,7 @@ static void bind_layout(const py::module_ &mod) {
         .def_property_readonly("n_1x1", &PyLayout::n_1x1)
         .def_property_readonly("n_1x2", &PyLayout::n_1x2)
         .def_property_readonly("n_2x1", &PyLayout::n_2x1)
-        .def_property_readonly("n_2x2", &PyLayout::n_2x2) // TODO: return `1` directly
+        .def_property_readonly("n_2x2", [](const PyLayout&) { return 1; })
 
         .def_property_readonly("type_id", &PyLayout::type_id)
         .def_property_readonly("pattern_id", &PyLayout::pattern_id)
@@ -73,6 +73,11 @@ static void bind_layout(const py::module_ &mod) {
         .def_property_readonly("toward", &PyLayout::toward)
         .def_property_readonly("group", &PyLayout::group_info)
         .def_property_readonly("case_info", &PyLayout::case_info)
+
+        .def("to_vertical_mirror", &PyLayout::to_vertical_mirror)
+        .def("to_horizontal_mirror", &PyLayout::to_horizontal_mirror)
+        .def_property_readonly("is_vertical_mirror", &PyLayout::is_vertical_mirror)
+        .def_property_readonly("is_horizontal_mirror", &PyLayout::is_horizontal_mirror)
 
         .def_static("check", py::overload_cast<uint64_t>(&PyLayout::check))
         .def_static("check", py::overload_cast<std::string_view>(&PyLayout::check));
