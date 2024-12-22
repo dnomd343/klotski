@@ -1,5 +1,6 @@
 #include "exception.h"
 #include "py_ffi/group.h"
+#include "py_ffi/layout.h"
 
 using klotski::codec::ShortCode;
 using klotski::codec::CommonCode;

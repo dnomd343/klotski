@@ -5,11 +5,11 @@
 #include <variant>
 #include <ranges/ranges.h>
 
-#include "py_ffi/layout.h"
-
 namespace klotski::ffi {
 
 using cases::RangesUnion;
+
+class PyLayout;
 
 class PyCasesIter {
 public:

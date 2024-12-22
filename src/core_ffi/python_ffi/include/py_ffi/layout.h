@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include <mover/mover.h>
+#include <group/group.h>
+#include <mover/mover.h> // TODO: move to `.cc` file
 #include <common_code/common_code.h>
 
+#include "py_ffi/group.h"
 #include "py_ffi/short_code.h"
 
 // TODO: add `copy` and `pickle` support
@@ -18,6 +20,13 @@ enum class PyBlock : uint8_t {
     B_1x1 = 0b011,
     B_2x2 = 0b100,
     FILL = 0b111,
+};
+
+enum class PyToward : uint8_t { // TODO: from `Group::Toward` directly
+    A = 0,
+    B = 1,
+    C = 2,
+    D = 3,
 };
 
 class PyLayout {
@@ -67,6 +76,52 @@ public:
     [[nodiscard]] std::vector<PyLayout> next_cases() const noexcept;
 
     [[nodiscard]] std::array<PyBlock, 20> dump_seq() const noexcept;
+
+    // ------------------------------------------------------------------------------------- //
+
+    [[nodiscard]] uint8_t type_id() const noexcept {
+        return group::GroupUnion::from_common_code(code_).unwrap();
+    }
+
+    [[nodiscard]] uint16_t pattern_id() const noexcept {
+        return group_info().pattern_id();
+    }
+
+    [[nodiscard]] PyToward toward() const noexcept {
+        const auto group = group::GroupCases::obtain_group(code_);
+        return (PyToward)group.toward();
+    }
+
+    [[nodiscard]] PyGroup group_info() const noexcept {
+        const auto group = group::GroupCases::obtain_group(code_);
+        return std::bit_cast<PyGroup>(group);
+    }
+
+    [[nodiscard]] uint32_t case_id() const noexcept {
+        const auto info = group::GroupCases::obtain_info(code_);
+        return info.case_id();
+    }
+
+    [[nodiscard]] std::tuple<PyGroup, uint32_t> case_info() const noexcept {
+        const auto info = group::GroupCases::obtain_info(code_);
+        return std::make_tuple(std::bit_cast<PyGroup>(info.group()), info.case_id());
+    }
+
+    [[nodiscard]] uint8_t n_1x1() const noexcept {
+        return std::get<2>(group::BLOCK_NUM[type_id()]);
+    }
+
+    [[nodiscard]] uint8_t n_1x2() const noexcept {
+        return std::get<0>(group::BLOCK_NUM[type_id()]) - n_2x1();
+    }
+
+    [[nodiscard]] uint8_t n_2x1() const noexcept {
+        return std::get<1>(group::BLOCK_NUM[type_id()]);
+    }
+
+    [[nodiscard]] uint8_t n_2x2() const noexcept {
+        return 1;
+    }
 
     // ------------------------------------------------------------------------------------- //
 

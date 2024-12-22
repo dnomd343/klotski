@@ -2,6 +2,7 @@
 
 #include "binder.h"
 #include "py_ffi/cases.h"
+#include "py_ffi/layout.h"
 
 using klotski::ffi::PyCases;
 using klotski::ffi::PyCasesIter;

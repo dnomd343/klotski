@@ -20,6 +20,7 @@ void bind_group(const py::module_ &m) {
         .def_property_readonly("pattern_id", &PyGroup::pattern_id)
 
         .def("__str__", &PyGroup::to_string)
+        .def("__repr__", &PyGroup::repr)
 
         .def("cases", &PyGroup::cases)
         .def("to_vertical_mirror", &PyGroup::to_vertical_mirror)
