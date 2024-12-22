@@ -1,5 +1,6 @@
 #include <pybind11/stl.h>
 #include <pybind11/operators.h>
+#include <py_ffi/speed_up.h>
 
 #include "binder.h"
 #include "py_ffi/layout.h"
@@ -7,7 +8,18 @@
 
 using klotski::ffi::PyBlock;
 using klotski::ffi::PyLayout;
+using klotski::ffi::PySpeedUp;
 using klotski::ffi::PyShortCode;
+
+static void bind_speed_up(const py::module_ &mod) {
+    py::class_<PySpeedUp>(mod, "SpeedUp")
+        .def_static("build_stage_0", &PySpeedUp::stage_0)
+        .def_static("build_stage_1", &PySpeedUp::stage_1)
+        .def_static("build_stage_2", &PySpeedUp::stage_2)
+        .def_property_readonly_static("is_stage_0", [](const py::object&) { return PySpeedUp::is_stage_0(); })
+        .def_property_readonly_static("is_stage_1", [](const py::object&) { return PySpeedUp::is_stage_1(); })
+        .def_property_readonly_static("is_stage_2", [](const py::object&) { return PySpeedUp::is_stage_2(); });
+}
 
 static void bind_layout(const py::module_ &mod) {
     py::enum_<PyBlock>(mod, "Block")
@@ -16,8 +28,7 @@ static void bind_layout(const py::module_ &mod) {
         .value("B_1x2", PyBlock::B_1x2)
         .value("B_2x1", PyBlock::B_2x1)
         .value("B_2x2", PyBlock::B_2x2)
-        .value("FILL", PyBlock::FILL)
-        .export_values();
+        .value("FILL", PyBlock::FILL);
 
     py::class_<PyLayout>(mod, "Layout")
         .def(py::init<uint64_t>())
@@ -73,12 +84,11 @@ static void bind_short_code(const py::module_ &mod) {
         .def("to_layout", &PyShortCode::layout)
 
         .def_static("check", py::overload_cast<uint32_t>(&PyShortCode::check))
-        .def_static("check", py::overload_cast<std::string_view>(&PyShortCode::check))
-
-        .def_static("speed_up", &PyShortCode::speed_up, py::arg("fast_mode") = false);
+        .def_static("check", py::overload_cast<std::string_view>(&PyShortCode::check));
 }
 
 void bind_klsk_code(const py::module_ &mod) {
     bind_layout(mod);
     bind_short_code(mod);
+    bind_speed_up(mod);
 }

@@ -457,6 +457,10 @@ public:
     /// Execute the build process without blocking.
     static void build_async(Executor &&executor, Notifier &&callback);
 
+    static bool is_fast_mode() {
+        return fast_;
+    }
+
     // ------------------------------------------------------------------------------------- //
 
     /// Get the CommonCode from CaseInfo.

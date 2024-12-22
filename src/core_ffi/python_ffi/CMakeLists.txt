@@ -18,6 +18,7 @@ set(KLSK_PYTHON_FFI_SRC
     wrapper/group_union.cc
     wrapper/group.cc
     wrapper/fast_cal.cc
+    wrapper/speed_up.cc
 )
 
 pybind11_add_module(klotski_py ${KLSK_PYTHON_FFI_SRC})

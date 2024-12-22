@@ -49,11 +49,6 @@ public:
 
     // ------------------------------------------------------------------------------------- //
 
-    /// Build conversion index for ShortCode.
-    static void speed_up(const bool fast_mode) { // TODO: move to `SpeedUp`
-        codec::ShortCode::speed_up(fast_mode);
-    }
-
 private:
     codec::ShortCode code_;
 };
