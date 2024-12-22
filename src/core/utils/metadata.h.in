@@ -1,0 +1,16 @@
+#pragma once
+
+#define VERSION_MAJOR uint32_t(@VERSION_MAJOR@)
+#define VERSION_MINOR uint32_t(@VERSION_MINOR@)
+#define VERSION_PATCH uint32_t(@VERSION_ALTER@)
+#define VERSION_STR   "v@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_ALTER@"
+
+#define AUTHOR          "dnomd343"
+#define SYSTEM          "@PLAT@ @ARCH@"
+#define COMPILER        "@COMPILER@"
+#define BUILD_TIME      "@VERSION_BUILD@"
+
+#define GIT_BRANCH      "@GIT_BRANCH@"
+#define GIT_TAG_ID      "@GIT_TAG_LONG@"
+#define GIT_PROJECT     "https://github.com/dnomd343/klotski.git"
+#define GIT_COMMIT_ID   "@GIT_COMMIT_LONG@"

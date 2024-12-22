@@ -3,6 +3,70 @@ project(klotski_core VERSION 0.0.2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 
+macro(git_tag _tag)
+  find_package(Git QUIET)
+  if (GIT_FOUND)
+    execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags
+                    OUTPUT_VARIABLE ${_tag}
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_QUIET)
+  endif()
+endmacro()
+
+macro(git_branch _branch)
+  find_package(Git QUIET)
+  if (GIT_FOUND)
+    execute_process(COMMAND ${GIT_EXECUTABLE} symbolic-ref --short -q HEAD
+                    OUTPUT_VARIABLE ${_branch}
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_QUIET)
+  endif()
+endmacro()
+
+macro(git_commit_id _hash)
+  find_package(Git QUIET)
+  if (GIT_FOUND)
+    execute_process(COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%H
+                    OUTPUT_VARIABLE ${_hash}
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_QUIET)
+  endif()
+endmacro()
+
+set(GIT_TAG_LONG "")
+git_tag(GIT_TAG_LONG)
+if(GIT_TAG_LONG STREQUAL "")  # without git tag
+    set(GIT_TAG_LONG "unknown")
+endif()
+
+set(GIT_BRANCH "")
+git_branch(GIT_BRANCH)
+if(GIT_BRANCH STREQUAL "")  # without git branch
+    set(GIT_BRANCH "unknown")
+endif()
+
+set(GIT_COMMIT_LONG "")
+git_commit_id(GIT_COMMIT_LONG)
+if(GIT_COMMIT_LONG STREQUAL "")  # without git commit
+    set(GIT_COMMIT_LONG "unknown")
+endif()
+
+set(PLAT "${CMAKE_SYSTEM_NAME}")  # TODO: add `KLSK_` prefix
+set(ARCH "${CMAKE_SYSTEM_PROCESSOR}")
+
+set(VERSION_MAJOR ${klotski_core_VERSION_MAJOR})
+set(VERSION_MINOR ${klotski_core_VERSION_MINOR})
+set(VERSION_ALTER ${klotski_core_VERSION_PATCH})
+
+string(TIMESTAMP VERSION_BUILD "%Y-%m-%d %H:%M:%S")
+
+set(COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
+
+configure_file(
+    ${PROJECT_SOURCE_DIR}/utils/metadata.h.in
+    ${PROJECT_SOURCE_DIR}/utils/metadata.h
+)
+
 set(KLSK_CORE_SRC
     ranges/internal/spawn.cc
     ranges/internal/ranges.cc

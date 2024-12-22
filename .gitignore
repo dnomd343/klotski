@@ -4,4 +4,6 @@
 /cmake-build/
 /cmake-build-debug/
 /cmake-build-release/
+
+/src/core/utils/metadata.h
 /src/klotski_core/utils/metadata.h
