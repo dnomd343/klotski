@@ -119,8 +119,20 @@ public:
         return std::get<1>(group::BLOCK_NUM[type_id()]);
     }
 
-    [[nodiscard]] uint8_t n_2x2() const noexcept {
-        return 1;
+    [[nodiscard]] bool is_vertical_mirror() const noexcept {
+        return code_.is_vertical_mirror();
+    }
+
+    [[nodiscard]] bool is_horizontal_mirror() const noexcept {
+        return code_.is_horizontal_mirror();
+    }
+
+    [[nodiscard]] PyLayout to_vertical_mirror() const noexcept {
+        return std::bit_cast<PyLayout>(code_.to_vertical_mirror());
+    }
+
+    [[nodiscard]] PyLayout to_horizontal_mirror() const noexcept {
+        return std::bit_cast<PyLayout>(code_.to_horizontal_mirror());
     }
 
     // ------------------------------------------------------------------------------------- //
