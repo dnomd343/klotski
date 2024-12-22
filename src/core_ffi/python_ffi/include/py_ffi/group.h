@@ -7,7 +7,6 @@
 #include <group/group.h>
 
 #include "py_ffi/cases.h"
-#include "py_ffi/layout.h"
 #include "py_ffi/short_code.h"
 
 namespace klotski::ffi {
@@ -38,6 +37,10 @@ public:
     [[nodiscard]] PyGroup to_vertical_mirror() const;
 
     [[nodiscard]] PyGroup to_horizontal_mirror() const;
+
+    static std::string repr(const PyGroup group) noexcept {
+        return std::format("<klotski.Group '{}'>", group.to_string()); // TODO: maybe add size info
+    }
 
 private:
     Group group_;

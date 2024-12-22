@@ -1,3 +1,3 @@
-from ._klotski import Cases, CommonCode, FastCal, Group, GroupUnion, ShortCode
+from ._klotski import Cases, Layout, FastCal, Group, GroupUnion, ShortCode, Toward, Block
 
-__all__ = ["Cases", "CommonCode", "FastCal", "Group", "GroupUnion", "ShortCode"]
+__all__ = ['Cases', 'Layout', 'FastCal', 'Group', 'GroupUnion', 'ShortCode', 'Toward', 'Block']

@@ -2,6 +2,7 @@
 #include <pybind11/pybind11.h>
 
 #include "py_ffi/cases.h"
+#include "py_ffi/layout.h"
 
 namespace py = pybind11;
 

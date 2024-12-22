@@ -8,6 +8,7 @@
 
 using klotski::ffi::PyBlock;
 using klotski::ffi::PyLayout;
+using klotski::ffi::PyToward;
 using klotski::ffi::PySpeedUp;
 using klotski::ffi::PyShortCode;
 
@@ -29,6 +30,12 @@ static void bind_layout(const py::module_ &mod) {
         .value("B_2x1", PyBlock::B_2x1)
         .value("B_2x2", PyBlock::B_2x2)
         .value("FILL", PyBlock::FILL);
+
+    py::enum_<PyToward>(mod, "Toward")
+        .value("A", PyToward::A)
+        .value("B", PyToward::B)
+        .value("C", PyToward::C)
+        .value("D", PyToward::D);
 
     py::class_<PyLayout>(mod, "Layout")
         .def(py::init<uint64_t>())
@@ -55,7 +62,17 @@ static void bind_layout(const py::module_ &mod) {
         .def("to_string", &PyLayout::string, py::arg("shorten") = false)
 
         .def_property_readonly("value", &PyLayout::value)
-        // TODO: add n_1x1 / n_1x2 / n_2x1 / ...
+        .def_property_readonly("n_1x1", &PyLayout::n_1x1)
+        .def_property_readonly("n_1x2", &PyLayout::n_1x2)
+        .def_property_readonly("n_2x1", &PyLayout::n_2x1)
+        .def_property_readonly("n_2x2", &PyLayout::n_2x2) // TODO: return `1` directly
+
+        .def_property_readonly("type_id", &PyLayout::type_id)
+        .def_property_readonly("pattern_id", &PyLayout::pattern_id)
+        .def_property_readonly("case_id", &PyLayout::case_id)
+        .def_property_readonly("toward", &PyLayout::toward)
+        .def_property_readonly("group", &PyLayout::group_info)
+        .def_property_readonly("case_info", &PyLayout::case_info)
 
         .def_static("check", py::overload_cast<uint64_t>(&PyLayout::check))
         .def_static("check", py::overload_cast<std::string_view>(&PyLayout::check));
