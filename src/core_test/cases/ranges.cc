@@ -20,6 +20,7 @@ using klotski::cases::BASIC_RANGES_NUM_;
 
 constexpr auto Heads = RangesUnion::Heads;
 
+static_assert(std::is_default_constructible_v<Ranges>); // TODO: more concept assert
 static_assert(std::is_base_of_v<std::vector<uint32_t>, Ranges>);
 
 TEST(Ranges, check) {

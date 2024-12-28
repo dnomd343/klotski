@@ -32,7 +32,15 @@ void helper::block_num_parallel(std::function<void(int n, int n_2x1, int n_1x1)>
 }
 
 void helper::group_parallel(std::function<void(Group)> &&func) {
-    // TODO: spawn all Groups
+    BS::thread_pool pool;
+    for (uint32_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
+            pool.detach_task([group, &func] {
+                func(group);
+            });
+        }
+    }
+    pool.wait();
 }
 
 void helper::type_id_parallel(std::function<void(uint32_t type_id)> &&func) {
