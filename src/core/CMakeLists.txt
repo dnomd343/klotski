@@ -62,10 +62,10 @@ string(TIMESTAMP VERSION_BUILD "%Y-%m-%d %H:%M:%S")
 
 set(COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}")
 
-configure_file(
-    ${PROJECT_SOURCE_DIR}/utils/metadata.h.in
-    ${PROJECT_SOURCE_DIR}/utils/metadata.h
-)
+#configure_file(
+#    ${PROJECT_SOURCE_DIR}/utils/metadata.h.in
+#    ${PROJECT_SOURCE_DIR}/utils/metadata.h
+#)
 
 set(KLSK_CORE_SRC
     ranges/internal/spawn.cc
