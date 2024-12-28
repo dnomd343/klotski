@@ -245,9 +245,9 @@ private:
 };
 
 static_assert(sizeof(GroupUnion) == 1);
+static_assert(is_compact_layout_v<GroupUnion>);
 static_assert(std::is_standard_layout_v<GroupUnion>);
 static_assert(std::is_trivially_copyable_v<GroupUnion>);
-static_assert(std::has_unique_object_representations_v<GroupUnion>);
 
 } // namespace klotski::group
 
@@ -371,9 +371,9 @@ private:
 };
 
 static_assert(sizeof(Group) == 4);
+static_assert(is_compact_layout_v<Group>);
 static_assert(std::is_standard_layout_v<Group>);
 static_assert(std::is_trivially_copyable_v<Group>);
-static_assert(std::has_unique_object_representations_v<Group>);
 
 } // namespace klotski::group
 
@@ -432,9 +432,9 @@ private:
 };
 
 static_assert(sizeof(CaseInfo) == 8);
+static_assert(is_compact_layout_v<CaseInfo>);
 static_assert(std::is_standard_layout_v<CaseInfo>);
 static_assert(std::is_trivially_copyable_v<CaseInfo>);
-static_assert(std::has_unique_object_representations_v<CaseInfo>);
 
 } // namespace klotski::group
 

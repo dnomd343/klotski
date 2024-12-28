@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <numeric>
 #include <functional>
+#include <type_traits>
 
 // ----------------------------------------------------------------------------------------- //
 
@@ -61,6 +62,13 @@
 // ----------------------------------------------------------------------------------------- //
 
 namespace klotski {
+
+template <typename T>
+#ifndef __cpp_lib_has_unique_object_representations
+concept is_compact_layout_v = true;
+#else
+concept is_compact_layout_v = std::has_unique_object_representations_v<T>;
+#endif
 
 /// Calculate the sum of an array of integers.
 template <typename T, size_t N>
