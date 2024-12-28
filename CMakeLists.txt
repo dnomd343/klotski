@@ -23,6 +23,8 @@ add_compile_options(-Wall -Wextra -g)
 # TODO: enabled by LTO option
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_compile_options(-flto=full)
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  add_compile_options(-flto=full)
 else ()
   #add_compile_options(-flto)  # TODO: only for g++
 endif ()

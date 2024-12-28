@@ -26,6 +26,7 @@ fn main() {
             .file("adapter/short_code.cc")
             .include("klotski/src/core")
             .flag("-std=c++23")
+            .flag_if_supported("-flto=full") // only for clang
             .flag("-fno-rtti")
             .flag("-fno-exceptions")
             .compile("klotski");

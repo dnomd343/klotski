@@ -8,6 +8,12 @@ repository = "https://github.com/dnomd343/klotski"
 license = "BSD-3-Clause"
 readme = "README.md"
 
+[profile.release]
+lto = "fat"
+panic = "abort"
+
+# TODO: also for `profile.test` and `profile.bench`
+
 [dependencies]
 cxx = "1.0"
 
