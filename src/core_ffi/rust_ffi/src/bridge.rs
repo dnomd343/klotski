@@ -2,12 +2,12 @@
 mod ffi {
     #[derive(Debug)]
     struct RsLayout {
-        code: u64,
+        code: u64
     }
 
     #[derive(Debug)]
     struct RsShortCode {
-        code: u32,
+        code: u32
     }
 
     unsafe extern "C++" {
@@ -39,6 +39,32 @@ mod ffi {
 
         /// Calculate the horizontally symmetrical klotski layout.
         fn to_horizontal_mirror(self: &RsLayout) -> RsLayout;
+
+        /// Obtain number of block 1x1.
+        fn n_1x1(self: &RsLayout) -> u8;
+
+        /// Obtain number of block 1x2.
+        fn n_1x2(self: &RsLayout) -> u8;
+
+        /// Obtain number of block 2x1.
+        fn n_2x1(self: &RsLayout) -> u8;
+
+        /// Obtain number of block 2x2.
+        fn n_2x2(self: &RsLayout) -> u8;
+
+        /// Obtain type_id value of current Layout.
+        fn type_id(self: &RsLayout) -> u8;
+
+        /// Obtain pattern_id value of current Layout.
+        fn pattern_id(self: &RsLayout) -> u16;
+
+        // TODO: add Toward enum for `toward` interface
+
+        // Obtain toward char of current Layout.
+        fn toward_char(self: &RsLayout) -> u8;
+
+        /// Obtain case_id value of current Layout.
+        fn case_id(self: &RsLayout) -> u32;
 
         /// Obtain all next cases in Layout.
         fn next_cases(self: &RsLayout) -> Vec<RsLayout>;

@@ -35,6 +35,13 @@ fn layout_demo() {
     println!("vertical_mirror: {:?}", code.to_vertical_mirror());
     println!("horizontal_mirror: {:?}", code.to_horizontal_mirror());
 
+    println!("case_info: {}-{}{}-{}", code.type_id(), code.pattern_id(), code.toward_char() as char, code.case_id());
+
+    println!("n_1x1: {}", code.n_1x1());
+    println!("n_1x2: {}", code.n_1x2());
+    println!("n_2x1: {}", code.n_2x1());
+    println!("n_2x2: {}", code.n_2x2());
+
     println!("next_cases: {:?}", code.next_cases());
 }
 
