@@ -12,16 +12,16 @@ readme = "README.md"
 # TODO: add `homepage` and `documentation`
 
 exclude = [
+  "/CMakeLists.txt",
   "/klotski/src/core/main.cc",
   "/klotski/src/core/benchmark/",
   #"/klotski/src/core/utils/metadata.h",  # TODO: code generated in crate dir is not allowed in cargo.
 
-  # TODO: this is not a robust solution, we may link them manually.
-  "!/klotski/third_party/parallel-hashmap/LICENSE",
-  "!/klotski/third_party/parallel-hashmap/cmake/*.cmake",
-  "!/klotski/third_party/parallel-hashmap/CMakeLists.txt",
-  "!/klotski/third_party/parallel-hashmap/parallel_hashmap/*.h",
-  "/klotski/third_party/parallel-hashmap/",
+  "klotski/third_party/parallel-hashmap/*",
+  "!klotski/third_party/parallel-hashmap/cmake/",
+  "!klotski/third_party/parallel-hashmap/LICENSE",
+  "!klotski/third_party/parallel-hashmap/CMakeLists.txt",
+  "!klotski/third_party/parallel-hashmap/parallel_hashmap/",
 ]
 
 [profile.release]

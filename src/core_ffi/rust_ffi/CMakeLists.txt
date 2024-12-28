@@ -17,7 +17,3 @@ if (KLSK_DEV_MODE)
   set_target_properties(klotski_rs PROPERTIES OUTPUT_NAME klotski)
   add_library(klotski::rs_ffi ALIAS klotski_rs)
 endif()
-
-if (CARGO_BUILD)
-  install(TARGETS klotski_core DESTINATION .)
-endif()
