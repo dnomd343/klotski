@@ -4,8 +4,8 @@
 
 using klotski::codec::ShortCode;
 
+using klotski::ffi::RsLayout;
 using klotski::ffi::RsShortCode;
-using klotski::ffi::RsCommonCode;
 
 bool klotski::ffi::short_code_check(const uint32_t val) {
     return ShortCode::check(val);
@@ -23,7 +23,7 @@ rust::String RsShortCode::to_string() const noexcept {
     return ShortCode::unsafe_create(code).to_string();
 }
 
-RsCommonCode RsShortCode::to_common_code() const noexcept {
+RsLayout RsShortCode::to_layout() const noexcept {
     return {ShortCode::unsafe_create(code).to_common_code().unwrap()};
 }
 

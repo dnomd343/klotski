@@ -5,8 +5,8 @@ set(CMAKE_CXX_STANDARD 23)
 
 if (KLSK_DEV_MODE)
   set(KLSK_RUST_FFI_SRC
+      adapter/layout.cc
       adapter/short_code.cc
-      adapter/common_code.cc
       target/cxxbridge/rust_ffi/src/bridge.rs.cc
   )
   add_library(klotski_rs STATIC ${KLSK_RUST_FFI_SRC}) # just for IDE highlight

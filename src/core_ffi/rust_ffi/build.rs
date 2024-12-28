@@ -22,8 +22,8 @@ fn main() {
 
         CFG.include_prefix = "rust_ffi";
         cxx_build::bridge("src/bridge.rs")
+            .file("adapter/layout.cc")
             .file("adapter/short_code.cc")
-            .file("adapter/common_code.cc")
             .include("klotski/src/core")
             .flag("-std=c++23")
             .flag("-fno-rtti")
@@ -32,6 +32,6 @@ fn main() {
     }
 
     println!("cargo:rerun-if-changed=src/bridge.rs");
+    println!("cargo:rerun-if-changed=adapter/layout.cc");
     println!("cargo:rerun-if-changed=adapter/short_code.cc");
-    println!("cargo:rerun-if-changed=adapter/common_code.cc");
 }

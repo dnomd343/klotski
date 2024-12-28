@@ -1,5 +1,5 @@
+use klotski::Layout;
 use klotski::ShortCode;
-use klotski::CommonCode;
 
 fn short_code_demo() {
     ShortCode::speed_up(false);
@@ -13,14 +13,14 @@ fn short_code_demo() {
     println!("code: {:?}", code.unwrap());
     println!("string: {}", code.to_string());
 
-    println!("common_code: {:?}", code.to_common_code());
+    println!("layout: {:?}", code.to_layout());
 }
 
-fn common_code_demo() {
-    assert!(CommonCode::check(0x1A9BF0C00));
-    let code = CommonCode::create(0x1A9BF0C00).unwrap();
-    assert_eq!(code, CommonCode::from_string("1A9BF0C").unwrap());
-    assert_eq!(code, CommonCode::create(0x1A9BF0C00).unwrap());
+fn layout_demo() {
+    assert!(Layout::check(0x1A9BF0C00));
+    let code = Layout::create(0x1A9BF0C00).unwrap();
+    assert_eq!(code, Layout::from_string("1A9BF0C").unwrap());
+    assert_eq!(code, Layout::create(0x1A9BF0C00).unwrap());
 
     println!("code: {:?}", code.unwrap());
 
@@ -42,6 +42,6 @@ fn main() {
     println!("----------------------------------------------------------------");
     short_code_demo();
     println!("----------------------------------------------------------------");
-    common_code_demo();
+    layout_demo();
     println!("----------------------------------------------------------------");
 }
