@@ -3,16 +3,22 @@ include setup.py
 include README.md
 exclude MANIFEST.in
 
-include src/klotski/*.py
-
 include CMakeLists.txt
 include src/CMakeLists.txt
 include src/core_ffi/CMakeLists.txt
-
-recursive-include src/core *
-recursive-include src/core_ffi/python_ffi *
-recursive-exclude src/core_ffi/python_ffi/packing *
-
 include third_party/ThirdParty.cmake
-recursive-include third_party/pybind11 *
-recursive-include third_party/parallel-hashmap *
+
+graft src/core/
+graft src/core_ffi/python_ffi/
+prune src/core_ffi/python_ffi/packing/
+exclude src/core/main.cc src/core/benchmark/*.cc
+
+graft third_party/pybind11/include/
+include third_party/pybind11/LICENSE
+include third_party/pybind11/CMakeLists.txt
+recursive-include third_party/pybind11/tools/ *.cmake
+
+include third_party/parallel-hashmap/LICENSE
+include third_party/parallel-hashmap/CMakeLists.txt
+graft third_party/parallel-hashmap/parallel_hashmap/
+recursive-include third_party/parallel-hashmap/cmake/ *.cmake
