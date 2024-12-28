@@ -12,11 +12,7 @@ use cxx_build::CFG;
 fn main() {
     if std::env::var("DOCS_RS").is_err() {
         cmake::Config::new("klotski")
-            .define("CARGO_BUILD:BOOL", "ON")
-            .define("KLSK_ENABLE_TESTING:BOOL", "OFF")
-            .define("KLSK_ENABLE_BENCHMARK:BOOL", "OFF")
-            .define("KLSK_C_FFI:BOOL", "OFF")
-            .define("KLSK_PYTHON_FFI:BOOL", "OFF")
+            .define("KLSK_ENABLE_LTO:BOOL", "ON")
             .build();
         println!("cargo:rustc-link-lib=static=klotski_core");
 
