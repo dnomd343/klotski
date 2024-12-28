@@ -6,3 +6,50 @@ requires = [
     "ninja",
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "py-klotski"
+version = "0.0.2"
+requires-python = ">=3.7"
+description = "Klotski multifunctional engine with high performance"
+
+readme = "README.md"
+license = {text = "BSD-3-Clause"}
+authors = [{name = "Dnomd343", email = "dnomd343@gmail.com"}]
+maintainers = [
+    {name = "Dnomd343", email = "dnomd343@gmail.com"}
+]
+
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: BSD License",
+
+    "Topic :: Games/Entertainment",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+
+    # TODO: add Windows support
+    "Operating System :: MacOS",
+    "Operating System :: POSIX",
+
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
+[project.urls]
+# TODO: add `Homepage` and `Documentation`
+Source = "https://github.com/dnomd343/klotski.git"
+Tracker = "https://github.com/dnomd343/klotski/issues"
+Changelog = "https://github.com/dnomd343/klotski/blob/master/CHANGELOG.md"
