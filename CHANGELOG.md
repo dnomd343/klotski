@@ -6,9 +6,9 @@ The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-### Added
+## [0.0.2] - 2024-12-28
 
-- Automatically generate metadata in header file.
+### Added
 
 - New `analyse` module for analyzing BFS graph structures.
 
@@ -40,5 +40,6 @@ The format is based on [*Keep a Changelog*](https://keepachangelog.com/en/1.0.0/
 
 - Preliminary Rust interfaces for preview.
 
-[unreleased]: https://github.com/dnomd343/klotski/compare/v0.0.1...HEAD
+[unreleased]: https://github.com/dnomd343/klotski/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/dnomd343/klotski/releases/tag/v0.0.2
 [0.0.1]: https://github.com/dnomd343/klotski/releases/tag/v0.0.1
