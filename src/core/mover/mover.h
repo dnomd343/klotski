@@ -98,3 +98,5 @@ private:
 };
 
 } // namespace klotski::mover
+
+#include "s2_mover.h"

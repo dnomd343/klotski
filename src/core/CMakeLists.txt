@@ -86,6 +86,7 @@ set(KLSK_CORE_SRC
 #    short_code/internal/serialize.cc
 
     mover/internal/mover.cc
+    mover/internal/s2_mover.cc
 
     group/internal/group_union.cc
     group/internal/group.cc

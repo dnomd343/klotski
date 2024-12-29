@@ -18,6 +18,7 @@
 
 using klotski::Analyse;
 
+using klotski::mover::S2Mover;
 using klotski::mover::MaskMover;
 using klotski::fast_cal::FastCal;
 
@@ -33,6 +34,7 @@ using klotski::group::Group;
 using klotski::group::GroupCases;
 using klotski::group::GroupUnion;
 
+using klotski::group::BLOCK_NUM;
 using klotski::group::TYPE_ID_LIMIT;
 using klotski::cases::ALL_CASES_NUM_;
 using klotski::codec::SHORT_CODE_LIMIT;
@@ -48,17 +50,56 @@ int main() {
 
     const auto start = std::chrono::system_clock::now();
 
+    // constexpr std::array s2_type_a_up = {"1a9bf0c", "1a99c3", "1abaf0c", "1aaef0c", "1aaac3", "9aaac3"};
+    // constexpr std::array s2_type_a_down = {"dc3be68", "dc399a", "dc3bae8", "dc3aee8", "dc3aaa", "5c3aaa"};
+    // constexpr std::array s2_type_a_left = {"1a9bfc", "1a9bd"};
+    // constexpr std::array s2_type_a_right = {"1a9bc3c", "1a9bc1"};
+
+    // const auto code = CommonCode::from_string(s2_type_a_up[5]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s2_type_a_down[5]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s2_type_a_left[1]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s2_type_a_right[1]).value().to_raw_code();
+
+    // constexpr std::array s2_type_b_up = {"5fef84d", "5fea134"};
+    // constexpr std::array s2_type_b_down = {"9346fbf", "9346afc"};
+    // constexpr std::array s2_type_b_left = {"6bfaf1c", "6bfae1", "6bfaf34", "6bfa47", "6bfa4d", "dbf993"};
+    // constexpr std::array s2_type_b_right = {"4fea3cd", "4fea2c4", "4fea3c7", "4fea134", "4fea11c", "dfe660c"};
+
+    // const auto code = CommonCode::from_string(s2_type_b_up[1]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s2_type_b_down[1]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s2_type_b_left[5]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s2_type_b_right[5]).value().to_raw_code();
+
+    // constexpr std::array s1_up = {"5f2f87d", "5f2a1f4"};
+    // constexpr std::array s1_down = {"9f46fbc", "9f46af"};
+    // constexpr std::array s1_left = {"1a9bcf", "1a9bc4"};
+    // constexpr std::array s1_right = {"1a9bcf", "1a9bc4"};
+    // const auto code = CommonCode::from_string(s1_up[1]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s1_down[1]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s1_left[1]).value().to_raw_code();
+    // const auto code = CommonCode::from_string(s1_right[1]).value().to_raw_code();
+
+    auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    S2Mover mover([](uint64_t code) {
+        std::cout << RawCode::unsafe_create(code) << std::endl;
+        if (!RawCode::check(code)) {
+            std::cout << "error" << std::endl;
+            std::abort();
+        }
+    });
+    mover.next_cases(code.unwrap());
+
     // TODO: maybe we can support `std::format`
 
-    const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
-    const auto solve_1 = CommonCode::unsafe_create(0xDAAF4CC00).to_raw_code();
-    const auto solve_2 = CommonCode::unsafe_create(0xDAA7F3000).to_raw_code();
+    // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    // const auto solve_1 = CommonCode::unsafe_create(0xDAAF4CC00).to_raw_code();
+    // const auto solve_2 = CommonCode::unsafe_create(0xDAA7F3000).to_raw_code();
 
-    Analyse analyse {code};
-    analyse.build();
-    const auto backtrack = analyse.backtrack({solve_1, solve_2});
-    std::cout << backtrack.size() << std::endl;
-    std::cout << backtrack[0].size() << ", " << backtrack[81].size() << std::endl;
+    // Analyse analyse {code};
+    // analyse.build();
+    // const auto backtrack = analyse.backtrack({solve_1, solve_2});
+    // std::cout << backtrack.size() << std::endl;
+    // std::cout << backtrack[0].size() << ", " << backtrack[81].size() << std::endl;
 
     // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();
