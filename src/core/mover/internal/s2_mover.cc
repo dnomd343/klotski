@@ -34,327 +34,332 @@ using klotski::codec::RawCode;
     ((code) | ((uint64_t)0b111'111'000'000'111'100 << ((addr) * 3)))
 
 void S2Mover::two_space_a(uint64_t code, int offset) const {
-    // TODO: only apply once (maybe using goto or do-while)
-
     // ---------------- case up ----------------
 
-    if (offset >= 4) {
-        /// 1x1 & 1x1
-        if (APPLY_MASK(code, offset - 4, 0b111'111) == 0b011'011) {
-            auto tmp_1 = UNSET_1x1(code, offset - 4);
-            release_(SET_1x1(tmp_1, offset));
-            release_(SET_1x1(tmp_1, offset + 1));
-            auto tmp_2 = UNSET_1x1(code, offset - 3);
-            release_(SET_1x1(tmp_2, offset + 1));
-            release_(SET_1x1(tmp_2, offset));
-        }
+    do {
+        if (offset >= 4) {
+            const uint8_t up_c = APPLY_MASK(code, offset - 4, 0b111);
+            if (up_c == BLOCK_1x2) {
+                release_(SET_1x2(UNSET_1x2(code, offset - 4), offset));
+                break;
+            }
+            if (up_c == BLOCK_1x1) {
+                const auto tmp = UNSET_1x1(code, offset - 4);
+                release_(SET_1x1(tmp, offset));
+                release_(SET_1x1(tmp, offset + 1));
+                // -> check right
+            } else if (up_c == BLOCK_fill) {
+                if (offset >= 8) {
+                    const uint8_t up_a = APPLY_MASK(code, offset - 8, 0b111);
+                    if (up_a == BLOCK_2x2) {
+                        release_(SET_2x2(UNSET_2x2(code, offset - 8), offset - 4));
+                        break;
+                    }
+                    if (up_a == BLOCK_2x1) {
+                        release_(SET_2x1(UNSET_2x1(code, offset - 8), offset - 4));
+                        // -> check right
+                    }
+                }
+                // -> check right
+            } else {
+                std::unreachable();
+            }
 
-        /// 1x2
-        if (APPLY_MASK(code, offset - 4, 0b111'111) == 0b111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset - 4), offset));
+            const uint8_t up_d = APPLY_MASK(code, offset - 3, 0b111);
+            if (up_d == BLOCK_1x1) {
+                const auto tmp = UNSET_1x1(code, offset - 3);
+                release_(SET_1x1(tmp, offset + 1));
+                release_(SET_1x1(tmp, offset));
+                break;
+            }
+            if (up_d == BLOCK_fill) {
+                if (offset >= 8) {
+                    const uint8_t up_b = APPLY_MASK(code, offset - 7, 0b111);
+                    if (up_b == BLOCK_2x1) {
+                        release_(SET_2x1(UNSET_2x1(code, offset - 7), offset - 3));
+                        break;
+                    }
+                }
+            }
         }
-    }
-    if (offset >= 8) {
-        /// 1x1 & 2x1
-        if (APPLY_MASK(code, offset - 8, 0b111'111'000'000'111'000) == 0b111'011'000'000'010'000) {
-            auto tmp_1 = UNSET_1x1(code, offset - 4);
-            release_(SET_1x1(tmp_1, offset));
-            release_(SET_1x1(tmp_1, offset + 1));
-            release_(SET_2x1(UNSET_2x1(code, offset - 7), offset - 3));
-        }
-
-        /// 2x1 & 1x1
-        if (APPLY_MASK(code, offset - 8, 0b111'111'000'000'000'111) == 0b011'111'000'000'000'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset - 8), offset - 4));
-            auto tmp_1 = UNSET_1x1(code, offset - 3);
-            release_(SET_1x1(tmp_1, offset + 1));
-            release_(SET_1x1(tmp_1, offset));
-        }
-
-        /// 2x1 & 2x1
-        if (APPLY_MASK(code, offset - 8, 0b111'111'000'000'111'111) == 0b111'111'000'000'010'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset - 8), offset - 4));
-            release_(SET_2x1(UNSET_2x1(code, offset - 7), offset - 3));
-        }
-
-        /// 2x2
-        if (APPLY_MASK(code, offset - 8, 0b111'111'000'000'111'111) == 0b111'111'000'000'111'100) {
-            release_(SET_2x2(UNSET_2x2(code, offset - 8), offset - 4));
-        }
-    }
+    } while (false);
 
     // ---------------- case down ----------------
 
-    if (offset < 16) {
-        /// 1x1 & 1x1
-        if (APPLY_MASK(code, offset + 4, 0b111'111) == 0b011'011) {
-            auto tmp_1 = UNSET_1x1(code, offset + 4);
-            release_(SET_1x1(tmp_1, offset));
-            release_(SET_1x1(tmp_1, offset + 1));
-            auto tmp_2 = UNSET_1x1(code, offset + 5);
-            release_(SET_1x1(tmp_2, offset + 1));
-            release_(SET_1x1(tmp_2, offset));
-        }
+    do {
+        if (offset < 16) {
+            const uint8_t down_a = APPLY_MASK(code, offset + 4, 0b111);
+            if (down_a == BLOCK_1x2) {
+                release_(SET_1x2(UNSET_1x2(code, offset + 4), offset));
+                break;
+            }
+            if (down_a == BLOCK_2x2) {
+                release_(SET_2x2(UNSET_2x2(code, offset + 4), offset));
+                break;
+            }
 
-        /// 1x2
-        if (APPLY_MASK(code, offset + 4, 0b111'111) == 0b111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset + 4), offset));
-        }
-    }
-    if (offset < 12) {
-        /// 1x1 & 2x1
-        if (APPLY_MASK(code, offset + 4, 0b111'000'000'000'111'111) == 0b111'000'000'000'010'011) {
-            auto tmp_1 = UNSET_1x1(code, offset + 4);
-            release_(SET_1x1(tmp_1, offset));
-            release_(SET_1x1(tmp_1, offset + 1));
-            release_(SET_2x1(UNSET_2x1(code, offset + 5), offset + 1));
-        }
+            if (down_a == BLOCK_2x1) {
+                release_(SET_2x1(UNSET_2x1(code, offset + 4), offset));
+            } else if (down_a == BLOCK_1x1) {
+                const auto tmp = UNSET_1x1(code, offset + 4);
+                release_(SET_1x1(tmp, offset));
+                release_(SET_1x1(tmp, offset + 1));
+            }
 
-        /// 2x1 & 1x1
-        if (APPLY_MASK(code, offset + 4, 0b000'111'000'000'111'111) == 0b000'111'000'000'011'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset + 4), offset));
-            auto tmp_1 = UNSET_1x1(code, offset + 5);
-            release_(SET_1x1(tmp_1, offset + 1));
-            release_(SET_1x1(tmp_1, offset));
+            const uint8_t down_b = APPLY_MASK(code, offset + 5, 0b111);
+            if (down_b == BLOCK_1x1) {
+                const auto tmp = UNSET_1x1(code, offset + 5);
+                release_(SET_1x1(tmp, offset + 1));
+                release_(SET_1x1(tmp, offset));
+                break;
+            }
+            if (down_b == BLOCK_2x1) {
+                release_(SET_2x1(UNSET_2x1(code, offset + 5), offset + 1));
+                break;
+            }
         }
-
-        /// 2x1 & 2x1
-        if (APPLY_MASK(code, offset + 4, 0b111'111'000'000'111'111) == 0b111'111'000'000'010'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset + 4), offset));
-            release_(SET_2x1(UNSET_2x1(code, offset + 5), offset + 1));
-        }
-
-        /// 2x2
-        if (APPLY_MASK(code, offset + 4, 0b111'111'000'000'111'111) == 0b111'111'000'000'111'100) {
-            release_(SET_2x2(UNSET_2x2(code, offset + 4), offset));
-        }
-    }
+    } while (false);
 
     // ---------------- case left ----------------
 
-    if ((offset % 4) != 0) {
-        /// 1x1
-        if (APPLY_MASK(code, offset - 1, 0b111) == 0b011) {
-            release_(SET_1x1(UNSET_1x1(code, offset - 1), offset));
-            release_(SET_1x1(UNSET_1x1(code, offset - 1), offset + 1));
+    do {
+        if ((offset % 4) != 0) { // 1x1
+            if (APPLY_MASK(code, offset - 1, 0b111) == 0b011) {
+                release_(SET_1x1(UNSET_1x1(code, offset - 1), offset));
+                release_(SET_1x1(UNSET_1x1(code, offset - 1), offset + 1));
+                break;
+            }
         }
-    }
-    if ((offset % 4) == 2) {
-        /// 1x2
-        if (APPLY_MASK(code, offset - 2, 0b111'111) == 0b111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset - 2), offset - 1));
-            release_(SET_1x2(UNSET_1x2(code, offset - 2), offset));
+        if ((offset % 4) == 2) { // 1x2
+            if (APPLY_MASK(code, offset - 2, 0b111'111) == 0b111'001) {
+                release_(SET_1x2(UNSET_1x2(code, offset - 2), offset - 1));
+                release_(SET_1x2(UNSET_1x2(code, offset - 2), offset));
+                break;
+            }
         }
-    }
+    } while (false);
 
     // ---------------- case right ----------------
 
-    if ((offset % 4) != 2) {
-        /// 1x1
-        if (APPLY_MASK(code, offset + 2, 0b111) == 0b011) {
-            release_(SET_1x1(UNSET_1x1(code, offset + 2), offset + 1));
-            release_(SET_1x1(UNSET_1x1(code, offset + 2), offset));
+    do {
+        if ((offset % 4) != 2) { // 1x1
+            if (APPLY_MASK(code, offset + 2, 0b111) == 0b011) {
+                release_(SET_1x1(UNSET_1x1(code, offset + 2), offset + 1));
+                release_(SET_1x1(UNSET_1x1(code, offset + 2), offset));
+                break;
+            }
         }
-    }
-    if ((offset % 4) == 0) {
-        /// 1x2
-        if (APPLY_MASK(code, offset + 2, 0b111'111) == 0b111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset + 2), offset + 1));
-            release_(SET_1x2(UNSET_1x2(code, offset + 2), offset));
+        if ((offset % 4) == 0) { // 1x2
+            if (APPLY_MASK(code, offset + 2, 0b111'111) == 0b111'001) {
+                release_(SET_1x2(UNSET_1x2(code, offset + 2), offset + 1));
+                release_(SET_1x2(UNSET_1x2(code, offset + 2), offset));
+                break;
+            }
         }
-    }
+    } while (false);
 }
 
 void S2Mover::two_space_b(uint64_t code, int offset) const {
     // ---------------- case up ----------------
 
-    if (offset >= 4) {
-        /// 1x1
-        if (APPLY_MASK(code, offset - 4, 0b111) == 0b011) {
-            release_(SET_1x1(UNSET_1x1(code, offset - 4), offset));
-            release_(SET_1x1(UNSET_1x1(code, offset - 4), offset + 4));
+    do {
+        if (offset >= 4) {
+            if (APPLY_MASK(code, offset - 4, 0b111) == 0b011) { // 1x1
+                release_(SET_1x1(UNSET_1x1(code, offset - 4), offset));
+                release_(SET_1x1(UNSET_1x1(code, offset - 4), offset + 4));
+                break;
+            }
         }
-    }
-    if (offset >= 8) {
-        /// 2x1
-        if (APPLY_MASK(code, offset - 8, 0b111'000'000'000'111) == 0b111'000'000'000'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset - 8), offset - 4));
-            release_(SET_2x1(UNSET_2x1(code, offset - 8), offset));
+        if (offset >= 8) {
+            if (APPLY_MASK(code, offset - 8, 0b111'000'000'000'111) == 0b111'000'000'000'010) { // 2x1
+                release_(SET_2x1(UNSET_2x1(code, offset - 8), offset - 4));
+                release_(SET_2x1(UNSET_2x1(code, offset - 8), offset));
+                break;
+            }
         }
-    }
+    } while (false);
 
     // ---------------- case down ----------------
 
-    if (offset < 16) {
-        /// 1x1
-        if (APPLY_MASK(code, offset + 8, 0b111) == 0b011) {
-            release_(SET_1x1(UNSET_1x1(code, offset + 8), offset + 4));
-            release_(SET_1x1(UNSET_1x1(code, offset + 8), offset));
+    do {
+        if (offset < 12) {
+            if (APPLY_MASK(code, offset + 8, 0b111) == 0b011) { // 1x1
+                release_(SET_1x1(UNSET_1x1(code, offset + 8), offset + 4));
+                release_(SET_1x1(UNSET_1x1(code, offset + 8), offset));
+                break;
+            }
         }
-    }
-    if (offset < 12) {
-        /// 2x1
-        if (APPLY_MASK(code, offset + 8, 0b111'000'000'000'111) == 0b111'000'000'000'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset + 8), offset + 4));
-            release_(SET_2x1(UNSET_2x1(code, offset + 8), offset));
+        if (offset < 8) {
+            if (APPLY_MASK(code, offset + 8, 0b111'000'000'000'111) == 0b111'000'000'000'010) { // 2x1
+                release_(SET_2x1(UNSET_2x1(code, offset + 8), offset + 4));
+                release_(SET_2x1(UNSET_2x1(code, offset + 8), offset));
+                break;
+            }
         }
-    }
+    } while (false);
 
     // ---------------- case left ----------------
 
-    if ((offset % 4) != 0) {
-        /// 1x1 & 1x1
-        if (APPLY_MASK(code, offset - 1, 0b111'000'000'000'111) == 0b011'000'000'000'011) {
-            auto tmp_1 = UNSET_1x1(code, offset - 1);
-            release_(SET_1x1(tmp_1, offset));
-            release_(SET_1x1(tmp_1, offset + 4));
-            auto tmp_2 = UNSET_1x1(code, offset + 3);
-            release_(SET_1x1(tmp_2, offset + 4));
-            release_(SET_1x1(tmp_2, offset));
-        }
+    do {
+        if ((offset % 4) != 0) {
+            const uint8_t left_b = APPLY_MASK(code, offset - 1, 0b111);
+            if (left_b == BLOCK_2x1) {
+                release_(SET_2x1(UNSET_2x1(code, offset - 1), offset));
+                break;
+            }
+            if (left_b == BLOCK_1x1) {
+                const auto tmp = UNSET_1x1(code, offset - 1);
+                release_(SET_1x1(tmp, offset));
+                release_(SET_1x1(tmp, offset + 4));
+                // -> check down
+            } else if (left_b == BLOCK_fill) {
+                if ((offset % 4) >= 2) {
+                    const uint8_t left_d = APPLY_MASK(code, offset - 2, 0b111);
+                    if (left_d == BLOCK_2x2) {
+                        release_(SET_2x2(UNSET_2x2(code, offset - 2), offset - 1));
+                        break;
+                    }
+                    if (left_d == BLOCK_1x2) {
+                        release_(SET_1x2(UNSET_1x2(code, offset - 2), offset - 1));
+                        // -> check down
+                    }
+                }
+                // -> check down
+            } else {
+                std::unreachable();
+            }
 
-        /// 2x1
-        if (APPLY_MASK(code, offset - 1, 0b111'000'000'000'111) == 0b111'000'000'000'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset - 1), offset));
+            const uint8_t left_d = APPLY_MASK(code, offset + 3, 0b111);
+            if (left_d == BLOCK_1x1) {
+                const auto tmp = UNSET_1x1(code, offset + 3);
+                release_(SET_1x1(tmp, offset + 4));
+                release_(SET_1x1(tmp, offset));
+                break;
+            }
+            if (left_d == BLOCK_fill) {
+                if ((offset % 4) >= 2) {
+                    const uint8_t left_c = APPLY_MASK(code, offset + 2, 0b111);
+                    if (left_c == BLOCK_1x2) {
+                        release_(SET_1x2(UNSET_1x2(code, offset + 2), offset + 3));
+                        break;
+                    }
+                }
+            }
         }
-    }
-    if ((offset % 4) >= 2) {
-        /// 1x1 & 1x2
-        if (APPLY_MASK(code, offset - 2, 0b111'111'000'000'111'000) == 0b111'001'000'000'011'000) {
-            auto tmp_1 = UNSET_1x1(code, offset - 1);
-            release_(SET_1x1(tmp_1, offset));
-            release_(SET_1x1(tmp_1, offset + 4));
-            release_(SET_1x2(UNSET_1x2(code, offset + 2), offset + 3));
-        }
-
-        /// 1x2 & 1x1
-        if (APPLY_MASK(code, offset - 2, 0b111'000'000'000'111'111) == 0b011'000'000'000'111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset - 2), offset - 1));
-            auto tmp_1 = UNSET_1x1(code, offset + 3);
-            release_(SET_1x1(tmp_1, offset + 4));
-            release_(SET_1x1(tmp_1, offset));
-        }
-
-        /// 1x2 & 1x2
-        if (APPLY_MASK(code, offset - 2, 0b111'111'000'000'111'111) == 0b111'001'000'000'111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset - 2), offset - 1));
-            release_(SET_1x2(UNSET_1x2(code, offset + 2), offset + 3));
-        }
-
-        /// 2x2
-        if (APPLY_MASK(code, offset - 2, 0b111'111'000'000'111'111) == 0b111'111'000'000'111'100) {
-            release_(SET_2x2(UNSET_2x2(code, offset - 2), offset - 1));
-        }
-    }
+    } while (false);
 
     // ---------------- case right ----------------
 
-    if ((offset % 4) != 3) {
-        /// 1x1 & 1x1
-        if (APPLY_MASK(code, offset + 1, 0b111'000'000'000'111) == 0b011'000'000'000'011) {
-            auto tmp_1 = UNSET_1x1(code, offset + 1);
-            release_(SET_1x1(tmp_1, offset));
-            release_(SET_1x1(tmp_1, offset + 4));
-            auto tmp_2 = UNSET_1x1(code, offset + 5);
-            release_(SET_1x1(tmp_2, offset + 4));
-            release_(SET_1x1(tmp_2, offset));
-        }
+    do {
+        if ((offset % 4) != 3) {
+            const uint8_t right_a = APPLY_MASK(code, offset + 1, 0b111);
+            if (right_a == BLOCK_2x1) {
+                release_(SET_2x1(UNSET_2x1(code, offset + 1), offset));
+                break;
+            }
+            if (right_a == BLOCK_2x2) {
+                release_(SET_2x2(UNSET_2x2(code, offset + 1), offset));
+                break;
+            }
+            if (right_a == BLOCK_1x2) {
+                release_(SET_1x2(UNSET_1x2(code, offset + 1), offset));
+            } else if (right_a == BLOCK_1x1) {
+                const auto tmp = UNSET_1x1(code, offset + 1);
+                release_(SET_1x1(tmp, offset));
+                release_(SET_1x1(tmp, offset + 4));
+            }
 
-        /// 2x1
-        if (APPLY_MASK(code, offset + 1, 0b111'000'000'000'111) == 0b111'000'000'000'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset + 1), offset));
+            const uint8_t right_c = APPLY_MASK(code, offset + 5, 0b111);
+            if (right_c == BLOCK_1x1) {
+                const auto tmp = UNSET_1x1(code, offset + 5);
+                release_(SET_1x1(tmp, offset + 4));
+                release_(SET_1x1(tmp, offset));
+                break;
+            }
+            if (right_c == BLOCK_1x2) {
+                release_(SET_1x2(UNSET_1x2(code, offset + 5), offset + 4));
+                break;
+            }
         }
-    }
-    if ((offset % 4) <= 1) {
-        /// 1x1 & 1x2
-        if (APPLY_MASK(code, offset + 1, 0b111'111'000'000'000'111) == 0b111'001'000'000'000'011) {
-            auto tmp_1 = UNSET_1x1(code, offset + 1);
-            release_(SET_1x1(tmp_1, offset));
-            release_(SET_1x1(tmp_1, offset + 4));
-            release_(SET_1x2(UNSET_1x2(code, offset + 5), offset + 4));
-        }
-
-        /// 1x2 & 1x1
-        if (APPLY_MASK(code, offset + 1, 0b000'111'000'000'111'111) == 0b000'011'000'000'111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset + 1), offset));
-            auto tmp_1 = UNSET_1x1(code, offset + 5);
-            release_(SET_1x1(tmp_1, offset + 4));
-            release_(SET_1x1(tmp_1, offset));
-        }
-
-        /// 1x2 & 1x2
-        if (APPLY_MASK(code, offset + 1, 0b111'111'000'000'111'111) == 0b111'001'000'000'111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset + 1), offset));
-            release_(SET_1x2(UNSET_1x2(code, offset + 5), offset + 4));
-        }
-
-        /// 2x2
-        if (APPLY_MASK(code, offset + 1, 0b111'111'000'000'111'111) == 0b111'111'000'000'111'100) {
-            release_(SET_2x2(UNSET_2x2(code, offset + 1), offset));
-        }
-    }
+    } while (false);
 }
 
 void S2Mover::one_space(uint64_t code, int offset) const {
     // ---------------- case up ----------------
 
-    if (offset >= 4) {
-        /// 1x1
-        if (APPLY_MASK(code, offset - 4, 0b111) == 0b011) {
-            release_(SET_1x1(UNSET_1x1(code, offset - 4), offset));
+    do {
+        if (offset >= 4) {
+            /// 1x1
+            if (APPLY_MASK(code, offset - 4, 0b111) == 0b011) {
+                release_(SET_1x1(UNSET_1x1(code, offset - 4), offset));
+                break;
+            }
         }
-    }
-    if (offset >= 8) {
-        /// 2x1
-        if (APPLY_MASK(code, offset - 8, 0b111'000'000'000'111) == 0b111'000'000'000'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset - 8), offset - 4));
+        if (offset >= 8) {
+            /// 2x1
+            if (APPLY_MASK(code, offset - 8, 0b111'000'000'000'111) == 0b111'000'000'000'010) {
+                release_(SET_2x1(UNSET_2x1(code, offset - 8), offset - 4));
+                break;
+            }
         }
-    }
+    } while (false);
 
     // ---------------- case down ----------------
 
-    if (offset < 16) {
-        /// 1x1
-        if (APPLY_MASK(code, offset + 4, 0b111) == 0b011) {
-            release_(SET_1x1(UNSET_1x1(code, offset + 4), offset));
+    do {
+        if (offset < 16) {
+            /// 1x1
+            if (APPLY_MASK(code, offset + 4, 0b111) == 0b011) {
+                release_(SET_1x1(UNSET_1x1(code, offset + 4), offset));
+                break;
+            }
         }
-    }
-    if (offset < 12) {
-        /// 2x1
-        if (APPLY_MASK(code, offset + 4, 0b111'000'000'000'111) == 0b111'000'000'000'010) {
-            release_(SET_2x1(UNSET_2x1(code, offset + 4), offset));
+        if (offset < 12) {
+            /// 2x1
+            if (APPLY_MASK(code, offset + 4, 0b111'000'000'000'111) == 0b111'000'000'000'010) {
+                release_(SET_2x1(UNSET_2x1(code, offset + 4), offset));
+                break;
+            }
         }
-    }
+    } while (false);
 
     // ---------------- case left ----------------
 
-    if ((offset % 4) != 0) {
-        /// 1x1
-        if (APPLY_MASK(code, offset - 1, 0b111) == 0b011) {
-            release_(SET_1x1(UNSET_1x1(code, offset - 1), offset));
+    do {
+        if ((offset % 4) != 0) {
+            /// 1x1
+            if (APPLY_MASK(code, offset - 1, 0b111) == 0b011) {
+                release_(SET_1x1(UNSET_1x1(code, offset - 1), offset));
+                break;
+            }
         }
-    }
-    if ((offset % 4) >= 2) {
-        /// 1x2
-        if (APPLY_MASK(code, offset - 2, 0b111'111) == 0b111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset - 2), offset - 1));
+        if ((offset % 4) >= 2) {
+            /// 1x2
+            if (APPLY_MASK(code, offset - 2, 0b111'111) == 0b111'001) {
+                release_(SET_1x2(UNSET_1x2(code, offset - 2), offset - 1));
+                break;
+            }
         }
-    }
+    } while (false);
 
     // ---------------- case right ----------------
 
-    if ((offset % 4) != 3) {
-        /// 1x1
-        if (APPLY_MASK(code, offset + 1, 0b111) == 0b011) {
-            release_(SET_1x1(UNSET_1x1(code, offset + 1), offset));
+    do {
+        if ((offset % 4) != 3) {
+            /// 1x1
+            if (APPLY_MASK(code, offset + 1, 0b111) == 0b011) {
+                release_(SET_1x1(UNSET_1x1(code, offset + 1), offset));
+                break;
+            }
         }
-    }
-    if ((offset % 4) <= 1) {
-        /// 1x2
-        if (APPLY_MASK(code, offset + 1, 0b111'111) == 0b111'001) {
-            release_(SET_1x2(UNSET_1x2(code, offset + 1), offset));
+        if ((offset % 4) <= 1) {
+            /// 1x2
+            if (APPLY_MASK(code, offset + 1, 0b111'111) == 0b111'001) {
+                release_(SET_1x2(UNSET_1x2(code, offset + 1), offset));
+                break;
+            }
         }
-    }
+    } while (false);
 }
 
 void S2Mover::next_cases(uint64_t code) {

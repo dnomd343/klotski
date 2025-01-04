@@ -79,15 +79,59 @@ int main() {
     // const auto code = CommonCode::from_string(s1_left[1]).value().to_raw_code();
     // const auto code = CommonCode::from_string(s1_right[1]).value().to_raw_code();
 
-    auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
-    S2Mover mover([](uint64_t code) {
-        std::cout << RawCode::unsafe_create(code) << std::endl;
-        if (!RawCode::check(code)) {
-            std::cout << "error" << std::endl;
-            std::abort();
+    // auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    // S2Mover mover([](uint64_t code) {
+    //     std::cout << RawCode::unsafe_create(code) << std::endl;
+    //     if (!RawCode::check(code)) {
+    //         std::cout << "error" << std::endl;
+    //         std::abort();
+    //     }
+    // });
+    // mover.next_cases(code.unwrap());
+
+    auto common_mover = [](RawCode src) {
+        std::vector<uint64_t> results {};
+        auto mover = MaskMover([&results](RawCode code, uint64_t) {
+            results.emplace_back(code.unwrap());
+        });
+        mover.next_cases(src, 0);
+        std::ranges::sort(results.begin(), results.end());
+        return results;
+    };
+
+    auto s2_mover = [](RawCode src) {
+        std::vector<uint64_t> results {};
+        auto mover = S2Mover([&results](uint64_t code) {
+            // std::cout << RawCode::unsafe_create(code) << std::endl;
+            if (!RawCode::check(code)) {
+                std::cout << "error" << std::endl;
+                std::abort();
+            }
+            results.emplace_back(code);
+        });
+        mover.next_cases(src.unwrap());
+        std::ranges::sort(results.begin(), results.end());
+        return results;
+    };
+
+    // auto code = CommonCode::unsafe_create(0x45C8B9000).to_raw_code();
+    // std::cout << std::format("{}\n", common_mover(code));
+    // std::cout << std::format("{}\n", s2_mover(code));
+
+    for (auto code : AllCases::instance().fetch().codes()) {
+        auto type_id = GroupUnion::from_common_code(code).unwrap();
+        auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id];
+        if (n * 2 + n_1x1 != 14) {
+            continue; // not s2 cases
         }
-    });
-    mover.next_cases(code.unwrap());
+
+        auto raw_code = code.to_raw_code();
+        auto ret_1 = common_mover(raw_code);
+        auto ret_2 = s2_mover(raw_code);
+        if (ret_1 != ret_2) {
+            std::cout << "!!! get -> " << code << std::endl;
+        }
+    }
 
     // TODO: maybe we can support `std::format`
 
