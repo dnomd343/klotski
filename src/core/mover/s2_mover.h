@@ -18,7 +18,10 @@ private:
     void two_space_a(uint64_t code, int offset) const;
     void two_space_b(uint64_t code, int offset) const;
 
-    void one_space(uint64_t code, int offset) const;
+    void one_space_(uint64_t code, int offset) const;
+
+    template <int N>
+    void one_space(uint64_t code) const;
 };
 
 } // namespace klotski::mover
