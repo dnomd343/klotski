@@ -15,8 +15,8 @@ public:
 private:
     release_t release_;
 
-    void two_space_a_(uint64_t code, int offset) const;
-    void two_space_b_(uint64_t code, int offset) const;
+    template <int N>
+    void one_space(uint64_t code) const;
 
     template <int N>
     void two_space_a(uint64_t code) const;
@@ -25,9 +25,8 @@ private:
     void two_space_b(uint64_t code) const;
 
     void one_space_(uint64_t code, int offset) const;
-
-    template <int N>
-    void one_space(uint64_t code) const;
+    void two_space_a_(uint64_t code, int offset) const;
+    void two_space_b_(uint64_t code, int offset) const;
 };
 
 } // namespace klotski::mover
