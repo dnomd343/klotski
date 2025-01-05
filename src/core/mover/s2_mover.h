@@ -10,7 +10,7 @@ public:
 
     explicit S2Mover(release_t release_func) : release_(std::move(release_func)) {}
 
-    void next_cases(uint64_t code);
+    void next_cases(uint64_t code) const;
 
 private:
     release_t release_;

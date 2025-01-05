@@ -1,49 +1,24 @@
-#include <iostream>
-
 #include "mover/s2_mover.h"
 #include "raw_code/raw_code.h"
 
 using klotski::mover::S2Mover;
 using klotski::codec::RawCode;
 
-#define CAPTURE(code, addr) \
-    (((code) >> ((addr) * 3)) & (uint64_t)(0b111))
+#define ADDR(N) ((N) * 3)
 
-#define UNSET_1x1_(code, addr) \
-    ((code) & ~((uint64_t)0b111 << ((addr) * 3)))
+#define CAPTURE(code, N) (((code) >> ADDR(N)) & 0b111ULL)
 
-#define SET_1x1_(code, addr) \
-    ((code) | ((uint64_t)0b011 << ((addr) * 3)))
+#define MOVE_1x1(code, SRC, DST) \
+    ((code) & ~(K_MASK_1x1_ << ADDR(SRC)) | (K_MASK_1x1 << ADDR(DST)))
 
-#define MOVE_1x1(code, addr_old, addr_new) \
-    SET_1x1_(UNSET_1x1_(code, addr_old), addr_new)
+#define MOVE_1x2(code, SRC, DST) \
+    ((code) & ~(K_MASK_1x2_ << ADDR(SRC)) | (K_MASK_1x2 << ADDR(DST)))
 
-#define UNSET_1x2_(code, addr) \
-    ((code) & ~((uint64_t)0b111'111 << ((addr) * 3)))
+#define MOVE_2x1(code, SRC, DST) \
+    ((code) & ~(K_MASK_2x1_ << ADDR(SRC)) | (K_MASK_2x1 << ADDR(DST)))
 
-#define SET_1x2_(code, addr) \
-    ((code) | ((uint64_t)0b111'001 << ((addr) * 3)))
-
-#define MOVE_1x2(code, addr_old, addr_new) \
-    SET_1x2_(UNSET_1x2_(code, addr_old), addr_new)
-
-#define UNSET_2x1_(code, addr) \
-    ((code) & ~((uint64_t)0b111'000'000'000'111 << ((addr) * 3)))
-
-#define SET_2x1_(code, addr) \
-    ((code) | ((uint64_t)0b111'000'000'000'010 << ((addr) * 3)))
-
-#define MOVE_2x1(code, addr_old, addr_new) \
-    SET_2x1_(UNSET_2x1_(code, addr_old), addr_new)
-
-#define UNSET_2x2_(code, addr) \
-    ((code) & ~((uint64_t)0b111'111'000'000'111'111 << ((addr) * 3)))
-
-#define SET_2x2_(code, addr) \
-    ((code) | ((uint64_t)0b111'111'000'000'111'100 << ((addr) * 3)))
-
-#define MOVE_2x2(code, addr_old, addr_new) \
-    SET_2x2_(UNSET_2x2_(code, addr_old), addr_new)
+#define MOVE_2x2(code, SRC, DST) \
+    ((code) & ~(K_MASK_2x2_ << ADDR(SRC)) | (K_MASK_2x2 << ADDR(DST)))
 
 template <int N>
 void S2Mover::move_single(const uint64_t code) const {
@@ -222,107 +197,86 @@ void S2Mover::move_double_v(const uint64_t code) const {
     } while (false);
 }
 
-void S2Mover::move_double_h(uint64_t code, int offset) const {
+void S2Mover::move_double_h(const uint64_t code, const int offset) const {
     switch (offset) {
-    case 0: move_double_h<0>(code); break;
-    case 1: move_double_h<1>(code); break;
-    case 2: move_double_h<2>(code); break;
-    case 4: move_double_h<4>(code); break;
-    case 5: move_double_h<5>(code); break;
-    case 6: move_double_h<6>(code); break;
-    case 8: move_double_h<8>(code); break;
-    case 9: move_double_h<9>(code); break;
-    case 10: move_double_h<10>(code); break;
-    case 12: move_double_h<12>(code); break;
-    case 13: move_double_h<13>(code); break;
-    case 14: move_double_h<14>(code); break;
-    case 16: move_double_h<16>(code); break;
-    case 17: move_double_h<17>(code); break;
-    case 18: move_double_h<18>(code); break;
-    default: std::unreachable();
+        case 0: move_double_h<0>(code); break;
+        case 1: move_double_h<1>(code); break;
+        case 2: move_double_h<2>(code); break;
+        case 4: move_double_h<4>(code); break;
+        case 5: move_double_h<5>(code); break;
+        case 6: move_double_h<6>(code); break;
+        case 8: move_double_h<8>(code); break;
+        case 9: move_double_h<9>(code); break;
+        case 10: move_double_h<10>(code); break;
+        case 12: move_double_h<12>(code); break;
+        case 13: move_double_h<13>(code); break;
+        case 14: move_double_h<14>(code); break;
+        case 16: move_double_h<16>(code); break;
+        case 17: move_double_h<17>(code); break;
+        case 18: move_double_h<18>(code); break;
+        default: std::unreachable();
     }
 }
 
-void S2Mover::move_double_v(uint64_t code, int offset) const {
+void S2Mover::move_double_v(const uint64_t code, const int offset) const {
     switch (offset) {
-    case 0: move_double_v<0>(code); break;
-    case 1: move_double_v<1>(code); break;
-    case 2: move_double_v<2>(code); break;
-    case 3: move_double_v<3>(code); break;
-    case 4: move_double_v<4>(code); break;
-    case 5: move_double_v<5>(code); break;
-    case 6: move_double_v<6>(code); break;
-    case 7: move_double_v<7>(code); break;
-    case 8: move_double_v<8>(code); break;
-    case 9: move_double_v<9>(code); break;
-    case 10: move_double_v<10>(code); break;
-    case 11: move_double_v<11>(code); break;
-    case 12: move_double_v<12>(code); break;
-    case 13: move_double_v<13>(code); break;
-    case 14: move_double_v<14>(code); break;
-    case 15: move_double_v<15>(code); break;
-    default: std::unreachable();
+        case 0: move_double_v<0>(code); break;
+        case 1: move_double_v<1>(code); break;
+        case 2: move_double_v<2>(code); break;
+        case 3: move_double_v<3>(code); break;
+        case 4: move_double_v<4>(code); break;
+        case 5: move_double_v<5>(code); break;
+        case 6: move_double_v<6>(code); break;
+        case 7: move_double_v<7>(code); break;
+        case 8: move_double_v<8>(code); break;
+        case 9: move_double_v<9>(code); break;
+        case 10: move_double_v<10>(code); break;
+        case 11: move_double_v<11>(code); break;
+        case 12: move_double_v<12>(code); break;
+        case 13: move_double_v<13>(code); break;
+        case 14: move_double_v<14>(code); break;
+        case 15: move_double_v<15>(code); break;
+        default: std::unreachable();
     }
 }
 
-void S2Mover::move_single(uint64_t code, int offset) const {
+void S2Mover::move_single(const uint64_t code, const int offset) const {
     switch (offset) {
-    case 0: move_single<0>(code); break;
-    case 1: move_single<1>(code); break;
-    case 2: move_single<2>(code); break;
-    case 3: move_single<3>(code); break;
-    case 4: move_single<4>(code); break;
-    case 5: move_single<5>(code); break;
-    case 6: move_single<6>(code); break;
-    case 7: move_single<7>(code); break;
-    case 8: move_single<8>(code); break;
-    case 9: move_single<9>(code); break;
-    case 10: move_single<10>(code); break;
-    case 11: move_single<11>(code); break;
-    case 12: move_single<12>(code); break;
-    case 13: move_single<13>(code); break;
-    case 14: move_single<14>(code); break;
-    case 15: move_single<15>(code); break;
-    case 16: move_single<16>(code); break;
-    case 17: move_single<17>(code); break;
-    case 18: move_single<18>(code); break;
-    case 19: move_single<19>(code); break;
-    default: std::unreachable();
+        case 0: move_single<0>(code); break;
+        case 1: move_single<1>(code); break;
+        case 2: move_single<2>(code); break;
+        case 3: move_single<3>(code); break;
+        case 4: move_single<4>(code); break;
+        case 5: move_single<5>(code); break;
+        case 6: move_single<6>(code); break;
+        case 7: move_single<7>(code); break;
+        case 8: move_single<8>(code); break;
+        case 9: move_single<9>(code); break;
+        case 10: move_single<10>(code); break;
+        case 11: move_single<11>(code); break;
+        case 12: move_single<12>(code); break;
+        case 13: move_single<13>(code); break;
+        case 14: move_single<14>(code); break;
+        case 15: move_single<15>(code); break;
+        case 16: move_single<16>(code); break;
+        case 17: move_single<17>(code); break;
+        case 18: move_single<18>(code); break;
+        case 19: move_single<19>(code); break;
+        default: std::unreachable();
     }
 }
 
-void S2Mover::next_cases(const uint64_t code) {
+void S2Mover::next_cases(const uint64_t code) const {
+    const uint64_t mask = code | (code >> 1) | (code >> 2) | 0xFDB6DB6DB6DB6DB6;
+    const int space_a = std::countr_one(mask) / 3;
+    const int space_b = (63 - std::countl_one(mask)) / 3;
 
-    uint64_t tmp = (code | (code >> 1) | (code >> 2)) | ~0x0249249249249249;
-
-    // constexpr auto kk = std::to_array({
-    //     0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0,
-    //     4, 0, 0, 5, 0, 0, 6, 0, 0, 7, 0, 0,
-    //     8, 0, 0, 9, 0, 0, 10, 0, 0, 11, 0, 0,
-    //     12, 0, 0, 13, 0, 0, 14, 0, 0, 15, 0, 0,
-    //     16, 0, 0, 17, 0, 0, 18, 0, 0, 19, 0, 0,
-    // });
-
-    // int val_1 = std::countr_one(tmp);
-    // int val_2 = 63 - std::countl_one(tmp);
-
-    // KLSK_ASSUME(val_1 >= 0 && val_1 <= 57 && val_1 % 3 == 0);
-    // KLSK_ASSUME(val_2 >= 0 && val_2 <= 57 && val_2 % 3 == 0);
-
-    // int space_1 = kk[val_1];
-    // int space_2 = kk[val_2];
-    // int space_1 = val_1 / 3;
-    // int space_2 = val_2 / 3;
-
-    int space_1 = std::countr_one(tmp) / 3;
-    int space_2 = (63 - std::countl_one(tmp)) / 3;
-
-    if (space_1 + 1 == space_2 && space_1 % 4 != 3) {
-        move_double_h(code, space_1);
-    } else if (space_1 + 4 == space_2) {
-        move_double_v(code, space_1);
+    if (space_a + 1 == space_b && space_a % 4 != 3) {
+        move_double_h(code, space_a);
+    } else if (space_a + 4 == space_b) {
+        move_double_v(code, space_a);
     } else {
-        move_single(code, space_1);
-        move_single(code, space_2);
+        move_single(code, space_a);
+        move_single(code, space_b);
     }
 }
