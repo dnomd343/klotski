@@ -27,7 +27,7 @@ using klotski::codec::RawCode;
 
 // TODO: test input mask with samples
 
-TEST(Core, core) {
+TEST(Mover, core) {
 
     // TODO: test for each type_id
 
@@ -68,7 +68,7 @@ TEST(Core, core) {
 
 // TODO: support multi-thread test
 
-TEST(Core, mask) {
+TEST(Mover, mask) {
     std::vector<uint64_t> raw_codes;
     raw_codes.reserve(klotski::cases::ALL_CASES_NUM_);
 
@@ -168,7 +168,7 @@ TEST(Core, mask) {
 
 }
 
-TEST(Core, next_cases) {
+TEST(Mover, next_cases) {
 
     std::vector<RawCode> raw_codes;
 

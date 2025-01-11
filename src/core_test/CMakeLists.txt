@@ -73,6 +73,7 @@ add_test(NAME klotski_codec COMMAND test_klotski_codec)
 
 set(KLSK_TEST_MOVER_SRC
     mover/mover.cc
+    mover/s2_mover.cc
 )
 
 add_executable(test_klotski_mover ${KLSK_TEST_MOVER_SRC})
