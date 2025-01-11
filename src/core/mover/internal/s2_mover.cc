@@ -20,37 +20,45 @@ using klotski::codec::RawCode;
 #define MOVE_2x2(code, SRC, DST) \
     ((code) & ~(K_MASK_2x2_ << ADDR(SRC)) | (K_MASK_2x2 << ADDR(DST)))
 
+#define RELEASE_1x1(code, SRC, DST) release_(MOVE_1x1(code, SRC, DST))
+
+#define RELEASE_1x2(code, SRC, DST) release_(MOVE_1x2(code, SRC, DST))
+
+#define RELEASE_2x1(code, SRC, DST) release_(MOVE_2x1(code, SRC, DST))
+
+#define RELEASE_2x2(code, SRC, DST) release_(MOVE_2x2(code, SRC, DST))
+
 template <int N>
 void S2Mover::move_single(const uint64_t code) const {
     if (N >= 4) { // case up
         if (CAPTURE(code, N - 4) == BLOCK_1x1) {
-            release_(MOVE_1x1(code, N - 4, N));
+            RELEASE_1x1(code, N - 4, N);
         } else if (N >= 8 && CAPTURE(code, N - 8) == BLOCK_2x1) {
-            release_(MOVE_2x1(code, N - 8, N - 4));
+            RELEASE_2x1(code, N - 8, N - 4);
         }
     }
 
     if (N < 16) { // case down
         if (const uint8_t block = CAPTURE(code, N + 4); block == BLOCK_1x1) {
-            release_(MOVE_1x1(code, N + 4, N));
+            RELEASE_1x1(code, N + 4, N);
         } else if (N < 12 && block == BLOCK_2x1) {
-            release_(MOVE_2x1(code, N + 4, N));
+            RELEASE_2x1(code, N + 4, N);
         }
     }
 
     if (N % 4 >= 1) { // case left
         if (CAPTURE(code, N - 1) == BLOCK_1x1) {
-            release_(MOVE_1x1(code, N - 1, N));
+            RELEASE_1x1(code, N - 1, N);
         } else if (N % 4 >= 2 && CAPTURE(code, N - 2) == BLOCK_1x2) {
-            release_(MOVE_1x2(code, N - 2, N - 1));
+            RELEASE_1x2(code, N - 2, N - 1);
         }
     }
 
     if (N % 4 < 3) { // case right
         if (const uint8_t block = CAPTURE(code, N + 1); block == BLOCK_1x1) {
-            release_(MOVE_1x1(code, N + 1, N));
+            RELEASE_1x1(code, N + 1, N);
         } else if (N % 4 < 2 && block == BLOCK_1x2) {
-            release_(MOVE_1x2(code, N + 1, N));
+            RELEASE_1x2(code, N + 1, N);
         }
     }
 }
@@ -60,24 +68,24 @@ void S2Mover::move_double_h(const uint64_t code) const {
     do { // case up
         if (N >= 4) {
             if (const uint8_t block = CAPTURE(code, N - 4); block == BLOCK_1x1) { // left part
-                release_(MOVE_1x1(code, N - 4, N));
-                release_(MOVE_1x1(code, N - 4, N + 1));
+                RELEASE_1x1(code, N - 4, N);
+                RELEASE_1x1(code, N - 4, N + 1);
             } else if (block == BLOCK_1x2) {
-                release_(MOVE_1x2(code, N - 4, N));
+                RELEASE_1x2(code, N - 4, N);
                 break;
             } else if (N >= 8 && block == BLOCK_fill) {
                 if (const uint8_t block_ = CAPTURE(code, N - 8); block_ == BLOCK_2x2) {
-                    release_(MOVE_2x2(code, N - 8, N - 4));
+                    RELEASE_2x2(code, N - 8, N - 4);
                     break;
                 } else if (block_ == BLOCK_2x1) {
-                    release_(MOVE_2x1(code, N - 8, N - 4));
+                    RELEASE_2x1(code, N - 8, N - 4);
                 }
             }
             if (const uint8_t block = CAPTURE(code, N - 3); block == BLOCK_1x1) { // right part
-                release_(MOVE_1x1(code, N - 3, N + 1));
-                release_(MOVE_1x1(code, N - 3, N));
+                RELEASE_1x1(code, N - 3, N + 1);
+                RELEASE_1x1(code, N - 3, N);
             } else if (N >= 8 && block == BLOCK_fill && CAPTURE(code, N - 7) == BLOCK_2x1) {
-                release_(MOVE_2x1(code, N - 7, N - 3));
+                RELEASE_2x1(code, N - 7, N - 3);
             }
         }
     } while (false);
@@ -85,43 +93,43 @@ void S2Mover::move_double_h(const uint64_t code) const {
     do { // case down
         if (N < 16) {
             if (const uint8_t block = CAPTURE(code, N + 4); block == BLOCK_1x1) { // left part
-                release_(MOVE_1x1(code, N + 4, N));
-                release_(MOVE_1x1(code, N + 4, N + 1));
+                RELEASE_1x1(code, N + 4, N);
+                RELEASE_1x1(code, N + 4, N + 1);
             } else if (N < 12 && block == BLOCK_2x1) {
-                release_(MOVE_2x1(code, N + 4, N));
+                RELEASE_2x1(code, N + 4, N);
             } else if (block == BLOCK_1x2) {
-                release_(MOVE_1x2(code, N + 4, N));
+                RELEASE_1x2(code, N + 4, N);
                 break;
             } else if (N < 12 && block == BLOCK_2x2) {
-                release_(MOVE_2x2(code, N + 4, N));
+                RELEASE_2x2(code, N + 4, N);
                 break;
             }
             if (const uint8_t block = CAPTURE(code, N + 5); block == BLOCK_1x1) { // right part
-                release_(MOVE_1x1(code, N + 5, N + 1));
-                release_(MOVE_1x1(code, N + 5, N));
+                RELEASE_1x1(code, N + 5, N + 1);
+                RELEASE_1x1(code, N + 5, N);
             } else if (N < 12 && block == BLOCK_2x1) {
-                release_(MOVE_2x1(code, N + 5, N + 1));
+                RELEASE_2x1(code, N + 5, N + 1);
             }
         }
     } while (false);
 
     if (N % 4 >= 1) { // case left
         if (CAPTURE(code, N - 1) == BLOCK_1x1) {
-            release_(MOVE_1x1(code, N - 1, N));
-            release_(MOVE_1x1(code, N - 1, N + 1));
+            RELEASE_1x1(code, N - 1, N);
+            RELEASE_1x1(code, N - 1, N + 1);
         } else if (N % 4 == 2 && CAPTURE(code, N - 2) == BLOCK_1x2) {
-            release_(MOVE_1x2(code, N - 2, N - 1));
-            release_(MOVE_1x2(code, N - 2, N));
+            RELEASE_1x2(code, N - 2, N - 1);
+            RELEASE_1x2(code, N - 2, N);
         }
     }
 
     if (N % 4 < 2) { // case right
         if (const uint8_t block = CAPTURE(code, N + 2); block == BLOCK_1x1) {
-            release_(MOVE_1x1(code, N + 2, N + 1));
-            release_(MOVE_1x1(code, N + 2, N));
+            RELEASE_1x1(code, N + 2, N + 1);
+            RELEASE_1x1(code, N + 2, N);
         } else if (N % 4 == 0 && block == BLOCK_1x2) {
-            release_(MOVE_1x2(code, N + 2, N + 1));
-            release_(MOVE_1x2(code, N + 2, N));
+            RELEASE_1x2(code, N + 2, N + 1);
+            RELEASE_1x2(code, N + 2, N);
         }
     }
 }
@@ -130,45 +138,45 @@ template <int N>
 void S2Mover::move_double_v(const uint64_t code) const {
     if (N >= 4) { // case up
         if (CAPTURE(code, N - 4) == BLOCK_1x1) {
-            release_(MOVE_1x1(code, N - 4, N));
-            release_(MOVE_1x1(code, N - 4, N + 4));
+            RELEASE_1x1(code, N - 4, N);
+            RELEASE_1x1(code, N - 4, N + 4);
         } else if (N >= 8 && CAPTURE(code, N - 8) == BLOCK_2x1) {
-            release_(MOVE_2x1(code, N - 8, N - 4));
-            release_(MOVE_2x1(code, N - 8, N));
+            RELEASE_2x1(code, N - 8, N - 4);
+            RELEASE_2x1(code, N - 8, N);
         }
     }
 
     if (N < 12) { // case down
         if (CAPTURE(code, N + 8) == BLOCK_1x1) {
-            release_(MOVE_1x1(code, N + 8, N + 4));
-            release_(MOVE_1x1(code, N + 8, N));
+            RELEASE_1x1(code, N + 8, N + 4);
+            RELEASE_1x1(code, N + 8, N);
         } else if (N < 8 && CAPTURE(code, N + 8) == BLOCK_2x1) {
-            release_(MOVE_2x1(code, N + 8, N + 4));
-            release_(MOVE_2x1(code, N + 8, N));
+            RELEASE_2x1(code, N + 8, N + 4);
+            RELEASE_2x1(code, N + 8, N);
         }
     }
 
     do { // case left
         if (N % 4 != 0) {
             if (const uint8_t block = CAPTURE(code, N - 1); block == BLOCK_1x1) { // up part
-                release_(MOVE_1x1(code, N - 1, N));
-                release_(MOVE_1x1(code, N - 1, N + 4));
+                RELEASE_1x1(code, N - 1, N);
+                RELEASE_1x1(code, N - 1, N + 4);
             } else if (block == BLOCK_2x1) {
-                release_(MOVE_2x1(code, N - 1, N));
+                RELEASE_2x1(code, N - 1, N);
                 break;
             } else if (N % 4 >= 2 && block == BLOCK_fill) {
                 if (const uint8_t block_ = CAPTURE(code, N - 2); block_ == BLOCK_2x2) {
-                    release_(MOVE_2x2(code, N - 2, N - 1));
+                    RELEASE_2x2(code, N - 2, N - 1);
                     break;
                 } else if (block_ == BLOCK_1x2) {
-                    release_(MOVE_1x2(code, N - 2, N - 1));
+                    RELEASE_1x2(code, N - 2, N - 1);
                 }
             }
             if (const uint8_t block = CAPTURE(code, N + 3); block == BLOCK_1x1) { // down part
-                release_(MOVE_1x1(code, N + 3, N + 4));
-                release_(MOVE_1x1(code, N + 3, N));
+                RELEASE_1x1(code, N + 3, N + 4);
+                RELEASE_1x1(code, N + 3, N);
             } else if (N % 4 >= 2 && block == BLOCK_fill && CAPTURE(code, N + 2) == BLOCK_1x2) {
-                release_(MOVE_1x2(code, N + 2, N + 3));
+                RELEASE_1x2(code, N + 2, N + 3);
             }
         }
     } while (false);
@@ -176,22 +184,22 @@ void S2Mover::move_double_v(const uint64_t code) const {
     do { // case right
         if (N % 4 < 3) {
             if (const uint8_t block = CAPTURE(code, N + 1); block == BLOCK_1x1) { // up part
-                release_(MOVE_1x1(code, N + 1, N));
-                release_(MOVE_1x1(code, N + 1, N + 4));
+                RELEASE_1x1(code, N + 1, N);
+                RELEASE_1x1(code, N + 1, N + 4);
             } else if (N % 4 < 2 && block == BLOCK_1x2) {
-                release_(MOVE_1x2(code, N + 1, N));
+                RELEASE_1x2(code, N + 1, N);
             } else if (block == BLOCK_2x1) {
-                release_(MOVE_2x1(code, N + 1, N));
+                RELEASE_2x1(code, N + 1, N);
                 break;
             } else if (N % 4 < 2 && block == BLOCK_2x2) {
-                release_(MOVE_2x2(code, N + 1, N));
+                RELEASE_2x2(code, N + 1, N);
                 break;
             }
             if (const uint8_t block = CAPTURE(code, N + 5); block == BLOCK_1x1) { // down part
-                release_(MOVE_1x1(code, N + 5, N + 4));
-                release_(MOVE_1x1(code, N + 5, N));
+                RELEASE_1x1(code, N + 5, N + 4);
+                RELEASE_1x1(code, N + 5, N);
             } else if (N % 4 < 2 && block == BLOCK_1x2) {
-                release_(MOVE_1x2(code, N + 5, N + 4));
+                RELEASE_1x2(code, N + 5, N + 4);
             }
         }
     } while (false);
