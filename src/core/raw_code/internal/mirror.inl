@@ -82,29 +82,73 @@ static constexpr void horizontal_clear(uint64_t &raw_code) {
 }
 
 constexpr uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) {
-    vertical_fill(raw_code);
-    raw_code = (raw_code & MASK_MIRROR_V3)
-        | ((raw_code >> 48) & MASK_MIRROR_V1) | ((raw_code >> 24) & MASK_MIRROR_V2)
-        | ((raw_code & MASK_MIRROR_V2) << 24) | ((raw_code & MASK_MIRROR_V1) << 48);
-    vertical_clear(raw_code);
-    return raw_code;
+    // vertical_fill(raw_code);
+
+    // uint64_t code = (raw_code & MASK_MIRROR_V3)
+    //     | ((raw_code >> 48) & MASK_MIRROR_V1) | ((raw_code >> 24) & MASK_MIRROR_V2)
+    //     | ((raw_code & MASK_MIRROR_V2) << 24) | ((raw_code & MASK_MIRROR_V1) << 48);
+
+    constexpr uint64_t M_1 = 0x0'000'000'000'FFF'FFF;
+    constexpr uint64_t M_2 = 0x0'FFF'FFF'000'000'000;
+
+    constexpr uint64_t M_3 = 0x0'000'FFF'000'000'FFF;
+    constexpr uint64_t M_4 = 0x0'FFF'000'000'FFF'000;
+
+    constexpr uint64_t M_5 = 0x0'000'000'FFF'000'000;
+
+    uint64_t code = ((raw_code >> 36) & M_1) | ((raw_code << 36) & M_2);
+    code = ((code >> 12) & M_3) | ((code << 12) & M_4);
+    code |= (raw_code & M_5);
+
+    uint64_t kk = ~code & (code >> 1) & 0x0249249249249249;
+    uint64_t pp = ~code & (code >> 1) & 0x0492492492492492;
+    kk |= (kk << 2);
+    pp |= (pp >> 1);
+
+    // code |= (kk | pp);
+    // code &= ~(kk >> 12) & ~(pp >> 12);
+
+    return (code | kk | pp) & ~(kk >> 12) & ~(pp >> 12);
+
+    // vertical_clear(raw_code);
+    // return raw_code;
 }
 
 constexpr uint64_t RawCode::get_horizontal_mirror(uint64_t raw_code) {
-    uint64_t code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
-        | ((raw_code & MASK_MIRROR_H2) << 3) | ((raw_code & MASK_MIRROR_H1) << 9); // flip raw code
+
+    // uint64_t kk = ~raw_code & (raw_code << 1) & 0x0492492492492492;
+    // kk |= (kk << 1);
+    // kk = ((kk << 6) & (0x0'038'038'038'038'038 << 3)) | ((kk >> 6) & 0x0'007'007'007'007'007) | (kk & 0x0'038'038'038'038'038);
+
+    // uint64_t pp = ~raw_code & (raw_code >> 1) & 0x0492492492492492;
+    // pp |= (pp >> 1);
+    // pp = ((pp << 6) & (0x0'038'038'038'038'038 << 3)) | ((pp >> 6) & 0x0'007'007'007'007'007) | (pp & 0x0'038'038'038'038'038);
+
+    // uint64_t code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
+    //     | ((raw_code & MASK_MIRROR_H2) << 3) | ((raw_code & MASK_MIRROR_H1) << 9); // flip raw code
+
+    // return code & (~kk & ~pp) | ((kk << 3) | (pp << 3));
+
+
+    constexpr uint64_t MASK_1 = 0x0'007'007'007'007'007 | 0x0'038'038'038'038'038;
+    constexpr uint64_t MASK_2 = MASK_1 << 6;
+
+    constexpr uint64_t MASK_3 = 0x0'007'007'007'007'007 | (0x0'038'038'038'038'038 << 3);
+    constexpr uint64_t MASK_4 = MASK_3 << 3;
+
+    uint64_t code = ((raw_code >> 6) & MASK_1) | ((raw_code << 6) & MASK_2);
+    code = ((code >> 3) & MASK_3) | ((code << 3) & MASK_4);
 
     uint64_t kk = ~code & (code << 1) & 0x0492492492492492;
-    kk |= (kk << 1);
-    code |= kk;
-    code &= ~(kk >> 3);
-
     uint64_t pp = ~code & (code >> 1) & 0x0492492492492492;
+    kk |= (kk << 1);
     pp |= (pp >> 1);
-    code |= pp;
-    code &= ~(pp >> 3);
 
-    return code;
+    return (code | kk | pp) & ~(kk >> 3) & ~(pp >> 3);
+
+    // code |= (kk | pp);
+    // code &= (~(kk >> 3) & ~(pp >> 3));
+    // return code;
 }
 
 constexpr bool RawCode::check_mirror(uint64_t raw_code) {
