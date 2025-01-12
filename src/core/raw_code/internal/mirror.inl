@@ -81,80 +81,55 @@ static constexpr void horizontal_clear(uint64_t &raw_code) {
     }
 }
 
-constexpr uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) {
-    // vertical_fill(raw_code);
-
-    // uint64_t code = (raw_code & MASK_MIRROR_V3)
-    //     | ((raw_code >> 48) & MASK_MIRROR_V1) | ((raw_code >> 24) & MASK_MIRROR_V2)
-    //     | ((raw_code & MASK_MIRROR_V2) << 24) | ((raw_code & MASK_MIRROR_V1) << 48);
-
-    constexpr uint64_t M_1 = 0x0'000'000'000'FFF'FFF;
-    constexpr uint64_t M_2 = 0x0'FFF'FFF'000'000'000;
-
-    constexpr uint64_t M_3 = 0x0'000'FFF'000'000'FFF;
-    constexpr uint64_t M_4 = 0x0'FFF'000'000'FFF'000;
-
-    constexpr uint64_t M_5 = 0x0'000'000'FFF'000'000;
-
-    uint64_t code = ((raw_code >> 36) & M_1) | ((raw_code << 36) & M_2);
-    code = ((code >> 12) & M_3) | ((code << 12) & M_4);
-    code |= (raw_code & M_5);
-
-    uint64_t kk = ~code & (code >> 1) & 0x0249249249249249;
-    uint64_t pp = ~code & (code >> 1) & 0x0492492492492492;
-    kk |= (kk << 2);
-    pp |= (pp >> 1);
-
-    // code |= (kk | pp);
-    // code &= ~(kk >> 12) & ~(pp >> 12);
-
-    return (code | kk | pp) & ~(kk >> 12) & ~(pp >> 12);
-
-    // vertical_clear(raw_code);
-    // return raw_code;
+constexpr uint64_t RawCode::get_vertical_mirror(const uint64_t raw_code) {
+    uint64_t code = ((raw_code >> 36) & 0x000'000'000'fff'fff) | ((raw_code << 36) & 0xfff'fff'000'000'000);
+    code = ((code >> 12) & 0x000'fff'000'000'fff) | ((code << 12) & 0xfff'000'000'fff'000);
+    code |= (raw_code & 0x000'000'fff'000'000);
+    uint64_t m1 = ~code & (code >> 1) & 0x249'249'249'249'249;
+    uint64_t m2 = ~code & (code >> 1) & 0x492'492'492'492'492;
+    m1 |= (m1 << 2);
+    m2 |= (m2 >> 1);
+    return (code | m1 | m2) & ~(m1 >> 12) & ~(m2 >> 12);
 }
 
-constexpr uint64_t RawCode::get_horizontal_mirror(uint64_t raw_code) {
-
-    // uint64_t kk = ~raw_code & (raw_code << 1) & 0x0492492492492492;
-    // kk |= (kk << 1);
-    // kk = ((kk << 6) & (0x0'038'038'038'038'038 << 3)) | ((kk >> 6) & 0x0'007'007'007'007'007) | (kk & 0x0'038'038'038'038'038);
-
-    // uint64_t pp = ~raw_code & (raw_code >> 1) & 0x0492492492492492;
-    // pp |= (pp >> 1);
-    // pp = ((pp << 6) & (0x0'038'038'038'038'038 << 3)) | ((pp >> 6) & 0x0'007'007'007'007'007) | (pp & 0x0'038'038'038'038'038);
-
-    // uint64_t code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
-    //     | ((raw_code & MASK_MIRROR_H2) << 3) | ((raw_code & MASK_MIRROR_H1) << 9); // flip raw code
-
-    // return code & (~kk & ~pp) | ((kk << 3) | (pp << 3));
-
-
-    constexpr uint64_t MASK_1 = 0x0'007'007'007'007'007 | 0x0'038'038'038'038'038;
-    constexpr uint64_t MASK_2 = MASK_1 << 6;
-
-    constexpr uint64_t MASK_3 = 0x0'007'007'007'007'007 | (0x0'038'038'038'038'038 << 3);
-    constexpr uint64_t MASK_4 = MASK_3 << 3;
-
-    uint64_t code = ((raw_code >> 6) & MASK_1) | ((raw_code << 6) & MASK_2);
-    code = ((code >> 3) & MASK_3) | ((code << 3) & MASK_4);
-
-    uint64_t kk = ~code & (code << 1) & 0x0492492492492492;
-    uint64_t pp = ~code & (code >> 1) & 0x0492492492492492;
-    kk |= (kk << 1);
-    pp |= (pp >> 1);
-
-    return (code | kk | pp) & ~(kk >> 3) & ~(pp >> 3);
-
-    // code |= (kk | pp);
-    // code &= (~(kk >> 3) & ~(pp >> 3));
-    // return code;
+constexpr uint64_t RawCode::get_horizontal_mirror(const uint64_t raw_code) {
+    uint64_t code = ((raw_code >> 6) & 0x03f'03f'03f'03f'03f) | ((raw_code << 6) & 0xfc0'fc0'fc0'fc0'fc0);
+    code = ((code >> 3) & 0x1c7'1c7'1c7'1c7'1c7) | ((code << 3) & 0xe38'e38'e38'e38'e38);
+    uint64_t m1 = ~code & (code << 1) & 0x492'492'492'492'492;
+    uint64_t m2 = ~code & (code >> 1) & 0x492'492'492'492'492;
+    m1 |= (m1 << 1);
+    m2 |= (m2 >> 1);
+    return (code | m1 | m2) & ~(m1 >> 3) & ~(m2 >> 3);
 }
 
 constexpr bool RawCode::check_mirror(uint64_t raw_code) {
-    horizontal_fill(raw_code);
+    // horizontal_fill(raw_code);
+    // return !(MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
+    //     && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));
+
+    // return raw_code == get_horizontal_mirror(raw_code);
+
+    uint64_t kk = ~raw_code & (raw_code << 1) & 0x0492492492492492;
+    kk |= (kk << 1);
+
+    // uint64_t pp = ~raw_code & (raw_code >> 1) & 0x0492492492492492;
+    // pp |= (pp >> 1);
+
+    uint64_t pp = raw_code & 0x924924924924924;
+    pp = (pp >> 1) | (pp >> 2);
+
+    raw_code |= pp;
+    raw_code &= ~(kk << 3);
+    // raw_code &= ~(pp << 3);
+
     return !(MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
         && !(MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code));
+
+    // return (((raw_code >> 9) & MASK_MIRROR_H1) == (raw_code & MASK_MIRROR_H1))
+    //     && (((raw_code >> 3) & MASK_MIRROR_H2) == (raw_code & MASK_MIRROR_H2));
+
+    // return ((MASK_MIRROR_H1 & ((raw_code >> 9) ^ raw_code))
+    //       | (MASK_MIRROR_H2 & ((raw_code >> 3) ^ raw_code))) == 0;
 }
 
 } // namespace klotski::codec
