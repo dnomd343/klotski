@@ -62,11 +62,13 @@ int main() {
     // std::cout << backtrack.size() << std::endl;
     // std::cout << backtrack[0].size() << ", " << backtrack[81].size() << std::endl;
 
-    // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();
-    // FastCal fc {code};
+    FastCal fc {code};
 
     // std::cout << fc.solve().value() << std::endl;
+
+    std::cout << fc.backtrack(fc.solve().value()).size() << std::endl;
 
     // for (const auto x : fc.solve_multi()) {
     //     std::cout << x.to_common_code() << std::endl;
