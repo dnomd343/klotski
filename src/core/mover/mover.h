@@ -100,4 +100,3 @@ private:
 } // namespace klotski::mover
 
 #include "s2_mover.h"
-#include "s2_hint_mover.h"

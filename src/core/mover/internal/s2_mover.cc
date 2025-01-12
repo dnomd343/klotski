@@ -1,8 +1,11 @@
-#include "mover/s2_mover.h"
+#include "mover/mover.h"
 #include "raw_code/raw_code.h"
 
-using klotski::mover::S2Mover;
 using klotski::codec::RawCode;
+using klotski::mover::S2Mover;
+
+// TODO: using `CAPTURE(N + xxx)` instead of `CAPTURE(code, N + xxx)`
+//       also for `RELEASE_xxx`
 
 #define ADDR(N) ((N) * 3)
 
@@ -20,13 +23,13 @@ using klotski::codec::RawCode;
 #define MOVE_2x2(code, SRC, DST) \
     ((code) & ~(K_MASK_2x2_ << ADDR(SRC)) | (K_MASK_2x2 << ADDR(DST)))
 
-#define RELEASE_1x1(code, SRC, DST) release_(MOVE_1x1(code, SRC, DST))
+#define RELEASE_1x1(code, SRC, DST) release_(RawCode::unsafe_create(MOVE_1x1(code, SRC, DST)))
 
-#define RELEASE_1x2(code, SRC, DST) release_(MOVE_1x2(code, SRC, DST))
+#define RELEASE_1x2(code, SRC, DST) release_(RawCode::unsafe_create(MOVE_1x2(code, SRC, DST)))
 
-#define RELEASE_2x1(code, SRC, DST) release_(MOVE_2x1(code, SRC, DST))
+#define RELEASE_2x1(code, SRC, DST) release_(RawCode::unsafe_create(MOVE_2x1(code, SRC, DST)))
 
-#define RELEASE_2x2(code, SRC, DST) release_(MOVE_2x2(code, SRC, DST))
+#define RELEASE_2x2(code, SRC, DST) release_(RawCode::unsafe_create(MOVE_2x2(code, SRC, DST)))
 
 template <int N>
 void S2Mover::move_single(const uint64_t code) const {
@@ -274,17 +277,18 @@ void S2Mover::move_single(const uint64_t code, const int offset) const {
     }
 }
 
-void S2Mover::next_cases(const uint64_t code) const {
-    const uint64_t mask = code | (code >> 1) | (code >> 2) | 0xFDB6DB6DB6DB6DB6;
+void S2Mover::next_cases(const RawCode code) const {
+    uint64_t code_ = code.unwrap();
+    const uint64_t mask = code_ | (code_ >> 1) | (code_ >> 2) | 0xFDB6DB6DB6DB6DB6;
     const int space_a = std::countr_one(mask) / 3;
     const int space_b = (63 - std::countl_one(mask)) / 3;
 
     if (space_a + 1 == space_b && space_a % 4 != 3) {
-        move_double_h(code, space_a);
+        move_double_h(code_, space_a);
     } else if (space_a + 4 == space_b) {
-        move_double_v(code, space_a);
+        move_double_v(code_, space_a);
     } else {
-        move_single(code, space_a);
-        move_single(code, space_b);
+        move_single(code_, space_a);
+        move_single(code_, space_b);
     }
 }

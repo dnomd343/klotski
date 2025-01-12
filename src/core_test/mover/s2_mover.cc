@@ -27,12 +27,12 @@ TEST(S2Mover, demo) {
 
     auto s2_mover = [](RawCode src) {
         std::vector<uint64_t> results {};
-        auto mover = S2Mover([&results](uint64_t code) {
+        auto mover = S2Mover([&results](RawCode code) {
             // std::cout << RawCode::unsafe_create(code) << std::endl;
-            EXPECT_TRUE(RawCode::check(code));
+            EXPECT_TRUE(RawCode::check(code.unwrap()));
             results.emplace_back(code);
         });
-        mover.next_cases(src.unwrap());
+        mover.next_cases(src);
         std::ranges::sort(results.begin(), results.end());
         return results;
     };

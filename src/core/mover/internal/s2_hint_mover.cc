@@ -1,8 +1,11 @@
-#include "mover/s2_hint_mover.h"
+#include "mover/mover.h"
 #include "raw_code/raw_code.h"
 
 using klotski::codec::RawCode;
 using klotski::mover::S2HintMover;
+
+// TODO: using `CAPTURE(N + xxx)` instead of `CAPTURE(code, N + xxx)`
+//       also for `RELEASE_xxx` and `MAYBE_xxx`
 
 #define ADDR(N) ((N) * 3)
 
@@ -21,16 +24,16 @@ using klotski::mover::S2HintMover;
     ((code) & ~(K_MASK_2x2_ << ADDR(SRC)) | (K_MASK_2x2 << ADDR(DST)))
 
 #define RELEASE_1x1(code, SRC, DST) \
-    release_(MOVE_1x1(code, SRC, DST), (0b1 << (DST)))
+    release_(RawCode::unsafe_create(MOVE_1x1(code, SRC, DST)), (0b1 << (DST)))
 
 #define RELEASE_1x2(code, SRC, DST) \
-    release_(MOVE_1x2(code, SRC, DST), (0b11 << (DST)))
+    release_(RawCode::unsafe_create(MOVE_1x2(code, SRC, DST)), (0b11 << (DST)))
 
 #define RELEASE_2x1(code, SRC, DST) \
-    release_(MOVE_2x1(code, SRC, DST), (0b10001 << (DST)))
+    release_(RawCode::unsafe_create(MOVE_2x1(code, SRC, DST)), (0b10001 << (DST)))
 
 #define RELEASE_2x2(code, SRC, DST) \
-    release_(MOVE_2x2(code, SRC, DST), (0b110011 << (DST)))
+    release_(RawCode::unsafe_create(MOVE_2x2(code, SRC, DST)), (0b110011 << (DST)))
 
 #define MAYBE_UP(hint, N) (((hint) & (1 << ((N) - 4))) == 0)
 
@@ -298,17 +301,18 @@ void S2HintMover::move_single(const uint64_t code, uint64_t hint, const int offs
     }
 }
 
-void S2HintMover::next_cases(const uint64_t code, const uint64_t hint) const {
-    const uint64_t mask = code | (code >> 1) | (code >> 2) | 0xFDB6DB6DB6DB6DB6;
+void S2HintMover::next_cases(const RawCode code, const uint64_t hint) const {
+    uint64_t code_ = code.unwrap();
+    const uint64_t mask = code_ | (code_ >> 1) | (code_ >> 2) | 0xFDB6DB6DB6DB6DB6;
     const int space_a = std::countr_one(mask) / 3;
     const int space_b = (63 - std::countl_one(mask)) / 3;
 
     if (space_a + 1 == space_b && space_a % 4 != 3) {
-        move_double_h(code, hint, space_a);
+        move_double_h(code_, hint, space_a);
     } else if (space_a + 4 == space_b) {
-        move_double_v(code, hint, space_a);
+        move_double_v(code_, hint, space_a);
     } else {
-        move_single(code, hint, space_a);
-        move_single(code, hint, space_b);
+        move_single(code_, hint, space_a);
+        move_single(code_, hint, space_b);
     }
 }

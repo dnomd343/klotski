@@ -88,7 +88,6 @@ set(KLSK_CORE_SRC
     mover/internal/mover.cc
     mover/internal/s2_mover.cc
     mover/internal/s2_hint_mover.cc
-    mover/internal/s2_demo.cc
 
     group/internal/group_union.cc
     group/internal/group.cc
