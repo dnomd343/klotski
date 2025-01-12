@@ -91,11 +91,20 @@ constexpr uint64_t RawCode::get_vertical_mirror(uint64_t raw_code) {
 }
 
 constexpr uint64_t RawCode::get_horizontal_mirror(uint64_t raw_code) {
-    horizontal_fill(raw_code);
-    raw_code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
+    uint64_t code = ((raw_code >> 9) & MASK_MIRROR_H1) | ((raw_code >> 3) & MASK_MIRROR_H2)
         | ((raw_code & MASK_MIRROR_H2) << 3) | ((raw_code & MASK_MIRROR_H1) << 9); // flip raw code
-    horizontal_clear(raw_code);
-    return raw_code;
+
+    uint64_t kk = ~code & (code << 1) & 0x0492492492492492;
+    kk |= (kk << 1);
+    code |= kk;
+    code &= ~(kk >> 3);
+
+    uint64_t pp = ~code & (code >> 1) & 0x0492492492492492;
+    pp |= (pp >> 1);
+    code |= pp;
+    code &= ~(pp >> 3);
+
+    return code;
 }
 
 constexpr bool RawCode::check_mirror(uint64_t raw_code) {
