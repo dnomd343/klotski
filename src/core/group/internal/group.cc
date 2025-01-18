@@ -1,3 +1,4 @@
+#include <iostream>
 #include <algorithm>
 
 #include "group/group.h"
@@ -48,6 +49,64 @@ static std::vector<RawCode> Group_extend_for_cases(RawCode raw_code, uint32_t re
     return codes;
 }
 
+// TODO: maybe we can send callback here (for GroupCases `data_1` builder)
+
+static RangesUnion extend_demo(Group group, RawCode seed, size_t reserve) { // TODO: group param only for test
+    std::vector<RawCode> codes;
+    // TODO: key type of flat_hash_map can using `RawCode` directly
+    phmap::flat_hash_map<uint64_t, uint64_t> cases; // <code, mask>
+    codes.reserve(reserve);
+    cases.reserve(reserve * 1.56);
+
+    std::vector<RawCode> mirror_codes;
+    mirror_codes.reserve(reserve); // TODO: cal max size-coff
+
+    auto core = MaskMover([&codes, &cases, &mirror_codes](RawCode code, uint64_t mask) {
+        // TODO: using `try_emplace` interface
+        if (const auto match = cases.find(code.unwrap()); match != cases.end()) {
+            match->second |= mask; // update mask
+            return;
+        }
+        cases.emplace(code, mask);
+        codes.emplace_back(code); // new case
+
+        auto kk = code.to_horizontal_mirror();
+        // if (const auto match = cases.find(kk.unwrap()); match != cases.end()) {
+        //     return;
+        // }
+        // cases.emplace(kk, 0);
+        if (kk != code && cases.try_emplace(kk.unwrap(), 0).second) {
+            mirror_codes.emplace_back(kk);
+        }
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(seed);
+    cases.emplace(seed, 0); // without mask
+
+    auto pp = seed.to_horizontal_mirror();
+    if (pp != seed) {
+        mirror_codes.emplace_back(seed.to_horizontal_mirror());
+        cases.emplace(seed.to_horizontal_mirror(), 0);
+    }
+
+    while (offset != codes.size()) {
+        auto curr = codes[offset++].unwrap();
+        core.next_cases(RawCode::unsafe_create(curr), cases.find(curr)->second);
+    }
+
+    std::cout << std::format("{}: {}+{}/{} ({})\n", group.to_string(), codes.size(), mirror_codes.size(), cases.size(), codes.size() + mirror_codes.size() == cases.size());
+
+    // TODO: we can emplace mirrored code into another vector
+
+    RangesUnion result {};
+    for (auto [raw_code, _] : cases) {
+        auto common_code = RawCode::unsafe_create(raw_code).to_common_code().unwrap();
+        result.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
+    }
+    return result;
+}
+
 // TODO: maybe we can perf with mirror cases
 RangesUnion Group::cases() const {
 
@@ -66,14 +125,8 @@ RangesUnion Group::cases() const {
         seed = seed.to_vertical_mirror().to_horizontal_mirror();
     }
 
-    auto codes = Group_extend_for_cases(seed.to_raw_code(), size());
-
-    RangesUnion data;
-    for (auto raw_code : codes) {
-        auto common_code = raw_code.to_common_code().unwrap();
-        data.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
-    }
-
+    // std::cout << seed << std::endl;
+    auto data = extend_demo(*this, seed.to_raw_code(), size());
     for (int head = 0; head < 16; ++head) {
         std::stable_sort(data.ranges(head).begin(), data.ranges(head).end());
     }

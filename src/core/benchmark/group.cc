@@ -112,9 +112,13 @@ static void RawCodeToTypeId(benchmark::State &state) {
 
 static void GroupExtend(benchmark::State &state) {
 
-    auto src = klotski::codec::RawCode::from_common_code(0x1A9BF0C00).value();
+    // auto src = klotski::codec::RawCode::from_common_code(0x1A9BF0C00).value();
+
+    const auto group = Group::unsafe_create(169, 0, Group::Toward::C);
 
     for (auto _ : state) {
+
+        volatile auto tmp = group.cases();
 
         // volatile auto ret = klotski::group::Group_extend(src, 0);
 
@@ -398,7 +402,7 @@ static void FastObtainCode(benchmark::State &state) {
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
-// BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
+BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(FilterFromAllCases)->Unit(benchmark::kMillisecond);
 
@@ -414,7 +418,7 @@ static void FastObtainCode(benchmark::State &state) {
 
 // BENCHMARK(GroupFromRawCode)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(FastObtainCode);
+// BENCHMARK(FastObtainCode);
 
 // BENCHMARK(IsVerticalMirror);
 // BENCHMARK(IsHorizontalMirror);
