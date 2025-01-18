@@ -114,7 +114,9 @@ static void GroupExtend(benchmark::State &state) {
 
     // auto src = klotski::codec::RawCode::from_common_code(0x1A9BF0C00).value();
 
-    const auto group = Group::unsafe_create(169, 0, Group::Toward::C);
+    // const auto group = Group::unsafe_create(169, 0, Group::Toward::C);
+    // const auto group = Group::create(5, 0, Group::Toward::A).value();
+    const auto group = Group::create(186, 0, Group::Toward::A).value();
 
     for (auto _ : state) {
 
