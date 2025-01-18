@@ -52,6 +52,25 @@ int main() {
 
     // TODO: maybe we can support `std::format`
 
+    // auto group = Group::create(169, 0, Group::Toward::C).value();
+    // auto group = Group::create(82, 68, Group::Toward::C).value();
+    // auto group = Group::create(189, 279, Group::Toward::A).value();
+    // auto kk = group.cases();
+    // std::cout << kk.size() << std::endl;
+
+    for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
+            // if (group.is_horizontal_mirror()) {
+            // if (group.is_vertical_mirror()) {
+            // if (group.mirror_type() == Group::MirrorType::Centro) {
+            // if (group.mirror_type() == Group::MirrorType::Full) {
+                // std::cout << group.to_string() << std::endl;
+                volatile auto kk = group.cases();
+                // std::cout << group.size() << std::endl;
+            // }
+        }
+    }
+
     // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto solve_1 = CommonCode::unsafe_create(0xDAAF4CC00).to_raw_code();
     // const auto solve_2 = CommonCode::unsafe_create(0xDAA7F3000).to_raw_code();
@@ -62,13 +81,13 @@ int main() {
     // std::cout << backtrack.size() << std::endl;
     // std::cout << backtrack[0].size() << ", " << backtrack[81].size() << std::endl;
 
-    const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();
-    FastCal fc {code};
+    // FastCal fc {code};
 
     // std::cout << fc.solve().value() << std::endl;
 
-    std::cout << fc.backtrack(fc.solve().value()).size() << std::endl;
+    // std::cout << fc.backtrack(fc.solve().value()).size() << std::endl;
 
     // for (const auto x : fc.solve_multi()) {
     //     std::cout << x.to_common_code() << std::endl;
@@ -178,6 +197,7 @@ int main() {
 //    std::cout << (int)gp.mirror_type() << std::endl;
 
 #if defined(__clang__)
+    // std::cerr << (std::chrono::system_clock::now() - start).count() << "us" << std::endl;
     std::cerr << (std::chrono::system_clock::now() - start).count() / 1000 << "ms" << std::endl;
 #elif defined(__GNUC__)
     std::cerr << (std::chrono::system_clock::now() - start).count() / 1000000 << "ms" << std::endl;

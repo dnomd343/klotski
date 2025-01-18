@@ -70,25 +70,50 @@ static RangesUnion extend_demo(Group group, RawCode seed, size_t reserve) { // T
         cases.emplace(code, mask);
         codes.emplace_back(code); // new case
 
-        auto kk = code.to_horizontal_mirror();
-        // if (const auto match = cases.find(kk.unwrap()); match != cases.end()) {
-        //     return;
-        // }
-        // cases.emplace(kk, 0);
-        if (kk != code && cases.try_emplace(kk.unwrap(), 0).second) {
-            mirror_codes.emplace_back(kk);
+        auto k1 = code.to_horizontal_mirror();
+        if (k1 != code) {
+            bool ret = cases.try_emplace(k1.unwrap(), 0).second;
+            if (!ret) {
+                std::cout << "!!! get unexpect case" << std::endl; // TODO: can we confirm it?
+            } else {
+                mirror_codes.emplace_back(k1);
+            }
         }
+
+        // auto k2 = code.to_vertical_mirror();
+        // if (k2 != code && cases.try_emplace(k2.unwrap(), 0).second) {
+        //     mirror_codes.emplace_back(k2);
+        // }
+
+        // auto k3 = k2.to_horizontal_mirror();
+        // if (k3 != code && cases.try_emplace(k3.unwrap(), 0).second) {
+        //     mirror_codes.emplace_back(k3);
+        // }
     });
 
     uint64_t offset = 0;
     codes.emplace_back(seed);
     cases.emplace(seed, 0); // without mask
 
-    auto pp = seed.to_horizontal_mirror();
-    if (pp != seed) {
-        mirror_codes.emplace_back(seed.to_horizontal_mirror());
-        cases.emplace(seed.to_horizontal_mirror(), 0);
+    auto p1 = seed.to_horizontal_mirror();
+    if (p1 != seed) {
+        mirror_codes.emplace_back(p1);
+        cases.emplace(p1, 0);
     }
+
+    std::cout << std::format("{} vs {}\n", codes.size(), mirror_codes.size());
+
+    // auto p2 = seed.to_vertical_mirror();
+    // if (p2 != seed) {
+    //     mirror_codes.emplace_back(p2);
+    //     cases.emplace(p2, 0);
+    // }
+
+    // auto p3 = p2.to_horizontal_mirror();
+    // if (p3 != p2) {
+    //     mirror_codes.emplace_back(p3);
+    //     cases.emplace(p3, 0);
+    // }
 
     while (offset != codes.size()) {
         auto curr = codes[offset++].unwrap();
@@ -107,13 +132,262 @@ static RangesUnion extend_demo(Group group, RawCode seed, size_t reserve) { // T
     return result;
 }
 
+static RangesUnion extend_type_common(RawCode seed, size_t reserve) {
+    std::vector<RawCode> codes;
+    phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
+
+    codes.reserve(reserve);
+    cases.reserve(reserve * 1.56);
+
+    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t hint) {
+        if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
+            iter->second |= hint; // update hint
+            return;
+        }
+        codes.emplace_back(code); // new case
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(seed);
+    cases.emplace(seed, 0); // without hint
+
+    while (offset != codes.size()) {
+        auto curr = codes[offset++];
+        core.next_cases(curr, cases.find(curr)->second);
+    }
+
+    RangesUnion result {};
+    // TODO: how to reserve
+    for (auto raw_code : codes) { // TODO: using `std::views::concat` in new std library
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    return result;
+}
+
+static RangesUnion extend_type_hor(RawCode seed, size_t reserve) {
+    std::vector<RawCode> codes;
+    std::vector<RawCode> mirrors;
+    phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
+
+    codes.reserve(reserve);
+    mirrors.reserve(reserve); // TODO: cal max size-coff
+    cases.reserve(reserve * 1.56);
+
+    auto core = MaskMover([&codes, &cases, &mirrors](RawCode code, uint64_t hint) {
+        if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
+            iter->second |= hint; // update hint
+            return;
+        }
+        codes.emplace_back(code); // new case
+
+        const auto k1 = code.to_horizontal_mirror();
+        if (k1 != code) {
+            cases.emplace(k1, 0); // TODO: contain check
+            mirrors.emplace_back(k1);
+        }
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(seed);
+    cases.emplace(seed, 0); // without hint
+
+    const auto p1 = seed.to_horizontal_mirror();
+    if (p1 != seed) {
+        mirrors.emplace_back(p1);
+        cases.emplace(p1, 0);
+    }
+
+    while (offset != codes.size()) {
+        auto curr = codes[offset++];
+        core.next_cases(curr, cases.find(curr)->second);
+    }
+
+    RangesUnion result {};
+    // TODO: how to reserve
+    for (auto raw_code : codes) { // TODO: using `std::views::concat` in new std library
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    for (auto raw_code : mirrors) {
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    return result;
+}
+
+static RangesUnion extend_type_ver(RawCode seed, size_t reserve) {
+    std::vector<RawCode> codes;
+    std::vector<RawCode> mirrors;
+    phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
+
+    codes.reserve(reserve);
+    mirrors.reserve(reserve); // TODO: cal max size-coff
+    cases.reserve(reserve * 1.56);
+
+    auto core = MaskMover([&codes, &cases, &mirrors](RawCode code, uint64_t hint) {
+        if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
+            iter->second |= hint; // update hint
+            return;
+        }
+        codes.emplace_back(code); // new case
+
+        const auto k1 = code.to_vertical_mirror();
+        if (k1 != code) {
+            cases.emplace(k1, 0); // TODO: contain check
+            mirrors.emplace_back(k1);
+        }
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(seed);
+    cases.emplace(seed, 0); // without hint
+
+    const auto p1 = seed.to_vertical_mirror();
+    if (p1 != seed) {
+        mirrors.emplace_back(p1);
+        cases.emplace(p1, 0);
+    }
+
+    while (offset != codes.size()) {
+        auto curr = codes[offset++];
+        core.next_cases(curr, cases.find(curr)->second);
+    }
+
+    RangesUnion result {};
+    // TODO: how to reserve
+    for (auto raw_code : codes) { // TODO: using `std::views::concat` in new std library
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    for (auto raw_code : mirrors) {
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    return result;
+}
+
+static RangesUnion extend_type_diag(RawCode seed, size_t reserve) {
+    std::vector<RawCode> codes;
+    std::vector<RawCode> mirrors;
+    phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
+
+    codes.reserve(reserve);
+    mirrors.reserve(reserve); // TODO: cal max size-coff
+    cases.reserve(reserve * 1.56);
+
+    auto core = MaskMover([&codes, &cases, &mirrors](RawCode code, uint64_t hint) {
+        if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
+            iter->second |= hint; // update hint
+            return;
+        }
+        codes.emplace_back(code); // new case
+
+        const auto k1 = code.to_vertical_mirror().to_horizontal_mirror();
+        if (k1 != code) {
+            cases.emplace(k1, 0); // TODO: contain check
+            mirrors.emplace_back(k1);
+        }
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(seed);
+    cases.emplace(seed, 0); // without hint
+
+    const auto p1 = seed.to_vertical_mirror().to_horizontal_mirror();
+    if (p1 != seed) {
+        mirrors.emplace_back(p1);
+        cases.emplace(p1, 0);
+    }
+
+    while (offset != codes.size()) {
+        auto curr = codes[offset++];
+        core.next_cases(curr, cases.find(curr)->second);
+    }
+
+    RangesUnion result {};
+    // TODO: how to reserve
+    for (auto raw_code : codes) { // TODO: using `std::views::concat` in new std library
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    for (auto raw_code : mirrors) {
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    return result;
+}
+
+static RangesUnion extend_type_x(RawCode seed, size_t reserve) {
+    std::vector<RawCode> codes;
+    std::vector<RawCode> mirrors;
+    phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
+
+    codes.reserve(reserve);
+    mirrors.reserve(reserve); // TODO: cal max size-coff
+    cases.reserve(reserve * 1.56);
+
+    auto core = MaskMover([&codes, &cases, &mirrors](RawCode code, uint64_t hint) {
+        if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
+            iter->second |= hint; // update hint
+            return;
+        }
+        codes.emplace_back(code); // new case
+
+        const auto k1 = code.to_vertical_mirror();
+        mirrors.emplace_back(k1);
+        cases.emplace(k1, 0);
+        const auto k2 = code.to_horizontal_mirror();
+        if (k2 != code) {
+            mirrors.emplace_back(k2);
+            cases.emplace(k2, 0);
+            const auto p3 = k1.to_horizontal_mirror();
+            mirrors.emplace_back(p3);
+            cases.emplace(p3, 0);
+        }
+    });
+
+    uint64_t offset = 0;
+    codes.emplace_back(seed);
+    cases.emplace(seed, 0); // without hint
+
+    const auto p1 = seed.to_vertical_mirror();
+    mirrors.emplace_back(p1);
+    cases.emplace(p1, 0);
+    const auto p2 = seed.to_horizontal_mirror();
+    if (p2 != seed) {
+        mirrors.emplace_back(p2);
+        cases.emplace(p2, 0);
+        const auto p3 = p1.to_horizontal_mirror();
+        mirrors.emplace_back(p3);
+        cases.emplace(p3, 0);
+    }
+
+    while (offset != codes.size()) {
+        auto curr = codes[offset++];
+        core.next_cases(curr, cases.find(curr)->second);
+    }
+
+    RangesUnion result {};
+    // TODO: how to reserve
+    for (auto raw_code : codes) { // TODO: using `std::views::concat` in new std library
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    for (auto raw_code : mirrors) {
+        const auto code = raw_code.to_common_code().unwrap();
+        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    }
+    return result;
+}
+
 // TODO: maybe we can perf with mirror cases
 RangesUnion Group::cases() const {
 
     // TODO: add white list for single-group unions
     //       return GroupUnion::cases directly
 
-    auto seed = CommonCode::unsafe_create(PATTERN_DATA[flat_id()] >> 23);
+    auto seed = CommonCode::unsafe_create(PATTERN_DATA[flat_id()] >> 23).to_raw_code();
 
     // NOTE: convert as RawCode directly
     if (toward_ == Toward::B) {
@@ -125,10 +399,33 @@ RangesUnion Group::cases() const {
         seed = seed.to_vertical_mirror().to_horizontal_mirror();
     }
 
-    // std::cout << seed << std::endl;
-    auto data = extend_demo(*this, seed.to_raw_code(), size());
+    // auto data = extend_type_hor(seed, size());
+    // auto data = extend_type_ver(seed, size());
+    // auto data = extend_type_diag(seed, size());
+    // auto data = extend_type_x(seed, size());
+
+    RangesUnion data;
+    if (mirror_type() == MirrorType::Full) {
+        data = extend_type_x(seed, size());
+    } else if (mirror_type() == MirrorType::Horizontal) {
+        data = extend_type_hor(seed, size());
+    } else if (mirror_type() == MirrorType::Vertical) {
+        data = extend_type_ver(seed, size());
+    } else if (mirror_type() == MirrorType::Centro) {
+        data = extend_type_diag(seed, size());
+    } else {
+        data = extend_type_common(seed, size());
+    }
+
+    // auto raw_data = Group_extend_for_cases(seed, size());
+    // RangesUnion data {};
+    // for (auto raw_code : raw_data) {
+    //     auto common_code = raw_code.to_common_code().unwrap();
+    //     data.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
+    // }
+
     for (int head = 0; head < 16; ++head) {
-        std::stable_sort(data.ranges(head).begin(), data.ranges(head).end());
+        std::stable_sort(data.ranges(head).begin(), data.ranges(head).end()); // TODO: maybe using quick_sort
     }
     return data;
 }
