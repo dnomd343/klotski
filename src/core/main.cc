@@ -62,6 +62,8 @@ int main() {
         for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
             // if (group.is_horizontal_mirror()) {
             // if (group.is_vertical_mirror()) {
+            // if (group.mirror_type() == Group::MirrorType::Horizontal) {
+            // if (group.mirror_type() == Group::MirrorType::Vertical) {
             // if (group.mirror_type() == Group::MirrorType::Centro) {
             // if (group.mirror_type() == Group::MirrorType::Full) {
             // if (group.mirror_type() == Group::MirrorType::Ordinary) {

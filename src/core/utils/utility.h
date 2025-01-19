@@ -36,8 +36,10 @@
 /// Force function declaration to be inline.
 #if defined(__clang__)
   #define KLSK_INLINE __attribute__ ((always_inline))
+  #define KLSK_NOINLINE __attribute__((noinline))
 #else
   #define KLSK_INLINE // NOTE: make sure that function can be inline
+  #define KLSK_NOINLINE
 #endif
 #define KLSK_INLINE_H KLSK_INLINE inline
 #define KLSK_INLINE_CE KLSK_INLINE constexpr
