@@ -68,6 +68,7 @@ int main() {
             // if (group.mirror_type() == Group::MirrorType::Full) {
             // if (group.mirror_type() == Group::MirrorType::Ordinary) {
                 // std::cout << std::format("{} ({})\n", group.to_string(), group.size());
+                std::cout << std::format("{}: ", group.to_string());
                 volatile auto kk = group.cases();
                 // std::cout << group.size() << std::endl;
             // }
