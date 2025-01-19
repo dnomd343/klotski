@@ -67,6 +67,10 @@ constexpr bool RawCode::is_horizontal_mirror() const {
     return check_mirror(code_);
 }
 
+constexpr RawCode RawCode::to_diagonal_mirror() const {
+    return unsafe_create(get_diagonal_mirror(code_));
+}
+
 constexpr RawCode RawCode::to_vertical_mirror() const {
     return unsafe_create(get_vertical_mirror(code_));
 }

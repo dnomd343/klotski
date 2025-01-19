@@ -127,6 +127,9 @@ public:
     /// Whether the layout is horizontally symmetrical.
     [[nodiscard]] constexpr bool is_horizontal_mirror() const;
 
+    /// Calculate the diagonally symmetrical klotski layout.
+    [[nodiscard]] constexpr RawCode to_diagonal_mirror() const;
+
     /// Calculate the vertically symmetrical klotski layout.
     [[nodiscard]] constexpr RawCode to_vertical_mirror() const;
 
@@ -160,6 +163,9 @@ private:
 
     /// Check the horizontally symmetrical.
     static constexpr bool check_mirror(uint64_t raw_code);
+
+    /// Get the diagonally symmetrical layout.
+    static constexpr uint64_t get_diagonal_mirror(uint64_t raw_code);
 
     /// Get the vertically symmetrical layout.
     static constexpr uint64_t get_vertical_mirror(uint64_t raw_code);

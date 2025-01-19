@@ -2,8 +2,6 @@
 
 namespace klotski::codec {
 
-// TODO: add `diagonal_mirror` support
-
 constexpr uint64_t RawCode::get_vertical_mirror(const uint64_t raw_code) {
     uint64_t code = ((raw_code >> 36) & 0x000'000'000'fff'fff) | ((raw_code << 36) & 0xfff'fff'000'000'000);
     code = ((code >> 12) & 0x000'fff'000'000'fff) | ((code << 12) & 0xfff'000'000'fff'000);
@@ -23,6 +21,11 @@ constexpr uint64_t RawCode::get_horizontal_mirror(const uint64_t raw_code) {
     m1 |= (m1 << 1);
     m2 |= (m2 >> 1);
     return (code | m1 | m2) & ~(m1 >> 3) & ~(m2 >> 3);
+}
+
+constexpr uint64_t RawCode::get_diagonal_mirror(const uint64_t raw_code) {
+    // TODO: perf it
+    return get_horizontal_mirror(get_vertical_mirror(raw_code));
 }
 
 constexpr bool RawCode::check_mirror(const uint64_t raw_code) {
