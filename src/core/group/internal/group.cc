@@ -51,7 +51,7 @@ KLSK_NOINLINE static RangesUnion group_extend(RawCode seed, const size_t reserve
         core.next_cases(curr, cases.find(curr)->second);
     }
 
-    std::cout << std::format("[{}, {}, {}]\n", codes.size(), mirrors.size(), cases.size());
+    // std::cout << std::format("[{}, {}, {}]\n", codes.size(), mirrors.size(), cases.size());
 
     // std::cout << std::format("{:.5f}\n", static_cast<double>(codes.size()) / reserve);
 
@@ -108,7 +108,7 @@ static RangesUnion extend_type_x(RawCode seed, size_t reserve) {
 
 RangesUnion Group::cases() const {
     if (const auto gu = GroupUnion::unsafe_create(type_id()); gu.group_num() == 1) {
-        std::cout << "[]" << std::endl;
+        // std::cout << "[]" << std::endl;
         return gu.cases();
     }
 

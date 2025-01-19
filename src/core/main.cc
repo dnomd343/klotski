@@ -58,20 +58,28 @@ int main() {
     // auto kk = group.cases();
     // std::cout << kk.size() << std::endl;
 
+    // constexpr auto group = Group::create(89, 0, Group::Toward::A).value();
+    // std::println("{}: {}", group.to_string(), group.size());
+    // volatile auto kk = group.cases();
+
+    // constexpr auto group_union = GroupUnion::unsafe_create(89);
+    // std::println("{}: {}", group_union.unwrap(), group_union.size());
+    // volatile auto pp = group_union.cases();
+
+    // for (auto kk : group_union.groups()) {
+    //     std::println("{}: {}", kk.to_string(), kk.size());
+    // }
+
     for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
         for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
-            // if (group.is_horizontal_mirror()) {
-            // if (group.is_vertical_mirror()) {
-            // if (group.mirror_type() == Group::MirrorType::Horizontal) {
-            // if (group.mirror_type() == Group::MirrorType::Vertical) {
-            // if (group.mirror_type() == Group::MirrorType::Centro) {
             // if (group.mirror_type() == Group::MirrorType::Full) {
+            if (group.mirror_type() == Group::MirrorType::Horizontal) {
+            // if (group.mirror_type() == Group::MirrorType::Centro) {
+            // if (group.mirror_type() == Group::MirrorType::Vertical) {
             // if (group.mirror_type() == Group::MirrorType::Ordinary) {
-                // std::cout << std::format("{} ({})\n", group.to_string(), group.size());
-                std::cout << std::format("{}: ", group.to_string());
+                // std::println("{} ({})", group.to_string(), group.size());
                 volatile auto kk = group.cases();
-                // std::cout << group.size() << std::endl;
-            // }
+            }
         }
     }
 

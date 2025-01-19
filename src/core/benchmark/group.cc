@@ -22,6 +22,8 @@ using klotski::group::GroupUnion;
 using klotski::codec::RawCode;
 using klotski::codec::CommonCode;
 
+using klotski::group::TYPE_ID_LIMIT;
+
 /// Build all valid CommonCodes.
 static std::vector<uint64_t> all_common_codes() {
     std::vector<uint64_t> codes;
@@ -114,13 +116,42 @@ static void GroupExtend(benchmark::State &state) {
 
     // auto src = klotski::codec::RawCode::from_common_code(0x1A9BF0C00).value();
 
-    // const auto group = Group::unsafe_create(169, 0, Group::Toward::C);
-    // const auto group = Group::create(5, 0, Group::Toward::A).value();
-    const auto group = Group::create(186, 0, Group::Toward::A).value();
+    // constexpr auto group = Group::unsafe_create(169, 0, Group::Toward::C); // Horizontal (5.33ms)
+    // constexpr auto group = Group::unsafe_create(5, 0, Group::Toward::A); // Full (8.27ms)
+    // constexpr auto group = Group::create(182, 0, Group::Toward::A).value(); // Vertical
+    // const auto group = Group::create(186, 0, Group::Toward::A).value();
+
+    // std::cout << (int)group.mirror_type() << std::endl;
+
+    // std::vector<Group> groups;
+    // groups.reserve(25422);
+    // for (int type_id = 0; type_id < 203; ++type_id) {
+    //     for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
+    //         groups.emplace_back(group);
+    //     }
+    // }
 
     for (auto _ : state) {
 
-        volatile auto tmp = group.cases();
+
+        for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+            for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
+                // if (group.mirror_type() == Group::MirrorType::Full) {
+                // if (group.mirror_type() == Group::MirrorType::Horizontal) {
+                // if (group.mirror_type() == Group::MirrorType::Centro) {
+                // if (group.mirror_type() == Group::MirrorType::Vertical) {
+                if (group.mirror_type() == Group::MirrorType::Ordinary) {
+                    // std::println("{} ({})", group.to_string(), group.size());
+                    volatile auto kk = group.cases();
+                }
+            }
+        }
+
+        // for (auto group : groups) {
+        //     volatile auto tmp = group.cases();
+        // }
+
+        // volatile auto tmp = group.cases();
 
         // volatile auto ret = klotski::group::Group_extend(src, 0);
 
