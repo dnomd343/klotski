@@ -171,19 +171,19 @@ class SoluGroup:
 
         for num in range(len(z_pairs)):
             if z_pairs[num][0] == z_pairs[num][1]:
-                z_pairs[num][0].name = f'{self.name}-{num:02}Z'
+                z_pairs[num][0].name = f'{self.name}-{num:03}Z'
             else:
-                z_pairs[num][0].name = f'{self.name}-{num:02}ZL'
-                z_pairs[num][1].name = f'{self.name}-{num:02}ZR'
+                z_pairs[num][0].name = f'{self.name}-{num:03}ZL'
+                z_pairs[num][1].name = f'{self.name}-{num:03}ZR'
 
     def build_lx_index(self) -> dict[str, str]:
         assert self.__name[-1] == 'L'
         right_data = {}
         self.__x_solus.sort(key=lambda x: (-x.ethnic_size, -x.ethnic_deep, x.layout))
         for num in range(len(self.__x_solus)):
-            self.__x_solus[num].name = f'{self.name}-{num:01}X'
+            self.__x_solus[num].name = f'{self.name}-{num:03}X'
             mirror = str(self.__x_solus[num].layout.to_horizontal_mirror())[:7]
-            right_data[mirror] = f'{num:01}Y'
+            right_data[mirror] = f'{num:03}Y'
         return right_data
 
     def build_rx_index(self) -> dict[str, str]:
@@ -191,9 +191,9 @@ class SoluGroup:
         left_data = {}
         self.__x_solus.sort(key=lambda x: (-x.ethnic_size, -x.ethnic_deep, x.layout))
         for num in range(len(self.__x_solus)):
-            self.__x_solus[num].name = f'{self.name}-{num:01}X'
+            self.__x_solus[num].name = f'{self.name}-{num:03}X'
             mirror = str(self.__x_solus[num].layout.to_horizontal_mirror())[:7]
-            left_data[mirror] = f'{num:01}Y'
+            left_data[mirror] = f'{num:03}Y'
         return left_data
 
     def apply_ly_index(self, data: dict[str, str]) -> None:
@@ -211,9 +211,9 @@ class SoluGroup:
         data = {}
         self.__z_solus.sort(key=lambda x: (-x.ethnic_size, -x.ethnic_deep, x.layout))
         for num in range(len(self.__z_solus)):
-            self.__z_solus[num].name = f'{self.name}-{num:01}Z'
+            self.__z_solus[num].name = f'{self.name}-{num:03}Z'
             mirror = str(self.__z_solus[num].layout.to_horizontal_mirror())[:7]
-            data[mirror] = f'{num:01}Z'
+            data[mirror] = f'{num:03}Z'
         return data
 
     def apply_rz_index(self, data: dict[str, str]) -> None:
@@ -381,9 +381,11 @@ def main() -> None:
     for num in range(6):  # 0/1/2/3/4/5
         for solu_pattern in split_patterns(load_valid_solutions(num)):
             solus.extend(solu_pattern.solus)
-            print(solu_pattern, end='\n\n')
-        print('-' * 238)
-    pprint(solus)
+            # print(solu_pattern, end='\n\n')
+        # print('-' * 238)
+
+    data = sorted([(x.code, x.name) for x in solus], key=lambda x: x[1])
+    print(json.dumps(dict(data)))
 
 
 if __name__ == "__main__":
