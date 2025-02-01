@@ -1,3 +1,5 @@
+#include <pybind11/stl.h>
+
 #include "binder.h"
 
 #include "py_ffi/cases.h"

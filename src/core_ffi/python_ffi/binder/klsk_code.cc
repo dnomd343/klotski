@@ -54,6 +54,13 @@ static void bind_layout(const py::module_ &mod) {
         .def("__int__", &PyLayout::value)
         .def("__repr__", &PyLayout::repr)
 
+        .def("__copy__", [](const PyLayout &self) {
+            return PyLayout(self);
+        })
+        .def("__deepcopy__", [](const PyLayout &self, py::dict) {
+            return PyLayout(self);
+        }, py::arg("memo"))
+
         .def("next_cases", &PyLayout::next_cases)
         .def("dump_seq", &PyLayout::dump_seq)
         // TODO: add fast_cal / fast_cal_multi / ...
