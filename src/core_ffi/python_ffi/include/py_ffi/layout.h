@@ -11,6 +11,11 @@
 
 // TODO: add `copy` and `pickle` support
 
+#include <iostream>
+#include <pybind11/pybind11.h>
+
+namespace py = pybind11;
+
 namespace klotski::ffi {
 
 enum class PyBlock : uint8_t {
@@ -70,6 +75,11 @@ public:
 
     /// Wrapper of `__repr__` method in Python.
     static std::string repr(PyLayout code) noexcept;
+
+    void set_state(uint64_t state) {
+        // std::cout << "set_state called" << std::endl;
+        code_ = codec::CommonCode::unsafe_create(state);
+    }
 
     // ------------------------------------------------------------------------------------- //
 

@@ -61,6 +61,11 @@ static void bind_layout(const py::module_ &mod) {
             return PyLayout(self);
         }, py::arg("memo"))
 
+        .def("__getstate__", [](const PyLayout &self) {
+            return self.value();
+        })
+        .def("__setstate__", &PyLayout::set_state)
+
         .def("next_cases", &PyLayout::next_cases)
         .def("dump_seq", &PyLayout::dump_seq)
         // TODO: add fast_cal / fast_cal_multi / ...
