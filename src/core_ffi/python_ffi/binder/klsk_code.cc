@@ -37,7 +37,7 @@ static void bind_layout(const py::module_ &mod) {
         .value("C", PyToward::C)
         .value("D", PyToward::D);
 
-    py::class_<PyLayout>(mod, "Layout")
+    py::class_<PyLayout>(mod, "Layout", py::is_final())
         .def(py::init<uint64_t>())
         .def(py::init<PyShortCode>())
         .def(py::init<std::string_view>())
