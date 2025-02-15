@@ -30,6 +30,90 @@ bool klotski::ffi::layout_check(const uint64_t val) {
     return CommonCode::check(val);
 }
 
+rust::String klotski::ffi::layout_to_str(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.to_string();
+}
+
+rust::String klotski::ffi::layout_to_shorten_str(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.to_shorten_string();
+}
+
+uint32_t klotski::ffi::layout_to_short_code(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.to_short_code().code;
+}
+
+bool klotski::ffi::layout_is_horizontal_mirror(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.is_horizontal_mirror();
+}
+
+bool klotski::ffi::layout_is_vertical_mirror(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.is_vertical_mirror();
+}
+
+uint64_t klotski::ffi::layout_to_horizontal_mirror(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.to_horizontal_mirror().code;
+}
+
+uint64_t klotski::ffi::layout_to_vertical_mirror(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.to_vertical_mirror().code;
+}
+
+uint8_t klotski::ffi::layout_n_1x1(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.n_1x1();
+}
+
+uint8_t klotski::ffi::layout_n_1x2(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.n_1x2();
+}
+
+uint8_t klotski::ffi::layout_n_2x1(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.n_2x1();
+}
+
+uint8_t klotski::ffi::layout_type_id(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.type_id();
+}
+
+uint16_t klotski::ffi::layout_pattern_id(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.pattern_id();
+}
+
+uint8_t klotski::ffi::layout_toward_char(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.toward_char();
+}
+
+uint32_t klotski::ffi::layout_case_id(uint64_t val) {
+    const auto layout = RsLayout {val};
+    return layout.case_id();
+}
+
+rust::Vec<uint64_t> klotski::ffi::layout_next_cases(uint64_t val) {
+    std::vector<CommonCode> result;
+    auto mover = MaskMover([&result](const RawCode code, uint64_t) {
+        result.emplace_back(code.to_common_code());
+    });
+    mover.next_cases(CommonCode::unsafe_create(val).to_raw_code(), 0);
+
+    rust::Vec<uint64_t> vec;
+    for (auto x : result) {
+        vec.emplace_back(x.unwrap());
+    }
+    return vec;
+}
+
 rust::String RsLayout::to_string() const noexcept {
     return CommonCode::unsafe_create(code).to_string();
 }

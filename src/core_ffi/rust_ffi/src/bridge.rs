@@ -1,5 +1,5 @@
 #[cxx::bridge(namespace = "klotski::ffi")]
-mod ffi {
+pub(crate) mod ffi {
     #[derive(Debug)]
     struct RsLayout {
         code: u64
@@ -18,6 +18,36 @@ mod ffi {
 
         /// only for internal use
         fn layout_from_str(s: &str) -> u64;
+
+        fn layout_to_str(val: u64) -> String;
+
+        fn layout_to_shorten_str(val: u64) -> String;
+
+        fn layout_to_short_code(val: u64) -> u32;
+
+        fn layout_is_horizontal_mirror(val: u64) -> bool;
+
+        fn layout_is_vertical_mirror(val: u64) -> bool;
+
+        fn layout_to_horizontal_mirror(val: u64) -> u64;
+
+        fn layout_to_vertical_mirror(val: u64) -> u64;
+
+        fn layout_n_1x1(val: u64) -> u8;
+
+        fn layout_n_1x2(val: u64) -> u8;
+
+        fn layout_n_2x1(val: u64) -> u8;
+
+        fn layout_type_id(val: u64) -> u8;
+
+        fn layout_pattern_id(val: u64) -> u16;
+
+        fn layout_toward_char(val: u64) -> u8;
+
+        fn layout_case_id(val: u64) -> u32;
+
+        fn layout_next_cases(val: u64) -> Vec<u64>;
 
         /// Convert Layout to string form.
         fn to_string(self: &RsLayout) -> String;
