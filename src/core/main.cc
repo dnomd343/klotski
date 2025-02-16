@@ -70,10 +70,64 @@ int main() {
     //     std::println("{}: {}", kk.to_string(), kk.size());
     // }
 
-    for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
-            // if (group.mirror_type() == Group::MirrorType::Full) {
-            if (group.mirror_type() == Group::MirrorType::Horizontal) {
+    // 0.960 27-0x
+    // 0.992 40-0x
+    // 0.999 50-0x
+    // 0.890 51-0x
+    // 0.996 61-0x
+    // 0.955 62-0x
+    // 0.982 73-0x
+    // 0.992 81-0x
+    // 0.786 82-0x
+    // 0.999 89-0x
+    // 0.989 90-0x
+    // 0.892 91-0x
+    // 0.998 98-0x
+    // 0.993 99-0x
+    // 0.942 100-0x
+    // 0.999 108-0x
+    // 0.968 109-0x
+    // 0.973 115-0x
+    // 0.641 116-0x
+    // 0.998 121-0x
+    // 0.969 122-0x
+    // 0.801 123-0x
+    // 0.998 127-0x
+    // 0.994 128-0x
+    // 0.976 129-0x
+    // 0.865 130-0x
+    // 0.999 134-0x
+    // 0.997 135-0x
+    // 0.990 136-0x
+    // 0.909 137-0x
+    // 0.998 143-0x
+    // 0.956 144-0x
+    // 0.933 148-0x
+    // 0.554 149-0x
+    // 0.988 152-0x
+    // 0.888 153-0x
+    // 0.558 154-0x
+    // 0.989 155-0x
+    // 0.989 156-0x
+    // 0.978 157-0x
+    // 0.930 158-0x
+    // 0.762 159-0x
+    // 0.977 161-0x
+    // 0.960 162-0x
+    // 0.928 163-0x
+    // 0.744 164-0x
+    // 0.997 167-0x
+    // 0.990 168-0x
+    // 0.584 181-0x
+    // 0.350 184-0x
+    // 0.313 185-0x
+    // 0.933 187-0x
+    // 0.342 188-0x
+
+    for (uint8_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        for (auto group: GroupUnion::unsafe_create(type_id).groups()) {
+            if (group.mirror_type() == Group::MirrorType::Full) {
+            // if (group.mirror_type() == Group::MirrorType::Horizontal) {
             // if (group.mirror_type() == Group::MirrorType::Centro) {
             // if (group.mirror_type() == Group::MirrorType::Vertical) {
             // if (group.mirror_type() == Group::MirrorType::Ordinary) {
@@ -82,6 +136,10 @@ int main() {
             }
         }
     }
+
+    // constexpr auto group = Group::unsafe_create(89, 0, Group::Toward::A);
+    // std::cout << group.to_string() << std::endl;
+    // volatile auto kk = group.cases();
 
     // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
     // const auto solve_1 = CommonCode::unsafe_create(0xDAAF4CC00).to_raw_code();

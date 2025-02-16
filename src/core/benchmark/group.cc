@@ -134,18 +134,23 @@ static void GroupExtend(benchmark::State &state) {
     for (auto _ : state) {
 
 
-        for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-            for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
-                // if (group.mirror_type() == Group::MirrorType::Full) {
-                // if (group.mirror_type() == Group::MirrorType::Horizontal) {
-                // if (group.mirror_type() == Group::MirrorType::Centro) {
-                // if (group.mirror_type() == Group::MirrorType::Vertical) {
-                if (group.mirror_type() == Group::MirrorType::Ordinary) {
-                    // std::println("{} ({})", group.to_string(), group.size());
-                    volatile auto kk = group.cases();
-                }
-            }
-        }
+        // for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+        //     for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
+        //         // if (group.mirror_type() == Group::MirrorType::Full) {
+        //         // if (group.mirror_type() == Group::MirrorType::Horizontal) {
+        //         // if (group.mirror_type() == Group::MirrorType::Centro) {
+        //         // if (group.mirror_type() == Group::MirrorType::Vertical) {
+        //         if (group.mirror_type() == Group::MirrorType::Ordinary) {
+        //             // std::println("{} ({})", group.to_string(), group.size());
+        //             volatile auto kk = group.cases();
+        //         }
+        //     }
+        // }
+
+        constexpr auto group = Group::unsafe_create(89, 0, Group::Toward::A);
+        // constexpr auto group = Group::unsafe_create(51, 0, Group::Toward::A);
+
+        volatile auto kk = group.cases();
 
         // for (auto group : groups) {
         //     volatile auto tmp = group.cases();

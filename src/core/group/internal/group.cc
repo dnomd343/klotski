@@ -106,10 +106,45 @@ static RangesUnion extend_type_x(RawCode seed, size_t reserve) {
     });
 }
 
+KLSK_NOINLINE static RangesUnion extend_pro(uint8_t type_id) {
+
+    // std::cout << (int)type_id << std::endl;
+
+    auto groups = GroupUnion::unsafe_create(type_id).groups();
+    RangesUnion others {};
+    for (size_t index = 1; index < groups.size(); ++index) {
+        others += groups[index].cases();
+    }
+    // std::cout << others.size() << std::endl;
+
+    auto all = GroupUnion::unsafe_create(type_id).cases();
+    // std::cout << all.size() << std::endl;
+
+    RangesUnion result {};
+    for (auto head : RangesUnion::Heads) {
+        std::stable_sort(others.ranges(head).begin(), others.ranges(head).end());
+
+        std::set_difference(all.ranges(head).begin(), all.ranges(head).end(),
+                      others.ranges(head).begin(), others.ranges(head).end(),
+                      std::back_inserter(result.ranges(head)));
+    }
+
+    // std::cout << result.size() << std::endl;
+
+    return result;
+}
+
 RangesUnion Group::cases() const {
-    if (const auto gu = GroupUnion::unsafe_create(type_id()); gu.group_num() == 1) {
+    if (const auto gu = GroupUnion::unsafe_create(type_id_); gu.group_num() == 1) {
         // std::cout << "[]" << std::endl;
         return gu.cases();
+    }
+
+    // if (type_id_ == 89 && pattern_id_ == 0) { // for group `89-0x`
+    //     return extend_pro(89);
+    // }
+    if (pattern_id_ == 0 && mirror_type() == MirrorType::Full) { // TODO: black-list filter
+        return extend_pro(type_id_);
     }
 
     auto seed = CommonCode::unsafe_create(PATTERN_DATA[flat_id()] >> 23).to_raw_code();
