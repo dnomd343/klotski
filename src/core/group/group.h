@@ -204,6 +204,9 @@ public:
     /// Get all klotski cases under the current type id.
     [[nodiscard]] cases::RangesUnion cases() const;
 
+    // TODO: only for perf right now
+    [[nodiscard]] cases::RangesUnion cases_without(const cases::RangesUnion &data) const;
+
     /// Get the group instance with the specified pattern id.
     [[nodiscard]] std::optional<Groups> groups(uint_least16_t pattern_id) const;
 

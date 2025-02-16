@@ -58,6 +58,9 @@ public:
     /// Derive the legal ranges from reversed ranges with specified head.
     void derive(int head, Ranges &output) const;
 
+    // TODO: only for perf right now
+    void derive_without(int head, Ranges &output, const Ranges &data) const;
+
     /// Check whether the combination of head and reversed range is valid.
     static KLSK_INLINE_CE int check(int head, uint32_t range);
 

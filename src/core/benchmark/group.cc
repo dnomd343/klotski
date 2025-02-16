@@ -149,6 +149,7 @@ static void GroupExtend(benchmark::State &state) {
 
         constexpr auto group = Group::unsafe_create(89, 0, Group::Toward::A);
         // constexpr auto group = Group::unsafe_create(51, 0, Group::Toward::A);
+        // constexpr auto group = Group::unsafe_create(98, 0, Group::Toward::A);
 
         volatile auto kk = group.cases();
 

@@ -36,3 +36,33 @@ void Ranges::derive(const int head, Ranges &output) const {
         output.emplace_back(range_reverse((*this)[index])); // release valid case
     }
 }
+
+void Ranges::derive_without(int head, Ranges &output, const Ranges &data) const {
+
+    size_t data_index = 0;
+
+    const uint32_t max_val = range_reverse(this->back());
+    for (uint32_t index = 0; index < size(); ++index) {
+        if (const auto offset = check(head, (*this)[index])) { // invalid case
+            ///         !! <- broken
+            /// ( xx xx xx ) xx xx xx ... [reversed range]
+            ///         +1   00 00 00 ...     (delta)
+            const uint32_t delta = 1U << (32 - offset * 2); // distance to next possible range
+            const auto min_next = delta + (range_reverse((*this)[index]) & ~(delta - 1));
+            if (min_next > max_val) {
+                break; // index has overflowed
+            }
+            while (range_reverse((*this)[++index]) < min_next) {} // located next range
+            --index;
+            continue;
+        }
+        auto tmp = range_reverse((*this)[index]);
+        if (data_index < data.size() && tmp == data[data_index]) {
+            ++data_index;
+        } else {
+            output.emplace_back(tmp);
+        }
+
+        // output.emplace_back(range_reverse((*this)[index])); // release valid case
+    }
+}
