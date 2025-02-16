@@ -51,10 +51,6 @@ KLSK_NOINLINE static RangesUnion group_extend(RawCode seed, const size_t reserve
         core.next_cases(curr, cases.find(curr)->second);
     }
 
-    // std::cout << std::format("[{}, {}, {}]\n", codes.size(), mirrors.size(), cases.size());
-
-    // std::cout << std::format("{:.5f}\n", static_cast<double>(codes.size()) / reserve);
-
     RangesUnion result {};
     // TODO: how to reserve
     for (auto raw_code : codes) {
@@ -88,9 +84,6 @@ static RangesUnion extend_type_ver(RawCode seed, size_t reserve) {
 
 static RangesUnion extend_type_diag(RawCode seed, size_t reserve) {
     return group_extend(seed, reserve, [](const RawCode code, auto callback) {
-        // if (const auto mirror = code.to_diagonal_mirror(); mirror != code) {
-        //     callback(mirror);
-        // }
         callback(code.to_diagonal_mirror());
     });
 }
@@ -106,123 +99,102 @@ static RangesUnion extend_type_x(RawCode seed, size_t reserve) {
     });
 }
 
-KLSK_NOINLINE static void spawn_full_pattern(RawCode seed, const size_t reserve, RangesUnion &output) {
+template <typename MFunc, typename RFunc>
+KLSK_NOINLINE static void spawn_pattern(RawCode seed, const size_t reserve, MFunc add_mirror, RFunc release) {
+
     std::vector<RawCode> codes;
+    std::vector<RawCode> mirrors;
     phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
 
     codes.reserve(reserve);
+    mirrors.reserve(reserve); // TODO: cal max size-coff
     cases.reserve(static_cast<size_t>(reserve * 1.56));
 
-    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t hint) {
+    auto core = MaskMover([&codes, &cases, &mirrors, add_mirror](RawCode code, uint64_t hint) {
         if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
             iter->second |= hint; // update hint
             return;
         }
         codes.emplace_back(code);
+        add_mirror(code, [&cases, &mirrors](RawCode mirror) {
+            cases.emplace(mirror, 0);
+            mirrors.emplace_back(mirror);
+        });
     });
 
     uint64_t offset = 0;
     codes.emplace_back(seed);
     cases.emplace(seed, 0); // without hint
+    add_mirror(seed, [&mirrors, &cases](RawCode mirror) {
+        cases.emplace(mirror, 0);
+        mirrors.emplace_back(mirror);
+    });
     while (offset != codes.size()) {
         const auto curr = codes[offset++];
         core.next_cases(curr, cases.find(curr)->second);
     }
 
-    for (auto raw_code : codes) {
-        const auto code = raw_code.to_common_code().unwrap();
-        output.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    for (const auto code : codes) {
+        release(code);
+    }
+    for (const auto code : mirrors) {
+        release(code);
     }
 }
 
-KLSK_NOINLINE static void spawn_hor_pattern(RawCode seed, const size_t reserve, RangesUnion &output) {
-    std::vector<RawCode> codes;
-    phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
-
-    codes.reserve(reserve);
-    cases.reserve(static_cast<size_t>(reserve * 1.56));
-
-    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t hint) {
-        if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
-            iter->second |= hint; // update hint
-            return;
-        }
-        codes.emplace_back(code);
+KLSK_NOINLINE static void spawn_full_pattern(RawCode seed, const size_t reserve, RangesUnion &output) {
+    spawn_pattern(seed, reserve, [](const RawCode code, auto callback) {
+        // const auto mirror_1 = code.to_vertical_mirror();
+        // callback(mirror_1);
+        // if (const auto mirror_2 = code.to_horizontal_mirror(); mirror_2 != code) {
+        //     callback(mirror_2);
+        //     callback(mirror_1.to_horizontal_mirror());
+        // }
+    }, [&output](RawCode raw_code) {
+        const auto code = raw_code.to_common_code().unwrap();
+        output.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
     });
+}
 
-    uint64_t offset = 0;
-    codes.emplace_back(seed);
-    cases.emplace(seed, 0); // without hint
-    while (offset != codes.size()) {
-        const auto curr = codes[offset++];
-        core.next_cases(curr, cases.find(curr)->second);
-    }
-
-    for (auto raw_code : codes) {
+KLSK_NOINLINE static void spawn_hor_pattern(RawCode seed, const size_t reserve, RangesUnion &output) {
+    spawn_pattern(seed, reserve, [](const RawCode code, auto callback) {
+        // if (const auto mirror = code.to_horizontal_mirror(); mirror != code) {
+        //     callback(mirror);
+        // }
+    }, [&output](RawCode raw_code) {
         const auto code = raw_code.to_common_code().unwrap();
         output.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
 
         const auto code_ = raw_code.to_vertical_mirror().to_common_code().unwrap();
         output.ranges(code_ >> 32).emplace_back(static_cast<uint32_t>(code_));
-    }
+    });
 }
 
 KLSK_NOINLINE static void spawn_ver_pattern(RawCode seed, const size_t reserve, RangesUnion &output) {
-    std::vector<RawCode> codes;
-    phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
-
-    codes.reserve(reserve);
-    cases.reserve(static_cast<size_t>(reserve * 1.56));
-
-    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t hint) {
-        if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
-            iter->second |= hint; // update hint
-            return;
-        }
-        codes.emplace_back(code);
-    });
-
-    uint64_t offset = 0;
-    codes.emplace_back(seed);
-    cases.emplace(seed, 0); // without hint
-    while (offset != codes.size()) {
-        const auto curr = codes[offset++];
-        core.next_cases(curr, cases.find(curr)->second);
-    }
-
-    for (auto raw_code : codes) {
+    spawn_pattern(seed, reserve, [](const RawCode code, auto callback) {
+        // callback(code.to_vertical_mirror());
+    }, [&output](RawCode raw_code) {
         const auto code = raw_code.to_common_code().unwrap();
         output.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
 
         const auto code_ = raw_code.to_horizontal_mirror().to_common_code().unwrap();
         output.ranges(code_ >> 32).emplace_back(static_cast<uint32_t>(code_));
-    }
+    });
 }
 
 KLSK_NOINLINE static void spawn_ord_pattern(RawCode seed, const size_t reserve, RangesUnion &output) {
-    std::vector<RawCode> codes;
-    phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
+    spawn_pattern(seed, reserve, [](RawCode, auto) {}, [&output](RawCode raw_code) {
 
-    codes.reserve(reserve);
-    cases.reserve(static_cast<size_t>(reserve * 1.56));
+        // auto add_case = [&output](RawCode r_code) {
+        //     const auto code = r_code.to_common_code().unwrap();
+        //     output.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+        // };
+        //
+        // add_case(raw_code);
+        // add_case(raw_code.to_vertical_mirror());
+        // add_case(raw_code.to_horizontal_mirror());
+        // add_case(raw_code.to_diagonal_mirror());
 
-    auto core = MaskMover([&codes, &cases](RawCode code, uint64_t hint) {
-        if (const auto [iter, ret] = cases.try_emplace(code, hint); !ret) {
-            iter->second |= hint; // update hint
-            return;
-        }
-        codes.emplace_back(code);
-    });
-
-    uint64_t offset = 0;
-    codes.emplace_back(seed);
-    cases.emplace(seed, 0); // without hint
-    while (offset != codes.size()) {
-        const auto curr = codes[offset++];
-        core.next_cases(curr, cases.find(curr)->second);
-    }
-
-    for (auto raw_code : codes) {
         const auto code = raw_code.to_common_code().unwrap();
         output.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
 
@@ -234,17 +206,10 @@ KLSK_NOINLINE static void spawn_ord_pattern(RawCode seed, const size_t reserve, 
 
         const auto code_3 = raw_code.to_diagonal_mirror().to_common_code().unwrap();
         output.ranges(code_3 >> 32).emplace_back(static_cast<uint32_t>(code_3));
-    }
+    });
 }
 
 KLSK_NOINLINE static RangesUnion extend_pro(uint8_t type_id) {
-
-    // auto groups = GroupUnion::unsafe_create(type_id).groups();
-    // RangesUnion others {};
-    // for (size_t index = 1; index < groups.size(); ++index) {
-    //     others += groups[index].cases();
-    // }
-
     RangesUnion others {};
     auto gu = GroupUnion::unsafe_create(type_id);
     for (int pattern_id = 1; pattern_id < gu.pattern_num(); ++pattern_id) {
@@ -260,9 +225,7 @@ KLSK_NOINLINE static RangesUnion extend_pro(uint8_t type_id) {
             spawn_hor_pattern(seed, size, others);
         } else if (mirror_type == Group::MirrorType::Vertical) {
             spawn_ver_pattern(seed, size, others);
-        } else if (mirror_type == Group::MirrorType::Centro) {
-            // std::abort();
-        } else {
+        } else if (mirror_type == Group::MirrorType::Ordinary) {
             spawn_ord_pattern(seed, size, others);
         }
     }
@@ -270,29 +233,16 @@ KLSK_NOINLINE static RangesUnion extend_pro(uint8_t type_id) {
     for (auto head : RangesUnion::Heads) {
         std::stable_sort(others.ranges(head).begin(), others.ranges(head).end());
     }
-
-    // auto all = GroupUnion::unsafe_create(type_id).cases();
-    //
-    // RangesUnion result {};
-    // for (auto head : RangesUnion::Heads) {
-    //     std::set_difference(all.ranges(head).begin(), all.ranges(head).end(),
-    //                   others.ranges(head).begin(), others.ranges(head).end(),
-    //                   std::back_inserter(result.ranges(head)));
-    // }
-    // return result;
+    // return others;
 
     return GroupUnion::unsafe_create(type_id).cases_without(others);
 }
 
 RangesUnion Group::cases() const {
     if (const auto gu = GroupUnion::unsafe_create(type_id_); gu.group_num() == 1) {
-        // std::cout << "[]" << std::endl;
         return gu.cases();
     }
 
-    // if (type_id_ == 89 && pattern_id_ == 0) { // for group `89-0x`
-    //     return extend_pro(89);
-    // }
     if (pattern_id_ == 0 && mirror_type() == MirrorType::Full) { // TODO: black-list filter
         return extend_pro(type_id_);
         // return GroupUnion::unsafe_create(type_id_).cases();
