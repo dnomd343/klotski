@@ -17,8 +17,8 @@ using klotski::mover::MaskMover;
 using klotski::group::GROUP_DATA;
 using klotski::group::PATTERN_DATA;
 
-template <typename Func>
-KLSK_NOINLINE static RangesUnion group_extend(RawCode seed, const size_t reserve, Func add_mirror) {
+template <typename MFunc, typename RFunc>
+KLSK_NOINLINE static void group_extend(RawCode seed, const size_t reserve, MFunc add_mirror, RFunc release) {
     std::vector<RawCode> codes;
     std::vector<RawCode> mirrors;
     phmap::flat_hash_map<RawCode, uint64_t> cases; // <code, hint>
@@ -51,52 +51,72 @@ KLSK_NOINLINE static RangesUnion group_extend(RawCode seed, const size_t reserve
         core.next_cases(curr, cases.find(curr)->second);
     }
 
-    RangesUnion result {};
-    // TODO: how to reserve
-    for (auto raw_code : codes) {
-        const auto code = raw_code.to_common_code().unwrap();
-        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    for (const auto code : codes) {
+        release(code);
     }
-    for (auto raw_code : mirrors) {
-        const auto code = raw_code.to_common_code().unwrap();
-        result.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
+    for (const auto code : mirrors) {
+        release(code);
     }
-    return result;
 }
 
 static RangesUnion extend_type_common(RawCode seed, size_t reserve) {
-    return group_extend(seed, reserve, [](RawCode, auto) {});
+    RangesUnion result {};
+    group_extend(seed, reserve, [](RawCode, auto) {}, [&result](RawCode code) {
+        const auto common_code = code.to_common_code().unwrap();
+        result.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
+    });
+    return result;
 }
 
 static RangesUnion extend_type_hor(RawCode seed, size_t reserve) {
-    return group_extend(seed, reserve, [](const RawCode code, auto callback) {
+    RangesUnion result {};
+    group_extend(seed, reserve, [](const RawCode code, auto callback) {
         if (const auto mirror = code.to_horizontal_mirror(); mirror != code) {
             callback(mirror);
         }
+    }, [&result](RawCode code) {
+        const auto common_code = code.to_common_code().unwrap();
+        result.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
     });
+    return result;
 }
 
 static RangesUnion extend_type_ver(RawCode seed, size_t reserve) {
-    return group_extend(seed, reserve, [](const RawCode code, auto callback) {
+    RangesUnion result {};
+    group_extend(seed, reserve, [](const RawCode code, auto callback) {
         callback(code.to_vertical_mirror());
+    }, [&result](RawCode code) {
+        const auto common_code = code.to_common_code().unwrap();
+        result.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
     });
+    return result;
 }
 
 static RangesUnion extend_type_diag(RawCode seed, size_t reserve) {
-    return group_extend(seed, reserve, [](const RawCode code, auto callback) {
+    RangesUnion result {};
+    group_extend(seed, reserve, [](const RawCode code, auto callback) {
         callback(code.to_diagonal_mirror());
+    }, [&result](RawCode code) {
+        const auto common_code = code.to_common_code().unwrap();
+        result.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
     });
+    return result;
 }
 
 static RangesUnion extend_type_x(RawCode seed, size_t reserve) {
-    return group_extend(seed, reserve, [](const RawCode code, auto callback) {
+    RangesUnion result {};
+    group_extend(seed, reserve, [](const RawCode code, auto callback) {
         const auto mirror_1 = code.to_vertical_mirror();
         callback(mirror_1);
         if (const auto mirror_2 = code.to_horizontal_mirror(); mirror_2 != code) {
             callback(mirror_2);
             callback(mirror_1.to_horizontal_mirror());
         }
+    }, [&result](RawCode code) {
+        const auto common_code = code.to_common_code().unwrap();
+        result.ranges(common_code >> 32).emplace_back(static_cast<uint32_t>(common_code));
     });
+    return result;
 }
 
 template <typename MFunc, typename RFunc>
