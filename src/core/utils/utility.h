@@ -46,6 +46,12 @@
 
 #define KLSK_STRING(x) #x
 
+#define KLSK_CONCAT_IMPL(X, Y) X##Y
+
+#define KLSK_CONCAT(X, Y) KLSK_CONCAT_IMPL(X, Y)
+
+#define KLSK_UNIQUE(PREFIX) KLSK_CONCAT(PREFIX##_, __COUNTER__)
+
 #if defined(__clang__)
   #define KLSK_UNROLL(N) _Pragma(KLSK_STRING(unroll N))
 #elif defined(__GNUC__)
