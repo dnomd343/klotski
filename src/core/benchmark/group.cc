@@ -441,6 +441,14 @@ static void FastObtainCode(benchmark::State &state) {
     }
 }
 
+static void GroupCasesBuild(benchmark::State &state) {
+
+    for (auto _ : state) {
+        GroupCases::build();
+    }
+
+}
+
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
@@ -461,7 +469,9 @@ static void FastObtainCode(benchmark::State &state) {
 
 // BENCHMARK(GroupFromRawCode)->Unit(benchmark::kMillisecond);
 
-BENCHMARK(FastObtainCode);
+// BENCHMARK(FastObtainCode);
+
+BENCHMARK(GroupCasesBuild)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(IsVerticalMirror);
 // BENCHMARK(IsHorizontalMirror);

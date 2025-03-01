@@ -31,6 +31,7 @@ using klotski::codec::CommonCode;
 using klotski::group::GroupUnion;
 
 using klotski::group::Group;
+using klotski::group::CaseInfo;
 using klotski::group::GroupCases;
 using klotski::group::GroupUnion;
 
@@ -129,18 +130,24 @@ int main() {
     // perf-b -> ~1311ms
     // perf-c -> ~1272ms
 
-    for (uint8_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        for (auto group: GroupUnion::unsafe_create(type_id).groups()) {
-            if (group.mirror_type() == Group::MirrorType::Full) {
-            // if (group.mirror_type() == Group::MirrorType::Horizontal) {
-            // if (group.mirror_type() == Group::MirrorType::Centro) {
-            // if (group.mirror_type() == Group::MirrorType::Vertical) {
-            // if (group.mirror_type() == Group::MirrorType::Ordinary) {
-                // std::println("{} ({})", group.to_string(), group.size());
-                volatile auto kk = group.cases();
-            }
-        }
-    }
+    // for (uint8_t type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+    //     for (auto group: GroupUnion::unsafe_create(type_id).groups()) {
+    //         // if (group.mirror_type() == Group::MirrorType::Full) {
+    //         // if (group.mirror_type() == Group::MirrorType::Horizontal) {
+    //         // if (group.mirror_type() == Group::MirrorType::Centro) {
+    //         // if (group.mirror_type() == Group::MirrorType::Vertical) {
+    //         // if (group.mirror_type() == Group::MirrorType::Ordinary) {
+    //             // std::println("{} ({})", group.to_string(), group.size());
+    //             volatile auto kk = group.cases();
+    //         // }
+    //     }
+    // }
+
+    GroupCases::build();
+
+    constexpr auto group = Group::unsafe_create(169, 0, Group::Toward::C);
+    constexpr auto info = CaseInfo::unsafe_create(group, 7472);
+    std::cout << info << ": " << GroupCases::obtain_code(info) << std::endl;
 
     // constexpr auto group = Group::unsafe_create(89, 0, Group::Toward::A);
     // std::cout << group.to_string() << std::endl;

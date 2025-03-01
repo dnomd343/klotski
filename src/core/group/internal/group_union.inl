@@ -18,7 +18,7 @@ constexpr uint32_t GroupUnion::group_num() const {
     return GROUP_NUM[type_id_];
 }
 
-constexpr uint32_t GroupUnion::pattern_num() const {
+constexpr uint32_t GroupUnion::pattern_num() const { // TODO: why not using `uint16_t`
     return PATTERN_NUM[type_id_];
 }
 
