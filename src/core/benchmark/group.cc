@@ -134,24 +134,24 @@ static void GroupExtend(benchmark::State &state) {
     for (auto _ : state) {
 
 
-        // for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
-        //     for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
-        //         // if (group.mirror_type() == Group::MirrorType::Full) {
-        //         // if (group.mirror_type() == Group::MirrorType::Horizontal) {
-        //         // if (group.mirror_type() == Group::MirrorType::Centro) {
-        //         // if (group.mirror_type() == Group::MirrorType::Vertical) {
-        //         if (group.mirror_type() == Group::MirrorType::Ordinary) {
-        //             // std::println("{} ({})", group.to_string(), group.size());
-        //             volatile auto kk = group.cases();
-        //         }
-        //     }
-        // }
+        for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
+            for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
+                if (group.mirror_type() == Group::MirrorType::Full) {
+                // if (group.mirror_type() == Group::MirrorType::Horizontal) {
+                // if (group.mirror_type() == Group::MirrorType::Centro) {
+                // if (group.mirror_type() == Group::MirrorType::Vertical) {
+                // if (group.mirror_type() == Group::MirrorType::Ordinary) {
+                    // std::println("{} ({})", group.to_string(), group.size());
+                    volatile auto kk = group.cases();
+                }
+            }
+        }
 
-        constexpr auto group = Group::unsafe_create(89, 0, Group::Toward::A);
+        // constexpr auto group = Group::unsafe_create(89, 0, Group::Toward::A);
         // constexpr auto group = Group::unsafe_create(51, 0, Group::Toward::A);
         // constexpr auto group = Group::unsafe_create(98, 0, Group::Toward::A);
 
-        volatile auto kk = group.cases();
+        // volatile auto kk = group.cases();
 
         // for (auto group : groups) {
         //     volatile auto tmp = group.cases();
@@ -370,7 +370,7 @@ static void ToHorizontalMirror(benchmark::State &state) {
 }
 
 static void FastObtainCode(benchmark::State &state) {
-    // GroupCases::build();
+    GroupCases::build();
 
     // std::vector<CaseInfo> infos;
     // for (auto code : common_code_samples(64)) {
@@ -379,14 +379,14 @@ static void FastObtainCode(benchmark::State &state) {
     // infos.emplace_back(CaseInfo::unsafe_create())
 
     const auto group = Group::unsafe_create(169, 0, Group::Toward::C);
-    const klotski::cases::RangesUnion data = group.cases();
-
-    std::array<size_t, 16> sizes {};
-    size_t offset = 0;
-    for (int i = 0; i < 16; ++i) {
-        sizes[i] = offset;
-        offset += data.ranges(i).size();
-    }
+    // const klotski::cases::RangesUnion data = group.cases();
+    //
+    // std::array<size_t, 16> sizes {};
+    // size_t offset = 0;
+    // for (int i = 0; i < 16; ++i) {
+    //     sizes[i] = offset;
+    //     offset += data.ranges(i).size();
+    // }
 
     std::vector infos {
         CaseInfo::unsafe_create(group, 2631),
@@ -415,24 +415,27 @@ static void FastObtainCode(benchmark::State &state) {
 
         for (auto info : infos) {
             /// about 35ns
-            auto &cases = data;
-            uint64_t head = 0;
-            auto case_id = info.case_id();
-            for (;;) {
-                if (case_id >= cases.ranges(head).size()) {
-                    case_id -= cases.ranges(head).size();
-                    ++head;
-                } else {
-                    break;
-                }
-            }
-            auto range = cases.ranges(head)[case_id];
-            volatile auto kk = CommonCode::unsafe_create(head << 32 | range);
+            // auto &cases = data;
+            // uint64_t head = 0;
+            // auto case_id = info.case_id();
+            // for (;;) {
+            //     if (case_id >= cases.ranges(head).size()) {
+            //         case_id -= cases.ranges(head).size();
+            //         ++head;
+            //     } else {
+            //         break;
+            //     }
+            // }
+            // auto range = cases.ranges(head)[case_id];
+            // volatile auto kk = CommonCode::unsafe_create(head << 32 | range);
 
             /// about 117ns
             // uint64_t head = std::upper_bound(sizes.begin(), sizes.end(), info.case_id()) - sizes.begin() - 1;
             // uint32_t range = data[head][info.case_id() - sizes[head]];
             // volatile auto kk = CommonCode::unsafe_create(head << 32 | range);
+
+            volatile auto kk = GroupCases::fast_obtain_code(info);
+
         }
 
     }
@@ -441,7 +444,8 @@ static void FastObtainCode(benchmark::State &state) {
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
-BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
+// BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
+// BENCHMARK(GroupExtend)->Unit(benchmark::kMicrosecond);
 
 // BENCHMARK(FilterFromAllCases)->Unit(benchmark::kMillisecond);
 
@@ -457,7 +461,7 @@ BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
 
 // BENCHMARK(GroupFromRawCode)->Unit(benchmark::kMillisecond);
 
-// BENCHMARK(FastObtainCode);
+BENCHMARK(FastObtainCode);
 
 // BENCHMARK(IsVerticalMirror);
 // BENCHMARK(IsHorizontalMirror);
