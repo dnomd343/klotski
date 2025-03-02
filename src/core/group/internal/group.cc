@@ -19,9 +19,9 @@ using klotski::group::PATTERN_DATA;
 using klotski::group::PATTERN_OFFSET;
 
 #define RELEASE_INTO(RU) \
-    [&data](const RawCode raw_code) { \
+    [&RU](const RawCode raw_code) { \
         const auto code = raw_code.to_common_code().unwrap(); \
-        data.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code)); \
+        RU.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code)); \
     }
 
 #define NO_MIRROR \
