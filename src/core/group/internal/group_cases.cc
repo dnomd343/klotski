@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 
 #include <algorithm>
@@ -14,6 +15,8 @@ using klotski::codec::CommonCode;
 using klotski::group::Group;
 using klotski::group::GroupCases;
 using klotski::group::GroupUnion;
+
+using klotski::cases::Ranges;
 using klotski::cases::RangesUnion;
 
 using klotski::group::CaseInfo;
@@ -30,6 +33,16 @@ using klotski::group::PATTERN_DATA;
 using klotski::group::PATTERN_OFFSET;
 using klotski::group::ALL_PATTERN_NUM;
 
+using klotski::group::BLOCK_NUM;
+using klotski::cases::BASIC_RANGES_NUM;
+using klotski::group::GROUP_UNION_CASES_NUM;
+
+#define RANGE_RESERVE(HEAD, SIZE) cases.ranges(HEAD).reserve(SIZE)
+
+#define RANGE_DERIVE_WITHOUT(HEAD) ranges.derive_without(HEAD, cases.ranges(HEAD), data.ranges(HEAD))
+
+using MirrorType = Group::MirrorType;
+
 struct case_info_t {
     uint32_t pattern_id : 10;
     uint32_t toward_id : 2;
@@ -42,12 +55,6 @@ static std::array<RangesUnion, ALL_PATTERN_NUM * 4> *ru_data_array = nullptr;
 
 static std::vector<case_info_t> *rev_data = nullptr;
 
-// #define RELEASE_INTO(RU) \
-//     [&RU](const RawCode raw_code) { \
-//         const auto code = raw_code.to_common_code().unwrap(); \
-//         RU.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code)); \
-//     }
-
 #define EMPLACE_INTO_IMPL(RU, VAR, EXPR) \
     const auto VAR = (EXPR).to_common_code().unwrap(); \
     RU.ranges(VAR >> 32).emplace_back(static_cast<uint32_t>(VAR));
@@ -55,8 +62,32 @@ static std::vector<case_info_t> *rev_data = nullptr;
 #define EMPLACE_INTO(RU, EXPR) \
     EMPLACE_INTO_IMPL(RU, KLSK_UNIQUE(tmp), EXPR)
 
-#define NO_MIRROR \
-    [](RawCode, auto) {}
+#define NO_MIRROR [](RawCode, auto) {}
+
+#define CTR_MIRROR \
+    [](const RawCode code, auto spawn) { \
+        spawn(code.to_diagonal_mirror()); \
+    }
+
+#define HOR_MIRROR \
+    [](const RawCode code, auto spawn) { \
+        if (const auto m_hor = code.to_horizontal_mirror(); m_hor != code) { \
+            spawn(m_hor); \
+        } \
+    }
+
+#define VRT_MIRROR \
+    [](const RawCode code, auto spawn) { \
+        spawn(code.to_vertical_mirror()); \
+    }
+
+#define FULL_MIRROR \
+    [](const RawCode code, auto spawn) { \
+        const auto m_vrt = code.to_vertical_mirror(); spawn(m_vrt); \
+        if (const auto m_hor = code.to_horizontal_mirror(); m_hor != code) { \
+            spawn(m_hor); spawn(m_vrt.to_horizontal_mirror()); \
+        } \
+    }
 
 template <typename MF, typename RF>
 KLSK_NOINLINE static void extend(const RawCode seed, const size_t reserve, MF add_mirror, RF release) {
@@ -94,197 +125,162 @@ KLSK_NOINLINE static void extend(const RawCode seed, const size_t reserve, MF ad
     for (const auto code : mirrors) { release(code); }
 }
 
-template <Group::MirrorType TYPE>
-static void extend_pattern(RawCode seed, size_t size, RangesUnion *kk) {
-    using MirrorType = Group::MirrorType;
+// #define RELEASE_TO(A, B, C, D) \
+//     [&data_a, &data_b, &data_c, &data_d](const RawCode code) { \
+//         if constexpr(A == 'A') { EMPLACE_INTO(data_a, code); } \
+//         if constexpr(B == 'B') { EMPLACE_INTO(data_b, code.to_horizontal_mirror()); } \
+//         if constexpr(C == 'C') { EMPLACE_INTO(data_c, code.to_vertical_mirror()); } \
+//         if constexpr(D == 'D') { EMPLACE_INTO(data_d, code.to_diagonal_mirror()); } \
+//     }
 
-    RangesUnion &a = kk[0];
-    RangesUnion &b = kk[1];
-    RangesUnion &c = kk[2];
-    RangesUnion &d = kk[3];
+template <MirrorType TYPE>
+static void spawn_pattern(RawCode seed, size_t size, RangesUnion *data) {
+    RangesUnion &ga = data[0];
+    RangesUnion &gb = data[1];
+    RangesUnion &gc = data[2];
+    RangesUnion &gd = data[3];
 
     if constexpr(TYPE == MirrorType::Full) {
-        const auto mirror_func = [](const RawCode code, auto spawn) {
-            const auto m_vrt = code.to_vertical_mirror();
-            spawn(m_vrt);
-            if (const auto m_hor = code.to_horizontal_mirror(); m_hor != code) {
-                spawn(m_hor);
-                spawn(m_vrt.to_horizontal_mirror());
-            }
-        };
-        extend(seed, size, mirror_func, [&a](const RawCode raw_code) {
-            // const auto code = raw_code.to_common_code().unwrap();
-            // a.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
-            EMPLACE_INTO(a, raw_code);
+        extend(seed, size, FULL_MIRROR, [&ga](const RawCode code) {
+            EMPLACE_INTO(ga, code);
         });
+        // extend(seed, size, HOR_MIRROR, RELEASE_TO('A', 0, 0, 0));
     }
 
     if constexpr(TYPE == MirrorType::Horizontal) {
-        const auto mirror_func = [](const RawCode code, auto spawn) {
-            if (const auto m_hor = code.to_horizontal_mirror(); m_hor != code) {
-                spawn(m_hor);
-            }
-        };
-        extend(seed, size, mirror_func, [&a, &c](const RawCode raw_code) {
-            // const auto code = raw_code.to_common_code().unwrap();
-            // a.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
-            EMPLACE_INTO(a, raw_code);
-
-            // const auto code_ = raw_code.to_vertical_mirror().to_common_code().unwrap();
-            // c.ranges(code_ >> 32).emplace_back(static_cast<uint32_t>(code_));
-            EMPLACE_INTO(c, raw_code.to_vertical_mirror());
+        extend(seed, size, HOR_MIRROR, [&ga, &gc](const RawCode code) {
+            EMPLACE_INTO(ga, code);
+            EMPLACE_INTO(gc, code.to_vertical_mirror());
         });
+        // extend(seed, size, HOR_MIRROR, RELEASE_TO('A', 0, 'C', 0));
     }
 
     if constexpr(TYPE == MirrorType::Centro) {
-        const auto mirror_func = [](const RawCode code, auto spawn) {
-            spawn(code.to_diagonal_mirror());
-        };
-        extend(seed, size, mirror_func, [&a, &b](const RawCode raw_code) {
-            // const auto code = raw_code.to_common_code().unwrap();
-            // a.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
-            EMPLACE_INTO(a, raw_code);
-
-            // const auto code_ = raw_code.to_horizontal_mirror().to_common_code().unwrap();
-            // b.ranges(code_ >> 32).emplace_back(static_cast<uint32_t>(code_));
-            EMPLACE_INTO(b, raw_code.to_horizontal_mirror());
+        extend(seed, size, CTR_MIRROR, [&ga, &gb](const RawCode code) {
+            EMPLACE_INTO(ga, code);
+            EMPLACE_INTO(gb, code.to_horizontal_mirror());
         });
+        // extend(seed, size, CTR_MIRROR, RELEASE_TO('A', 'B', 0, 0));
     }
 
     if constexpr(TYPE == MirrorType::Vertical) {
-        const auto mirror_func = [](const RawCode code, auto spawn) {
-            spawn(code.to_vertical_mirror());
-        };
-        extend(seed, size, mirror_func, [&a, &b](const RawCode raw_code) {
-            // const auto code = raw_code.to_common_code().unwrap();
-            // a.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
-            EMPLACE_INTO(a, raw_code);
-
-            // const auto code_ = raw_code.to_horizontal_mirror().to_common_code().unwrap();
-            // b.ranges(code_ >> 32).emplace_back(static_cast<uint32_t>(code_));
-            EMPLACE_INTO(b, raw_code.to_horizontal_mirror());
+        extend(seed, size, VRT_MIRROR, [&ga, &gb](const RawCode code) {
+            EMPLACE_INTO(ga, code);
+            EMPLACE_INTO(gb, code.to_horizontal_mirror());
         });
+        // extend(seed, size, VRT_MIRROR, RELEASE_TO('A', 'B', 0, 0));
     }
 
     if constexpr(TYPE == MirrorType::Ordinary) {
-        extend(seed, size, NO_MIRROR, [&a, &b, &c, &d](const RawCode raw_code) {
-            // const auto code = raw_code.to_common_code().unwrap();
-            // a.ranges(code >> 32).emplace_back(static_cast<uint32_t>(code));
-            EMPLACE_INTO(a, raw_code);
-
-            // const auto code_1 = raw_code.to_horizontal_mirror().to_common_code().unwrap();
-            // b.ranges(code_1 >> 32).emplace_back(static_cast<uint32_t>(code_1));
-            EMPLACE_INTO(b, raw_code.to_horizontal_mirror());
-
-            // const auto code_2 = raw_code.to_vertical_mirror().to_common_code().unwrap();
-            // c.ranges(code_2 >> 32).emplace_back(static_cast<uint32_t>(code_2));
-            EMPLACE_INTO(c, raw_code.to_vertical_mirror());
-
-            // const auto code_3 = raw_code.to_diagonal_mirror().to_common_code().unwrap();
-            // d.ranges(code_3 >> 32).emplace_back(static_cast<uint32_t>(code_3));
-            EMPLACE_INTO(d, raw_code.to_diagonal_mirror());
+        extend(seed, size, NO_MIRROR, [&ga, &gb, &gc, &gd](const RawCode code) {
+            EMPLACE_INTO(ga, code);
+            EMPLACE_INTO(gb, code.to_horizontal_mirror());
+            EMPLACE_INTO(gc, code.to_vertical_mirror());
+            EMPLACE_INTO(gd, code.to_diagonal_mirror());
         });
+        // extend(seed, size, NO_MIRROR, RELEASE_TO('A', 'B', 'C', 'D'));
     }
 
-    for (auto head : RangesUnion::Heads) {
-        std::stable_sort(a.ranges(head).begin(), a.ranges(head).end());
-
+    for (const auto head : RangesUnion::Heads) {
+        std::stable_sort(ga.ranges(head).begin(), ga.ranges(head).end());
         if constexpr(TYPE == MirrorType::Centro || TYPE == MirrorType::Vertical || TYPE == MirrorType::Ordinary) {
-            std::stable_sort(b.ranges(head).begin(), b.ranges(head).end());
+            std::stable_sort(gb.ranges(head).begin(), gb.ranges(head).end());
         }
-
         if constexpr(TYPE == MirrorType::Horizontal || TYPE == MirrorType::Ordinary) {
-            std::stable_sort(c.ranges(head).begin(), c.ranges(head).end());
+            std::stable_sort(gc.ranges(head).begin(), gc.ranges(head).end());
         }
-
         if constexpr(TYPE == MirrorType::Ordinary) {
-            std::stable_sort(d.ranges(head).begin(), d.ranges(head).end());
+            std::stable_sort(gd.ranges(head).begin(), gd.ranges(head).end());
         }
     }
 }
 
-// static void build_ru_arr(uint8_t type_id, std::array<RangesUnion, ALL_PATTERN_NUM * 4> &data) {
-static void build_ru_arr(uint8_t type_id, RangesUnion *offset) {
-    auto group_union = GroupUnion::unsafe_create(type_id);
+// KLSK_INLINE static std::tuple<MirrorType, RawCode, size_t> get_info(uint8_t type_id, uint16_t pattern_id) {
+//     const auto flat_id = PATTERN_OFFSET[type_id] + pattern_id;
 
-    // auto offset = &data[PATTERN_OFFSET[type_id] * 4];
+//     const auto mirror_type = static_cast<MirrorType>(PATTERN_DATA[flat_id] & 0b111);
 
-    if (group_union.group_num() == 1) { // only single group
-        // data[PATTERN_OFFSET[type_id] * 4] = group_union.cases();
-        *offset = group_union.cases();
+//     const auto seed_val = PATTERN_DATA[flat_id] >> 23;
+//     auto seed = CommonCode::unsafe_create(seed_val).to_raw_code();
+//     const auto size = (PATTERN_DATA[flat_id] >> 3) & 0xFFFFF;
+
+//     return {mirror_type, seed, size};
+// }
+
+static RangesUnion cases_without(uint8_t type_id, const RangesUnion &data) {
+    Ranges ranges {};
+    ranges.reserve(BASIC_RANGES_NUM[type_id]);
+    const auto [n, n_2x1, n_1x1] = BLOCK_NUM[type_id];
+    ranges.spawn(n, n_2x1, n_1x1);
+    ranges.reverse();
+
+    RangesUnion cases;
+    const auto [na, nb, nc, nd] = GROUP_UNION_CASES_NUM[type_id];
+    RANGE_RESERVE(0x0, na); RANGE_RESERVE(0x1, nb); RANGE_RESERVE(0x2, na);
+    RANGE_RESERVE(0x4, nc); RANGE_RESERVE(0x5, nd); RANGE_RESERVE(0x6, nc);
+    RANGE_RESERVE(0x8, nc); RANGE_RESERVE(0x9, nd); RANGE_RESERVE(0xA, nc);
+    RANGE_RESERVE(0xC, na); RANGE_RESERVE(0xD, nb); RANGE_RESERVE(0xE, na);
+
+    RANGE_DERIVE_WITHOUT(0x0); RANGE_DERIVE_WITHOUT(0x1); RANGE_DERIVE_WITHOUT(0x2);
+    RANGE_DERIVE_WITHOUT(0x4); RANGE_DERIVE_WITHOUT(0x5); RANGE_DERIVE_WITHOUT(0x6);
+    RANGE_DERIVE_WITHOUT(0x8); RANGE_DERIVE_WITHOUT(0x9); RANGE_DERIVE_WITHOUT(0xA);
+    RANGE_DERIVE_WITHOUT(0xC); RANGE_DERIVE_WITHOUT(0xD); RANGE_DERIVE_WITHOUT(0xE);
+    return cases;
+}
+
+static void build_ru_arr(uint8_t type_id, RangesUnion *output) {
+    const auto gu = GroupUnion::unsafe_create(type_id);
+    if (gu.group_num() == 1) { // with single group
+        *output = gu.cases();
         return;
     }
 
-    uint32_t pattern_id_begin = 0;
-    if ((PATTERN_DATA[PATTERN_OFFSET[type_id]] & 0b111) == 0) { // first pattern is `x`
-        pattern_id_begin = 1;
-    }
+    const bool ff_mode = (PATTERN_DATA[PATTERN_OFFSET[type_id]] & 0b111) == 0;
 
-    for (uint32_t pattern_id = pattern_id_begin; pattern_id < group_union.pattern_num(); ++pattern_id) {
+    // uint32_t pattern_id_begin = 0;
+    // if ((PATTERN_DATA[PATTERN_OFFSET[type_id]] & 0b111) == 0) { // first pattern type `Full`
+    //     pattern_id_begin = 1;
+    // }
+
+    for (uint16_t pattern_id = ff_mode ? 1 : 0; pattern_id < gu.pattern_num(); ++pattern_id) {
 
         const auto flat_id = PATTERN_OFFSET[type_id] + pattern_id;
-        const auto mirror_type = static_cast<Group::MirrorType>(PATTERN_DATA[flat_id] & 0b111);
+        const auto mirror_type = static_cast<MirrorType>(PATTERN_DATA[flat_id] & 0b111);
 
         const auto seed_val = PATTERN_DATA[flat_id] >> 23;
         auto seed = CommonCode::unsafe_create(seed_val).to_raw_code();
         const auto size = (PATTERN_DATA[flat_id] >> 3) & 0xFFFFF;
 
-        // auto kk = &data[flat_id * 4];
-        const auto kk = offset + pattern_id * 4;
+        // const auto [mirror_type, seed, size] = get_info(type_id, pattern_id);
 
-        if (mirror_type == Group::MirrorType::Full) {
-            extend_pattern<Group::MirrorType::Full>(seed, size, kk);
-        } else if (mirror_type == Group::MirrorType::Horizontal) {
-            extend_pattern<Group::MirrorType::Horizontal>(seed, size, kk);
-        } else if (mirror_type == Group::MirrorType::Centro) {
-            extend_pattern<Group::MirrorType::Centro>(seed, size, kk);
-        } else if (mirror_type == Group::MirrorType::Vertical) {
-            extend_pattern<Group::MirrorType::Vertical>(seed, size, kk);
-        } else if (mirror_type == Group::MirrorType::Ordinary) {
-            extend_pattern<Group::MirrorType::Ordinary>(seed, size, kk);
+        const auto kk = output + pattern_id * 4;
+
+        if (mirror_type == MirrorType::Full) {
+            spawn_pattern<MirrorType::Full>(seed, size, kk);
+        } else if (mirror_type == MirrorType::Horizontal) {
+            spawn_pattern<MirrorType::Horizontal>(seed, size, kk);
+        } else if (mirror_type == MirrorType::Centro) {
+            spawn_pattern<MirrorType::Centro>(seed, size, kk);
+        } else if (mirror_type == MirrorType::Vertical) {
+            spawn_pattern<MirrorType::Vertical>(seed, size, kk);
+        } else if (mirror_type == MirrorType::Ordinary) {
+            spawn_pattern<MirrorType::Ordinary>(seed, size, kk);
         }
-
-        // RangesUnion &a = kk[0];
-        // RangesUnion &b = kk[1];
-        // RangesUnion &c = kk[2];
-        // RangesUnion &d = kk[3];
-        //
-        // for (auto head : RangesUnion::Heads) {
-        //     std::stable_sort(a.ranges(head).begin(), a.ranges(head).end());
-        //     std::stable_sort(b.ranges(head).begin(), b.ranges(head).end());
-        //     std::stable_sort(c.ranges(head).begin(), c.ranges(head).end());
-        //     std::stable_sort(d.ranges(head).begin(), d.ranges(head).end());
-        // }
-
     }
 
-    if (pattern_id_begin == 1) { // first pattern is `x`
+    if (ff_mode) {
         RangesUnion others;
 
-        // size_t index_begin = (PATTERN_OFFSET[type_id] + 1) * 4;
-        // size_t index_end = (PATTERN_OFFSET[type_id] + group_union.pattern_num()) * 4;
-        //
-        // for (size_t index = index_begin; index < index_end; ++index) {
-        //     others += data[index];
-        // }
-
         // TODO: try to reserve
-        for (auto *ptr = offset + 4; ptr < offset + group_union.pattern_num() * 4; ++ptr) {
+        for (auto *ptr = output + 4; ptr < output + gu.pattern_num() * 4; ++ptr) {
             others += *ptr;
         }
-        // for (size_t index = 4; index < group_union.pattern_num() * 4; ++index) {
-        //     others += *(offset + index);
-        // }
 
-        // RangesUnion init;
-        // auto others = std::accumulate(offset + 4, offset + group_union.pattern_num() * 4, init, [](RangesUnion a, RangesUnion b) { return a += b; });
-
-        for (auto head : RangesUnion::Heads) {
+        for (const auto head : RangesUnion::Heads) {
             std::stable_sort(others.ranges(head).begin(), others.ranges(head).end());
         }
-
-        // data[PATTERN_OFFSET[type_id] * 4] = group_union.cases_without(others);
-        *offset = group_union.cases_without(others);
+        // *output = gu.cases_without(others);
+        *output = cases_without(type_id, others);
     }
 }
 
