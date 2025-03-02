@@ -443,6 +443,8 @@ static void FastObtainCode(benchmark::State &state) {
 
 static void GroupCasesBuild(benchmark::State &state) {
 
+    klotski::codec::ShortCode::speed_up(true);
+
     for (auto _ : state) {
         GroupCases::build();
     }
