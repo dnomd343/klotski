@@ -136,11 +136,11 @@ static void GroupExtend(benchmark::State &state) {
 
         for (int type_id = 0; type_id < TYPE_ID_LIMIT; ++type_id) {
             for (auto group : GroupUnion::unsafe_create(type_id).groups()) {
-                if (group.mirror_type() == Group::MirrorType::Full) {
+                // if (group.mirror_type() == Group::MirrorType::Full) {
                 // if (group.mirror_type() == Group::MirrorType::Horizontal) {
                 // if (group.mirror_type() == Group::MirrorType::Centro) {
                 // if (group.mirror_type() == Group::MirrorType::Vertical) {
-                // if (group.mirror_type() == Group::MirrorType::Ordinary) {
+                if (group.mirror_type() == Group::MirrorType::Ordinary) {
                     // std::println("{} ({})", group.to_string(), group.size());
                     volatile auto kk = group.cases();
                 }
@@ -451,10 +451,20 @@ static void GroupCasesBuild(benchmark::State &state) {
 
 }
 
+static void SingleGroupExtend(benchmark::State &state) {
+    uint8_t type_id = state.range(0);
+    auto group = Group::unsafe_create(type_id, 0, Group::Toward::A);
+
+    for (auto _ : state) {
+        // std::println("{} ({})", group.to_string(), group.size());
+        volatile auto kk = group.cases();
+    }
+}
+
 // BENCHMARK(CommonCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 // BENCHMARK(RawCodeToTypeId)->Arg(8)->Arg(64)->Arg(256);
 
-// BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
+BENCHMARK(GroupExtend)->Unit(benchmark::kMillisecond);
 // BENCHMARK(GroupExtend)->Unit(benchmark::kMicrosecond);
 
 // BENCHMARK(FilterFromAllCases)->Unit(benchmark::kMillisecond);
@@ -473,7 +483,61 @@ static void GroupCasesBuild(benchmark::State &state) {
 
 // BENCHMARK(FastObtainCode);
 
-BENCHMARK(GroupCasesBuild)->Unit(benchmark::kMillisecond);
+// BENCHMARK(GroupCasesBuild)->Unit(benchmark::kMillisecond);
+
+// BENCHMARK(SingleGroupExtend)->Arg(27)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(40)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(50)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(51)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(61)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(62)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(73)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(81)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(82)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(89)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(90)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(91)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(98)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(99)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(100)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(108)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(109)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(115)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(116)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(121)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(122)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(123)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(127)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(128)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(129)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(130)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(134)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(135)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(136)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(137)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(143)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(144)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(148)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(149)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(152)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(153)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(154)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(155)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(156)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(157)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(158)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(159)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(161)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(162)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(163)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(164)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(167)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(168)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(181)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(184)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(185)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(187)->Unit(benchmark::kMicrosecond);
+// BENCHMARK(SingleGroupExtend)->Arg(188)->Unit(benchmark::kMicrosecond);
 
 // BENCHMARK(IsVerticalMirror);
 // BENCHMARK(IsHorizontalMirror);

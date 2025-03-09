@@ -180,8 +180,26 @@ RangesUnion Group::cases() const {
     if (GroupUnion::unsafe_create(type_id_).group_num() == 1) {
         return GroupUnion::unsafe_create(type_id_).cases();
     }
-    if (pattern_id_ == 0 && mirror_type() == MirrorType::Full) { // TODO: black-list filter
-        return first_x_group(type_id_);
+
+    // + 116:  3321us vs 3162us
+    // - 149:   989us vs 1406us
+    // - 154:  4257us vs 6521us
+    // + 159: 12801us vs 11804us
+    // - 164: 13067us vs 13974us
+    // - 181:   206us vs 613us
+    // - 184:   170us vs 935us
+    // - 185:   733us vs 3674us
+    // - 187:   391us vs 530us
+    // - 188:   587us vs 3155us
+
+    if (pattern_id_ == 0 && mirror_type() == MirrorType::Full) {
+
+        // TODO: it seems that this filter has a negative impact on non-full group cases performance.
+        // if (type_id_ != 149 && type_id_ != 154 && type_id_ != 164 && type_id_ != 181 && type_id_ != 184 && type_id_ != 185 && type_id_ != 187 && type_id_ != 188) {
+        // if (type_id_ != 149 && type_id_ != 154 && type_id_ != 164 && type_id_ < 181) {
+            return first_x_group(type_id_);
+        // }
+
     }
 
     const auto seed_val = PATTERN_DATA[flat_id()] >> 23;

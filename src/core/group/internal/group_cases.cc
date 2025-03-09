@@ -347,20 +347,19 @@ static std::vector<case_info_t> build_tmp_data() {
 }
 
 void GroupCases::build() {
-    // if (fast_) {
-    //     return;
-    // }
-    // std::lock_guard guard {busy_};
+    if (fast_) {
+        return;
+    }
+    std::lock_guard guard {busy_};
 
     // TODO: make `data` as class member
-
     static auto data_array = build_ru_array();
     ru_data_array = &data_array;
     static auto data_2 = build_tmp_data();
     rev_data = &data_2;
 
-    // KLSK_MEM_BARRIER;
-    // fast_ = true;
+    KLSK_MEM_BARRIER; // TODO: should we move it to the end?
+    fast_ = true;
 }
 
 void GroupCases::build_async(Executor &&executor, Notifier &&callback) {
