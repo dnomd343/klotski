@@ -97,6 +97,7 @@ set(KLSK_CORE_SRC
 
     analyse/analyse.cc
     analyse/backtrack.cc
+    analyse/internal/analyse_pro.cc
 )
 
 add_library(klotski_core STATIC ${KLSK_CORE_SRC})
@@ -150,4 +151,8 @@ if (KLSK_ENABLE_BENCHMARK)
   add_executable(bm_klsk_fast_cal benchmark/fast_cal.cc)
   target_compile_options(bm_klsk_fast_cal PRIVATE ${KLSK_BENCHMARK_OPTS})
   target_link_libraries(bm_klsk_fast_cal PRIVATE ${KLSK_BENCHMARK_LIBS})
+
+  add_executable(bm_klsk_analyse benchmark/analyse.cc)
+  target_compile_options(bm_klsk_analyse PRIVATE ${KLSK_BENCHMARK_OPTS})
+  target_link_libraries(bm_klsk_analyse PRIVATE ${KLSK_BENCHMARK_LIBS})
 endif()

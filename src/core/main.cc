@@ -17,6 +17,7 @@
 #include <parallel_hashmap/phmap.h>
 
 using klotski::Analyse;
+using klotski::analyse::AnalysePro;
 
 using klotski::mover::S2Mover;
 using klotski::mover::MaskMover;
@@ -50,6 +51,11 @@ int main() {
     // std::cout << ret.size() << std::endl;
 
     const auto start = std::chrono::system_clock::now();
+
+    // const auto code = CommonCode::unsafe_create(0x1A9BF0C00).to_raw_code();
+    const auto code = CommonCode::unsafe_create(0x4FEA13400).to_raw_code();
+    AnalysePro analyse {code};
+    analyse.build_all();
 
     // TODO: maybe we can support `std::format`
 
@@ -143,11 +149,11 @@ int main() {
     //     }
     // }
 
-    GroupCases::build();
-
-    constexpr auto group = Group::unsafe_create(169, 0, Group::Toward::C);
-    constexpr auto info = CaseInfo::unsafe_create(group, 7472);
-    std::cout << info << ": " << GroupCases::obtain_code(info) << std::endl;
+    // GroupCases::build();
+    //
+    // constexpr auto group = Group::unsafe_create(169, 0, Group::Toward::C);
+    // constexpr auto info = CaseInfo::unsafe_create(group, 7472);
+    // std::cout << info << ": " << GroupCases::obtain_code(info) << std::endl;
 
     // constexpr auto group = Group::unsafe_create(89, 0, Group::Toward::A);
     // std::cout << group.to_string() << std::endl;

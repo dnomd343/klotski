@@ -8,12 +8,12 @@ namespace klotski {
 
 template <typename T>
 requires std::is_trivial_v<T>
-class LayerQueue final {
+class LayerQueuePro final {
 public:
-    ~LayerQueue();
+    ~LayerQueuePro();
 
     /// Construct from first layer nodes and reserve size.
-    LayerQueue(std::initializer_list<T> first_layer, size_t max_size);
+    LayerQueuePro(std::initializer_list<T> first_layer, size_t max_size);
 
     // ------------------------------------------------------------------------------------- //
 
@@ -32,15 +32,15 @@ public:
     [[nodiscard]] bool is_ending() const;
 
     /// Whether the queue front is on new layer.
-    [[nodiscard]] bool is_new_layer() const;
+    // [[nodiscard]] bool is_new_layer() const;
 
     // ------------------------------------------------------------------------------------- //
 
     /// Get the nodes of the last layer.
-    std::vector<T> last_layer() const;
+    // std::vector<T> last_layer() const;
 
     /// Get all the nodes of each layer.
-    std::vector<std::vector<T>> all_layers() const;
+    // std::vector<std::vector<T>> all_layers() const;
 
     // ------------------------------------------------------------------------------------- //
 
