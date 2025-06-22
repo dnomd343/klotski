@@ -19,10 +19,12 @@ def compare(file_1: str, file_2: str) -> None:
     for edge in g2.es:
         assert edge.attributes() == {}
 
-    for i in range(g1.vcount()):
-        assert g1.vs[i].attributes() == g2.vs[i].attributes()
+    gv1 = {x['code']: x.attributes() for x in g1.vs}
+    gv2 = {x['code']: x.attributes() for x in g2.vs}
+    assert gv1 == gv2
 
 
 if __name__ == '__main__':
-    for name in sorted(os.listdir('output-ig-raw')):
-        compare(f'output-ig/{name}', f'output-ig-raw/{name}')
+    assert sorted(os.listdir('legacy-ig')) == sorted(os.listdir('modern-ig'))
+    for name in sorted(os.listdir('modern-ig')):
+        compare(f'legacy-ig/{name}', f'modern-ig/{name}')

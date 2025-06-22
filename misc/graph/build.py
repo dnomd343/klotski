@@ -4,12 +4,23 @@ import pickle
 import igraph as ig
 
 from klotski import FastCal
-from klotski import CommonCode
+from klotski import Block, Layout
 from klotski import Group, GroupUnion
 
 
-def build_step_map(code: str) -> dict[CommonCode, int]:
-    cal = FastCal(CommonCode(code))
+def is_valid_solution(code: Layout) -> bool:
+    if str(code)[0] != 'D':
+        return False
+
+    seq = code.dump_seq()
+    is_z_valid = seq[9] == Block.SPACE and seq[10] == Block.SPACE
+    is_x_valid = seq[12] == Block.SPACE and seq[16] == Block.SPACE
+    is_y_valid = seq[15] == Block.SPACE and seq[19] == Block.SPACE
+    return is_x_valid or is_y_valid or is_z_valid
+
+
+def build_step_map(code: str) -> dict[Layout, int]:
+    cal = FastCal(Layout(code))
     cal.build_all()
     data = cal.exports()
     result = {}
@@ -19,8 +30,8 @@ def build_step_map(code: str) -> dict[CommonCode, int]:
     return result
 
 
-def build_min_step_scope(group: Group, targets: list[str]) -> dict[CommonCode, dict[CommonCode, int]]:
-    targets = [CommonCode(x) for x in targets]
+def build_min_step_scope(group: Group, targets: list[str]) -> dict[Layout, dict[Layout, int]]:
+    targets = [Layout(x) for x in targets]
     all_solution = set([x for x in group.cases() if str(x).startswith('D')])
     not_solved = all_solution - set(targets)
 
@@ -44,7 +55,7 @@ def build_min_step_scope(group: Group, targets: list[str]) -> dict[CommonCode, d
     return result
 
 
-def build_graph(nodes: dict[CommonCode, int]) -> ig.Graph:
+def build_graph(nodes: dict[Layout, int]) -> ig.Graph:
     edges = []
     for code, step in nodes.items():
         for next_case in code.next_cases():
@@ -67,16 +78,24 @@ def save_graph(name: str, graph: ig.Graph) -> None:
         pickle.dump(graph, fp)
 
 
-def main() -> None:
-    targets = [
-        'DAAF4CC', 'DABFD20', 'DAEF720', 'DAEFD20', 'DAFED20', 'DBAB4CC', 'DBAFD20', 'DEAB4CC', 'DEAFD20', 'DEEB60C', 'DFAA4CC', 'DFAED20',
-        'DAA7F30', 'DAB9F30', 'DABDF80', 'DAE9F30', 'DAEDF80', 'DAFA730', 'DAFB780', 'DBADF80', 'DBAF780', 'DBBE930', 'DEADF80', 'DFAB780',
-        'DAF60EC', 'DBE60EC', 'DBE70AC', 'DBF682C', 'DFA70AC', 'DFE90AC',
-    ]
-    group = GroupUnion(169).groups()[1]
+def build_data(group: Group) -> None:
+    print(f'Start building: {group}')
+    targets = [str(x)[:7] for x in list(group.cases()) if is_valid_solution(x)]
+    if not targets:
+        return
     data = build_min_step_scope(group, targets)
     for target in targets:
-        save_graph(target, build_graph(data[CommonCode(target)]))
+        save_graph(target, build_graph(data[Layout(target)]))
+
+
+def main() -> None:
+    group = GroupUnion(169).groups()[1]
+    build_data(group)
+
+    # type_ids = [149, 154, 159, 164, 169, 174]
+    # groups = [y for x in type_ids for y in GroupUnion(x).groups()]
+    # for group in groups:
+    #     build_data(group)
 
 
 if __name__ == '__main__':
