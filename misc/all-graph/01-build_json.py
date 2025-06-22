@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import os
 import json
+import multiprocessing
 from klotski import Group, Layout, FastCal
 
 
@@ -29,41 +31,22 @@ def build_graph(group: Group, targets: set[Layout], ignores: set[Layout]) -> dic
     for layout in steps:
         assert len(steps[layout]) == len(targets)
         step = min(x for _, x in steps[layout])
-        pivots = set(x for x, y in steps[layout] if y == step)
-        graph[layout] = {'step': step, 'pivots': pivots, 'next': set()}
+        pivots = [x for x, y in steps[layout] if y == step]
+        graph[layout] = {'step': step, 'pivots': pivots, 'next': []}
 
     for layout, info in graph.items():
         for x in layout.next_cases():
             if graph[x]['step'] == info['step'] + 1:
-                info['next'].add(x)
-
-    # for ignore in ignores:
-    #     assert ignore in graph
-    #     for x in graph[ignore]['next']:
-    #         assert x in ignores
-    #
-    #     for layout, info in graph.items():
-    #         if ignore in info['next'] and layout not in ignores:
-    #             assert layout in targets
+                info['next'].append(x)
 
     for ignore in ignores:
         del graph[ignore]
 
     for layout, info in graph.items():
-        need_remove = []
-        for x in info['next']:
-            if x in ignores:
-                assert layout in targets
-                need_remove.append(x)
-        for x in need_remove:
-            info['next'].remove(x)
+        info['next'] = list(filter(lambda x: x not in ignores, info['next']))
 
-    # for layout, info in graph.items():
-    #     for x in info['next']:
-    #         assert x in graph
-
-    assert sorted(graph) == list(graph)
     assert len(set(graph)) == len(graph)
+    assert sorted(graph) == list(graph)
     return graph
 
 
@@ -78,7 +61,8 @@ def dump_json(group_info: dict, graph: dict[Layout, dict]) -> str:
     return json.dumps({**group_info, 'graph': data}, separators=(',', ':'))
 
 
-def load_and_dump(info: dict, path_prefix: str) -> None:
+def build_and_dump(info: dict, output: str) -> None:
+    print(f'Start building: {output}')
     targets = sorted(Layout(x) for x in info['solutions']['valid'])
     ignores = sorted(Layout(x) for x in info['solutions']['invalid'])
 
@@ -92,13 +76,19 @@ def load_and_dump(info: dict, path_prefix: str) -> None:
         'targets': {layout_to_str(x): target_map[x] for x in targets},
         'ignores': [layout_to_str(x) for x in ignores],
     }
-    with open(f'{path_prefix}.json', 'w') as fp:
+    with open(output, 'w') as fp:
         fp.write(dump_json(group_info, graph))
 
 
-if __name__ == '__main__':
-    raw = json.loads(open('data.json').read())
+def build_all(path: str, group_info: dict[str, dict]) -> None:
+    pool = multiprocessing.Pool()
+    for name, info in group_info.items():
+        output = os.path.join(path, f'{name}.json')
+        pool.apply_async(build_and_dump, args=(info, output))
+    pool.close()
+    pool.join()
 
-    for name, info in raw.items():
-        print(name)
-        load_and_dump(info, f'./output-json/{name}')
+
+if __name__ == '__main__':
+    os.makedirs('./output-json/', exist_ok=True)
+    build_all('./output-json/', json.loads(open('data.json').read()))
