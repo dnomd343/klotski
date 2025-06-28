@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import igraph as ig
 
 
@@ -12,6 +13,15 @@ def split_neighbor_layer(g: ig.Graph, n: int) -> tuple[list[set[ig.Vertex]], lis
 
     select_next = lambda p: set(x for x in p.neighbors() if x['step'] == n + 1)
     select_last = lambda p: set(x for x in p.neighbors() if x['step'] == n)
+
+    layer_a_data.append(set())
+    for node in layer_a:
+        if not select_next(node):
+            layer_a_data[0].add(node)
+    for node in layer_a_data[0]:
+        layer_a.remove(node)
+    if not layer_a_data[0]:
+        layer_a_data.clear()
 
     while len(layer_a) != 0:
         side_a: set[ig.Vertex] = set()
@@ -91,7 +101,7 @@ def combine_split_result(data_a: list[set[ig.Vertex]], data_b: list[set[ig.Verte
 def split_layers(g: ig.Graph) -> list[list[set[ig.Vertex]]]:
     assert min(g.vs['step']) == 0
     layer_num = max(g.vs['step']) + 1
-    print(f'layer_num: {layer_num}')
+    # print(f'layer_num: {layer_num}')
 
     layers = [{'up': [], 'down': []} for x in range(layer_num)]
     layers[0]['up'] = [set(g.vs.select(step=0))]
@@ -132,7 +142,7 @@ def export_new_graph(g: ig.Graph, split_data: list[list[set[ig.Vertex]]]) -> ig.
         for union_index, nodes in enumerate(unions):
             index_map[(layer_index, union_index)] = g_index
             ng.vs[g_index]['step'] = layer_index
-            ng.vs[g_index]['codes'] = [x['code'] for x in nodes]
+            ng.vs[g_index]['code'] = [x['code'] for x in nodes]
             g_index += 1
 
     for layer_index in range(len(split_data)-1):
@@ -157,14 +167,20 @@ def export_new_graph(g: ig.Graph, split_data: list[list[set[ig.Vertex]]]) -> ig.
     return ng
 
 
-if __name__ == '__main__':
-    raw = ig.Graph.Read_Pickle('data/DAA7F30.pkl')
-    # raw = ig.Graph.Read_Pickle('data/DBAB4CC.pkl')
-    # raw = ig.Graph.Read_Pickle('main_combined.pkl')
-    print(raw.summary())
+def do_combine(input: str, output: str):
+    print(f'Combine {input} -> {output}')
+    raw = ig.Graph.Read_Pickle(input)
     gg = export_new_graph(raw, split_layers(raw))
-    print(gg.summary())
-    # print(gg.isomorphic(raw))
+    # print(raw.summary())
+    # print(gg.summary())
+    # print(raw.isomorphic(gg))
+    gg.write_pickle(output)
 
-    gg.write_pickle('main_combined.pkl')
-    # gg.write_graphml('main_combined.graphml')
+
+if __name__ == '__main__':
+    do_combine('data/DAA7F30.pkl', 'main_combined.pkl')
+    # do_combine('data/DBAB4CC.pkl', 'main_combined.pkl')
+    # do_combine('main_combined.pkl', 'main_combined.pkl')
+
+    # for name in os.listdir('data'):
+    #     do_combine(f'data/{name}', f'{name}')

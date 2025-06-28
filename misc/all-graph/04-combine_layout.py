@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+import os
 import igraph as ig
+import multiprocessing
 
 
 def split_layer(graph: ig.Graph, step_a: int, step_b: int) -> tuple[list[set[int]], list[set[int]]]:
@@ -37,13 +39,18 @@ def split_layer(graph: ig.Graph, step_a: int, step_b: int) -> tuple[list[set[int
 
     data_a: list[set[int]] = []
     data_b: list[set[int]] = []
+    special_set = set()
     while layer_a:
-        # TODO: maybe we should combine all union_a when union_b is empty
         union_a, union_b = extend_from(layer_a.pop())
+        if len(union_b) == 0:
+            assert len(union_a) == 1
+            special_set.update(union_a)
+            continue
         layer_a -= union_a
         layer_b -= union_b
         data_a.append(set(x.index for x in union_a))
         data_b.append(set(x.index for x in union_b))
+    data_a.append(set(x.index for x in special_set))
 
     assert len(layer_a) == 0 and len(layer_b) == 0
     assert sum(len(x) for x in data_a) == layer_num_a
@@ -69,8 +76,7 @@ def build_multi_set(unions_a: list[set[int]], unions_b: list[set[int]]) -> list[
     return release
 
 
-def do_split(file: str) -> ig.Graph:
-    g = ig.Graph.Read_Pickle(file)
+def do_split(g: ig.Graph) -> ig.Graph:
     max_step = max(x['step'] for x in g.vs)
 
     layer_data = [[] for _ in range(max_step + 1)]
@@ -108,6 +114,33 @@ def do_split(file: str) -> ig.Graph:
     return g
 
 
+def do_combine(input: str, output: str) -> None:
+    print(f'Start combining: {input}')
+    g = do_split(ig.Graph.Read_Pickle(input))
+    g.write_pickle(output)
+
+    g_mod = g.copy()
+    for x in g_mod.vs:
+        x['code'] = '+'.join(x['code'])
+    g_mod = do_split(g_mod)
+
+    assert g.vcount() == g_mod.vcount()
+    assert g.ecount() == g_mod.ecount()
+    for index in range(g.vcount()):
+        assert len(g_mod.vs[index]['code']) == 1
+        assert g.vs[index]['step'] == g_mod.vs[index]['step']
+        assert '+'.join(g.vs[index]['code']) == g_mod.vs[index]['code'][0]
+    assert g.isomorphic(g_mod)
+
+
+def combine_all(ig_dir: str, output_dir: str) -> None:
+    pool = multiprocessing.Pool()
+    for name in sorted(os.listdir(ig_dir)):
+        pool.apply_async(do_combine, args=(f'{ig_dir}/{name}', f'{output_dir}/{name}'))
+    pool.close()
+    pool.join()
+
+
 if __name__ == "__main__":
-    g_release = do_split('output-ig/1-00M-000Y_DAA7F30.pkl')
-    g_release.write_pickle('1-00M-000Y_DAA7F30-combined.pkl')
+    os.makedirs('output-combine', exist_ok=True)
+    combine_all('output-ig', 'output-combine')

@@ -32,10 +32,10 @@ def build_step_map(code: str) -> dict[Layout, int]:
 
 def build_min_step_scope(group: Group, targets: list[str]) -> dict[Layout, dict[Layout, int]]:
     targets = [Layout(x) for x in targets]
-    all_solution = set([x for x in group.cases() if str(x).startswith('D')])
+    all_solution = set([x for x in list(group.cases()) if str(x).startswith('D')])
     not_solved = all_solution - set(targets)
 
-    step_data = {x: {} for x in group.cases() if x not in not_solved}
+    step_data = {x: {} for x in list(group.cases()) if x not in not_solved}
     for target in targets:
         for code, step_num in build_step_map(target).items():
             if code in not_solved:
