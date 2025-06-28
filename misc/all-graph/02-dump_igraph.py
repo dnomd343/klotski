@@ -82,7 +82,7 @@ def convert_all(json_dir: str, output_dir: str) -> None:
     pool = multiprocessing.Pool()
     for name in sorted(os.listdir(json_dir)):
         json_file = f'{json_dir}/{name}'
-        output_prefix = f"{output_dir}/{name.removesuffix('.json')}"
+        output_prefix = f'{output_dir}/{name.removesuffix('.json')}'
         pool.apply_async(convert_and_dump, args=(json_file, output_prefix))
     pool.close()
     pool.join()
