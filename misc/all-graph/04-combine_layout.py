@@ -4,30 +4,30 @@ import os
 import igraph as ig
 import multiprocessing
 
+type Union = set[int]
 
-def split_adjacent_layers(graph: ig.Graph, step: int) -> tuple[list[set[int]], list[set[int]]]:
+
+def split_adjacent_layers(graph: ig.Graph, step: int) -> tuple[list[Union], list[Union]]:
     layouts = graph.vs.select(step_in=[step, step + 1])
-    code_map = {x['code']: x.index for x in layouts}
-    to_index = lambda iter: {code_map[x['code']] for x in iter}
+    mapping = {x['code']: x.index for x in layouts}
+    spawn_union = lambda iter: {mapping[x['code']] for x in iter}
 
     layer_curr, layer_next = [], []
     g_focus = graph.subgraph(layouts)
-    isolated = g_focus.vs.select(_degree=0)
-    if isolated:
-        assert {x['step'] for x in isolated} == {step}
-        layer_curr = [to_index(isolated)]
+    if isolated := g_focus.vs.select(_degree=0):
+        assert set(isolated['step']) == {step}
+        layer_curr = [spawn_union(isolated)]
         g_focus.delete_vertices(isolated)
 
-    for component in g_focus.connected_components():
-        component = [g_focus.vs[x] for x in component]
-        layer_curr.append(to_index(x for x in component if x['step'] == step))
-        layer_next.append(to_index(x for x in component if x['step'] == step + 1))
+    for comp in map(g_focus.vs.select, g_focus.connected_components()):
+        layer_curr.append(spawn_union(comp.select(step=step)))
+        layer_next.append(spawn_union(comp.select(step=step+1)))
     return layer_curr, layer_next
 
 
-def apply_layer_unions(unions_a: list[set[int]], unions_b: list[set[int]]) -> list[set[int]]:
-    layer_data = {x for u in unions_a for x in u}
-    assert layer_data == {x for u in unions_b for x in u}
+def apply_layer_unions(unions_a: list[Union], unions_b: list[Union]) -> list[Union]:
+    layouts = {x for u in unions_a for x in u}
+    assert layouts == {x for u in unions_b for x in u}
 
     unions = []
     for curr_union in unions_a:
@@ -40,16 +40,16 @@ def apply_layer_unions(unions_a: list[set[int]], unions_b: list[set[int]]) -> li
 
     assert set(len(x) for x in unions_a) == {0}
     assert set(len(x) for x in unions_b) == {0}
-    assert layer_data == {x for u in unions for x in u}
+    assert layouts == {x for u in unions for x in u}
     return unions
 
 
-def build_all_unions(graph: ig.Graph) -> list[set[int]]:
+def build_all_unions(graph: ig.Graph) -> list[Union]:
     max_step = max(graph.vs['step'])
-    layer_unions = [[{x.index for x in graph.vs if x['step'] == 0}]]
+    layer_unions = [[set(graph.vs.select(step=0).indices)]]
     for step in range(0, max_step):
         layer_unions.extend(list(split_adjacent_layers(graph, step)))
-    layer_unions.append([{x.index for x in graph.vs if x['step'] == max_step}])
+    layer_unions.append([set(graph.vs.select(step=max_step).indices)])
     assert len(layer_unions) == (max_step + 1) * 2
 
     all_unions = []
@@ -69,11 +69,11 @@ def combine_graph(graph: ig.Graph) -> ig.Graph:
     assert len(combine_idx) == graph.vcount()
     assert set(combine_idx) == set(range(len(unions)))
 
-    id_len = len(str(len(unions) - 1))
-    graph.vs['id'] = [f'U{x:0{id_len}}' for x in combine_idx]
+    tag_len = len(str(len(unions) - 1))
+    graph.vs['tag'] = [f'U{x:0{tag_len}}' for x in combine_idx]
 
-    graph.contract_vertices(combine_idx, combine_attrs={'id': 'first', 'step': 'first', 'code': list})
-    assert [int(x.removeprefix('U')) for x in graph.vs['id']] == list(range(len(unions)))
+    graph.contract_vertices(combine_idx, combine_attrs={'tag': 'first', 'step': 'first', 'code': list})
+    assert [int(x.removeprefix('U')) for x in graph.vs['tag']] == list(range(len(unions)))
     assert not any(x.is_loop() for x in graph.es)
     graph.simplify(multiple=True)
     return graph
@@ -87,14 +87,14 @@ def do_combine(input: str, output: str) -> None:
     del graph.vs['code']
     graph.write_pickle(output)  # save combined graph
 
-    g_raw.vs['code'] = g_raw.vs['id']  # modify as origin format
+    g_raw.vs['code'] = g_raw.vs['tag']  # modify as origin format
     g_mod = combine_graph(g_raw.copy())
 
     assert g_raw.vcount() == g_mod.vcount()
     assert g_raw.ecount() == g_mod.ecount()
-    assert all(x['code'] == [x['id']] for x in g_mod.vs)
+    assert all(x['code'] == [x['tag']] for x in g_mod.vs)
     assert g_raw.vs['step'] == g_mod.vs['step']
-    assert g_raw.vs['code'] == g_mod.vs['id']
+    assert g_raw.vs['code'] == g_mod.vs['tag']
     assert g_raw.isomorphic(g_mod)
 
 

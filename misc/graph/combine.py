@@ -142,7 +142,7 @@ def export_new_graph(g: ig.Graph, split_data: list[list[set[ig.Vertex]]]) -> ig.
         for union_index, nodes in enumerate(unions):
             index_map[(layer_index, union_index)] = g_index
             ng.vs[g_index]['step'] = layer_index
-            ng.vs[g_index]['code'] = [x['code'] for x in nodes]
+            ng.vs[g_index]['codes'] = [x['code'] for x in nodes]
             g_index += 1
 
     for layer_index in range(len(split_data)-1):

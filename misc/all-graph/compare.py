@@ -7,18 +7,18 @@ import igraph as ig
 def load_legacy(file: str) -> ig.Graph:
     g = ig.Graph.Read_Pickle(file)
     for node in g.vs:
-        assert sorted(node['code']) == node['code']
-        node['codes'] = node['code']
-    del g.vs['code']
+        node['codes'] = sorted(node['codes'])
     return g
 
 
 def load_modern(file: str) -> ig.Graph:
     g = ig.Graph.Read_Pickle(file)
-    assert [int(x.removeprefix('U')) for x in g.vs['id']] == list(range(g.vcount()))
-    for node in g.vs:
+
+    for idx, node in enumerate(g.vs):
         assert sorted(node['codes']) == node['codes']
-    del g.vs['id']
+        assert int(node['tag'].removeprefix('U')) == idx
+
+    del g.vs['tag']
     return g
 
 
@@ -36,7 +36,9 @@ def compare(g1: ig.Graph, g2: ig.Graph) -> None:
 
 
 if __name__ == '__main__':
-    for name in sorted(os.listdir('output-combine-raw')):
-        g1 = load_legacy(f'output-combine-raw/{name}')
+    for name in sorted(os.listdir('output-combine')):
+        if '_' not in name:
+            continue
+        g1 = load_legacy(f'combined/{name.split('_')[1]}')
         g2 = load_modern(f'output-combine/{name}')
         compare(g1, g2)
